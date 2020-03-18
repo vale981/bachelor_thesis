@@ -4,5 +4,11 @@
 - Buecher etc...
 - Tags :ref: :unref: jeh nach verwendung
 - Links zu seiten [[file:~/Downloads/README.pdf::2][VSOP87 README]]
-** Test Buch
-link zur datei
+
+** Latex
+*** Latex/KOMA Ref-Sheet
+ - [[file:literature/prog/LaTeX_RefSheet.pdf][Refsheet]]
+*** AUCTeX
+ - [[file:literature/prog/tex-ref.pdf][Auctex]]
+*** Modular Documents
+ - [[https://en.wikibooks.org/wiki/LaTeX/Modular_Documents][Modular Documents]]
