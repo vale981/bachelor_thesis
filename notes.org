@@ -12,3 +12,67 @@
  - [[file:literature/prog/tex-ref.pdf][Auctex]]
 *** Modular Documents
  - [[https://en.wikibooks.org/wiki/LaTeX/Modular_Documents][Modular Documents]]
+
+** Feynman Rules
+*** Siegert Vorlesung
+ - [[file:literature/feynman/tk-vorlesung.pdf][Vorlesung]]
+ - [[file:literature/feynman/tk-vorlesung.pdf::54][Kapitel 4.3]]
+   - Feynman Diags etc...
+ - [[file:literature/feynman/tk-vorlesung.pdf::64][Kapitel 4.4]]
+   - Beispiel zur Berechnung
+
+
+
+** Emails
+*** Erste Aufgaben
+ - [[file:literature/emails/first_step.eml][Mail]]
+Hi Valentin,
+
+alles klar. Das Formular machen wir dann einfach im Nachhinein und datieren es zurueck.
+
+Dann wuerde ich zur Einarbeitung vorschlagen, Du schaust Dir mal meinen Aufschrieb zu Feynman-Regeln und der |M|^2-Berechnung aus der Vorlesung an, Kapitel 4.3 und 4.4 hier:
+
+  http://fsiegert.web.cern.ch/fsiegert/tmp/tk-vorlesung.pdf
+
+Versuch das erstmal fuer den gezeigten Prozess nachzuvollziehen, und schau dann, ob Du folgende Uebungsaufgaben aus meinem Kurs kannst:
+4.1
+4.2
+5.1
+5.2
+5.3
+https://bildungsportal.sachsen.de/opal/auth/RepositoryEntry/11966152704/CourseNode/92162447560998
+
+Wenn Du konzeptionell oder rechnerisch irgendwo haengen bleibst, reden wir (Skype/Vidyo/Zoom/...), damit ich einzelnes nochmal naeher erlaeutern kann. Wenn Du damit durch bist, kann ich Dir die Musterloesungen zur Verfuegung stellen und du schaust nochmal genauer, ob noch irgendwas unklar ist.
+
+Dann kannst Du mal qq->yy rechnen.
+
+Klingt das OK fuer den Start?
+
+Viele Gruesse,
+Frank
+
+
+On Wed, 18 Mar 2020 at 08:30, Valentin Boettcher <hiro@protagon.space> wrote:
+
+    Hi Frank,
+    Ich denke, es waere besser heute schon anzufangen.
+    Das Formular zur Anmeldung der Arbeit kann ich dir als Ausgefuelltes PDF
+    schicken.
+
+    Cheers,
+    Valentin
+
+    On 3/17/20 7:45 PM, Frank Siegert wrote:
+    > Hallo Valentin,
+    >
+    > Ich bin morgen nicht im Büro, wir sollten unseren Treff also
+    > verschieben. Willst du trotzdem schon richtig anfangen und aus der Ferne
+    > Anleitung bekommen, oder verschieben wir den Beginn erstmal?
+    >
+    > VG,
+    > Frank
+    >
+
+    --
+    Cheers,
+    Valentin

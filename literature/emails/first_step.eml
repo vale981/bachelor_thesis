@@ -1,0 +1,223 @@
+Return-Path: <Frank.Siegert@cern.ch>
+Delivered-To: hiro@protagon.space
+Received: from protagon.space
+	by protagon.space with LMTP
+	id 91nNImnicV5NKwAA5qOL3w
+	(envelope-from <Frank.Siegert@cern.ch>)
+	for <hiro@protagon.space>; Wed, 18 Mar 2020 08:57:13 +0000
+Received: from localhost (localhost [127.0.0.1])
+	by protagon.space (Postfix) with ESMTP id 7D9D77C01E2
+	for <hiro@protagon.space>; Wed, 18 Mar 2020 08:57:13 +0000 (UTC)
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=40.107.8.79; helo=eur04-vi1-obe.outbound.protection.outlook.com; envelope-from=frank.siegert@cern.ch; receiver=<UNKNOWN> 
+Authentication-Results: protagon.space; dmarc=none (p=none dis=none) header.from=cern.ch
+Authentication-Results: protagon.space;
+	dkim=pass (1024-bit key; unprotected) header.d=cern.onmicrosoft.com header.i=@cern.onmicrosoft.com header.b="rptOybaH";
+	dkim-atps=neutral
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80079.outbound.protection.outlook.com [40.107.8.79])
+	by protagon.space (Postfix) with ESMTPS id AEB447C01DE
+	for <hiro@protagon.space>; Wed, 18 Mar 2020 08:57:11 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n7wmYxIGJmf/KElyxnFl/mxIgg9zKwYHzI3FLWzzYcNZiZ9hD90yHwtWBwr9b1yXM2FumYLwTMTIEKW5cc5s3FbRUuQPBFZjpZS6zck3vS1RmU7BYsBs9K1Ccp7KEQo3zW1XAvN3yg+4w4pk5rP3lGsHLn/kBPwI1n0SAVpbcNLjZ3Kz65ybjLmES7Jayx3e7TG/UcozaxDlSa+e56YVSh1HHhkPkfVg7HIk3XJzPKLV0+dfvTYxB6oRhPaJxeRMZxOXD0KBVn7vUCBb9Im5KS7svHJcG4htOSaDKm+ABWwK32Vb0ZyBOHcfRmb0Osze65bpNymSLLB4KQ/6rK5yDA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BicaBMpG/fAQr8a+f5eI285loZ6us3dvhzZntEiPTVE=;
+ b=Fs48PM/gbzUAFmnUonzCJ7XjMfzt57WZvpIsXlIYxWqewcGdNG1J5SCW/yZEotigy75BoU9MeY9A3RcnU6eVJxejVQCOoRKexfFx1iwxDRfhwH/N8F/QkonLkJr6+xdMQXZ5tGd2jfa8bU/umpESRPFdl/O+QAdQe9V847NnlQ4WPPlj5fm5KLw1uz/Ll/9mm7bP2SpwbcqVUuJrLy52FwwTJI8lz/0VhfSPGQQMXofP4zNywGWDt1PNSCEmtiA/dIRDKpvpRMUy+JrjX1N0V2aAqmDnVROe844r8JQHSmF+J7r487tkARvlTmh8hwXiOxdsYnGmGHgBf74axuulZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 188.184.36.46) smtp.rcpttodomain=protagon.space smtp.mailfrom=cern.ch;
+ dmarc=bestguesspass action=none header.from=cern.ch; dkim=none (message not
+ signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cern.onmicrosoft.com;
+ s=selector2-cern-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BicaBMpG/fAQr8a+f5eI285loZ6us3dvhzZntEiPTVE=;
+ b=rptOybaHJnkd0b04Q4aoOKzeU4cJBDFZVI5lKkACCBFYa06EbVDPaFTERkB136MlwNbsDBcLUROYL/6iXdraMZ12rK8bMiqP7ktXZ7nNPy4uiXzGPjhw3XRcKsGmH613gej6mTOx92gd5vidVfe9tjOsilKpzkBA4a+efo88eBM=
+Received: from AM5P194CA0002.EURP194.PROD.OUTLOOK.COM (2603:10a6:203:8f::12)
+ by AM5PR0601MB2625.eurprd06.prod.outlook.com (2603:10a6:203:43::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.19; Wed, 18 Mar
+ 2020 08:57:04 +0000
+Received: from HE1EUR02FT032.eop-EUR02.prod.protection.outlook.com
+ (2603:10a6:203:8f:cafe::d) by AM5P194CA0002.outlook.office365.com
+ (2603:10a6:203:8f::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.19 via Frontend
+ Transport; Wed, 18 Mar 2020 08:57:04 +0000
+Authentication-Results: spf=pass (sender IP is 188.184.36.46)
+ smtp.mailfrom=cern.ch; protagon.space; dkim=none (message not signed)
+ header.d=none;protagon.space; dmarc=bestguesspass action=none
+ header.from=cern.ch;
+Received-SPF: Pass (protection.outlook.com: domain of cern.ch designates
+ 188.184.36.46 as permitted sender) receiver=protection.outlook.com;
+ client-ip=188.184.36.46; helo=cernmxgwlb4.cern.ch;
+Received: from cernmxgwlb4.cern.ch (188.184.36.46) by
+ HE1EUR02FT032.mail.protection.outlook.com (10.152.10.135) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.2814.13 via Frontend Transport; Wed, 18 Mar 2020 08:57:02 +0000
+Received: from cernfe06.cern.ch (188.184.36.49) by cernmxgwlb4.cern.ch
+ (188.184.36.46) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 18 Mar
+ 2020 09:56:49 +0100
+Received: from mail-qk1-f172.google.com (209.85.222.172) by smtp.cern.ch
+ (188.184.36.52) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 18 Mar
+ 2020 09:56:49 +0100
+Received: by mail-qk1-f172.google.com with SMTP id q16so108229qki.0        for
+ <hiro@protagon.space>; Wed, 18 Mar 2020 01:56:50 -0700 (PDT)
+X-Gm-Message-State: ANhLgQ3Oly467CvY6295WIlo7RXlCpVyxMg107zXLZ2ANhPTLqpyXvPE
+	Ppg+lJqdxUPaGqW73rmKBu/XWrlOGAPfecSaHDo=
+X-Google-Smtp-Source: ADFU+vvZp9yc1utEI6KCro2NAQDaeTNP56ViAvYhJ3DsZD22QbNGsQfImSZiMhnhZDwoNPDld3cAo7z1ptOEjdBNiDA=
+X-Received: by 2002:a25:f88:: with SMTP id 130mr4467098ybp.131.1584521809137;
+ Wed, 18 Mar 2020 01:56:49 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAF4aNUZFM4DaXu+hxxnCCB2jJfkaUh4U31pdTJzRz3ygYirkBw@mail.gmail.com>
+ <0ef3d0a0-26a6-c4d0-c92c-d4dcb24eee06@protagon.space>
+In-Reply-To: <0ef3d0a0-26a6-c4d0-c92c-d4dcb24eee06@protagon.space>
+From: Frank Siegert <frank.siegert@cern.ch>
+Date: Wed, 18 Mar 2020 09:56:12 +0100
+X-Gmail-Original-Message-ID: <CAF4aNUYgGJxJ7PBk=pKuLXeVjmzJfxPW=QuTirSCNpHkw9TXzQ@mail.gmail.com>
+Message-ID: <CAF4aNUYgGJxJ7PBk=pKuLXeVjmzJfxPW=QuTirSCNpHkw9TXzQ@mail.gmail.com>
+Subject: Re: Verschiebung
+To: Valentin Boettcher <hiro@protagon.space>
+Content-Type: multipart/alternative; boundary="00000000000092966e05a11d3bf0"
+X-EOPAttributedMessage: 0
+X-Forefront-Antispam-Report:
+	CIP:188.184.36.46;IPV:;CTRY:CH;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(396003)(376002)(136003)(39860400002)(199004)(46966005)(8936002)(966005)(70206006)(70586007)(86362001)(316002)(5660300002)(42186006)(47076004)(26005)(186003)(7116003)(356004)(6666004)(9686003)(336012)(246002)(8676002)(6916009)(55446002)(478600001)(3480700007)(2906002)(44832011)(53546011)(7636002)(33964004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM5PR0601MB2625;H:cernmxgwlb4.cern.ch;FPR:;SPF:Pass;LANG:de;PTR:cernmx13.cern.ch;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ea9236ef-d188-4ba1-4a76-08d7cb1a5366
+X-MS-TrafficTypeDiagnostic: AM5PR0601MB2625:
+X-Microsoft-Antispam-PRVS:
+	<AM5PR0601MB26252EFAC108ABF79FFE75B2E0F70@AM5PR0601MB2625.eurprd06.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:188;
+X-Forefront-PRVS: 03468CBA43
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	AUuk0DBG6hnvcQK5eWxe3YxLE+qzq1D0BuV60KR4eSP3h4GYyKLQC1zsLpoq1IwBaCQHodbIWNObYIrHEdtMGhh5XnJGA5c8Wopn80X3OPvkJLkJw5IGUmcb0uin/x7y00+DPpLLCDjmTGTibq6E8QS+KFu5XztdGMulmBYUNbyO4QM0aVY06lMXexhEMiDhFuKwun9YZhvj4V4XdVmt+bNt8O8jkJwqMcAVTCgmeyqbgkyPQxZpduAhpsETVz1fejI+fqCaGVrp3VD8HJ8V1bS96cIKh2KBZHF9+mNhwHgvULbhQl9L2be2Jzb83zEWuM5nm27Iy7wjbv/IwD7ghKo2IkDtm0X+3rLJLx/AOtrm+HqQEdSB68qE+GtdIStq0jsU6CRp2Nhm2xKkWtUzNvy77YcMcS4fn+jIahJR6h+uwuQbX6EkDW9SA2yCgqxYAZ06vsHwuxEqdA9ql0HRdQUJI0k8kSOKYBo/0CPUUELryk84FDmqbw5gYawm9nQXfKA3OIL1wAksSZBHIyXzLB9hOvsTfdLxHMCe/oDfp79ipZnks6vvuTA2nDZtEpRp2ikXhZcJhGju895A7sneRw==
+X-OriginatorOrg: cern.ch
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2020 08:57:02.1902
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea9236ef-d188-4ba1-4a76-08d7cb1a5366
+X-MS-Exchange-CrossTenant-Id: c80d3499-4a40-4a8c-986e-abce017d6b19
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=c80d3499-4a40-4a8c-986e-abce017d6b19;Ip=[188.184.36.46];Helo=[cernmxgwlb4.cern.ch]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0601MB2625
+
+--00000000000092966e05a11d3bf0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi Valentin,
+
+alles klar. Das Formular machen wir dann einfach im Nachhinein und datieren
+es zurueck.
+
+Dann wuerde ich zur Einarbeitung vorschlagen, Du schaust Dir mal meinen
+Aufschrieb zu Feynman-Regeln und der |M|^2-Berechnung aus der Vorlesung an,
+Kapitel 4.3 und 4.4 hier:
+
+  http://fsiegert.web.cern.ch/fsiegert/tmp/tk-vorlesung.pdf
+
+Versuch das erstmal fuer den gezeigten Prozess nachzuvollziehen, und schau
+dann, ob Du folgende Uebungsaufgaben aus meinem Kurs kannst:
+4.1
+4.2
+5.1
+5.2
+5.3
+https://bildungsportal.sachsen.de/opal/auth/RepositoryEntry/11966152704/Cou=
+rseNode/92162447560998
+
+Wenn Du konzeptionell oder rechnerisch irgendwo haengen bleibst, reden wir
+(Skype/Vidyo/Zoom/...), damit ich einzelnes nochmal naeher erlaeutern kann.
+Wenn Du damit durch bist, kann ich Dir die Musterloesungen zur Verfuegung
+stellen und du schaust nochmal genauer, ob noch irgendwas unklar ist.
+
+Dann kannst Du mal qq->yy rechnen.
+
+Klingt das OK fuer den Start?
+
+Viele Gruesse,
+Frank
+
+
+On Wed, 18 Mar 2020 at 08:30, Valentin Boettcher <hiro@protagon.space>
+wrote:
+
+> Hi Frank,
+> Ich denke, es waere besser heute schon anzufangen.
+> Das Formular zur Anmeldung der Arbeit kann ich dir als Ausgefuelltes PDF
+> schicken.
+>
+> Cheers,
+> Valentin
+>
+> On 3/17/20 7:45 PM, Frank Siegert wrote:
+> > Hallo Valentin,
+> >
+> > Ich bin morgen nicht im B=C3=BCro, wir sollten unseren Treff also
+> > verschieben. Willst du trotzdem schon richtig anfangen und aus der Fern=
+e
+> > Anleitung bekommen, oder verschieben wir den Beginn erstmal?
+> >
+> > VG,
+> > Frank
+> >
+>
+> --
+> Cheers,
+> Valentin
+>
+
+--00000000000092966e05a11d3bf0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Hi Valentin,</div><div><br></div><div>alles klar. Das=
+ Formular machen wir dann einfach im Nachhinein und datieren es zurueck.</d=
+iv><div><br></div><div>Dann wuerde ich zur Einarbeitung vorschlagen, Du sch=
+aust Dir mal meinen Aufschrieb zu Feynman-Regeln und der |M|^2-Berechnung a=
+us der Vorlesung an, Kapitel 4.3 und 4.4 hier:<br></div><div><br></div><div=
+>=C2=A0 <a href=3D"http://fsiegert.web.cern.ch/fsiegert/tmp/tk-vorlesung.pd=
+f">http://fsiegert.web.cern.ch/fsiegert/tmp/tk-vorlesung.pdf</a></div><div>=
+<br></div><div>Versuch das erstmal fuer den gezeigten Prozess nachzuvollzie=
+hen, und schau dann, ob Du folgende Uebungsaufgaben aus meinem Kurs kannst:=
+</div><div>4.1</div><div>4.2</div><div>5.1</div><div>5.2</div><div>5.3<br><=
+/div><div><a href=3D"https://bildungsportal.sachsen.de/opal/auth/Repository=
+Entry/11966152704/CourseNode/92162447560998">https://bildungsportal.sachsen=
+.de/opal/auth/RepositoryEntry/11966152704/CourseNode/92162447560998</a></di=
+v><div><br></div><div>Wenn Du konzeptionell oder rechnerisch irgendwo haeng=
+en bleibst, reden wir (Skype/Vidyo/Zoom/...), damit ich einzelnes nochmal n=
+aeher erlaeutern kann. Wenn Du damit durch bist, kann ich Dir die Musterloe=
+sungen zur Verfuegung stellen und du schaust nochmal genauer, ob noch irgen=
+dwas unklar ist. </div><div><br></div><div>Dann kannst Du mal qq-&gt;yy rec=
+hnen.</div><div><br></div><div>Klingt das OK fuer den Start?</div><div><br>=
+</div><div>Viele Gruesse,</div><div>Frank<br></div><div><br></div></div><br=
+><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Wed, 1=
+8 Mar 2020 at 08:30, Valentin Boettcher &lt;<a href=3D"mailto:hiro@protagon=
+.space">hiro@protagon.space</a>&gt; wrote:<br></div><blockquote class=3D"gm=
+ail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,=
+204,204);padding-left:1ex">Hi Frank,<br>
+Ich denke, es waere besser heute schon anzufangen.<br>
+Das Formular zur Anmeldung der Arbeit kann ich dir als Ausgefuelltes PDF<br=
+>
+schicken.<br>
+<br>
+Cheers,<br>
+Valentin<br>
+<br>
+On 3/17/20 7:45 PM, Frank Siegert wrote:<br>
+&gt; Hallo Valentin,<br>
+&gt; <br>
+&gt; Ich bin morgen nicht im B=C3=BCro, wir sollten unseren Treff also<br>
+&gt; verschieben. Willst du trotzdem schon richtig anfangen und aus der Fer=
+ne<br>
+&gt; Anleitung bekommen, oder verschieben wir den Beginn erstmal?<br>
+&gt; <br>
+&gt; VG,<br>
+&gt; Frank<br>
+&gt; <br>
+<br>
+-- <br>
+Cheers,<br>
+Valentin<br>
+</blockquote></div>
+
+--00000000000092966e05a11d3bf0--
