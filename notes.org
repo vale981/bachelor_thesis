@@ -1,10 +1,4 @@
-* Looks empty to me...
-
 * Literatur
-- Buecher etc...
-- Tags :ref: :unref: jeh nach verwendung
-- Links zu seiten [[file:~/Downloads/README.pdf::2][VSOP87 README]]
-
 ** Latex
 *** Latex/KOMA Ref-Sheet
  - [[file:literature/prog/LaTeX_RefSheet.pdf][Refsheet]]
@@ -25,7 +19,7 @@
 
 ** Emails
 *** Erste Aufgaben
- - [[file:literature/emails/first_step.eml][Mail]]
+**** Mail von Siegert
 Hi Valentin,
 
 alles klar. Das Formular machen wir dann einfach im Nachhinein und datieren es zurueck.
