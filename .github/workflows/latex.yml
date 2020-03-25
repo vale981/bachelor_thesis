@@ -21,7 +21,7 @@ jobs:
         uses: dante-ev/latex-action@v0.2.0
         with:
           # The root LaTeX file to be compiled
-          root_file: latex/document.tex
+          root_file: document.tex
           # The working directory for the latex compiler to be invoked
           working_directory: latex
           # LaTeX engine to be used
