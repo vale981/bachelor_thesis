@@ -2,15 +2,68 @@
 \usepackage[utf8]{inputenc} % load early
 \usepackage[T1]{fontenc}
 % load early
-\usepackage[ngerman]{babel}
+\usepackage[english]{babel}
 \usepackage[autostyle=true]{csquotes}
-\usepackage{palatino}
+\usepackage{newpxtext,newpxmath}
 \usepackage{physics}
 \usepackage{graphicx, booktabs, float, scrhack}
 \usepackage{amsmath,amssymb}
 \usepackage[automark]{scrlayer-scrpage}
-\usepackage[backend=biber,style=verbose,sortcase=false,
-language=british]{biblatex}
+\usepackage[backend=biber,style=verbose,sortcase=false,language=english]{biblatex}
 \PassOptionsToPackage{hyphens}{url}
+\usepackage{siunitx}
+\usepackage[pdfencoding=auto]{hyperref} % load late
+% \usepackage[activate={true,nocompatibility},final,tracking=true,spacing=true,factor=1100,stretch=10,shrink=10]{microtype}
+\usepackage{tikz-feynman}
+\usepackage{caption}
+\usepackage[list=true, font=small,
+labelformat=brace, position=top]{subcaption}
+\usepackage{tikz}
+\usepackage{wrapfig}
+\usepackage{slashed}
 
-\usepackage[hidelinks]{hyperref} % load late
+%% Tikz
+\usetikzlibrary{arrows,shapes,angles,quotes,arrows.meta}
+
+%% Hyperref
+\hypersetup{
+    colorlinks,
+    linkcolor={blue!50!black},
+    citecolor={red!50!black},
+    urlcolor={green!80!black}
+}
+
+%% Captions
+\captionsetup{justification=centering}
+
+%% Labels
+\labelformat{section}{section #1}
+\labelformat{figure}{figure #1}
+\labelformat{table}{table #1}
+
+% Macros
+
+%% qqgg
+\newcommand{\qqgg}[0]{q\bar{q}\rightarrow\gamma\gamma}
+
+%% Impulses and Polarization Vectors convenience
+\DeclareMathOperator{\ps}{\slashed{p}}
+
+\DeclareMathOperator{\pe}{\varepsilon}
+\DeclareMathOperator{\pes}{\slashed{\pe}}
+
+\DeclareMathOperator{\pse}{\varepsilon^{*}}
+\DeclareMathOperator{\pses}{\slashed{\pe}^{*}}
+
+%% Spinor convenience
+\DeclareMathOperator{\us}{u}
+\DeclareMathOperator{\usb}{\bar{u}}
+
+\DeclareMathOperator{\vs}{v}
+\DeclareMathOperator{\vsb}{\bar{v}}
+
+%% Fast Slash
+\let\sl\slashed
+
+%% Notes on Equations
+\newcommand{\shorteqnote}[1]{ &  & \text{\small\llap{#1}}}

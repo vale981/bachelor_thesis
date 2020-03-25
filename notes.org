@@ -2,6 +2,8 @@
 ** Latex
 *** Latex/KOMA Ref-Sheet
  - [[file:literature/prog/LaTeX_RefSheet.pdf][Refsheet]]
+*** KOMA Docs
+ - [[file:literature/prog/scrguide.pdf][KOMA Docs]]
 *** AUCTeX
  - [[file:literature/prog/tex-ref.pdf][Auctex]]
 *** Modular Documents
@@ -26,9 +28,18 @@
     :END:
  - [[file:literature/feynman/Thomson.pdf][Modern Particle Physics]]
  - [[file:literature/feynman/Thomson.pdf::100][Spinors]]
+ - [[file:literature/feynman/Thomson.pdf::107][Spinors, Helicity Eigenstates]]
+ - [[file:literature/feynman/Thomson.pdf::533][Completeness Pol. Vectors]]
 * Aufgaben
-** Erste Aufgaben
-**** Mail von Siegert
+** Erste Aufgabenp
+   :LOGBOOK:
+   CLOCK: [2020-03-20 Fri 09:30]
+   :END:
+*** Mail von Siegert
+     :LOGBOOK:
+     CLOCK: [2020-03-19 Thu 15:21]--[2020-03-19 Thu 17:25] =>  2:04
+     CLOCK: [2020-03-19 Thu 10:05]--[2020-03-19 Thu 11:56] =>  1:51
+     :END:
 Hi Valentin,
 
 alles klar. Das Formular machen wir dann einfach im Nachhinein und
@@ -56,7 +67,13 @@ Dann kannst Du mal qq->yy rechnen.
 Klingt das OK fuer den Start?
 
 Viele Gruesse, Frank
-
+** Berechnung qq -> γγ
+ - 4 Anlaeufe :). Idiotischerweise 4-Vektor negiert
+ - letzter Anlauf mit Casimir Trick erfolgreich
+ - gute tricks:
+   - γ auf z Achse
+   - Symmetrien Beachten -> spart die Haelfte beim umdrehen der Spins
+ - Vollstaendigkeitsrelation von pol. Vektoren in Form: [[file:literature/feynman/Thomson.pdf::533][Completeness Pol. Vectors]]
 * Clock Table
 #+BEGIN: clocktable :scope file :maxlevel 2
 #+CAPTION: Clock summary at [2020-03-18 Wed 21:01]
@@ -74,6 +91,10 @@ Viele Gruesse, Frank
  - Ich stand ganz schoen auf dem Schlauch: Lorentz Invar = selbe Form
    in allen BS (muss nicht unb. konst bei LT sein), lorentzskalarfeld
 
+** Impulserhaltung aus dem Gefuehl... (ohne deltas) ok?
+** Normierung Photonenfeld?
+** Globaler Spin bei pol. Vektoren?
+** Spin nicht erhalten?
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!
