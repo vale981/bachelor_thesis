@@ -35,10 +35,12 @@ element for~\ref{fig:qqggfeyn2} is obtained by simply renaming
 
 To simplify notation, the some shorthands are intruduced
 in~\eqref{eq:scshort}.
-\begin{align}
+\begin{equation}
   \label{eq:scshort}
-  s(x) &= \sin(x) & c(x) &= \cos(x) \\ s'(x) &= \sin(\frac{x}{2}) & c'(x) &= \cos(\frac{x}{2})
-\end{align}
+  \begin{split}
+    s(x) &= \sin(x) & c(x) &= \cos(x) \\ s'(x) &= \sin(\frac{x}{2}) & c'(x) &= \cos(\frac{x}{2})
+  \end{split}
+\end{equation}
 
 All calculations are made in the center of momentum frame unless
 stated otherwise.  The impulses used in the center of momentum frame
@@ -98,11 +100,16 @@ matrices and their bared variants can be written as in~\eqref{eq:shortgamma}.
 To work out~\eqref{eq:averagedm} one must evaluate terms of the
 form~\eqref{eq:gbricks}.
 
-\begin{align}
+\begin{equation}
   \label{eq:gbricks}
-  \Gamma_{ij} = \sum_{\lambda_1\lambda_2} \tr(\Gamma_i\ps_2\Gamma_j\ps_1) =
-  \sum_{\lambda_1\lambda_2} \tr[\pses(a_i)(\ps_1-\ps(a_i))\pses(b_i)\ps_2\pes(b_i)(\ps_1 - \ps(a_i))\pes(a_i)\ps_1]
-\end{align}
+  \begin{split}
+    \Gamma_{ij} &= \sum_{\lambda_1\lambda_2}
+    \tr(\Gamma_i\ps_2\Gamma_j\ps_1)\\
+    &= \sum_{\lambda_1\lambda_2}
+    \tr[\pses(a_i)(\ps_1-\ps(a_i))\pses(b_i)\ps_2\pes(b_i)(\ps_1 -
+    \ps(a_i))\pes(a_i)\ps_1]
+  \end{split}
+\end{equation}
 
 The sum over plarisation can be simplified by utilizing the
 completeness relation for polarisation vectors for \emph{external}
@@ -173,3 +180,5 @@ averaged matrix element of~\eqref{eq:averagedm_final}.
   &= 4(gQ)^4 \cdot\frac{2+\sin^2(\theta)}{\sin^2(\theta)}
   \end{split}
 \end{equation}
+
+The rest is left as an exercise for the reader.
