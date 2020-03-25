@@ -3,8 +3,9 @@
 
 After labeling the incoming quarks and outcoming photons, as well as
 the impulses according to~\ref{fig:qqggfeyn}, the feynman rules yield
-the matrix elements in~\eqref{eq:matel}. The matrix element
-for~\ref{fig:qqggfeyn2} is obtained by simply renaming
+the matrix elements in~\eqref{eq:matel}, where \(Q\) is the electric
+charge of the quark and \(g\) is the QED coupling constant. The matrix
+element for~\ref{fig:qqggfeyn2} is obtained by simply renaming
 \(3\leftrightarrow 4\).
 
 \begin{align}
@@ -81,7 +82,7 @@ helicities, \(\lambda_i\) are the polarisations and \(\bar{\Gamma_i}=\gamma^0\Ga
 \begin{equation}
   \label{eq:averagedm}
   \langle\mathcal{M}\rangle = \frac{1}{4}\sum_{s_1 s_2}\sum_{\lambda_1
-    \lambda_2} \abs{\mathcal{M}}^2=\frac{1}{4}\sum_{\lambda_1
+    \lambda_2} \abs{\mathcal{M}}^2=\overbrace{\frac{1}{4}\frac{(gQ)^4}{(2p)^4}}^\mathfrak{F}\sum_{\lambda_1
     \lambda_2}\tr[\qty(\frac{\Gamma_1}{s'^2}+\frac{\Gamma_2}{c'^2})
   \ps_2\qty(\frac{\bar{\Gamma}_1}{s'^2}+\frac{\bar{\Gamma}_2}{c'^2})\ps_1]
 \end{equation}
@@ -129,14 +130,46 @@ theorems for the gamma matrices~\eqref{eq:gii} follows.
 
 The same tricks as well as the commutation relation for gamma matrices
 can be utilized for the case \(i\neq j\) and lead to
+\ref{eq:gij}.
 
 \begin{equation}
   \label{eq:gij}
   \begin{split}
 \Gamma_{ii} &=
-\tr[\gamma_\mu(\ps_1-\ps(a_i))\gamma_\nu\ps_2\gamma^\nu(\ps_1-\ps(a_j))\gamma^\mu\ps_1)]
-\\
-&= 4\tr[(\ps_1-\ps(a_i))\ps_2(\ps_1-\ps(a_i))\ps_1]\\
-&= 32\qty[(p(a_i)\cdot p_2)(p(a_i)\cdot p_1)]
+\tr[\gamma_\mu(\ps_1-\ps(a_i))\gamma_\nu\ps_2\gamma^\mu(\ps_1-\ps(a_j))\gamma^\nu\ps_1)]\\
+&= 2\tr[\ps_2(\ps_1-\ps(a_i))\gamma_v(\ps_1-\ps(a_j))\gamma^\nu\ps_1]\\
+&\hphantom{=} - 2\tr[\gamma_\mu(\ps_1-\ps(a_i))\ps_2(\ps_1-\ps(a_j))\gamma^\mu\ps_1]\\
+&\hphantom{=} +
+\tr[\gamma_\mu(\ps_1-\ps(a_i))\gamma^\mu\gamma_\nu\ps_2(\ps_1-\ps(a_j))\gamma^\nu\ps_1]\\
+&= 32 \qty[2p^2(p(a_j)\cdot p_1) - (p(a_i)\cdot p_2)(p(a_j)\cdot p_1)]
+   \\
+&\hphantom{=} + 32\qty[(p(a_i)\cdot p(a_j))(p_1\cdot p_2) + (p(a_i)\cdot p_1)(p(a_j)\cdot p_2)]
 \end{split}
+\end{equation}
+
+The crucial step here was to move the \(\gamma^\mu\) past
+\(\gamma_\nu\ps_2\) as shown in~\eqref{eq:movepast}.
+
+\begin{equation}
+  \label{eq:movepast}
+  \gamma_\nu\ps\gamma^\mu = 2\gamma_\nu p^\mu - 2\delta_\nu^\mu\ps +
+  \gamma^\mu\gamma_\nu\ps
+\end{equation}
+
+After multiplying out the terms in~\eqref{eq:averagedm} and applying
+the results~\eqref{eq:gii} and~\eqref{eq:gij} there results (after
+rather technical simplifications) the
+averaged matrix element of
+
+\begin{equation}
+  \label{eq:averagedm_final}
+  \begin{split}
+  \langle\mathcal{M}\rangle &= \mathfrak{F}\cdot
+  32\cdot\qty[\frac{(1-c)(1+c)}{s'^4}] + \qty[\frac{2(1+c) -
+    (1+c)(1+c)+4-(1-c)(1-c)}{s'^2c'^2}] \\
+  &\hphantom{=} +\qty[\frac{2(1+c) -
+    (1+c)(1+c)+4-(1-c)(1-c)}{s'^2c'^2}] +
+  \qty[\frac{(1-c)(1+c)}{c'^4}] \\
+  &= 4(gQ)^4 \cdot\frac{2+\sin^2(\theta)}{\sin^2(\theta)}
+  \end{split}
 \end{equation}
