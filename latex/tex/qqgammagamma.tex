@@ -1,0 +1,55 @@
+\chapter{Quark-Antiquark Annihilation into
+  two Photons}%
+\label{sec:qqgg}
+
+Consider the scattering reaction \(\qqgg\). The first order expansion
+of this process is described by the Feynman diagrams
+in~\ref{fig:qqggfeyn}.  Because there is only QED involved, the color
+degrees of freedom average out and will not be considered henceforth.
+Furthermore a high energy regime will be supposed and therefor masses
+will be neglected.
+
+\begin{figure}[h]
+  \centering
+  \begin{subfigure}[c]{.4\textwidth}
+  \centering
+  \begin{tikzpicture}
+    \begin{feynman}
+    \diagram [small,horizontal=i2 to a] {
+      i2 [particle=\(q\)] -- [fermion, momentum=\(p_2\)] a --
+      [fermion, reversed momentum=\(q\)] b,
+      i1 [particle=\(\bar{q}\)] -- [anti fermion, momentum'=\(p_1\)] b,
+      i2 -- [opacity=0] i1,
+      a -- [photon, momentum=\(p_3\)] f1 [particle=\(\gamma\)],
+      b -- [photon, momentum'=\(p_4\)] f2 [particle=\(\gamma\)],
+      f1 -- [opacity=0] f2,
+    };
+    \end{feynman}
+  \end{tikzpicture}
+  \subcaption{u channel}
+  \end{subfigure}
+  \begin{subfigure}[c]{.4\textwidth}
+  \centering
+  \begin{tikzpicture}
+    \begin{feynman}
+      \diagram [small,horizontal=i2 to a] {
+      i2 [particle=\(q\)] -- [fermion, momentum=\(p_2\)] a --
+      [fermion, reversed momentum'=\(q\)] b,
+      i1 [particle=\(\bar{q}\)] -- [anti fermion, momentum'=\(p_1\)] b,
+      i2 -- [opacity=0] i1,
+      a -- [draw=none] f2 [particle=\(\gamma\)],
+      b -- [draw=none] f1 [particle=\(\gamma\)],
+      f1 -- [opacity=0] f2,
+    };
+    \diagram* {
+      (a) -- [photon] (f1),
+      (b) -- [photon] (f2),
+    };
+    \end{feynman}
+  \end{tikzpicture}
+    \subcaption{\label{fig:qqggfeyn2}t channel}
+  \end{subfigure}
+
+  \caption{First order diagrams for \(\qqgg\).}%
+  \label{fig:qqggfeyn}
+\end{figure}

@@ -1,4 +1,4 @@
-LATEXMKFLAGS=-pdfxe -interaction=nonstopmode
+LATEXMKFLAGS=-pdflua -interaction=nonstopmode
 OUTDIR=build
 
 thesis: document.tex
