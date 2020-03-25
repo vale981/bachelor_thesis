@@ -1,0 +1,28 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v1
+      - name: LaTeX compilation
+        uses: dante-ev/latex-action@v0.2.0
+        with:
+          # The root LaTeX file to be compiled
+          root_file: latex/document.tex
+          # The working directory for the latex compiler to be invoked
+          working_directory: latex
+          # LaTeX engine to be used
+          compiler: luatex
