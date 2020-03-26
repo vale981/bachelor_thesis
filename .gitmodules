@@ -1,0 +1,3 @@
+[submodule "sherpa"]
+	path = sherpa
+	url = git@gitlab.com:sherpa-team/sherpa.git
