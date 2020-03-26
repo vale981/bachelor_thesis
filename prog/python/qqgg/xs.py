@@ -70,6 +70,6 @@ def total_xs_eta(eta, charge, esp):
         raise ValueError('Invalid eta cut.')
 
     def F(x):
-        return -np.tanh(x) - np.log(1-np.tanh(x)) + np.log(1+np.tanh(x)) - x/4
+        return np.tanh(x) - 2*x
 
-    return -2*np.pi*f*(F(eta[0]) - F(eta[1]))
+    return 2*np.pi*f*(F(eta[0]) - F(eta[1]))
