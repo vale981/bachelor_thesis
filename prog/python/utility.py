@@ -2,6 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from SecondaryValue import SecondaryValue
 from scipy.constants import hbar, c, electron_volt
+import numpy as np
 
 ###############################################################################
 #                                   Utility                                   #
@@ -10,6 +11,12 @@ from scipy.constants import hbar, c, electron_volt
 def gev_to_pb(xs):
     """Converts a cross section from 1/GeV^2 to pb."""
     return xs/(electron_volt**2)*(hbar*c)**2*1e22
+
+def tex_value(val, unit='', prefix='', prec=10, err=None):
+    """Generates LaTeX output of a value with units and error."""
+
+    val = np.round(val, prec)
+    return fr'\({prefix}\SI{{{val}}}{{{unit}}}\)'
 
 ###############################################################################
 #                                  Plot Porn                                  #

@@ -23,8 +23,15 @@ labelformat=brace, position=top]{subcaption}
 \usepackage{wrapfig}
 \usepackage{slashed}
 \usepackage[toc]{multitoc}
+\usepackage{minted}
+
+%% multicolumn toc
 \renewcommand*{\multicolumntoc}{2}
 \setlength{\columnseprule}{0.5pt}
+
+%% minted
+\usemintedstyle{colorful}
+\newmintedfile{yaml}{linenos,mathescape=true}
 
 %% fix p slash
 \declareslashed{}{/}{0}{.15}{p}
@@ -68,6 +75,12 @@ labelformat=brace, position=top]{subcaption}
 
 \DeclareMathOperator{\vs}{v}
 \DeclareMathOperator*{\vsb}{\overline{v}}
+
+%% Center of Mass energy
+\DeclareMathOperator{\ecm}{E_{\text{CM}}}
+
+%% area hyperbolicus
+\DeclareMathOperator{\artanh}{artanh}
 
 %% Fast Slash
 \let\sl\slashed

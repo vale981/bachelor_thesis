@@ -77,16 +77,21 @@ The total matrix element (the minus sign has been dropped) is given in~\eqref{eq
   \mathcal{M} = \mathcal{M}_1 + \mathcal{M}_2 = \frac{(gQ)^2}{\qty(2p)^2}\vsb(1)\qty(\frac{\Gamma_1}{s'^2}+\frac{\Gamma_2}{c'^2})\us(2)
 \end{equation}
 
-To obtain an experimentally verifiable cross section the absolute square of the
-matrix element will averaged over incoming helicities and summed over
-all photon polarisations.  Using casimir's trick, the averaging can be
-simplified to the calculation of a trace as in where \(s_i\) are
-helicities, \(\lambda_i\) are the polarisations and \(\bar{\Gamma}_i=\gamma^0\Gamma^\dagger_i\gamma^0\).
+To obtain an experimentally verifiable cross section the absolute
+square of the matrix element will averaged over incoming helicities
+and summed over all photon polarisations.  Using casimir's trick, the
+averaging can be simplified to the calculation of a trace as in where
+\(s_i\) are helicities, \(\lambda_i\) are the polarisations and
+\(\bar{\Gamma}_i=\gamma^0\Gamma^\dagger_i\gamma^0\). An additional
+factor of \(\frac{1}{3}\) arises from the color averaging. There are
+total of \emph{nine} color combinations, but only \emph{three}
+contribute (different color states are orthogonal, no preferred colors
+in the beams).
 
 \begin{equation}
   \label{eq:averagedm}
   \langle\abs{\mathcal{M}}^2\rangle = \frac{1}{4}\sum_{s_1 s_2}\sum_{\lambda_1
-    \lambda_2} \abs{\mathcal{M}}^2=\overbrace{\frac{1}{4}\frac{(gQ)^4}{(2p)^4}}^\mathfrak{F}\sum_{\lambda_1
+    \lambda_2} \abs{\mathcal{M}}^2=\overbrace{\frac{1}{3}\frac{1}{4}\frac{(gQ)^4}{(2p)^4}}^\mathfrak{F}\sum_{\lambda_1
     \lambda_2}\tr[\qty(\frac{\Gamma_1}{s'^2}+\frac{\Gamma_2}{c'^2})
   \ps_2\qty(\frac{\bar{\Gamma}_1}{s'^2}+\frac{\bar{\Gamma}_2}{c'^2})\ps_1]
 \end{equation}
@@ -145,41 +150,34 @@ can be utilized for the case \(i\neq j\) and lead to
   \label{eq:gij}
   \begin{split}
 \Gamma_{ii} &=
-\tr[\gamma_\mu(\ps_1-\ps(a_i))\gamma_\nu\ps_2\gamma^\mu(\ps_1-\ps(a_j))\gamma^\nu\ps_1)]\\
-&= 2\tr[\ps_2(\ps_1-\ps(a_i))\gamma_v(\ps_1-\ps(a_j))\gamma^\nu\ps_1]\\
-&\hphantom{=} - 2\tr[\gamma_\mu(\ps_1-\ps(a_i))\ps_2(\ps_1-\ps(a_j))\gamma^\mu\ps_1]\\
-&\hphantom{=} +
-\tr[\gamma_\mu(\ps_1-\ps(a_i))\gamma^\mu\gamma_\nu\ps_2(\ps_1-\ps(a_j))\gamma^\nu\ps_1]\\
-&= 32 \qty[2p^2(p(a_j)\cdot p_1) - (p(a_i)\cdot p_2)(p(a_j)\cdot p_1)]
+\tr[\gamma_\mu(\ps_1-\ps(a_i))\gamma^\nu\ps_2\gamma^\mu(\ps_1-\ps(a_j))\gamma_\nu\ps_1)]\\
+&= -2\tr[\ps_2\gamma^\nu(\ps_1-\ps(a_i))(\ps_1-\ps(a_j))\gamma_\nu\ps_1)]
    \\
-&\hphantom{=} + 32\qty[(p(a_i)\cdot p(a_j))(p_1\cdot p_2) - (p(a_i)\cdot p_1)(p(a_j)\cdot p_2)]
+&=-16\qty[(p_1p_2)(2(p_ap(a_j)) - p(a_i)p(a_j)) +
+(p_1p(a_i))(p_2p(a_j)) - (p_1p(a_j))(p_2p(a_i))]
 \end{split}
 \end{equation}
 
-The crucial step here was to move the \(\gamma^\mu\) past
-\(\gamma_\nu\ps_2\) as shown in~\eqref{eq:movepast}.
+The crucial step here was to sum over \(\mu\) and utilizing
+\(\gamma ^{\mu }\gamma ^{\nu }\gamma ^{\rho }\gamma ^{\sigma }\gamma
+_{\mu }=-2\gamma ^{\sigma }\gamma ^{\rho }\gamma ^{\nu }\).
 
-\begin{equation}
-  \label{eq:movepast}
-  \gamma_\nu\ps\gamma^\mu = 2\gamma_\nu p^\mu - 2\delta_\nu^\mu\ps +
-  \gamma^\mu\gamma_\nu\ps
-\end{equation}
 
 After multiplying out the terms in~\eqref{eq:averagedm} and applying
 the \eqref{eq:gii} and~\eqref{eq:gij} there results (after
 rather technical simplifications) the
-averaged matrix element of~\eqref{eq:averagedm_final}.
+averaged matrix element of~\eqref{eq:averagedm_final}. It is
+noteworthy that the mixing terms cancel out, in other terms:
+\(\Gamma_{12} + \Gamma_{21} = 0\). The result is also expressed in
+terms of the pseudo-rapidity \(\eta \equiv -\ln[\tan(\frac{\theta}{2})]\).
 
 \begin{equation}
   \label{eq:averagedm_final}
   \begin{split}
   \langle\abs{\mathcal{M}}^2\rangle &= p^4\cdot\mathfrak{F}\cdot
-  32\cdot\qty[\frac{(1-c)(1+c)}{s'^4}] + \qty[\frac{2(1+c) -
-    (1+c)(1+c)+4-(1-c)(1-c)}{s'^2c'^2}] \\
-  &\hphantom{=} +\qty[\frac{2(1+c) -
-    (1+c)(1+c)+4-(1-c)(1-c)}{s'^2c'^2}] +
-  \qty[\frac{(1-c)(1+c)}{c'^4}] \\
-  &= 4(gQ)^4 \cdot\frac{2+\sin^2(\theta)}{\sin^2(\theta)}
+  32\cdot\qty[\frac{(1-c)(1+c)}{s'^4}] + \qty[\frac{(1-c)(1+c)}{c'^4}] \\
+  &= \frac{4}{3}(gQ)^4 \cdot\frac{1+\cos^2(\theta)}{\sin^2(\theta)} =
+  \frac{4}{3}(gQ)^4\cdot(2\cosh(\eta) - 1)
   \end{split}
 \end{equation}
 
