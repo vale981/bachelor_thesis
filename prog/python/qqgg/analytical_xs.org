@@ -1,3 +1,5 @@
+#+PROPERTY: header-args :exports both
+
 * Init
 ** Required Modules
 #+NAME: e988e3f2-ad1f-49a3-ad60-bedba3863283
@@ -56,7 +58,7 @@ import matplotlib.pyplot as plt
       """
 
       f = energy_factor(charge, esp)
-      return f*(1 + 2/np.sin(theta)**2)
+      return f*((np.cos(theta)**+1)/np.sin(theta)**2)
 
   def diff_xs_eta(eta, charge, esp):
       """
@@ -70,7 +72,7 @@ import matplotlib.pyplot as plt
       """
 
       f = energy_factor(charge, esp)
-      return f*(1 + 2*np.cosh(eta)**2)
+      return f*(2*np.cosh(eta)**2 - 1)
 
   def total_xs_eta(eta, charge, esp):
       """
@@ -129,7 +131,7 @@ xs_pb
 0.053793289459925515
 :END:
 
-Compared to sherpa, its a little off.
+Compared to sherpa, it's pretty close.
 #+NAME: 81b5ed93-0312-45dc-beec-e2ba92e22626
 #+BEGIN_SRC ein-python :session :exports both :results raw drawer
   sherpa = 0.0538009
@@ -140,3 +142,6 @@ Compared to sherpa, its a little off.
 :RESULTS:
 0.9998585425137037
 :END:
+
+I had to set the runcard option ~EW_SCHEME: alpha0~ to use the pure
+QED coupling constant.
