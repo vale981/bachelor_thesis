@@ -100,6 +100,7 @@ Viele Gruesse, Frank
 ** Normierung Photonenfeld?
 ** Globaler Spin bei pol. Vektoren?
 ** Spin nicht erhalten?
+** Abweichungen im vergeich weiter diskutieren?
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!
