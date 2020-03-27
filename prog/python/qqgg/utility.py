@@ -1,1 +1,0 @@
-/home/hiro/Documents/Projects/UNI/Bachelor/prog/python/utility.py
