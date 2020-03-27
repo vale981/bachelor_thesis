@@ -74,6 +74,11 @@ Viele Gruesse, Frank
    - γ auf z Achse
    - Symmetrien Beachten -> spart die Haelfte beim umdrehen der Spins
  - Vollstaendigkeitsrelation von pol. Vektoren in Form: [[file:literature/feynman/Thomson.pdf::533][Completeness Pol. Vectors]]
+** Vergleich mit Sherpa
+ - [[file:prog/runcards/qqgg/Sherpa.yaml][Runcard]]
+ - [[file:prog/python/qqgg/analytical_xs.ipynb][Notebook mit Implementierung der XS]]
+ - Zeigte fehler in Rechnung auf
+
 * Clock Table
 #+BEGIN: clocktable :scope file :maxlevel 2
 #+CAPTION: Clock summary at [2020-03-18 Wed 21:01]
