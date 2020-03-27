@@ -140,14 +140,3 @@ Compared to sherpa, its a little off.
 :RESULTS:
 0.9998585425137037
 :END:
-
-Sieht sehr nach 4/3 aus...
-#+NAME: 1fec1d70-725d-4ca2-9729-98a3859a2f6f
-#+BEGIN_SRC ein-python :session :exports both :results raw drawer
-  4/3
-#+END_SRC
-
-#+RESULTS: 1fec1d70-725d-4ca2-9729-98a3859a2f6f
-:RESULTS:
-1.3333333333333333
-:END:
