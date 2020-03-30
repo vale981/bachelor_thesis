@@ -35,7 +35,7 @@ def integrate(f, interval, point_density=1000, seed=None, **kwargs):
     return integral, deviation
 
 
-def sample(f, interval, point_density=1000,
+def sample(f, interval, point_density=10000,
          upper_bound=None, seed=None, **kwargs):
     assert len(interval) == 2, 'An interval has two endpoints'
 
