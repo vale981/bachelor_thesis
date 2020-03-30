@@ -1,4 +1,4 @@
-#+PROPERTY: header-args :exports both :output-dir ../../../results/xs
+#+PROPERTY: header-args :exports both :output-dir results
 
 * Init
 ** Required Modules
@@ -12,17 +12,15 @@
 
 ** Utilities
 #+NAME: 53548778-a4c1-461a-9b1f-0f401df12b08
-#+BEGIN_SRC ipython :session :exports both :results raw drawer
+#+BEGIN_SRC ipython :session :exports both
 %run ../utility.py
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
-:RESULTS:
-:END:
 
-* COMMENT Implementation
+* Implementation
 #+NAME: 777a013b-6c20-44bd-b58b-6a7690c21c0e
-#+BEGIN_SRC ipython :session :exports both :results raw drawer :exports code :tangle xs.py
+#+BEGIN_SRC ipython :session :exports both :results raw drawer :exports code :tangle tangled/xs.py
   """
   Implementation of the analytical cross section for q q_bar ->
   gamma gamma
@@ -49,7 +47,7 @@
   def diff_xs(θ, charge, esp):
       """
       Calculates the differential cross section as a function of the
-      azimuth angle θ in units of 1/GeV^2.
+      azimuth angle θ in units of 1/GeV².
 
       Arguments:
       θ -- azimuth angle
@@ -98,7 +96,6 @@
           return np.tanh(x) - 2*x
 
       return 2*np.pi*f*(F(η[0]) - F(η[1]))
-
 #+END_SRC
 
 #+RESULTS: 777a013b-6c20-44bd-b58b-6a7690c21c0e
@@ -121,15 +118,15 @@ esp = 200  # GeV
 
 And now calculate the cross section in picobarn.
 #+NAME: cf853fb6-d338-482e-bc55-bd9f8e796495
-#+BEGIN_SRC ipython :session :exports both :results drawer output file :file xs.tex :output-dir ../../../results/xs
-  xs_gev = total_xs_η(η, charge, esp)
+#+BEGIN_SRC ipython :session :exports both :results drawer output file :file xs.tex
+  xs_gev = total_xs_eta(η, charge, esp)
   xs_pb = gev_to_pb(xs_gev)
-  print(tex_value(xs_pb, unit=r'\pico\barn', prefix=r'\eta = ', prec=5))
+  print(tex_value(xs_pb, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5))
 #+END_SRC
 
 #+RESULTS: cf853fb6-d338-482e-bc55-bd9f8e796495
 :RESULTS:
-[[file:../../../results/xs/xs.tex]]
+[[file:results/xs.tex]]
 :END:
 
 Compared to sherpa, it's pretty close.
@@ -143,8 +140,6 @@ Compared to sherpa, it's pretty close.
 :RESULTS:
 0.9998585425137037
 :END:
-
-
 
 I had to set the runcard option ~EW_SCHEME: alpha0~ to use the pure
 QED coupling constant.
