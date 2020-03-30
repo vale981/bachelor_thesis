@@ -35,6 +35,20 @@ def diff_xs(θ, charge, esp):
     f = energy_factor(charge, esp)
     return f*((np.cos(θ)**2+1)/np.sin(θ)**2)
 
+def diff_xs_cosθ(cosθ, charge, esp):
+    """
+    Calculates the differential cross section as a function of the
+    cosine of the azimuth angle θ in units of 1/GeV².
+
+    Arguments:
+    θ -- azimuth angle
+    esp -- center of momentum energy in GeV
+    charge -- charge of the particle in units of the elementary charge
+    """
+
+    f = energy_factor(charge, esp)
+    return f*((cosθ**2+1)/(1-cosθ**2))
+
 def diff_xs_eta(η, charge, esp):
     """
     Calculates the differential cross section as a function of the

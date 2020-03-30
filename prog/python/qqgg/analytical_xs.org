@@ -60,6 +60,20 @@
       f = energy_factor(charge, esp)
       return f*((np.cos(θ)**2+1)/np.sin(θ)**2)
 
+  def diff_xs_cosθ(cosθ, charge, esp):
+      """
+      Calculates the differential cross section as a function of the
+      cosine of the azimuth angle θ in units of 1/GeV².
+
+      Arguments:
+      θ -- azimuth angle
+      esp -- center of momentum energy in GeV
+      charge -- charge of the particle in units of the elementary charge
+      """
+
+      f = energy_factor(charge, esp)
+      return f*((cosθ**2+1)/(1-cosθ**2))
+
   def diff_xs_eta(η, charge, esp):
       """
       Calculates the differential cross section as a function of the
@@ -150,7 +164,9 @@ QED coupling constant.
 *** Numerical Integration
 Set up the integration and plot intervals.
 #+begin_src ipython :session :exports both :results raw drawer
+interval_η = [-η, η]
 interval = η_to_θ([-η, η])
+interval_cosθ = np.cos(interval)
 plot_interval = [0.1, np.pi-.1]
 #+end_src
 
@@ -214,7 +230,7 @@ Intergrate σ with the mc method.
 
 #+RESULTS:
 :RESULTS:
-(0.054247689434674694, 4.2989412760901153e-05)
+(0.05364189417398581, 4.241792187836808e-05)
 :END:
 
 #+begin_src ipython :session :exports both :results raw drawer output :file xs_mc.tex
@@ -228,5 +244,48 @@ print(tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5))
 
 Now we monte-carlo sample our distribution.
 #+begin_src ipython :session :exports both :results raw drawer
-def
+cosθ_sample = sample(lambda x: diff_xs_cosθ(x, charge, esp), interval_cosθ)
+η_sample = sample(lambda x: diff_xs_eta(x, charge, esp), interval_η)
 #+end_src
+
+#+RESULTS:
+:RESULTS:
+:END:
+
+Nice! And now draw some histograms.
+
+We define an auxilliary method for convenience.
+#+begin_src ipython :session :exports both :results raw drawer
+  def draw_histo(points, xlabel, bins=20):
+      fig, ax = set_up_plot()
+      ax.hist(points, bins, histtype='step')
+      ax.set_xlabel(xlabel)
+      ax.set_xlim([points.min(), points.max()])
+      return fig, ax
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+:END:
+
+The histogram for cosθ.
+#+begin_src ipython :session :exports both :results raw drawer
+fig, _ = draw_histo(cosθ_sample, r'$\cos\theta$')
+save_fig(fig, 'histo_cos_theta', 'xs', size=(4,2))
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+[[file:./obipy-resources/XUeHmM.png]]
+:END:
+
+And the histogram for η.
+#+begin_src ipython :session :exports both :results raw drawer
+draw_histo(η_sample, r'$\eta$')
+save_fig(fig, 'histo_eta', 'xs', size=(4,2))
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+[[file:./obipy-resources/lxq7dj.png]]
+:END:
