@@ -3811,7 +3811,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=0.466597in,y=2.197917in,,bottom,rotate=90.000000]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle \frac{d\sigma}{d\omega}\) [pb]}%
+\pgftext[x=0.466597in,y=2.197917in,,bottom,rotate=90.000000]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle \frac{d\sigma}{d\Omega}\) [pb]}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfpathrectangle{\pgfqpoint{0.866319in}{0.594444in}}{\pgfqpoint{2.935069in}{3.206944in}}%

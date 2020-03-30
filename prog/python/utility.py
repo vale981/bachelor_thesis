@@ -22,6 +22,9 @@ def η_to_θ(η):
     η = np.asarray(η)
     return 2*np.arctan(np.exp(-η))
 
+def η_to_pt(η, p):
+    return p/np.cosh(η)
+
 def tex_value(val, unit='', prefix='', prec=10, err=None):
     """Generates LaTeX output of a value with units and error."""
 

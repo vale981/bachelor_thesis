@@ -42,6 +42,7 @@ def sample(f, interval, point_density=10000,
     a, b = interval
     if b < a:
         a, b = b, a
+        interval = [a, b]
 
     np.random.seed(seed)
 
@@ -59,4 +60,5 @@ def sample(f, interval, point_density=10000,
     points = np.random.uniform([a, 0], [b, 1], [num_points_x, 2])
     sample_points = points[:, 0] \
         [np.where(f(points[:, 0]) > points[:, 1]*upper_bound)]
+
     return sample_points
