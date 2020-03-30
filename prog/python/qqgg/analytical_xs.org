@@ -66,7 +66,7 @@
       cosine of the azimuth angle θ in units of 1/GeV².
 
       Arguments:
-      θ -- azimuth angle
+      cosθ -- cosine of the azimuth angle
       esp -- center of momentum energy in GeV
       charge -- charge of the particle in units of the elementary charge
       """
@@ -87,6 +87,20 @@
 
       f = energy_factor(charge, esp)
       return f*(2*np.cosh(η)**2 - 1)
+
+  def diff_xs_pt(pt, charge, esp):
+      """
+      Calculates the differential cross section as a function of the
+      transversal impulse of the photons in units of 1/GeV^2.
+
+      Arguments:
+      η -- transversal impulse
+      esp -- center of momentum energy in GeV
+      charge -- charge of the particle in units of the elementary charge
+      """
+
+      f = energy_factor(charge, esp)
+      return f*((esp/pt)**2/2 - 1)
 
   def total_xs_eta(η, charge, esp):
       """
@@ -161,12 +175,13 @@ Compared to sherpa, it's pretty close.
 
 I had to set the runcard option ~EW_SCHEME: alpha0~ to use the pure
 QED coupling constant.
-*** Numerical Integration
+*** Numerical Integration and Sampling
 Set up the integration and plot intervals.
 #+begin_src ipython :session :exports both :results raw drawer
 interval_η = [-η, η]
 interval = η_to_θ([-η, η])
 interval_cosθ = np.cos(interval)
+interval_pt = η_to_pt([0, η], esp/2)
 plot_interval = [0.1, np.pi-.1]
 #+end_src
 
@@ -190,7 +205,7 @@ save_fig(fig, 'diff_xs', 'xs', size=[4, 4])
 
 #+RESULTS:
 :RESULTS:
-[[file:./obipy-resources/VutHnr.png]]
+[[file:./obipy-resources/EvlB5m.png]]
 :END:
 
 Define the integrand.
@@ -217,7 +232,7 @@ save_fig(fig, 'xs_integrand', 'xs', size=[4, 4])
 
 #+RESULTS:
 :RESULTS:
-[[file:./obipy-resources/vkG9zr.png]]
+[[file:./obipy-resources/lOkEKe.png]]
 :END:
 
 
@@ -230,7 +245,7 @@ Intergrate σ with the mc method.
 
 #+RESULTS:
 :RESULTS:
-(0.05364189417398581, 4.241792187836808e-05)
+(0.05382327328187836, 4.2568280254619665e-05)
 :END:
 
 #+begin_src ipython :session :exports both :results raw drawer output :file xs_mc.tex
@@ -246,6 +261,8 @@ Now we monte-carlo sample our distribution.
 #+begin_src ipython :session :exports both :results raw drawer
 cosθ_sample = sample(lambda x: diff_xs_cosθ(x, charge, esp), interval_cosθ)
 η_sample = sample(lambda x: diff_xs_eta(x, charge, esp), interval_η)
+pt_sample = sample(lambda x: diff_xs_pt(x, charge, esp), interval_pt)
+
 #+end_src
 
 #+RESULTS:
@@ -276,7 +293,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,2))
 
 #+RESULTS:
 :RESULTS:
-[[file:./obipy-resources/XUeHmM.png]]
+[[file:./obipy-resources/UtLSDE.png]]
 :END:
 
 And the histogram for η.
@@ -287,5 +304,16 @@ save_fig(fig, 'histo_eta', 'xs', size=(4,2))
 
 #+RESULTS:
 :RESULTS:
-[[file:./obipy-resources/lxq7dj.png]]
+[[file:./obipy-resources/I7AUEF.png]]
+:END:
+
+And the same for pt.
+#+begin_src ipython :session :exports both :results raw drawer
+draw_histo(pt_sample, r'$p_{T}$ [GeV]')
+save_fig(fig, 'histo_pt', 'xs', size=(4,2))
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+[[file:./obipy-resources/Ix0X0o.png]]
 :END:
