@@ -2,7 +2,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 from SecondaryValue import SecondaryValue
 from scipy.constants import hbar, c, electron_volt
+import matplotlib.ticker as ticker
 import numpy as np
+import os
 
 ###############################################################################
 #                                   Utility                                   #
@@ -11,6 +13,14 @@ import numpy as np
 def gev_to_pb(xs):
     """Converts a cross section from 1/GeV^2 to pb."""
     return xs/(electron_volt**2)*(hbar*c)**2*1e22
+
+def θ_to_η(θ):
+    θ = np.asarray(θ)
+    return -np.log(np.tan(θ/2))
+
+def η_to_θ(η):
+    η = np.asarray(η)
+    return 2*np.arctan(np.exp(-η))
 
 def tex_value(val, unit='', prefix='', prec=10, err=None):
     """Generates LaTeX output of a value with units and error."""
@@ -33,7 +43,7 @@ def pinmp_ticks(axis, ticks):
     axis.set_minor_locator(ticker.MaxNLocator(ticks*10))
     return axis
 
-def set_up_plot(ticks=10, pimp_top=True, subplot=111, fig=None):
+def set_up_plot(ticks=4, pimp_top=True, subplot=111, fig=None):
     if fig is None:
         fig = plt.figure()
     ax = fig.add_subplot(subplot)
@@ -52,23 +62,22 @@ def set_up_plot(ticks=10, pimp_top=True, subplot=111, fig=None):
 
     return fig, ax
 
+def cm2inch(*tupl):
+    inch = 2.54
+    if isinstance(tupl[0], tuple):
+        return tuple(i/inch for i in tupl[0])
+    else:
+        return tuple(i/inch for i in tupl)
+
 def save_fig(fig, title, folder='unsorted', size=(5, 4)):
     fig.set_size_inches(*size)
     fig.tight_layout()
-    try:
-        os.makedirs(f'./figs/{folder}/')
-    except OSError as exc:
-        pass
+
+    size = cm2inch(*size)
+    os.makedirs(f'./figs/{folder}/', exist_ok=True)
+
     fig.savefig(f'./figs/{folder}/{title}.pdf')
     fig.savefig(f'./figs/{folder}/{title}.pgf')
 
-    with open('./out/figlist.txt', 'a') as f:
-        f.write(r'''
-\begin{figure}[H]\centering
-  \input{../auswertung/figs/'''
-  + f'{folder}/{title}.pgf' +
-  r'''}
-  \caption{}
-  \label{fig:''' + folder + '-' + title + r'''}
-\end{figure}
-    ''')
+    with open(f'./figs/{folder}/{title}.tex', 'w') as f:
+        f.write(f'\\input{{figs/{folder}/{title}.pgf}}')

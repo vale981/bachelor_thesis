@@ -33,7 +33,7 @@ def diff_xs(θ, charge, esp):
     """
 
     f = energy_factor(charge, esp)
-    return f*((np.cos(θ)**+1)/np.sin(θ)**2)
+    return f*((np.cos(θ)**2+1)/np.sin(θ)**2)
 
 def diff_xs_eta(η, charge, esp):
     """
