@@ -1,3 +1,7 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import monte_carlo
+
 """
 Implementation of the analytical cross section for q q_bar ->
 gamma gamma
@@ -101,3 +105,31 @@ def total_xs_eta(η, charge, esp):
         return np.tanh(x) - 2*x
 
     return 2*np.pi*f*(F(η[0]) - F(η[1]))
+
+def sample_impulses(sample_num, interval, charge, esp, seed=None):
+    """Samples `sample_num` unweighted photon 4-impulses from the cross-section.
+
+    :param sample_num: number of samples to take
+    :param interval: cosθ interval to sample from
+    :param charge: the charge of the quark
+    :param esp: center of mass energy
+    :param seed: the seed for the rng, optional, default is system
+        time
+
+    :returns: an array of 4 photon impulses
+    :rtype: np.ndarray
+    """
+    cosθ_sample = \
+        monte_carlo.sample_unweighted_array(sample_num,
+                                            lambda x:
+                                              diff_xs_cosθ(x, charge, esp),
+                                           interval_cosθ)
+    φ_sample = np.random.uniform(0, 1, sample_num)
+
+    def make_impulse(esp, cosθ, φ):
+        sinθ = np.sqrt(1-cosθ**2)
+        return np.array([1, sinθ*np.cos(φ), sinθ*np.sin(φ), cosθ])*esp/2
+
+    impulses = np.array([make_impulse(esp, cosθ, φ) \
+                         for cosθ, φ in np.array([cosθ_sample, φ_sample]).T])
+    return impulses
