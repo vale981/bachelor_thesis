@@ -22,6 +22,8 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 * Implementation
 #+NAME: 777a013b-6c20-44bd-b58b-6a7690c21c0e
@@ -143,6 +145,8 @@ charge = 1/3
 esp = 200  # GeV
 #+END_SRC
 
+#+RESULTS: 7e62918a-2935-41ac-94e0-f0e7c3af8e0d
+
 Set up the integration and plot intervals.
 #+begin_src jupyter-python :exports both :results raw drawer
 interval_η = [-η, η]
@@ -154,15 +158,13 @@ plot_interval = [0.1, np.pi-.1]
 
 #+RESULTS:
 
-#+RESULTS: 7e62918a-2935-41ac-94e0-f0e7c3af8e0d
-
 *** Analytical Integratin
 And now calculate the cross section in picobarn.
 #+NAME: cf853fb6-d338-482e-bc55-bd9f8e796495
-#+BEGIN_SRC jupyter-python :exports both :results drawer output file :file xs.tex
+#+BEGIN_SRC jupyter-python :exports both :results raw file :file xs.tex
   xs_gev = total_xs_eta(η, charge, esp)
   xs_pb = gev_to_pb(xs_gev)
-  print(tex_value(xs_pb, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5))
+  tex_value(xs_pb, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5, save=('results', 'xs.tex'))
 #+END_SRC
 
 #+RESULTS: cf853fb6-d338-482e-bc55-bd9f8e796495
@@ -231,15 +233,15 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-| 0.05365000636562272 | 4.2342293364016736e-05 |
+| 0.053689832699921 | 4.246793940977776e-05 |
 
 We gonna export that as tex.
-#+begin_src jupyter-python :exports both :results raw drawer output :file xs_mc.tex
-print(tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5))
+#+begin_src jupyter-python :exports both :results raw drawer
+tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5, save=('results', 'xs_mc.tex'))
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05365}{\pico\barn}\)
+: \(\sigma = \SI{0.05369}{\pico\barn}\)
 
 *** Sampling and Analysis
 Define the sample number.
@@ -280,7 +282,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/ddc5e5b2a628d9f9add43555d7386acf4d92c6ee.png]]
+[[file:./.ob-jupyter/ff31ac5aa215650ba21cae64f922409ff7d68a7f.png]]
 
 Now we define some utilities to draw real 4-impulse samples.
 #+begin_src jupyter-python :exports both :tangle tangled/xs.py
@@ -349,13 +351,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  60.93780026,  38.29391655,  69.42737539],
-:        [100.        ,  16.62473755,   5.08308744, -98.47730867],
-:        [100.        ,  62.52584971,  41.05712399,  66.3688985 ],
+: array([[100.        ,  23.0915126 ,  13.61511328,  96.34007856],
+:        [100.        ,  16.03233722,  23.8952722 , -95.77045541],
+:        [100.        ,  19.35361213,  19.26156648,  96.19994675],
 :        ...,
-:        [100.        ,  36.93115123,  10.77808502, -92.30342871],
-:        [100.        ,  34.39831699,  43.0134429 ,  83.46615792],
-:        [100.        ,  69.87424822,   3.87926805,  71.43207063]])
+:        [100.        ,  12.65336284,  10.35175164, -98.65461797],
+:        [100.        ,  27.98611373,   1.54502504,  95.99161597],
+:        [100.        ,  96.16289696,  10.84933516,  25.19899154]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -365,8 +367,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb464af2040> |
-[[file:./.ob-jupyter/347b6d473f38cf692e5614a095c9bc1a0e89c763.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f14923a38e0> |
+[[file:./.ob-jupyter/aa6ee513133606f9398e0cbafbd05f4cdcfe1090.png]]
 :END:
 
 
@@ -378,6 +380,6 @@ And the same for the p_t (transverse impulse) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb463469d60> |
-[[file:./.ob-jupyter/880ac31d31bd9a537c0faacd56dc38f9eb668c7d.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f14922bf1c0> |
+[[file:./.ob-jupyter/4319d0b8aad0693e22c1267606a7ecd4029b0815.png]]
 :END:

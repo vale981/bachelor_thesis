@@ -25,11 +25,17 @@ def η_to_θ(η):
 def η_to_pt(η, p):
     return p/np.cosh(η)
 
-def tex_value(val, unit='', prefix='', prec=10, err=None):
+def tex_value(val, unit='', prefix='', prec=10, err=None, save=None):
     """Generates LaTeX output of a value with units and error."""
 
     val = np.round(val, prec)
-    return fr'\({prefix}\SI{{{val}}}{{{unit}}}\)'
+    val_string = fr'\({prefix}\SI{{{val}}}{{{unit}}}\)'
+    if save:
+        os.makedirs(save[0], exist_ok=True)
+        with open(f'{save[0]}/{save[1]}', 'w') as f:
+            f.write(val_string)
+
+    return val_string
 
 ###############################################################################
 #                                  Plot Porn                                  #
