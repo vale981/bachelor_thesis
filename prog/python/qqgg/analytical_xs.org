@@ -233,7 +233,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-| 0.053689832699921 | 4.246793940977776e-05 |
+| 0.05367831915813582 | 4.264036796520297e-05 |
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -241,7 +241,7 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5, save=('resu
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05369}{\pico\barn}\)
+: \(\sigma = \SI{0.05368}{\pico\barn}\)
 
 *** Sampling and Analysis
 Define the sample number.
@@ -251,15 +251,74 @@ Define the sample number.
 
 #+RESULTS:
 
-
-Now we monte-carlo sample our distribution.
+Let's define a shortcut for our distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
-cosθ_sample = monte_carlo.sample_unweighted_array(sample_num, lambda x:
-                                            diff_xs_cosθ(x, charge, esp),
-                                            interval_cosθ)
+  def dist(x):
+      return gev_to_pb(diff_xs_cosθ(x, charge, esp))*2*np.pi
 #+end_src
 
 #+RESULTS:
+
+Now we monte-carlo sample our distribution. We observe that the efficiency his very bad!
+#+begin_src jupyter-python :exports both :results raw drawer
+  cosθ_sample, cosθ_efficiency = \
+      monte_carlo.sample_unweighted_array(sample_num, dist,
+                                          interval_cosθ, report_efficiency=True)
+  cosθ_efficiency
+#+end_src
+
+#+RESULTS:
+: 0.027318377817804704
+
+Our distribution has a lot of variance, as can be seen by plotting it.
+#+begin_src jupyter-python :exports both :results raw drawer
+    pts = np.linspace(*interval_cosθ, 100)
+    fig, ax = set_up_plot()
+    ax.plot(pts, dist(pts), label=r'$\frac{d\sigma}{d\Omega}$')
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+| <matplotlib.lines.Line2D | at | 0x7fb6b431e790> |
+[[file:./.ob-jupyter/04d0c9300d134c04b087aef7bb0a1b6036038b64.png]]
+:END:
+
+We define a friendly and easy to integrate upper limit function.
+#+begin_src jupyter-python :exports both :results raw drawer
+  upper_limit = dist(interval_cosθ[0]) \
+      /interval_cosθ[0]**2
+  upper_base = dist(0)
+
+  def upper(x):
+      return  upper_base + upper_limit*x**2
+
+  def upper_int(x):
+      return  upper_base*x + upper_limit*x**3/3
+
+  ax.plot(pts, upper(pts), label='Upper bound')
+  ax.legend()
+  ax.set_xlabel(r'$\cos\theta$')
+  ax.set_ylabel(r'$\frac{d\sigma}{d\Omega}$')
+  save_fig(fig, 'upper_bound', 'xs_sampling', size=(4, 4))
+  fig
+#+end_src
+
+#+RESULTS:
+[[file:./.ob-jupyter/1a720f93049e88987bdddac861b1c3847501e271.png]]
+
+
+To increase our efficiency, we have to specify an upper bound. That is
+at least a little bit better. The numeric inversion is horribly inefficent.
+#+begin_src jupyter-python :exports both :results raw drawer
+  cosθ_sample, cosθ_efficiency = \
+      monte_carlo.sample_unweighted_array(sample_num, dist,
+                                          interval_cosθ, report_efficiency=True,
+                                          upper_bound=[upper, upper_int])
+  cosθ_efficiency
+#+end_src
+
+#+RESULTS:
+: 0.07584353538369662
 
 Nice! And now draw some histograms.
 
@@ -282,7 +341,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/ff31ac5aa215650ba21cae64f922409ff7d68a7f.png]]
+[[file:./.ob-jupyter/6c0c8783b68b394bd8539ce621e285b54f9a0d0c.png]]
 
 Now we define some utilities to draw real 4-impulse samples.
 #+begin_src jupyter-python :exports both :tangle tangled/xs.py
@@ -351,13 +410,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  23.0915126 ,  13.61511328,  96.34007856],
-:        [100.        ,  16.03233722,  23.8952722 , -95.77045541],
-:        [100.        ,  19.35361213,  19.26156648,  96.19994675],
+: array([[100.        ,  28.29533668,   1.8580239 , -95.89536834],
+:        [100.        ,  15.63107713,   8.96259547,  98.36331283],
+:        [100.        ,  37.20714833,  36.40572302, -85.38296929],
 :        ...,
-:        [100.        ,  12.65336284,  10.35175164, -98.65461797],
-:        [100.        ,  27.98611373,   1.54502504,  95.99161597],
-:        [100.        ,  96.16289696,  10.84933516,  25.19899154]])
+:        [100.        ,  23.83872893,  21.09208613,  94.79893937],
+:        [100.        ,  53.08852778,  37.82714439,  75.83347127],
+:        [100.        ,  78.42901358,  58.54310277,  20.5327774 ]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -367,8 +426,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f14923a38e0> |
-[[file:./.ob-jupyter/aa6ee513133606f9398e0cbafbd05f4cdcfe1090.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb6b410ca00> |
+[[file:./.ob-jupyter/e93174871d533af3abc0a74dc6e4641aefc138ad.png]]
 :END:
 
 
@@ -380,6 +439,6 @@ And the same for the p_t (transverse impulse) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f14922bf1c0> |
-[[file:./.ob-jupyter/4319d0b8aad0693e22c1267606a7ecd4029b0815.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb6b3fc6e80> |
+[[file:./.ob-jupyter/e63cd849824f57bdcad1ff45ef940def0f5c5934.png]]
 :END:
