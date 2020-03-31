@@ -1,9 +1,9 @@
-#+PROPERTY: header-args :exports both :output-dir results
+#+PROPERTY: header-args :exports both :output-dir results :session xs :kernel python3
 
 * Init
 ** Required Modules
 #+NAME: e988e3f2-ad1f-49a3-ad60-bedba3863283
-#+begin_src ipython :session :exports both :tangle tangled/xs.py
+#+begin_src jupyter-python :exports both :tangle tangled/xs.py
   import numpy as np
   import matplotlib.pyplot as plt
   import monte_carlo
@@ -11,9 +11,10 @@
 
 #+RESULTS: e988e3f2-ad1f-49a3-ad60-bedba3863283
 
+
 ** Utilities
 #+NAME: 53548778-a4c1-461a-9b1f-0f401df12b08
-#+BEGIN_SRC ipython :session :exports both
+#+BEGIN_SRC jupyter-python :exports both
 %run ../utility.py
 %load_ext autoreload
 %aimport monte_carlo
@@ -24,7 +25,7 @@
 
 * Implementation
 #+NAME: 777a013b-6c20-44bd-b58b-6a7690c21c0e
-#+BEGIN_SRC ipython :session :exports both :results raw drawer :exports code :tangle tangled/xs.py
+#+BEGIN_SRC jupyter-python :exports both :results raw drawer :exports code :tangle tangled/xs.py
   """
   Implementation of the analytical cross section for q q_bar ->
   gamma gamma
@@ -131,21 +132,19 @@
 #+END_SRC
 
 #+RESULTS: 777a013b-6c20-44bd-b58b-6a7690c21c0e
-:RESULTS:
-:END:
 
 * Calculations
 ** XS qq -> gamma gamma
 First, set up the input parameters.
 #+NAME: 7e62918a-2935-41ac-94e0-f0e7c3af8e0d
-#+BEGIN_SRC ipython :session :exports both :results raw drawer
+#+BEGIN_SRC jupyter-python :exports both :results raw drawer
 η = 2.5
 charge = 1/3
 esp = 200  # GeV
 #+END_SRC
 
 Set up the integration and plot intervals.
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
 interval_η = [-η, η]
 interval = η_to_θ([-η, η])
 interval_cosθ = np.cos(interval)
@@ -154,45 +153,37 @@ plot_interval = [0.1, np.pi-.1]
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-:END:
 
 #+RESULTS: 7e62918a-2935-41ac-94e0-f0e7c3af8e0d
-:RESULTS:
-:END:
 
 *** Analytical Integratin
 And now calculate the cross section in picobarn.
 #+NAME: cf853fb6-d338-482e-bc55-bd9f8e796495
-#+BEGIN_SRC ipython :session :exports both :results drawer output file :file xs.tex
+#+BEGIN_SRC jupyter-python :exports both :results drawer output file :file xs.tex
   xs_gev = total_xs_eta(η, charge, esp)
   xs_pb = gev_to_pb(xs_gev)
   print(tex_value(xs_pb, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5))
 #+END_SRC
 
 #+RESULTS: cf853fb6-d338-482e-bc55-bd9f8e796495
-:RESULTS:
-[[file:results/xs.tex]]
-:END:
+: \(\sigma = \SI{0.05379}{\pico\barn}\)
 
 Compared to sherpa, it's pretty close.
 #+NAME: 81b5ed93-0312-45dc-beec-e2ba92e22626
-#+BEGIN_SRC ipython :session :exports both :results raw drawer
+#+BEGIN_SRC jupyter-python :exports both :results raw drawer
   sherpa = 0.0538009
   xs_pb/sherpa
 #+END_SRC
 
 #+RESULTS: 81b5ed93-0312-45dc-beec-e2ba92e22626
-:RESULTS:
-0.9998585425137037
-:END:
+: 0.9998585425137037
 
 I had to set the runcard option ~EW_SCHEME: alpha0~ to use the pure
 QED coupling constant.
 *** Numerical Integration
 
 Plot our nice distribution:
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
 plot_points = np.linspace(*plot_interval, 1000)
 
 fig, ax = set_up_plot()
@@ -206,22 +197,18 @@ save_fig(fig, 'diff_xs', 'xs', size=[4, 4])
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-[[file:./obipy-resources/DHBTl1.png]]
-:END:
+[[file:./.ob-jupyter/d30ededeaa03958fae5b649f50f3c5c3e6ae4677.png]]
 
 Define the integrand.
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
   def xs_pb_int(θ):
       return gev_to_pb(np.sin(θ)*diff_xs(θ, charge=charge, esp=esp))
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-:END:
 
 Plot the integrand. # TODO: remove duplication
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
 fig, ax = set_up_plot()
 ax.plot(plot_points, xs_pb_int(plot_points))
 ax.set_xlabel(r'$\theta$')
@@ -233,59 +220,49 @@ save_fig(fig, 'xs_integrand', 'xs', size=[4, 4])
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-[[file:./obipy-resources/4mne94.png]]
-:END:
+[[file:./.ob-jupyter/78974a2e2315c72bd7ae8e4ac009b3d79cfe7001.png]]
 
 
 Intergrate σ with the mc method.
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
   xs_pb_mc, xs_pb_mc_err = monte_carlo.integrate(xs_pb_int, interval, 10000)
   xs_pb_mc = xs_pb_mc*np.pi*2
   xs_pb_mc, xs_pb_mc_err
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-(0.05360809379599215, 4.22681790215136e-05)
-:END:
+| 0.05365000636562272 | 4.2342293364016736e-05 |
 
 We gonna export that as tex.
-#+begin_src ipython :session :exports both :results raw drawer output :file xs_mc.tex
+#+begin_src jupyter-python :exports both :results raw drawer output :file xs_mc.tex
 print(tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5))
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-[[file:results/xs_mc.tex]]
-:END:
+: \(\sigma = \SI{0.05365}{\pico\barn}\)
 
 *** Sampling and Analysis
 Define the sample number.
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
   sample_num = 1000
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-:END:
 
 
 Now we monte-carlo sample our distribution.
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
 cosθ_sample = monte_carlo.sample_unweighted_array(sample_num, lambda x:
                                             diff_xs_cosθ(x, charge, esp),
                                             interval_cosθ)
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-:END:
 
 Nice! And now draw some histograms.
 
 We define an auxilliary method for convenience.
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
   def draw_histo(points, xlabel, bins=20):
       fig, ax = set_up_plot()
       ax.hist(points, bins, histtype='step')
@@ -295,22 +272,18 @@ We define an auxilliary method for convenience.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-:END:
 
 The histogram for cosθ.
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
 fig, _ = draw_histo(cosθ_sample, r'$\cos\theta$')
 save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-[[file:./obipy-resources/ZSJaBQ.png]]
-:END:
+[[file:./.ob-jupyter/ddc5e5b2a628d9f9add43555d7386acf4d92c6ee.png]]
 
 Now we define some utilities to draw real 4-impulse samples.
-#+begin_src ipython :session :exports both :tangle tangled/xs.py
+#+begin_src jupyter-python :exports both :tangle tangled/xs.py
   def sample_impulses(sample_num, interval, charge, esp, seed=None):
       """Samples `sample_num` unweighted photon 4-impulses from the cross-section.
 
@@ -342,8 +315,10 @@ Now we define some utilities to draw real 4-impulse samples.
 
 #+RESULTS:
 
-To generate histograms of other obeservables, we have to define them as functions on 4-impuleses.
-#+begin_src ipython :session :exports both :results raw drawer :tangle tangled/observables.py
+To generate histograms of other obeservables, we have to define them
+as functions on 4-impuleses. Using those to transform samples is
+analogous to transforming the distribution itself.
+#+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/observables.py
   """This module defines some observables on arrays of 4-pulses."""
   import numpy as np
 
@@ -365,56 +340,44 @@ To generate histograms of other obeservables, we have to define them as function
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-:END:
 
 
 Lets try it out.
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
   impulse_sample = sample_impulses(2000, interval_cosθ, charge, esp)
   impulse_sample
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-#+BEGIN_EXAMPLE
-  array([[100.        ,  48.55787717,  64.05713855,  59.48794471],
-  [100.        ,  42.68070092,  33.17436113, -84.12977792],
-  [100.        ,  18.42611283,  27.20055109, -94.44897239],
-  ...,
-  [100.        ,  21.40152914,  14.7440014 ,  96.56391134],
-  [100.        ,  35.84656512,   5.33864248, -93.20151643],
-  [100.        ,  38.37094512,   8.92583559,  91.9130025 ]])
-#+END_EXAMPLE
-:END:
+: array([[100.        ,  60.93780026,  38.29391655,  69.42737539],
+:        [100.        ,  16.62473755,   5.08308744, -98.47730867],
+:        [100.        ,  62.52584971,  41.05712399,  66.3688985 ],
+:        ...,
+:        [100.        ,  36.93115123,  10.77808502, -92.30342871],
+:        [100.        ,  34.39831699,  43.0134429 ,  83.46615792],
+:        [100.        ,  69.87424822,   3.87926805,  71.43207063]])
 
 Now let's make a histogram of the η distribution.
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
   η_sample = η(impulse_sample)
   draw_histo(η_sample, r'$\eta$')
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-#+BEGIN_EXAMPLE
-  (<Figure size 432x288 with 1 Axes>,
-  <matplotlib.axes._subplots.AxesSubplot at 0x7ff36151dd60>)
-#+END_EXAMPLE
-[[file:./obipy-resources/S2OvbR.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb464af2040> |
+[[file:./.ob-jupyter/347b6d473f38cf692e5614a095c9bc1a0e89c763.png]]
 :END:
 
 
 And the same for the p_t (transverse impulse) distribution.
-#+begin_src ipython :session :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer
   p_t_sample = p_t(impulse_sample)
   draw_histo(p_t_sample, r'$p_T$')
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-#+BEGIN_EXAMPLE
-  (<Figure size 432x288 with 1 Axes>,
-  <matplotlib.axes._subplots.AxesSubplot at 0x7ff364951370>)
-#+END_EXAMPLE
-[[file:./obipy-resources/nW1TKv.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb463469d60> |
+[[file:./.ob-jupyter/880ac31d31bd9a537c0faacd56dc38f9eb668c7d.png]]
 :END:
