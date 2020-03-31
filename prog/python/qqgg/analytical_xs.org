@@ -434,11 +434,11 @@ Now let's make a histogram of the η distribution.
 And the same for the p_t (transverse impulse) distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
   p_t_sample = p_t(impulse_sample)
-  draw_histo(p_t_sample, r'$p_T$')
+  draw_histo(p_t_sample, r'$p_T$ [GeV]')
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb6b3fc6e80> |
-[[file:./.ob-jupyter/e63cd849824f57bdcad1ff45ef940def0f5c5934.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb6b3dd31f0> |
+[[file:./.ob-jupyter/c8662c3b2dffce44824f5bc356f1fd7bfa594621.png]]
 :END:
