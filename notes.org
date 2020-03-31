@@ -79,6 +79,9 @@ Viele Gruesse, Frank
  - [[file:prog/python/qqgg/analytical_xs.ipynb][Notebook mit Implementierung der XS]]
  - Zeigte fehler in Rechnung auf
 
+** Monte Carlo Methods
+ - [[file:prog/python/qqgg/analytical_xs.org::*Numerical Integration][Integration]]
+ - [[file:prog/python/qqgg/analytical_xs.org::*Sampling and Analysis][Sampling and Analysis]]
 * Clock Table
 #+BEGIN: clocktable :scope file :maxlevel 2
 #+CAPTION: Clock summary at [2020-03-18 Wed 21:01]

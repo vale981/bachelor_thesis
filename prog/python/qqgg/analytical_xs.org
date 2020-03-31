@@ -142,10 +142,18 @@ charge = 1/3
 esp = 200  # GeV
 #+END_SRC
 
+Set up the integration and plot intervals.
+#+begin_src ipython :session :exports both :results raw drawer
+interval_η = [-η, η]
+interval = η_to_θ([-η, η])
+interval_cosθ = np.cos(interval)
+interval_pt = η_to_pt([0, η], esp/2)
+plot_interval = [0.1, np.pi-.1]
+#+end_src
+
 #+RESULTS: 7e62918a-2935-41ac-94e0-f0e7c3af8e0d
 :RESULTS:
 :END:
-
 
 *** Analytical Integratin
 And now calculate the cross section in picobarn.
@@ -175,19 +183,7 @@ Compared to sherpa, it's pretty close.
 
 I had to set the runcard option ~EW_SCHEME: alpha0~ to use the pure
 QED coupling constant.
-*** Numerical Integration and Sampling
-Set up the integration and plot intervals.
-#+begin_src ipython :session :exports both :results raw drawer
-interval_η = [-η, η]
-interval = η_to_θ([-η, η])
-interval_cosθ = np.cos(interval)
-interval_pt = η_to_pt([0, η], esp/2)
-plot_interval = [0.1, np.pi-.1]
-#+end_src
-
-#+RESULTS:
-:RESULTS:
-:END:
+*** Numerical Integration
 
 Plot our nice distribution:
 #+begin_src ipython :session :exports both :results raw drawer
@@ -257,6 +253,7 @@ print(tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5))
 [[file:results/xs_mc.tex]]
 :END:
 
+*** Sampling and Analysis
 Now we monte-carlo sample our distribution.
 #+begin_src ipython :session :exports both :results raw drawer
 cosθ_sample = sample(lambda x: diff_xs_cosθ(x, charge, esp), interval_cosθ)
