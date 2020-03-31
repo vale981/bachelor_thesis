@@ -80,6 +80,7 @@ Viele Gruesse, Frank
  - Zeigte fehler in Rechnung auf
 
 ** Monte Carlo Methods
+ - implementation as [[file:prog/python/qqgg/monte_carlo.py][module]]
  - [[file:prog/python/qqgg/analytical_xs.org::*Numerical Integration][Integration]]
  - [[file:prog/python/qqgg/analytical_xs.org::*Sampling and Analysis][Sampling and Analysis]]
 * Clock Table
