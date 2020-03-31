@@ -3,9 +3,10 @@
 * Init
 ** Required Modules
 #+NAME: e988e3f2-ad1f-49a3-ad60-bedba3863283
-#+begin_src ipython :session :exports both
+#+begin_src ipython :session :exports both :tangle tangled/xs.py
   import numpy as np
   import matplotlib.pyplot as plt
+  import monte_carlo
 #+end_src
 
 #+RESULTS: e988e3f2-ad1f-49a3-ad60-bedba3863283
@@ -16,6 +17,7 @@
 %run ../utility.py
 %load_ext autoreload
 %aimport monte_carlo
+%autoreload 1
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
@@ -151,6 +153,10 @@ interval_pt = η_to_pt([0, η], esp/2)
 plot_interval = [0.1, np.pi-.1]
 #+end_src
 
+#+RESULTS:
+:RESULTS:
+:END:
+
 #+RESULTS: 7e62918a-2935-41ac-94e0-f0e7c3af8e0d
 :RESULTS:
 :END:
@@ -201,7 +207,7 @@ save_fig(fig, 'diff_xs', 'xs', size=[4, 4])
 
 #+RESULTS:
 :RESULTS:
-[[file:./obipy-resources/EvlB5m.png]]
+[[file:./obipy-resources/DHBTl1.png]]
 :END:
 
 Define the integrand.
@@ -228,22 +234,23 @@ save_fig(fig, 'xs_integrand', 'xs', size=[4, 4])
 
 #+RESULTS:
 :RESULTS:
-[[file:./obipy-resources/lOkEKe.png]]
+[[file:./obipy-resources/4mne94.png]]
 :END:
 
 
 Intergrate σ with the mc method.
 #+begin_src ipython :session :exports both :results raw drawer
-  xs_pb_mc, xs_pb_mc_err = integrate(xs_pb_int, interval, 10000)
+  xs_pb_mc, xs_pb_mc_err = monte_carlo.integrate(xs_pb_int, interval, 10000)
   xs_pb_mc = xs_pb_mc*np.pi*2
   xs_pb_mc, xs_pb_mc_err
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-(0.05382327328187836, 4.2568280254619665e-05)
+(0.05360809379599215, 4.22681790215136e-05)
 :END:
 
+We gonna export that as tex.
 #+begin_src ipython :session :exports both :results raw drawer output :file xs_mc.tex
 print(tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5))
 #+end_src
@@ -254,12 +261,21 @@ print(tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5))
 :END:
 
 *** Sampling and Analysis
+Define the sample number.
+#+begin_src ipython :session :exports both :results raw drawer
+  sample_num = 1000
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+:END:
+
+
 Now we monte-carlo sample our distribution.
 #+begin_src ipython :session :exports both :results raw drawer
-cosθ_sample = sample(lambda x: diff_xs_cosθ(x, charge, esp), interval_cosθ)
-η_sample = sample(lambda x: diff_xs_eta(x, charge, esp), interval_η)
-pt_sample = sample(lambda x: diff_xs_pt(x, charge, esp), interval_pt)
-
+cosθ_sample = monte_carlo.sample_unweighted_array(sample_num, lambda x:
+                                            diff_xs_cosθ(x, charge, esp),
+                                            interval_cosθ)
 #+end_src
 
 #+RESULTS:
@@ -285,32 +301,120 @@ We define an auxilliary method for convenience.
 The histogram for cosθ.
 #+begin_src ipython :session :exports both :results raw drawer
 fig, _ = draw_histo(cosθ_sample, r'$\cos\theta$')
-save_fig(fig, 'histo_cos_theta', 'xs', size=(4,2))
+save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-[[file:./obipy-resources/UtLSDE.png]]
+[[file:./obipy-resources/ZSJaBQ.png]]
 :END:
 
-And the histogram for η.
-#+begin_src ipython :session :exports both :results raw drawer
-draw_histo(η_sample, r'$\eta$')
-save_fig(fig, 'histo_eta', 'xs', size=(4,2))
+Now we define some utilities to draw real 4-impulse samples.
+#+begin_src ipython :session :exports both :tangle tangled/xs.py
+  def sample_impulses(sample_num, interval, charge, esp, seed=None):
+      """Samples `sample_num` unweighted photon 4-impulses from the cross-section.
+
+      :param sample_num: number of samples to take
+      :param interval: cosθ interval to sample from
+      :param charge: the charge of the quark
+      :param esp: center of mass energy
+      :param seed: the seed for the rng, optional, default is system
+          time
+
+      :returns: an array of 4 photon impulses
+      :rtype: np.ndarray
+      """
+      cosθ_sample = \
+          monte_carlo.sample_unweighted_array(sample_num,
+                                              lambda x:
+                                                diff_xs_cosθ(x, charge, esp),
+                                             interval_cosθ)
+      φ_sample = np.random.uniform(0, 1, sample_num)
+
+      def make_impulse(esp, cosθ, φ):
+          sinθ = np.sqrt(1-cosθ**2)
+          return np.array([1, sinθ*np.cos(φ), sinθ*np.sin(φ), cosθ])*esp/2
+
+      impulses = np.array([make_impulse(esp, cosθ, φ) \
+                           for cosθ, φ in np.array([cosθ_sample, φ_sample]).T])
+      return impulses
+#+end_src
+
+#+RESULTS:
+
+To generate histograms of other obeservables, we have to define them as functions on 4-impuleses.
+#+begin_src ipython :session :exports both :results raw drawer :tangle tangled/observables.py
+  """This module defines some observables on arrays of 4-pulses."""
+  import numpy as np
+
+  def p_t(p):
+      """Transverse impulse
+
+      :param p: array of 4-impulses
+      """
+
+      return np.linalg.norm(p[:,1:3], axis=1)
+
+  def η(p):
+      """Pseudo rapidity.
+
+      :param p: array of 4-impulses
+      """
+
+      return np.arccosh(np.linalg.norm(p[:,1:], axis=1)/p_t(p))*np.sign(p[:, 3])
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-[[file:./obipy-resources/I7AUEF.png]]
 :END:
 
-And the same for pt.
+
+Lets try it out.
 #+begin_src ipython :session :exports both :results raw drawer
-draw_histo(pt_sample, r'$p_{T}$ [GeV]')
-save_fig(fig, 'histo_pt', 'xs', size=(4,2))
+  impulse_sample = sample_impulses(2000, interval_cosθ, charge, esp)
+  impulse_sample
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-[[file:./obipy-resources/Ix0X0o.png]]
+#+BEGIN_EXAMPLE
+  array([[100.        ,  48.55787717,  64.05713855,  59.48794471],
+  [100.        ,  42.68070092,  33.17436113, -84.12977792],
+  [100.        ,  18.42611283,  27.20055109, -94.44897239],
+  ...,
+  [100.        ,  21.40152914,  14.7440014 ,  96.56391134],
+  [100.        ,  35.84656512,   5.33864248, -93.20151643],
+  [100.        ,  38.37094512,   8.92583559,  91.9130025 ]])
+#+END_EXAMPLE
+:END:
+
+Now let's make a histogram of the η distribution.
+#+begin_src ipython :session :exports both :results raw drawer
+  η_sample = η(impulse_sample)
+  draw_histo(η_sample, r'$\eta$')
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+#+BEGIN_EXAMPLE
+  (<Figure size 432x288 with 1 Axes>,
+  <matplotlib.axes._subplots.AxesSubplot at 0x7ff36151dd60>)
+#+END_EXAMPLE
+[[file:./obipy-resources/S2OvbR.png]]
+:END:
+
+
+And the same for the p_t (transverse impulse) distribution.
+#+begin_src ipython :session :exports both :results raw drawer
+  p_t_sample = p_t(impulse_sample)
+  draw_histo(p_t_sample, r'$p_T$')
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+#+BEGIN_EXAMPLE
+  (<Figure size 432x288 with 1 Axes>,
+  <matplotlib.axes._subplots.AxesSubplot at 0x7ff364951370>)
+#+END_EXAMPLE
+[[file:./obipy-resources/nW1TKv.png]]
 :END:

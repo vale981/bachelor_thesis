@@ -14,10 +14,9 @@ def _process_interval(interval):
     if b < a:
         a, b = b, a
 
-    return interval
+    return [a, b]
 
 
-@process_arg(1, _process_interval)
 def integrate(f, interval, point_density=1000, seed=None, **kwargs):
     """Monte-Carlo integrates the functin `f` in an interval.
 
@@ -36,7 +35,6 @@ def integrate(f, interval, point_density=1000, seed=None, **kwargs):
 
     interval_length = (interval[1] - interval[0])
     num_points = int(interval_length * point_density)
-
     points = np.random.uniform(interval[0], interval[1], num_points)
 
     sample = f(points, **kwargs)
@@ -44,6 +42,7 @@ def integrate(f, interval, point_density=1000, seed=None, **kwargs):
     deviation = np.std(sample)/np.sqrt(num_points - 1)*interval_length
 
     return integral, deviation
+
 
 def find_upper_bound(f, interval, **kwargs):
     """Find the upper bound of a function.
@@ -88,7 +87,7 @@ def sample_unweighted(f, interval, upper_bound=None, seed=None,
 
     def allocate_random_chunk():
         return np.random.uniform([interval[0], 0], [interval[1], 1],
-                            [chunk_size*interval_length, 2])
+                            [int(chunk_size*interval_length), 2])
 
     while True:
         points = allocate_random_chunk()
@@ -96,3 +95,13 @@ def sample_unweighted(f, interval, upper_bound=None, seed=None,
             [np.where(f(points[:, 0]) > points[:, 1]*upper_bound)]
         for point in sample_points:
             yield point
+
+def sample_unweighted_array(num, *args, **kwargs):
+    """Sample `num` elements from a distribution.  The rest of the
+    arguments is analogous to `sample_unweighted`.
+    """
+
+    sample_arr = np.empty(num)
+    for i, sample in zip(range(num), sample_unweighted(*args, **kwargs)):
+                        sample_arr[i] = sample
+    return sample_arr
