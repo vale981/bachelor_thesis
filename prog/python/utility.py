@@ -5,7 +5,7 @@ from scipy.constants import hbar, c, electron_volt
 import matplotlib.ticker as ticker
 import numpy as np
 import os
-
+import tikzplotlib
 ###############################################################################
 #                                   Utility                                   #
 ###############################################################################
@@ -88,5 +88,3 @@ def save_fig(fig, title, folder='unsorted', size=(5, 4)):
     fig.savefig(f'./figs/{folder}/{title}.pdf')
     fig.savefig(f'./figs/{folder}/{title}.pgf')
 
-    with open(f'./figs/{folder}/{title}.tex', 'w') as f:
-        f.write(f'\\input{{figs/{folder}/{title}.pgf}}')

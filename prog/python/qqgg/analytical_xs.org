@@ -21,6 +21,8 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 * Implementation
 #+NAME: 777a013b-6c20-44bd-b58b-6a7690c21c0e
@@ -184,11 +186,17 @@ ax.set_ylabel(r'$\frac{d\sigma}{d\Omega}$ [pb]')
 ax.axvline(interval[0], color='gray', linestyle='--')
 ax.axvline(interval[1], color='gray', linestyle='--', label=rf'$|\eta|={η}$')
 ax.legend()
-save_fig(fig, 'diff_xs', 'xs', size=[4, 4])
+save_fig(fig, 'diff_xs', 'xs', size=[3, 3])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/d30ededeaa03958fae5b649f50f3c5c3e6ae4677.png]]
+:RESULTS:
+: /usr/lib/python3.8/site-packages/tikzplotlib/_axes.py:211: MatplotlibDeprecationWarning: Passing the minor parameter of get_xticks() positionally is deprecated since Matplotlib 3.2; the parameter will become keyword-only two minor releases later.
+:   data, "minor x", obj.get_xticks("minor"), obj.get_xticklabels("minor")
+: /usr/lib/python3.8/site-packages/tikzplotlib/_axes.py:216: MatplotlibDeprecationWarning: Passing the minor parameter of get_yticks() positionally is deprecated since Matplotlib 3.2; the parameter will become keyword-only two minor releases later.
+:   data, "minor y", obj.get_yticks("minor"), obj.get_yticklabels("minor")
+[[file:./.ob-jupyter/84554de6897392b423848ccff74c3b1bdbbac799.png]]
+:END:
 
 Define the integrand.
 #+begin_src jupyter-python :exports both :results raw drawer
