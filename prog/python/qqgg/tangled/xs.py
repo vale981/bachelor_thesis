@@ -10,7 +10,6 @@ Author: Valentin Boettcher <hiro@protagon.space>
 """
 
 import numpy as np
-from scipy.constants import alpha
 
 # NOTE: a more elegant solution would be a decorator
 def energy_factor(charge, esp):
@@ -22,7 +21,7 @@ def energy_factor(charge, esp):
     charge -- charge of the particle in units of the elementary charge
     """
 
-    return charge**4*(alpha/esp)**2/6
+    return charge**4*/(137.036*esp)**2/6
 
 
 def diff_xs(θ, charge, esp):

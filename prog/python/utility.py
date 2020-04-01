@@ -28,8 +28,18 @@ def η_to_pt(η, p):
 def tex_value(val, unit='', prefix='', prec=10, err=None, save=None):
     """Generates LaTeX output of a value with units and error."""
 
-    val = np.round(val, prec)
-    val_string = fr'\({prefix}\SI{{{val}}}{{{unit}}}\)'
+    if err:
+        val, err, prec = scientific_round(val, err, retprec=True)
+    else:
+        val = np.round(val, prec)
+
+    val_string = fr'\({prefix}\SI{{{val:.{prec}f}'
+
+    if err:
+        val_string += fr'\pm {err:.{prec}f}'
+
+    val_string += fr'}}{{{unit}}}\)'
+
     if save:
         os.makedirs(save[0], exist_ok=True)
         with open(f'{save[0]}/{save[1]}', 'w') as f:
@@ -88,3 +98,50 @@ def save_fig(fig, title, folder='unsorted', size=(5, 4)):
     fig.savefig(f'./figs/{folder}/{title}.pdf')
     fig.savefig(f'./figs/{folder}/{title}.pgf')
 
+
+def scientific_round(val, *err, retprec=False):
+    """Scientifically rounds the values to the given errors."""
+    val, err = np.asarray(val), np.asarray(err)
+    if len(err.shape) == 1:
+        err = np.array([err])
+        err = err.T
+    err = err.T
+
+    if err.size == 1 and val.size > 1:
+        err = np.ones_like(val)*err
+
+    if len(err.shape) == 0:
+        err = np.array([err])
+
+    if val.size == 1 and err.shape[0] > 1:
+        val = np.ones_like(err)*val
+
+    i = np.floor(np.log10(err))
+    first_digit = (err // 10**i).astype(int)
+    prec = (-i + np.ones_like(err) * (first_digit <= 3)).astype(int)
+    prec = np.max(prec, axis=1)
+
+    def smart_round(value, precision):
+        value = np.round(value, precision)
+        if precision <= 0:
+            value = value.astype(int)
+        return value
+
+    if val.size > 1:
+        rounded = np.empty_like(val)
+        rounded_err = np.empty_like(err)
+        for n, (value, error, precision) in enumerate(zip(val, err, prec)):
+            rounded[n] = smart_round(value, precision)
+            rounded_err[n] = smart_round(error, precision)
+
+        if retprec:
+            return rounded, rounded_err, prec
+        else:
+            return rounded, rounded_err
+
+    else:
+        prec = prec[0]
+        if retprec:
+            return smart_round(val, prec), *smart_round(err, prec)[0], prec
+        else:
+            return smart_round(val, prec), *smart_round(err, prec)[0]
