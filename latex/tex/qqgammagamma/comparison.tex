@@ -1,4 +1,4 @@
-\section{Comparison with Sherpa}%
+\section{Discussion and Comparison with Sherpa}%
 \label{sec:compsher}
 
 The result obtained in~\ref{sec:qqggcalc} shall now be verified by
@@ -9,9 +9,8 @@ and observing that the initial and final impulses are equal
 (\(p_i=p_f\)) and \(g=\sqrt{4\pi\alpha}\), the
 result~\eqref{eq:crossec} arises.
 
-An additional
-factor of \(\frac{1}{2}\) arises from there being two identical
-photons in the final state.
+An additional factor of \(\frac{1}{2}\) comes in due to there being
+two identical photons in the final state.
 \begin{equation}
   \label{eq:crossec}
   \dv{\sigma}{\Omega} =
@@ -19,9 +18,21 @@ photons in the final state.
   = \overbrace{\frac{\alpha^2Q^4}{6\ecm^2}}^{\mathfrak{C}}\frac{1+\cos^2(\theta)}{\sin^2(\theta)}
 \end{equation}
 
-The differential cross section~\eqref{eq:crossec} is divergent for
-angles near zero or \(\pi\). Allowing finite mass in the calculation
-may regularize this divergence. Because \(m=0\) is the limit for
+
+\begin{figure}[ht]
+  \centering
+  \plot{xs/diff_xs}
+  \caption[Plot of the differential cross section of the \(\qqgg\)
+  process.]{\label{fig:diffxs} The differential cross section of the
+    process \(\qqgg\) as a function of the azimuth angle
+    \(\theta\). The pseudo-rapdity cut \(\abs{\eta} \leq 2.5\) is
+    being visualized.}
+\end{figure}
+
+The differential cross section~\eqref{eq:crossec} (see
+also~\ref{fig:diffxs}) is divergent for angles near zero or
+\(\pi\). Allowing finite mass in the calculation may regularize this
+divergence. Because \(m=0\) is the limit for
 \(\ecm\rightarrow\infty\), the cross section would still have strong
 peaks for angles near \(0,\pi\) at high energies so that the result is
 not altogether nonphysical. It is clearly symmetric around
