@@ -46,7 +46,7 @@
       charge -- charge of the particle in units of the elementary charge
       """
 
-      return charge**4*/(137.036*esp)**2/6
+      return charge**4/(137.036*esp)**2/6
 
 
   def diff_xs(θ, charge, esp):
@@ -124,13 +124,6 @@
 #+END_SRC
 
 #+RESULTS: 777a013b-6c20-44bd-b58b-6a7690c21c0e
-:RESULTS:
-# [goto error]
-:   File "<ipython-input-39-3fe28bd90183>", line 20
-:     return charge**4*/(137.036*esp)**2/6
-:                      ^
-: SyntaxError: invalid syntax
-:END:
 
 * Calculations
 ** XS qq -> gamma gamma
@@ -157,15 +150,30 @@ plot_interval = [0.1, np.pi-.1]
 
 *** Analytical Integratin
 And now calculate the cross section in picobarn.
-#+NAME: cf853fb6-d338-482e-bc55-bd9f8e796495
 #+BEGIN_SRC jupyter-python :exports both :results raw file :file xs.tex
   xs_gev = total_xs_eta(η, charge, esp)
   xs_pb = gev_to_pb(xs_gev)
   tex_value(xs_pb, unit=r'\pico\barn', prefix=r'\sigma = ', prec=6, save=('results', 'xs.tex'))
 #+END_SRC
 
-#+RESULTS: cf853fb6-d338-482e-bc55-bd9f8e796495
+#+RESULTS:
 : \(\sigma = \SI{0.053793}{\pico\barn}\)
+
+Lets plot the total xs as a function of η.
+#+begin_src jupyter-python :exports both :results raw drawer
+  fig, ax = set_up_plot()
+  η_s = np.linspace(0, 3, 1000)
+  ax.plot(η_s, gev_to_pb(total_xs_eta(η_s, charge, esp)))
+  ax.set_xlabel(r'$\eta$')
+  ax.set_ylabel(r'$\sigma$ [pb]')
+  ax.set_xlim([0, max(η_s)])
+  ax.set_ylim(0)
+  save_fig(fig, 'total_xs', 'xs', size=[2.5, 2])
+#+end_src
+
+#+RESULTS:
+[[file:./.ob-jupyter/b709b22e5727fe27a94a18f9d31d40567f035376.png]]
+
 
 Compared to sherpa, it's pretty close.
 #+NAME: 81b5ed93-0312-45dc-beec-e2ba92e22626
@@ -175,7 +183,7 @@ Compared to sherpa, it's pretty close.
 #+END_SRC
 
 #+RESULTS: 81b5ed93-0312-45dc-beec-e2ba92e22626
-: -6.710540074485183e-06
+: -6.7112594623469635e-06
 
 I had to set the runcard option ~EW_SCHEME: alpha0~ to use the pure
 QED coupling constant.
@@ -188,21 +196,15 @@ plot_points = np.linspace(*plot_interval, 1000)
 fig, ax = set_up_plot()
 ax.plot(plot_points, gev_to_pb(diff_xs(plot_points, charge=charge, esp=esp)))
 ax.set_xlabel(r'$\theta$')
-ax.set_ylabel(r'$\frac{d\sigma}{d\Omega}$ [pb]')
+ax.set_ylabel(r'$d\sigma/d\Omega$ [pb]')
 ax.axvline(interval[0], color='gray', linestyle='--')
 ax.axvline(interval[1], color='gray', linestyle='--', label=rf'$|\eta|={η}$')
 ax.legend()
-save_fig(fig, 'diff_xs', 'xs', size=[3, 3])
+save_fig(fig, 'diff_xs', 'xs', size=[2.5, 2])
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-: /usr/lib/python3.8/site-packages/tikzplotlib/_axes.py:211: MatplotlibDeprecationWarning: Passing the minor parameter of get_xticks() positionally is deprecated since Matplotlib 3.2; the parameter will become keyword-only two minor releases later.
-:   data, "minor x", obj.get_xticks("minor"), obj.get_xticklabels("minor")
-: /usr/lib/python3.8/site-packages/tikzplotlib/_axes.py:216: MatplotlibDeprecationWarning: Passing the minor parameter of get_yticks() positionally is deprecated since Matplotlib 3.2; the parameter will become keyword-only two minor releases later.
-:   data, "minor y", obj.get_yticks("minor"), obj.get_yticklabels("minor")
-[[file:./.ob-jupyter/84554de6897392b423848ccff74c3b1bdbbac799.png]]
-:END:
+[[file:./.ob-jupyter/aa1aab15903411e94de8fd1d6f9b8c1de0e95b67.png]]
 
 Define the integrand.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -236,7 +238,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-| 0.053599995094203025 | 0.0002656256326580591 |
+| 0.05422703137390394 | 0.000268605849942814 |
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -244,7 +246,7 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05360\pm 0.00027}{\pico\barn}\)
+: \(\sigma = \SI{0.05423\pm 0.00027}{\pico\barn}\)
 
 *** Sampling and Analysis
 Define the sample number.
@@ -271,7 +273,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.026054076452916193
+: 0.026903553299492386
 
 Our distribution has a lot of variance, as can be seen by plotting it.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -282,7 +284,7 @@ Our distribution has a lot of variance, as can be seen by plotting it.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f3dc1880fd0> |
+| <matplotlib.lines.Line2D | at | 0x7f8ddb3103a0> |
 [[file:./.ob-jupyter/04d0c9300d134c04b087aef7bb0a1b6036038b64.png]]
 :END:
 
@@ -321,7 +323,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.07947335025380711
+: 0.08002855329949239
 
 Nice! And now draw some histograms.
 
@@ -344,7 +346,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/d473cf9d22d8fe203293e6d17a92497aad3109d3.png]]
+[[file:./.ob-jupyter/dda2037170d010d5d85e5a1c1b20e3dc9534165a.png]]
 
 Now we define some utilities to draw real 4-impulse samples.
 #+begin_src jupyter-python :exports both :tangle tangled/xs.py
@@ -413,13 +415,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  16.36721437,   5.49983339,  98.49805138],
-:        [100.        ,  58.57273425,  71.41789832, -38.32386465],
-:        [100.        ,  73.44354101,  23.28263462, -63.74923693],
+: array([[100.        ,  59.26579305,  67.600286  ,  43.79231789],
+:        [100.        ,  96.78459631,  13.6042884 ,  21.1581014 ],
+:        [100.        ,  61.76467479,  45.77603074, -63.9506056 ],
 :        ...,
-:        [100.        ,  86.35169559,  12.11748171,  48.95458411],
-:        [100.        ,  58.83596982,   7.2563454 , -80.53368306],
-:        [100.        ,  55.49634462,  66.91946554, -49.41599807]])
+:        [100.        ,  14.640252  ,  18.74352686,  97.13054732],
+:        [100.        ,  19.3091743 ,  24.17309458, -95.09372895],
+:        [100.        ,  50.01570095,  19.25766337, -84.42494927]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -429,8 +431,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f3dc20caf10> |
-[[file:./.ob-jupyter/70b0373104835c034a1444836807c357c2f8aacb.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f8ddb309ee0> |
+[[file:./.ob-jupyter/0954cd955f841f22cb4f9d2e4cd9d0c861224d50.png]]
 :END:
 
 
@@ -442,6 +444,6 @@ And the same for the p_t (transverse impulse) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f3dc17120a0> |
-[[file:./.ob-jupyter/0329079132169b82385536d1b707f5fe884f70aa.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f8ddb768640> |
+[[file:./.ob-jupyter/49e305feee697b8c9b514853458ef3709b84fc94.png]]
 :END:
