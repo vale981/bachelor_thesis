@@ -21,12 +21,20 @@ two identical photons in the final state.
 
 \begin{figure}[ht]
   \centering
-  \plot{xs/diff_xs}
-  \caption[Plot of the differential cross section of the \(\qqgg\)
-  process.]{\label{fig:diffxs} The differential cross section of the
-    process \(\qqgg\) as a function of the azimuth angle
-    \(\theta\). The pseudo-rapdity cut \(\abs{\eta} \leq 2.5\) is
-    being visualized.}
+  \begin{subfigure}[c]{.45\textwidth}
+    \centering \plot{xs/diff_xs}
+    \caption[Plot of the differential cross section of the \(\qqgg\)
+    process.]{\label{fig:diffxs} The differential cross section as a
+      function of the azimuth angle \(\theta\). }
+  \end{subfigure}
+  \begin{subfigure}[c]{.45\textwidth}
+  \centering
+  \plot{xs/total_xs}
+  \caption[Plot of the total cross section of the \(\qqgg\)
+  process.]{\label{fig:totxs} The total cross section
+    (~\ref{eq:total-crossec}) of the process for a pseudo-rapidity
+    range of \([-\eta, \eta]\).}
+  \end{subfigure}
 \end{figure}
 
 The differential cross section~\eqref{eq:crossec} (see
@@ -44,7 +52,8 @@ sensible results.
 
 The total cross section in such an interval, given by
 integrating~\eqref{eq:crossec} for \(\theta\in [\theta_1, \theta_2]\)
-or \(\eta\in [\eta_1, \eta_2]\) is given in~\eqref{eq:total-crossec}.
+or \(\eta\in [\eta_1, \eta_2]\) is given
+in~\eqref{eq:total-crossec}.
 
 \begin{equation}
   \label{eq:total-crossec}
@@ -52,18 +61,21 @@ or \(\eta\in [\eta_1, \eta_2]\) is given in~\eqref{eq:total-crossec}.
   \sigma &=
   2\pi\mathfrak{C}\cdot\qty{\cos(\theta_2)-\cos(\theta_1)+2\qty[\artanh(\cos(\theta_1))
     - \artanh(\cos(\theta_2))]} \\
-  &=2\pi\mathfrak{C}\cdot\qty[\tanh(\eta_1) - \tanh(\eta_2) + 2(\eta_2
-  - \eta_1))] \\
-  &={\frac{\pi\alpha^2Q^4}{3\ecm^2}}\cdot\qty[\tanh(\eta_1) - \tanh(\eta_2) + 2(\eta_2
-  - \eta_1))]
+  &=2\pi\mathfrak{C}\cdot\qty[\tanh(\eta_2) - \tanh(\eta_1) + 2(\eta_1
+  - \eta_2))] \\
+  &={\frac{\pi\alpha^2Q^4}{3\ecm^2}}\cdot\qty[\tanh(\eta_2) - \tanh(\eta_1) + 2(\eta_1
+  - \eta_2))]
   \end{split}
 \end{equation}
 
-Choosing \(\eta\in [-2.5,2.5]\) and
-\(\ecm=\SI{100}{\giga\electronvolt}\) the process was monte carlo
-integrated in sherpa using the runcard in~\ref{sec:qqggruncard}. This
-runcard describes the exact same (first order) process as the
-calculated cross section.
+As can be seen in~\ref{fig:totxs}, the cross section, integrated over
+an interval of \([-\eta, \eta]\), is dominated by the linear
+contributions in~\ref{eq:total-crossec} and would result in an
+infinity if no cut on \(\eta\) would be made.  Choosing
+\(\eta\in [-2.5,2.5]\) and \(\ecm=\SI{100}{\giga\electronvolt}\) the
+process was monte carlo integrated in sherpa using the runcard
+in~\ref{sec:qqggruncard}. This runcard describes the exact same (first
+order) process as the calculated cross section.
 
 Sherpa yields \(\sigma = \SI{0.05380\pm
   .00005}{\pico\barn}\). Plugging the same parameters

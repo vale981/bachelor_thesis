@@ -21,7 +21,7 @@ def energy_factor(charge, esp):
     charge -- charge of the particle in units of the elementary charge
     """
 
-    return charge**4*/(137.036*esp)**2/6
+    return charge**4/(137.036*esp)**2/6
 
 
 def diff_xs(θ, charge, esp):
