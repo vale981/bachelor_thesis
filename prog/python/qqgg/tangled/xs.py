@@ -30,6 +30,8 @@ def diff_xs(θ, charge, esp):
     Calculates the differential cross section as a function of the
     azimuth angle θ in units of 1/GeV².
 
+    Here dΩ=sinθdθdφ
+
     Arguments:
     θ -- azimuth angle
     esp -- center of momentum energy in GeV
@@ -43,6 +45,8 @@ def diff_xs_cosθ(cosθ, charge, esp):
     """
     Calculates the differential cross section as a function of the
     cosine of the azimuth angle θ in units of 1/GeV².
+
+    Here dΩ=d(cosθ)dφ
 
     Arguments:
     cosθ -- cosine of the azimuth angle
@@ -58,6 +62,8 @@ def diff_xs_eta(η, charge, esp):
     Calculates the differential cross section as a function of the
     pseudo rapidity of the photons in units of 1/GeV^2.
 
+    This is actually the crossection dσ/(dφdη).
+
     Arguments:
     η -- pseudo rapidity
     esp -- center of momentum energy in GeV
@@ -65,21 +71,7 @@ def diff_xs_eta(η, charge, esp):
     """
 
     f = energy_factor(charge, esp)
-    return f*(2*np.cosh(η)**2 - 1)
-
-def diff_xs_pt(pt, charge, esp):
-    """
-    Calculates the differential cross section as a function of the
-    transversal impulse of the photons in units of 1/GeV^2.
-
-    Arguments:
-    η -- transversal impulse
-    esp -- center of momentum energy in GeV
-    charge -- charge of the particle in units of the elementary charge
-    """
-
-    f = energy_factor(charge, esp)
-    return f*((esp/pt)**2/2 - 1)
+    return f*(2*np.cosh(η)**2 - 1)*2*np.exp(-η)/np.cosh(η)**2
 
 def total_xs_eta(η, charge, esp):
     """

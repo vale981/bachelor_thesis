@@ -11,7 +11,6 @@
 
 #+RESULTS: e988e3f2-ad1f-49a3-ad60-bedba3863283
 
-
 ** Utilities
 #+NAME: 53548778-a4c1-461a-9b1f-0f401df12b08
 #+BEGIN_SRC jupyter-python :exports both
@@ -22,8 +21,6 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 * Implementation
 #+NAME: 777a013b-6c20-44bd-b58b-6a7690c21c0e
@@ -56,6 +53,8 @@
       Calculates the differential cross section as a function of the
       azimuth angle θ in units of 1/GeV².
 
+      Here dΩ=sinθdθdφ
+
       Arguments:
       θ -- azimuth angle
       esp -- center of momentum energy in GeV
@@ -69,6 +68,8 @@
       """
       Calculates the differential cross section as a function of the
       cosine of the azimuth angle θ in units of 1/GeV².
+
+      Here dΩ=d(cosθ)dφ
 
       Arguments:
       cosθ -- cosine of the azimuth angle
@@ -84,6 +85,8 @@
       Calculates the differential cross section as a function of the
       pseudo rapidity of the photons in units of 1/GeV^2.
 
+      This is actually the crossection dσ/(dφdη).
+
       Arguments:
       η -- pseudo rapidity
       esp -- center of momentum energy in GeV
@@ -91,21 +94,7 @@
       """
 
       f = energy_factor(charge, esp)
-      return f*(2*np.cosh(η)**2 - 1)
-
-  def diff_xs_pt(pt, charge, esp):
-      """
-      Calculates the differential cross section as a function of the
-      transversal impulse of the photons in units of 1/GeV^2.
-
-      Arguments:
-      η -- transversal impulse
-      esp -- center of momentum energy in GeV
-      charge -- charge of the particle in units of the elementary charge
-      """
-
-      f = energy_factor(charge, esp)
-      return f*((esp/pt)**2/2 - 1)
+      return f*(2*np.cosh(η)**2 - 1)*2*np.exp(-η)/np.cosh(η)**2
 
   def total_xs_eta(η, charge, esp):
       """
@@ -233,7 +222,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-| 0.05367831915813582 | 4.264036796520297e-05 |
+| 0.0533729011785669 | 4.2045868368605987e-05 |
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -241,7 +230,7 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', prec=5, save=('resu
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05368}{\pico\barn}\)
+: \(\sigma = \SI{0.05337}{\pico\barn}\)
 
 *** Sampling and Analysis
 Define the sample number.
@@ -268,7 +257,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.027318377817804704
+: 0.026054076452916193
 
 Our distribution has a lot of variance, as can be seen by plotting it.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -279,7 +268,7 @@ Our distribution has a lot of variance, as can be seen by plotting it.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fb6b431e790> |
+| <matplotlib.lines.Line2D | at | 0x7f3dc1880fd0> |
 [[file:./.ob-jupyter/04d0c9300d134c04b087aef7bb0a1b6036038b64.png]]
 :END:
 
@@ -318,7 +307,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.07584353538369662
+: 0.07947335025380711
 
 Nice! And now draw some histograms.
 
@@ -341,7 +330,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/6c0c8783b68b394bd8539ce621e285b54f9a0d0c.png]]
+[[file:./.ob-jupyter/d473cf9d22d8fe203293e6d17a92497aad3109d3.png]]
 
 Now we define some utilities to draw real 4-impulse samples.
 #+begin_src jupyter-python :exports both :tangle tangled/xs.py
@@ -410,13 +399,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  28.29533668,   1.8580239 , -95.89536834],
-:        [100.        ,  15.63107713,   8.96259547,  98.36331283],
-:        [100.        ,  37.20714833,  36.40572302, -85.38296929],
+: array([[100.        ,  16.36721437,   5.49983339,  98.49805138],
+:        [100.        ,  58.57273425,  71.41789832, -38.32386465],
+:        [100.        ,  73.44354101,  23.28263462, -63.74923693],
 :        ...,
-:        [100.        ,  23.83872893,  21.09208613,  94.79893937],
-:        [100.        ,  53.08852778,  37.82714439,  75.83347127],
-:        [100.        ,  78.42901358,  58.54310277,  20.5327774 ]])
+:        [100.        ,  86.35169559,  12.11748171,  48.95458411],
+:        [100.        ,  58.83596982,   7.2563454 , -80.53368306],
+:        [100.        ,  55.49634462,  66.91946554, -49.41599807]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -426,8 +415,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb6b410ca00> |
-[[file:./.ob-jupyter/e93174871d533af3abc0a74dc6e4641aefc138ad.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f3dc20caf10> |
+[[file:./.ob-jupyter/70b0373104835c034a1444836807c357c2f8aacb.png]]
 :END:
 
 
@@ -439,6 +428,6 @@ And the same for the p_t (transverse impulse) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb6b3dd31f0> |
-[[file:./.ob-jupyter/c8662c3b2dffce44824f5bc356f1fd7bfa594621.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f3dc17120a0> |
+[[file:./.ob-jupyter/0329079132169b82385536d1b707f5fe884f70aa.png]]
 :END:
