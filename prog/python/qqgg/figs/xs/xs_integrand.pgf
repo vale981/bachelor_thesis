@@ -3714,15 +3714,15 @@
 \pgfsetstrokecolor{currentstroke}%
 \pgfsetstrokeopacity{0.800000}%
 \pgfsetdash{}{0pt}%
-\pgfpathmoveto{\pgfqpoint{1.018278in}{3.481944in}}%
-\pgfpathlineto{\pgfqpoint{3.704167in}{3.481944in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{3.731944in}{3.481944in}}{\pgfqpoint{3.731944in}{3.509722in}}%
-\pgfpathlineto{\pgfqpoint{3.731944in}{3.704167in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{3.731944in}{3.731944in}}{\pgfqpoint{3.704167in}{3.731944in}}%
-\pgfpathlineto{\pgfqpoint{1.018278in}{3.731944in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{0.990500in}{3.731944in}}{\pgfqpoint{0.990500in}{3.704167in}}%
-\pgfpathlineto{\pgfqpoint{0.990500in}{3.509722in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{0.990500in}{3.481944in}}{\pgfqpoint{1.018278in}{3.481944in}}%
+\pgfpathmoveto{\pgfqpoint{1.854752in}{3.481944in}}%
+\pgfpathlineto{\pgfqpoint{2.812956in}{3.481944in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{2.840734in}{3.481944in}}{\pgfqpoint{2.840734in}{3.509722in}}%
+\pgfpathlineto{\pgfqpoint{2.840734in}{3.704167in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{2.840734in}{3.731944in}}{\pgfqpoint{2.812956in}{3.731944in}}%
+\pgfpathlineto{\pgfqpoint{1.854752in}{3.731944in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{1.826974in}{3.731944in}}{\pgfqpoint{1.826974in}{3.704167in}}%
+\pgfpathlineto{\pgfqpoint{1.826974in}{3.509722in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{1.826974in}{3.481944in}}{\pgfqpoint{1.854752in}{3.481944in}}%
 \pgfpathclose%
 \pgfusepath{stroke,fill}%
 \end{pgfscope}%
@@ -3733,15 +3733,15 @@
 \definecolor{currentstroke}{rgb}{0.501961,0.501961,0.501961}%
 \pgfsetstrokecolor{currentstroke}%
 \pgfsetdash{{5.550000pt}{2.400000pt}}{0.000000pt}%
-\pgfpathmoveto{\pgfqpoint{1.046056in}{3.620833in}}%
-\pgfpathlineto{\pgfqpoint{1.323833in}{3.620833in}}%
+\pgfpathmoveto{\pgfqpoint{1.882530in}{3.620833in}}%
+\pgfpathlineto{\pgfqpoint{2.160308in}{3.620833in}}%
 \pgfusepath{stroke}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=1.434944in,y=3.572222in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle |\eta|=<function η at 0x7f9ddc45bb80>\)}%
+\pgftext[x=2.271419in,y=3.572222in,left,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle |\eta|=2.5\)}%
 \end{pgfscope}%
 \end{pgfpicture}%
 \makeatother%

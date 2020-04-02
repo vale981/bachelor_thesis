@@ -230,7 +230,7 @@ save_fig(fig, 'xs_integrand', 'xs', size=[4, 4])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/377a2432093426a961983767c2f23e1cd8b105a5.png]]
+[[file:./.ob-jupyter/a84ac9746f0f4b0c2f1038dc249e557fc1fe48f5.png]]
 
 Intergrate σ with the mc method.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -240,7 +240,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-| 0.05422172738734162 | 0.0004981981873510893 |
+| 0.05466536540609581 | 0.000514451152380251 |
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -248,7 +248,7 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05389\pm 0.00005}{\pico\barn}\)
+: \(\sigma = \SI{0.0547\pm 0.0005}{\pico\barn}\)
 
 
 Plot the intgrand of the pseudo rap.
@@ -273,7 +273,7 @@ because the differential cross section does not difverge anymore.
 #+end_src
 
 #+RESULTS:
-| 0.053758763260352345 | 7.109470263473152e-05 |
+| 0.053595716158528074 | 7.086198485158159e-05 |
 
 And yet again export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -281,7 +281,7 @@ tex_value(*xs_pb_η, unit=r'\pico\barn', prefix=r'\sigma = ', save=('results', '
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05359\pm 0.00007}{\pico\barn}\)
+: \(\sigma = \SI{0.05360\pm 0.00007}{\pico\barn}\)
 
 *** Sampling and Analysis
 Define the sample number.
@@ -308,7 +308,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.027946369454866477
+: 0.027454833251460073
 
 Our distribution has a lot of variance, as can be seen by plotting it.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -319,7 +319,7 @@ Our distribution has a lot of variance, as can be seen by plotting it.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f9c91fef190> |
+| <matplotlib.lines.Line2D | at | 0x7f9c8f843670> |
 [[file:./.ob-jupyter/04d0c9300d134c04b087aef7bb0a1b6036038b64.png]]
 :END:
 
@@ -358,7 +358,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.07860329180126134
+: 0.07721888940163052
 
 Nice! And now draw some histograms.
 
@@ -381,7 +381,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/b51052005c8adf520b2a3d8133b0192b378ab349.png]]
+[[file:./.ob-jupyter/63036da0543e6050afb0f67c61a5de0ffd57f95a.png]]
 
 Now we define some utilities to draw real 4-impulse samples.
 #+begin_src jupyter-python :exports both :tangle tangled/xs.py
@@ -450,13 +450,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  78.6513978 ,  25.03974819, -56.4532429 ],
-:        [100.        ,  80.50316938,   1.23982425,  59.31022303],
-:        [100.        ,  37.34488027,  25.09007454,  89.30760369],
+: array([[100.        ,  44.03336072,  10.25225489, -89.19615694],
+:        [100.        ,  20.73318397,  14.0308709 , -96.81564824],
+:        [100.        ,  73.6411763 ,  57.35692182, -35.8770215 ],
 :        ...,
-:        [100.        ,  27.28611517,  11.11891923,  95.56064856],
-:        [100.        ,  49.67818369,  55.52508519,  66.70114676],
-:        [100.        ,  32.95364669,   8.54598622,  94.02671583]])
+:        [100.        ,  16.07641432,   8.86145745,  98.30067891],
+:        [100.        ,  64.69088817,   7.6059656 , -75.8764672 ],
+:        [100.        ,  11.3984156 ,  16.00364368, -98.05080066]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -466,8 +466,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9c92128520> |
-[[file:./.ob-jupyter/9c85532fa94e9e0b01a6201f9308c5002176d073.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9c8eb14130> |
+[[file:./.ob-jupyter/f2525956634b298ac068b35855a5bc28ac0bc772.png]]
 :END:
 
 
@@ -479,6 +479,6 @@ And the same for the p_t (transverse impulse) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9c9210d5e0> |
-[[file:./.ob-jupyter/814509eb1779574dce1de9a9fe093e067f30ff33.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9c8ebae970> |
+[[file:./.ob-jupyter/84ed41f10a61f4d3c79c974921031dca67e42403.png]]
 :END:
