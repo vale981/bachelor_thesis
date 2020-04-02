@@ -30,6 +30,8 @@
  - [[file:literature/feynman/Thomson.pdf::100][Spinors]]
  - [[file:literature/feynman/Thomson.pdf::107][Spinors, Helicity Eigenstates]]
  - [[file:literature/feynman/Thomson.pdf::533][Completeness Pol. Vectors]]
+** Rivet
+ - [[https://gitlab.com/hepcedar/rivet/tree/master/doc/tutorials][getting started]]
 * Aufgaben
 ** Erste Aufgabenp
    :LOGBOOK:
@@ -83,6 +85,16 @@ Viele Gruesse, Frank
  - implementation as [[file:prog/python/qqgg/monte_carlo.py][module]]
  - [[file:prog/python/qqgg/analytical_xs.org::*Numerical Integration][Integration]]
  - [[file:prog/python/qqgg/analytical_xs.org::*Sampling and Analysis][Sampling and Analysis]]
+*** TODO Check Statistics
+ - 100 mal.... 67, check with random seed
+ - error bars in histtype
+*** TODO Variablen Trafo geschickt waehlen.
+ - stratified sampling, vegas?
+*** TODO Sherpa + Rivet
+ - analyse + histogramme
+ - manual
+** Parton Density functions
+ - [[https://lhapdf.hepforge.org/][pdf library]]
 * Clock Table
 #+BEGIN: clocktable :scope file :maxlevel 2
 #+CAPTION: Clock summary at [2020-03-18 Wed 21:01]

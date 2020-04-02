@@ -56,6 +56,7 @@ def diff_xs_cosθ(cosθ, charge, esp):
     f = energy_factor(charge, esp)
     return f*((cosθ**2+1)/(1-cosθ**2))
 
+
 def diff_xs_eta(η, charge, esp):
     """
     Calculates the differential cross section as a function of the
@@ -71,6 +72,25 @@ def diff_xs_eta(η, charge, esp):
 
     f = energy_factor(charge, esp)
     return f*(np.tanh(η)**2 + 1)
+
+
+def diff_xs_p_t(p_t, charge, esp):
+    """
+    Calculates the differential cross section as a function of the
+    transverse momentum (p_t) of the photons in units of 1/GeV^2.
+
+    This is actually the crossection dσ/(dφdp_t).
+
+    Arguments:
+    p_t -- transverse momentum in GeV
+    esp -- center of momentum energy in GeV
+    charge -- charge of the particle in units of the elementary charge
+    """
+
+    f = energy_factor(charge, esp)
+    sqrt_fact = np.sqrt(1-(2*p_t/esp)**2)
+    return f/p_t*(1/sqrt_fact + sqrt_fact)
+
 
 def total_xs_eta(η, charge, esp):
     """
@@ -97,8 +117,8 @@ def total_xs_eta(η, charge, esp):
 
     return 2*np.pi*f*(F(η[0]) - F(η[1]))
 
-def sample_impulses(sample_num, interval, charge, esp, seed=None):
-    """Samples `sample_num` unweighted photon 4-impulses from the cross-section.
+def sample_momentums(sample_num, interval, charge, esp, seed=None):
+    """Samples `sample_num` unweighted photon 4-momentums from the cross-section.
 
     :param sample_num: number of samples to take
     :param interval: cosθ interval to sample from
@@ -107,7 +127,7 @@ def sample_impulses(sample_num, interval, charge, esp, seed=None):
     :param seed: the seed for the rng, optional, default is system
         time
 
-    :returns: an array of 4 photon impulses
+    :returns: an array of 4 photon momentums
     :rtype: np.ndarray
     """
     cosθ_sample = \
@@ -117,10 +137,10 @@ def sample_impulses(sample_num, interval, charge, esp, seed=None):
                                            interval_cosθ)
     φ_sample = np.random.uniform(0, 1, sample_num)
 
-    def make_impulse(esp, cosθ, φ):
+    def make_momentum(esp, cosθ, φ):
         sinθ = np.sqrt(1-cosθ**2)
         return np.array([1, sinθ*np.cos(φ), sinθ*np.sin(φ), cosθ])*esp/2
 
-    impulses = np.array([make_impulse(esp, cosθ, φ) \
+    momentums = np.array([make_momentum(esp, cosθ, φ) \
                          for cosθ, φ in np.array([cosθ_sample, φ_sample]).T])
-    return impulses
+    return momentums

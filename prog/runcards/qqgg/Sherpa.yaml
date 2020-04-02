@@ -1,5 +1,5 @@
 # general options
-OUTPUT: 2
+OUTPUT: 3
 
 # no events
 EVENTS: 0
@@ -38,3 +38,6 @@ MPI: None
 # cut to $\abs{\eta} \leq 2.5$
 SELECTORS:
 - [Eta, 22, -2.5, 2.5]
+
+# no transverse impulses
+BEAM_REMNANTS: false
