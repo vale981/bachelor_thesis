@@ -21,6 +21,8 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 * Implementation
 #+NAME: 777a013b-6c20-44bd-b58b-6a7690c21c0e
@@ -93,7 +95,7 @@
       """
 
       f = energy_factor(charge, esp)
-      return f*(2*np.cosh(η)**2 - 1)*2*np.exp(-η)/np.cosh(η)**2
+      return f*(np.tanh(η)**2 + 1)
 
   def total_xs_eta(η, charge, esp):
       """
@@ -227,16 +229,15 @@ save_fig(fig, 'xs_integrand', 'xs', size=[4, 4])
 #+RESULTS:
 [[file:./.ob-jupyter/9e547bdeaa79bb956057b552090b4ab6305a20e6.png]]
 
-
 Intergrate σ with the mc method.
 #+begin_src jupyter-python :exports both :results raw drawer
-  xs_pb_mc, xs_pb_mc_err = monte_carlo.integrate(xs_pb_int, interval, 100000)
+  xs_pb_mc, xs_pb_mc_err = monte_carlo.integrate(xs_pb_int, interval, 1000)
   xs_pb_mc = xs_pb_mc
   xs_pb_mc, xs_pb_mc_err
 #+end_src
 
 #+RESULTS:
-| 0.05388966591629671 | 5.033605571755944e-05 |
+| 0.05422172738734162 | 0.0004981981873510893 |
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -245,6 +246,26 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 
 #+RESULTS:
 : \(\sigma = \SI{0.05389\pm 0.00005}{\pico\barn}\)
+
+
+As we see, the result is much better if we use pseudo rapidity,
+because the differential cross section does not difverge anymore.
+#+begin_src jupyter-python :exports both :results raw drawer
+  xs_pb_η = monte_carlo.integrate(lambda x: 2*np.pi*gev_to_pb(diff_xs_eta(x, charge, esp)),
+                        interval_η, 1000)
+  xs_pb_η
+#+end_src
+
+#+RESULTS:
+| 0.05359070224781967 | 7.127342563203912e-05 |
+
+And yet again export that as tex.
+#+begin_src jupyter-python :exports both :results raw drawer
+tex_value(*xs_pb_η, unit=r'\pico\barn', prefix=r'\sigma = ', save=('results', 'xs_mc_eta.tex'))
+#+end_src
+
+#+RESULTS:
+: \(\sigma = \SI{0.05359\pm 0.00007}{\pico\barn}\)
 
 *** Sampling and Analysis
 Define the sample number.

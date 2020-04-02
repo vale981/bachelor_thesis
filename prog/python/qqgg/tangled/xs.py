@@ -70,7 +70,7 @@ def diff_xs_eta(η, charge, esp):
     """
 
     f = energy_factor(charge, esp)
-    return f*(2*np.cosh(η)**2 - 1)*2*np.exp(-η)/np.cosh(η)**2
+    return f*(np.tanh(η)**2 + 1)
 
 def total_xs_eta(η, charge, esp):
     """
