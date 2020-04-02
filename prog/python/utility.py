@@ -25,7 +25,7 @@ def η_to_θ(η):
 def η_to_pt(η, p):
     return p/np.cosh(η)
 
-def tex_value(val, unit='', prefix='', prec=10, err=None, save=None):
+def tex_value(val, err=None, unit='', prefix='', prec=10, save=None):
     """Generates LaTeX output of a value with units and error."""
 
     if err:
