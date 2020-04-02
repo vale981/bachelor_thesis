@@ -81,6 +81,7 @@
       f = energy_factor(charge, esp)
       return f*((cosθ**2+1)/(1-cosθ**2))
 
+
   def diff_xs_eta(η, charge, esp):
       """
       Calculates the differential cross section as a function of the
@@ -96,6 +97,25 @@
 
       f = energy_factor(charge, esp)
       return f*(np.tanh(η)**2 + 1)
+
+
+  def diff_xs_p_t(p_t, charge, esp):
+      """
+      Calculates the differential cross section as a function of the
+      transverse momentum (p_t) of the photons in units of 1/GeV^2.
+
+      This is actually the crossection dσ/(dφdp_t).
+
+      Arguments:
+      p_t -- transverse momentum in GeV
+      esp -- center of momentum energy in GeV
+      charge -- charge of the particle in units of the elementary charge
+      """
+
+      f = energy_factor(charge, esp)
+      sqrt_fact = np.sqrt(1-(2*p_t/esp)**2)
+      return f/p_t*(1/sqrt_fact + sqrt_fact)
+
 
   def total_xs_eta(η, charge, esp):
       """
@@ -142,13 +162,13 @@ Set up the integration and plot intervals.
 interval_η = [-η, η]
 interval = η_to_θ([-η, η])
 interval_cosθ = np.cos(interval)
-interval_pt = η_to_pt([0, η], esp/2)
+interval_pt = np.sort(η_to_pt([0, η], esp/2))
 plot_interval = [0.1, np.pi-.1]
 #+end_src
 
 #+RESULTS:
 
-*** Analytical Integratin
+*** Analytical Integration
 And now calculate the cross section in picobarn.
 #+BEGIN_SRC jupyter-python :exports both :results raw file :file xs.tex
   xs_gev = total_xs_eta(η, charge, esp)
@@ -240,7 +260,6 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-| 0.05466536540609581 | 0.000514451152380251 |
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -248,7 +267,7 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.0547\pm 0.0005}{\pico\barn}\)
+: \(\sigma = \SI{0.0532\pm 0.0005}{\pico\barn}\)
 
 
 Plot the intgrand of the pseudo rap.
@@ -268,12 +287,11 @@ As we see, the result is much better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.
 #+begin_src jupyter-python :exports both :results raw drawer
   xs_pb_η = monte_carlo.integrate(xs_pb_int_η,
-                        interval_η, 1000)
+                                  interval_η, 1000)
   xs_pb_η
 #+end_src
 
 #+RESULTS:
-| 0.053595716158528074 | 7.086198485158159e-05 |
 
 And yet again export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -281,7 +299,7 @@ tex_value(*xs_pb_η, unit=r'\pico\barn', prefix=r'\sigma = ', save=('results', '
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05360\pm 0.00007}{\pico\barn}\)
+: \(\sigma = \SI{0.05382\pm 0.00007}{\pico\barn}\)
 
 *** Sampling and Analysis
 Define the sample number.
@@ -290,44 +308,46 @@ Define the sample number.
 #+end_src
 
 #+RESULTS:
-
-Let's define a shortcut for our distribution.
+Let's define shortcuts for our distributions. The 2π are just there
+for formal correctnes. Factors do not influecence the outcome.
 #+begin_src jupyter-python :exports both :results raw drawer
-  def dist(x):
+  def dist_θ(x):
       return gev_to_pb(diff_xs_cosθ(x, charge, esp))*2*np.pi
+
+  def dist_η(x):
+      return gev_to_pb(diff_xs_eta(x, charge, esp))*2*np.pi
 #+end_src
 
 #+RESULTS:
 
+**** Sampling the cosθ cross section
+
 Now we monte-carlo sample our distribution. We observe that the efficiency his very bad!
 #+begin_src jupyter-python :exports both :results raw drawer
   cosθ_sample, cosθ_efficiency = \
-      monte_carlo.sample_unweighted_array(sample_num, dist,
+      monte_carlo.sample_unweighted_array(sample_num, dist_θ,
                                           interval_cosθ, report_efficiency=True)
   cosθ_efficiency
 #+end_src
 
 #+RESULTS:
-: 0.027454833251460073
+: 0.026596869712351947
 
 Our distribution has a lot of variance, as can be seen by plotting it.
 #+begin_src jupyter-python :exports both :results raw drawer
     pts = np.linspace(*interval_cosθ, 100)
     fig, ax = set_up_plot()
-    ax.plot(pts, dist(pts), label=r'$\frac{d\sigma}{d\Omega}$')
+    ax.plot(pts, dist_θ(pts), label=r'$\frac{d\sigma}{d\Omega}$')
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f9c8f843670> |
 [[file:./.ob-jupyter/04d0c9300d134c04b087aef7bb0a1b6036038b64.png]]
-:END:
 
 We define a friendly and easy to integrate upper limit function.
 #+begin_src jupyter-python :exports both :results raw drawer
-  upper_limit = dist(interval_cosθ[0]) \
+  upper_limit = dist_θ(interval_cosθ[0]) \
       /interval_cosθ[0]**2
-  upper_base = dist(0)
+  upper_base = dist_θ(0)
 
   def upper(x):
       return  upper_base + upper_limit*x**2
@@ -351,14 +371,14 @@ To increase our efficiency, we have to specify an upper bound. That is
 at least a little bit better. The numeric inversion is horribly inefficent.
 #+begin_src jupyter-python :exports both :results raw drawer
   cosθ_sample, cosθ_efficiency = \
-      monte_carlo.sample_unweighted_array(sample_num, dist,
+      monte_carlo.sample_unweighted_array(sample_num, dist_θ,
                                           interval_cosθ, report_efficiency=True,
                                           upper_bound=[upper, upper_int])
   cosθ_efficiency
 #+end_src
 
 #+RESULTS:
-: 0.07721888940163052
+: 0.07837255806798954
 
 Nice! And now draw some histograms.
 
@@ -380,13 +400,14 @@ fig, _ = draw_histo(cosθ_sample, r'$\cos\theta$')
 save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
+**** Observables
 #+RESULTS:
-[[file:./.ob-jupyter/63036da0543e6050afb0f67c61a5de0ffd57f95a.png]]
+[[file:./.ob-jupyter/54b0cf3238ee619ba0b2ed0f7625a0987cea35d9.png]]
 
-Now we define some utilities to draw real 4-impulse samples.
+Now we define some utilities to draw real 4-momentum samples.
 #+begin_src jupyter-python :exports both :tangle tangled/xs.py
-  def sample_impulses(sample_num, interval, charge, esp, seed=None):
-      """Samples `sample_num` unweighted photon 4-impulses from the cross-section.
+  def sample_momentums(sample_num, interval, charge, esp, seed=None):
+      """Samples `sample_num` unweighted photon 4-momentums from the cross-section.
 
       :param sample_num: number of samples to take
       :param interval: cosθ interval to sample from
@@ -395,7 +416,7 @@ Now we define some utilities to draw real 4-impulse samples.
       :param seed: the seed for the rng, optional, default is system
           time
 
-      :returns: an array of 4 photon impulses
+      :returns: an array of 4 photon momentums
       :rtype: np.ndarray
       """
       cosθ_sample = \
@@ -405,13 +426,13 @@ Now we define some utilities to draw real 4-impulse samples.
                                              interval_cosθ)
       φ_sample = np.random.uniform(0, 1, sample_num)
 
-      def make_impulse(esp, cosθ, φ):
+      def make_momentum(esp, cosθ, φ):
           sinθ = np.sqrt(1-cosθ**2)
           return np.array([1, sinθ*np.cos(φ), sinθ*np.sin(φ), cosθ])*esp/2
 
-      impulses = np.array([make_impulse(esp, cosθ, φ) \
+      momentums = np.array([make_momentum(esp, cosθ, φ) \
                            for cosθ, φ in np.array([cosθ_sample, φ_sample]).T])
-      return impulses
+      return momentums
 #+end_src
 
 #+RESULTS:
@@ -424,9 +445,9 @@ analogous to transforming the distribution itself.
   import numpy as np
 
   def p_t(p):
-      """Transverse impulse
+      """Transverse momentum
 
-      :param p: array of 4-impulses
+      :param p: array of 4-momentums
       """
 
       return np.linalg.norm(p[:,1:3], axis=1)
@@ -434,7 +455,7 @@ analogous to transforming the distribution itself.
   def η(p):
       """Pseudo rapidity.
 
-      :param p: array of 4-impulses
+      :param p: array of 4-momentums
       """
 
       return np.arccosh(np.linalg.norm(p[:,1:], axis=1)/p_t(p))*np.sign(p[:, 3])
@@ -445,40 +466,72 @@ analogous to transforming the distribution itself.
 
 Lets try it out.
 #+begin_src jupyter-python :exports both :results raw drawer
-  impulse_sample = sample_impulses(2000, interval_cosθ, charge, esp)
-  impulse_sample
+  momentum_sample = sample_momentums(2000, interval_cosθ, charge, esp)
+  momentum_sample
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  44.03336072,  10.25225489, -89.19615694],
-:        [100.        ,  20.73318397,  14.0308709 , -96.81564824],
-:        [100.        ,  73.6411763 ,  57.35692182, -35.8770215 ],
+: array([[100.        ,  59.47431703,  63.11831301,  49.78839399],
+:        [100.        ,  30.38398854,  46.67592902,  83.05522795],
+:        [100.        ,  29.38492237,  14.35182776, -94.50159457],
 :        ...,
-:        [100.        ,  16.07641432,   8.86145745,  98.30067891],
-:        [100.        ,  64.69088817,   7.6059656 , -75.8764672 ],
-:        [100.        ,  11.3984156 ,  16.00364368, -98.05080066]])
+:        [100.        ,  13.08650357,  10.16978188,  98.6170318 ],
+:        [100.        ,  99.06859219,   3.25082692, -13.22294089],
+:        [100.        ,  21.64119346,   6.93302257, -97.38373552]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
-  η_sample = η(impulse_sample)
+  η_sample = η(momentum_sample)
   draw_histo(η_sample, r'$\eta$')
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9c8eb14130> |
-[[file:./.ob-jupyter/f2525956634b298ac068b35855a5bc28ac0bc772.png]]
-:END:
+[[file:./.ob-jupyter/3fee13d0b17e1928768cd767dc32bf31d852c90c.png]]
 
 
-And the same for the p_t (transverse impulse) distribution.
+And the same for the p_t (transverse momentum) distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
-  p_t_sample = p_t(impulse_sample)
-  draw_histo(p_t_sample, r'$p_T$ [GeV]')
+  p_t_sample = p_t(momentum_sample)
+  draw_histo(p_t_sample, r'$p_T$ [GeV]', bins=100)
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9c8ebae970> |
-[[file:./.ob-jupyter/84ed41f10a61f4d3c79c974921031dca67e42403.png]]
-:END:
+[[file:./.ob-jupyter/362353770803b813aa60ae207ddd9ce760c5385b.png]]
+
+That looks somewhat fishy, but it isn't.
+#+begin_src jupyter-python :exports both :results raw drawer
+  fig, ax = set_up_plot()
+  points = np.linspace(interval_pt[0], interval_pt[1] - .01, 1000)
+  ax.plot(points, gev_to_pb(diff_xs_p_t(points, charge, esp)))
+  ax.set_xlabel(r'$p_T$')
+  ax.set_xlim(interval_pt[0], interval_pt[1] + 1)
+  ax.set_ylim([0, gev_to_pb(diff_xs_p_t(interval_pt[1] -.01, charge, esp))])
+  ax.set_ylabel(r'$\frac{d\sigma}{dp_t}$ [pb]')
+  save_fig(fig, 'diff_xs_p_t', 'xs_sampling', size=[4, 3])
+#+end_src
+
+#+RESULTS:
+[[file:./.ob-jupyter/739fdde6357d58890ef7847d0afc3277cffa9062.png]]
+this is strongly peaked at p_t=100GeV. (The jacobian goes like 1/x there!)
+
+
+**** Sampling the η cross section
+An again we see that the efficiency is way better...
+#+begin_src jupyter-python :exports both :results raw drawer
+  η_sample, η_efficiency = \
+      monte_carlo.sample_unweighted_array(sample_num, dist_η,
+                                          interval_η, report_efficiency=True)
+  η_efficiency
+#+end_src
+
+#+RESULTS:
+: 0.407
+
+Let's draw a histogram to compare with the previous results.
+#+begin_src jupyter-python :exports both :results raw drawer
+  draw_histo(η_sample, r'$\eta$')
+#+end_src
+
+#+RESULTS:
+[[file:./.ob-jupyter/0fc0ae202c61afd28adec28b672474ffafd4c2c0.png]]
+Looks good to me :).
