@@ -117,8 +117,8 @@ def total_xs_eta(η, charge, esp):
 
     return 2*np.pi*f*(F(η[0]) - F(η[1]))
 
-def sample_momentums(sample_num, interval, charge, esp, seed=None):
-    """Samples `sample_num` unweighted photon 4-momentums from the
+def sample_momenta(sample_num, interval, charge, esp, seed=None):
+    """Samples `sample_num` unweighted photon 4-momenta from the
     cross-section.
 
     :param sample_num: number of samples to take
@@ -128,7 +128,7 @@ def sample_momentums(sample_num, interval, charge, esp, seed=None):
     :param seed: the seed for the rng, optional, default is system
         time
 
-    :returns: an array of 4 photon momentums
+    :returns: an array of 4 photon momenta
 
     :rtype: np.ndarray
     """
@@ -143,6 +143,6 @@ def sample_momentums(sample_num, interval, charge, esp, seed=None):
         sinθ = np.sqrt(1-cosθ**2)
         return np.array([1, sinθ*np.cos(φ), sinθ*np.sin(φ), cosθ])*esp/2
 
-    momentums = np.array([make_momentum(esp, cosθ, φ) \
+    momenta = np.array([make_momentum(esp, cosθ, φ) \
                          for cosθ, φ in np.array([cosθ_sample, φ_sample]).T])
-    return momentums
+    return momenta

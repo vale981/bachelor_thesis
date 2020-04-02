@@ -412,8 +412,8 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 **** Observables
 Now we define some utilities to draw real 4-momentum samples.
 #+begin_src jupyter-python :exports both :tangle tangled/xs.py
-  def sample_momentums(sample_num, interval, charge, esp, seed=None):
-      """Samples `sample_num` unweighted photon 4-momentums from the
+  def sample_momenta(sample_num, interval, charge, esp, seed=None):
+      """Samples `sample_num` unweighted photon 4-momenta from the
       cross-section.
 
       :param sample_num: number of samples to take
@@ -423,7 +423,7 @@ Now we define some utilities to draw real 4-momentum samples.
       :param seed: the seed for the rng, optional, default is system
           time
 
-      :returns: an array of 4 photon momentums
+      :returns: an array of 4 photon momenta
 
       :rtype: np.ndarray
       """
@@ -438,9 +438,9 @@ Now we define some utilities to draw real 4-momentum samples.
           sinθ = np.sqrt(1-cosθ**2)
           return np.array([1, sinθ*np.cos(φ), sinθ*np.sin(φ), cosθ])*esp/2
 
-      momentums = np.array([make_momentum(esp, cosθ, φ) \
+      momenta = np.array([make_momentum(esp, cosθ, φ) \
                            for cosθ, φ in np.array([cosθ_sample, φ_sample]).T])
-      return momentums
+      return momenta
 #+end_src
 
 #+RESULTS:
@@ -455,7 +455,7 @@ analogous to transforming the distribution itself.
   def p_t(p):
       """Transverse momentum
 
-      :param p: array of 4-momentums
+      :param p: array of 4-momenta
       """
 
       return np.linalg.norm(p[:,1:3], axis=1)
@@ -463,7 +463,7 @@ analogous to transforming the distribution itself.
   def η(p):
       """Pseudo rapidity.
 
-      :param p: array of 4-momentums
+      :param p: array of 4-momenta
       """
 
       return np.arccosh(np.linalg.norm(p[:,1:], axis=1)/p_t(p))*np.sign(p[:, 3])
@@ -474,7 +474,7 @@ analogous to transforming the distribution itself.
 
 Lets try it out.
 #+begin_src jupyter-python :exports both :results raw drawer
-  momentum_sample = sample_momentums(2000, interval_cosθ, charge, esp)
+  momentum_sample = sample_momenta(2000, interval_cosθ, charge, esp)
   momentum_sample
 #+end_src
 
