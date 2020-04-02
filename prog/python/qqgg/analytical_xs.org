@@ -267,7 +267,7 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.0532\pm 0.0005}{\pico\barn}\)
+: \(\sigma = \SI{0.0541\pm 0.0005}{\pico\barn}\)
 
 
 Plot the intgrand of the pseudo rap.
@@ -299,7 +299,7 @@ tex_value(*xs_pb_η, unit=r'\pico\barn', prefix=r'\sigma = ', save=('results', '
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05382\pm 0.00007}{\pico\barn}\)
+: \(\sigma = \SI{0.05381\pm 0.00007}{\pico\barn}\)
 
 *** Sampling and Analysis
 Define the sample number.
@@ -331,7 +331,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.026596869712351947
+: 0.026850120224418916
 
 Our distribution has a lot of variance, as can be seen by plotting it.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -378,15 +378,21 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.07837255806798954
+: 0.08195513345341411
 
 Nice! And now draw some histograms.
 
 We define an auxilliary method for convenience.
 #+begin_src jupyter-python :exports both :results raw drawer
   def draw_histo(points, xlabel, bins=20):
+      heights, edges = np.histogram(points, bins)
+      centers = (edges[1:] + edges[:-1])/2
+      deviations = np.sqrt(heights)
+
       fig, ax = set_up_plot()
-      ax.hist(points, bins, histtype='step')
+      ax.errorbar(centers, heights, deviations, linestyle='none', color='orange')
+      ax.step(edges,  [heights[0], *heights], color='#1f77b4')
+
       ax.set_xlabel(xlabel)
       ax.set_xlim([points.min(), points.max()])
       return fig, ax
@@ -400,14 +406,15 @@ fig, _ = draw_histo(cosθ_sample, r'$\cos\theta$')
 save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
-**** Observables
 #+RESULTS:
-[[file:./.ob-jupyter/54b0cf3238ee619ba0b2ed0f7625a0987cea35d9.png]]
+[[file:./.ob-jupyter/b2ab8fc7e8279a39a8f1889070260f9e125b12a4.png]]
 
+**** Observables
 Now we define some utilities to draw real 4-momentum samples.
 #+begin_src jupyter-python :exports both :tangle tangled/xs.py
   def sample_momentums(sample_num, interval, charge, esp, seed=None):
-      """Samples `sample_num` unweighted photon 4-momentums from the cross-section.
+      """Samples `sample_num` unweighted photon 4-momentums from the
+      cross-section.
 
       :param sample_num: number of samples to take
       :param interval: cosθ interval to sample from
@@ -417,6 +424,7 @@ Now we define some utilities to draw real 4-momentum samples.
           time
 
       :returns: an array of 4 photon momentums
+
       :rtype: np.ndarray
       """
       cosθ_sample = \
@@ -471,13 +479,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  59.47431703,  63.11831301,  49.78839399],
-:        [100.        ,  30.38398854,  46.67592902,  83.05522795],
-:        [100.        ,  29.38492237,  14.35182776, -94.50159457],
+: array([[100.        ,  28.50182951,   8.74702686, -95.45226679],
+:        [100.        ,  43.94685208,  35.57777159,  82.47967241],
+:        [100.        ,  60.9254658 ,  16.22961083, -77.6188595 ],
 :        ...,
-:        [100.        ,  13.08650357,  10.16978188,  98.6170318 ],
-:        [100.        ,  99.06859219,   3.25082692, -13.22294089],
-:        [100.        ,  21.64119346,   6.93302257, -97.38373552]])
+:        [100.        ,  93.28130315,  15.77669023, -32.39898962],
+:        [100.        ,  27.51319787,   8.9808636 ,  95.72025926],
+:        [100.        ,  47.25705812,  73.10232205,  49.22215932]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -486,17 +494,17 @@ Now let's make a histogram of the η distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/3fee13d0b17e1928768cd767dc32bf31d852c90c.png]]
+[[file:./.ob-jupyter/8cbb03a6c857f8be1b1a92450ec4a4dfa34a4de8.png]]
 
 
 And the same for the p_t (transverse momentum) distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
   p_t_sample = p_t(momentum_sample)
-  draw_histo(p_t_sample, r'$p_T$ [GeV]', bins=100)
+  draw_histo(p_t_sample, r'$p_T$ [GeV]')
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/362353770803b813aa60ae207ddd9ce760c5385b.png]]
+[[file:./.ob-jupyter/61e270b589aed1b42004a4ef0c451cbfdc0c5015.png]]
 
 That looks somewhat fishy, but it isn't.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -514,9 +522,8 @@ That looks somewhat fishy, but it isn't.
 [[file:./.ob-jupyter/739fdde6357d58890ef7847d0afc3277cffa9062.png]]
 this is strongly peaked at p_t=100GeV. (The jacobian goes like 1/x there!)
 
-
 **** Sampling the η cross section
-An again we see that the efficiency is way better...
+An again we see that the efficiency is way, way! better...
 #+begin_src jupyter-python :exports both :results raw drawer
   η_sample, η_efficiency = \
       monte_carlo.sample_unweighted_array(sample_num, dist_η,
@@ -525,7 +532,7 @@ An again we see that the efficiency is way better...
 #+end_src
 
 #+RESULTS:
-: 0.407
+: 0.4036666666666667
 
 Let's draw a histogram to compare with the previous results.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -533,5 +540,5 @@ Let's draw a histogram to compare with the previous results.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/0fc0ae202c61afd28adec28b672474ffafd4c2c0.png]]
+[[file:./.ob-jupyter/c896f5d9c2f7a55e27bebfcce02c31faca869366.png]]
 Looks good to me :).
