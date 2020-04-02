@@ -37,7 +37,10 @@ def integrate(f, interval, point_density=1000, seed=None, **kwargs):
 
     sample = f(points, **kwargs)
     integral = np.sum(sample)/num_points*interval_length
-    deviation = np.std(sample)/np.sqrt(num_points - 1)*interval_length
+
+    # the deviation gets multiplied by the square root of the interval
+    # lenght, because it is the standard deviation of the integral.
+    deviation = np.std(sample)*np.sqrt(interval_length/(num_points - 1))
 
     return integral, deviation
 
@@ -59,6 +62,8 @@ def find_upper_bound(f, interval, **kwargs):
         return -upper_bound.fun
     else:
         raise RuntimeError('Could not find an upper bound.')
+
+
 
 def sample_unweighted(f, interval, upper_bound=None, seed=None,
                     chunk_size=100, report_efficiency=False, **kwargs):

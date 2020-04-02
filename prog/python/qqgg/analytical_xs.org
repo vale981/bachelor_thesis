@@ -21,8 +21,6 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 * Implementation
 #+NAME: 777a013b-6c20-44bd-b58b-6a7690c21c0e
@@ -232,13 +230,13 @@ save_fig(fig, 'xs_integrand', 'xs', size=[4, 4])
 
 Intergrate σ with the mc method.
 #+begin_src jupyter-python :exports both :results raw drawer
-  xs_pb_mc, xs_pb_mc_err = monte_carlo.integrate(xs_pb_int, interval, 10000)
+  xs_pb_mc, xs_pb_mc_err = monte_carlo.integrate(xs_pb_int, interval, 100000)
   xs_pb_mc = xs_pb_mc
   xs_pb_mc, xs_pb_mc_err
 #+end_src
 
 #+RESULTS:
-| 0.05422703137390394 | 0.000268605849942814 |
+| 0.05388966591629671 | 5.033605571755944e-05 |
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -246,7 +244,7 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05423\pm 0.00027}{\pico\barn}\)
+: \(\sigma = \SI{0.05389\pm 0.00005}{\pico\barn}\)
 
 *** Sampling and Analysis
 Define the sample number.
@@ -273,7 +271,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.026903553299492386
+: 0.027946369454866477
 
 Our distribution has a lot of variance, as can be seen by plotting it.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -284,7 +282,7 @@ Our distribution has a lot of variance, as can be seen by plotting it.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f8ddb3103a0> |
+| <matplotlib.lines.Line2D | at | 0x7f9c91fef190> |
 [[file:./.ob-jupyter/04d0c9300d134c04b087aef7bb0a1b6036038b64.png]]
 :END:
 
@@ -323,7 +321,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.08002855329949239
+: 0.07860329180126134
 
 Nice! And now draw some histograms.
 
@@ -346,7 +344,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/dda2037170d010d5d85e5a1c1b20e3dc9534165a.png]]
+[[file:./.ob-jupyter/b51052005c8adf520b2a3d8133b0192b378ab349.png]]
 
 Now we define some utilities to draw real 4-impulse samples.
 #+begin_src jupyter-python :exports both :tangle tangled/xs.py
@@ -415,13 +413,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  59.26579305,  67.600286  ,  43.79231789],
-:        [100.        ,  96.78459631,  13.6042884 ,  21.1581014 ],
-:        [100.        ,  61.76467479,  45.77603074, -63.9506056 ],
+: array([[100.        ,  78.6513978 ,  25.03974819, -56.4532429 ],
+:        [100.        ,  80.50316938,   1.23982425,  59.31022303],
+:        [100.        ,  37.34488027,  25.09007454,  89.30760369],
 :        ...,
-:        [100.        ,  14.640252  ,  18.74352686,  97.13054732],
-:        [100.        ,  19.3091743 ,  24.17309458, -95.09372895],
-:        [100.        ,  50.01570095,  19.25766337, -84.42494927]])
+:        [100.        ,  27.28611517,  11.11891923,  95.56064856],
+:        [100.        ,  49.67818369,  55.52508519,  66.70114676],
+:        [100.        ,  32.95364669,   8.54598622,  94.02671583]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -431,8 +429,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f8ddb309ee0> |
-[[file:./.ob-jupyter/0954cd955f841f22cb4f9d2e4cd9d0c861224d50.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9c92128520> |
+[[file:./.ob-jupyter/9c85532fa94e9e0b01a6201f9308c5002176d073.png]]
 :END:
 
 
@@ -444,6 +442,6 @@ And the same for the p_t (transverse impulse) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f8ddb768640> |
-[[file:./.ob-jupyter/49e305feee697b8c9b514853458ef3709b84fc94.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9c9210d5e0> |
+[[file:./.ob-jupyter/814509eb1779574dce1de9a9fe093e067f30ff33.png]]
 :END:
