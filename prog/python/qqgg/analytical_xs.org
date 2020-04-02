@@ -210,6 +210,9 @@ Define the integrand.
 #+begin_src jupyter-python :exports both :results raw drawer
   def xs_pb_int(θ):
       return 2*np.pi*gev_to_pb(np.sin(θ)*diff_xs(θ, charge=charge, esp=esp))
+
+  def xs_pb_int_η(η):
+      return 2*np.pi*gev_to_pb(diff_xs_eta(η, charge, esp))
 #+end_src
 
 #+RESULTS:
@@ -219,7 +222,7 @@ Plot the integrand. # TODO: remove duplication
 fig, ax = set_up_plot()
 ax.plot(plot_points, xs_pb_int(plot_points))
 ax.set_xlabel(r'$\theta$')
-ax.set_ylabel(r'$\sin(\theta)\cdot\frac{d\sigma}{d\theta}$ [pb]')
+ax.set_ylabel(r'$\sin(\theta)\cdot\frac{d\sigma}{d\Omega}$ [pb]')
 ax.axvline(interval[0], color='gray', linestyle='--')
 ax.axvline(interval[1], color='gray', linestyle='--', label=rf'$|\eta|={η}$')
 ax.legend()
@@ -227,7 +230,7 @@ save_fig(fig, 'xs_integrand', 'xs', size=[4, 4])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/9e547bdeaa79bb956057b552090b4ab6305a20e6.png]]
+[[file:./.ob-jupyter/377a2432093426a961983767c2f23e1cd8b105a5.png]]
 
 Intergrate σ with the mc method.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -248,16 +251,29 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 : \(\sigma = \SI{0.05389\pm 0.00005}{\pico\barn}\)
 
 
+Plot the intgrand of the pseudo rap.
+#+begin_src jupyter-python :exports both :results raw drawer
+fig, ax = set_up_plot()
+points = np.linspace(*interval_η, 1000)
+ax.plot(points, xs_pb_int_η(points))
+ax.set_xlabel(r'$\eta$')
+ax.set_ylabel(r'$\frac{d\sigma}{d\theta}$ [pb]')
+save_fig(fig, 'xs_integrand_η', 'xs', size=[4, 4])
+#+end_src
+
+#+RESULTS:
+[[file:./.ob-jupyter/09de667c0ccb1d17fef74918e3f462a1340df113.png]]
+
 As we see, the result is much better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.
 #+begin_src jupyter-python :exports both :results raw drawer
-  xs_pb_η = monte_carlo.integrate(lambda x: 2*np.pi*gev_to_pb(diff_xs_eta(x, charge, esp)),
+  xs_pb_η = monte_carlo.integrate(xs_pb_int_η,
                         interval_η, 1000)
   xs_pb_η
 #+end_src
 
 #+RESULTS:
-| 0.05359070224781967 | 7.127342563203912e-05 |
+| 0.053758763260352345 | 7.109470263473152e-05 |
 
 And yet again export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
