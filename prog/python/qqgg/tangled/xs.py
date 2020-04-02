@@ -118,7 +118,8 @@ def total_xs_eta(η, charge, esp):
     return 2*np.pi*f*(F(η[0]) - F(η[1]))
 
 def sample_momentums(sample_num, interval, charge, esp, seed=None):
-    """Samples `sample_num` unweighted photon 4-momentums from the cross-section.
+    """Samples `sample_num` unweighted photon 4-momentums from the
+    cross-section.
 
     :param sample_num: number of samples to take
     :param interval: cosθ interval to sample from
@@ -128,6 +129,7 @@ def sample_momentums(sample_num, interval, charge, esp, seed=None):
         time
 
     :returns: an array of 4 photon momentums
+
     :rtype: np.ndarray
     """
     cosθ_sample = \
