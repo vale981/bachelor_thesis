@@ -40,7 +40,7 @@ def integrate(f, interval, point_density=1000, seed=None, **kwargs):
 
     # the deviation gets multiplied by the square root of the interval
     # lenght, because it is the standard deviation of the integral.
-    deviation = np.std(sample)*np.sqrt(interval_length/(num_points - 1))
+    deviation = np.std(sample)*np.sqrt(1/(num_points - 1))*interval_length
 
     return integral, deviation
 

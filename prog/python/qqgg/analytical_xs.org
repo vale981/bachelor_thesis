@@ -148,14 +148,13 @@
 * Calculations
 ** XS qq -> gamma gamma
 First, set up the input parameters.
-#+NAME: 7e62918a-2935-41ac-94e0-f0e7c3af8e0d
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer
 η = 2.5
 charge = 1/3
 esp = 200  # GeV
 #+END_SRC
 
-#+RESULTS: 7e62918a-2935-41ac-94e0-f0e7c3af8e0d
+#+RESULTS:
 
 Set up the integration and plot intervals.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -207,8 +206,8 @@ Compared to sherpa, it's pretty close.
 
 I had to set the runcard option ~EW_SCHEME: alpha0~ to use the pure
 QED coupling constant.
-*** Numerical Integration
 
+*** Numerical Integration
 Plot our nice distribution:
 #+begin_src jupyter-python :exports both :results raw drawer
 plot_points = np.linspace(*plot_interval, 1000)
@@ -300,6 +299,24 @@ tex_value(*xs_pb_η, unit=r'\pico\barn', prefix=r'\sigma = ', save=('results', '
 
 #+RESULTS:
 : \(\sigma = \SI{0.05381\pm 0.00007}{\pico\barn}\)
+
+Let's battle test the statistics.
+#+begin_src jupyter-python :exports both :results raw drawer
+  num_runs = 1000
+  num_within = 0
+
+  for _ in range(num_runs):
+      val, err = monte_carlo.integrate(xs_pb_int_η, interval_η, 1000)
+      if abs(xs_pb - val) <= err:
+          num_within += 1
+
+  num_within/num_runs
+#+end_src
+
+#+RESULTS:
+: 0.673
+
+So we see: the standard deviation is sound.
 
 *** Sampling and Analysis
 Define the sample number.
