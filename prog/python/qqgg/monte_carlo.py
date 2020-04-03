@@ -153,11 +153,40 @@ def sample_unweighted_array(num, *args, report_efficiency=False, **kwargs):
 
 
 def integrate_vegas(f, interval, seed=None, num_increments=5,
-                  point_density=1000, **kwargs):
+                  point_density=1000, epsilon=1e-3, alpha=1.5, **kwargs):
+    """Integrate the given function (in one dimension) with the vegas
+    algorithm to reduce variance.  This implementation follows the
+    description given in JOURNAL OF COMPUTATIONAL 27, 192-203 (1978),
+    but does not calculate a cumulative estimate.
 
+    :param f: function of one variable, kwargs are passed to it
+    :param tuple interval: a 2-tuple of numbers, specifiying the
+        integration range
+    :param seed: the seed for the rng, if not specified, the system
+        time is used
+    :param num_increments: the number increments in which to divide
+        the interval
+    :param point_density: the number of random points per unit
+        interval
+    :param epsilon: the breaking condition, if the magnitude of the
+        difference between the increment positions in subsequent
+        iterations does not change more then epsilon*num_increments
+        the computation is considered to have converged
+    :param alpha: controls the the convergence speed, should be
+        between 1 and 2
 
-    interval = _process_interval(interval)
+    :returns: the intregal, the standard deviation, an array of
+              increment borders which can be used in subsequent
+              sampling
+
+    :rtype: tuple
+    """
+
+    Interval = _process_interval(interval)
     interval_length = (interval[1] - interval[0])
+
+    if seed:
+        np.random.seed(seed)
 
     # start with equally sized intervals
     interval_borders = np.linspace(*interval, num_increments + 1, endpoint=True)
@@ -165,15 +194,16 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
     points_per_increment = int(point_density*interval_length/num_increments)
     total_points = points_per_increment*num_increments
 
-    def evaluate_integrand(interval_borders):
+    def evaluate_integrand(interval_borders, interval_lengths):
         intervals = np.array((interval_borders[:-1], interval_borders[1:]))
-        interval_lenghts = interval_borders[1:] - interval_borders[:-1]
         sample_points = np.random.uniform(*intervals,
                                           (points_per_increment, num_increments)).T
-        weighted_f_values = f(sample_points, **kwargs)*interval_lenghts[:, None]
 
+        weighted_f_values = f(sample_points, **kwargs)*interval_lengths[:, None]
+
+        # here the num_increments don't cancel
         weighted_f_squared_values = (f(sample_points, **kwargs) \
-            *interval_lenghts[:, None])**2*num_increments
+            *interval_lengths[:, None])**2*num_increments
 
         integral_steps = weighted_f_values.mean(axis=1)
         integral = integral_steps.sum()
@@ -184,23 +214,29 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
 
     K = num_increments*1000
     increment_borders = interval_borders[1:-1] - interval_borders[0]
-    ε = 1e-3
-    α = 1.5
+
     while True:
         interval_lengths = interval_borders[1:] - interval_borders[:-1]
-        integral, integral_steps, variance = evaluate_integrand(interval_borders)
-        new_increments = (K*((np.abs(integral_steps)/integral - 1)/(np.log(np.abs(integral_steps)/integral)))**α).astype(int)
-        #new_increments[-1] += K - new_increments.sum()
-        group_size = new_increments.sum()/num_increments  # = 1000
+        integral, integral_steps, variance = evaluate_integrand(interval_borders, interval_lengths)
 
-        i = 0
-        j = 0
+        # alpha controls the convergence speed
+        μ = np.abs(integral_steps)/integral
+        new_increments = (K*((μ - 1)/(np.log(μ)))**alpha).astype(int)
+        group_size = new_increments.sum()/num_increments
+
         new_increment_borders = np.empty_like(increment_borders)
-        rest = new_increments[0]
-        head = group_size
-        current = 0
-        while i < (num_increments) and (j < (num_increments - 1)):
-            #breakpoint()
+
+        # this whole code does a very simple thing: it eats up
+        # sub-increments until it has `group_size` of them
+        i = 0  # position in increment count list
+        j = 0  # position in new_incerement_borders
+        rest = new_increments[0]  # the number of sub-increments still available
+        head = group_size  # the number of sub-increments needed to
+                           # fill one increment
+        current = 0  # the current position in the interval relative
+                     # to its beginning
+
+        while i < num_increments and (j < (num_increments - 1)):
             if new_increments[i] == 0:
                 i += 1
                 rest = new_increments[i]
@@ -210,19 +246,19 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
             if head <= rest:
                 current += head*current_increment_size
                 new_increment_borders[j] = current
-                j += 1
                 rest -= head
                 head = group_size
+                j += 1
 
             else:
-                head -= rest
                 current += rest*current_increment_size
+                head -= rest
                 i += 1
-                if i >= num_increments:
-                    break
                 rest = new_increments[i]
 
         interval_borders[1:-1] = interval_borders[0] + increment_borders
-        if np.linalg.norm(increment_borders - new_increment_borders)*num_increments < ε:
+        if np.linalg.norm(increment_borders - new_increment_borders)\
+           *num_increments < epsilon:
             return integral, np.sqrt(variance), interval_borders
+
         increment_borders = new_increment_borders
