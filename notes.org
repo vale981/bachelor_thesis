@@ -32,6 +32,9 @@
  - [[file:literature/feynman/Thomson.pdf::533][Completeness Pol. Vectors]]
 ** Rivet
  - [[https://gitlab.com/hepcedar/rivet/tree/master/doc/tutorials][getting started]]
+** Monte Carlo
+ - [[file:literature/mc/general_purp_evt.pdf::170][Allgemeines zu MC integration, sampling]]
+ - [[file:literature/mc/vegas.pdf][VEGAS]]
 * Aufgaben
 ** Erste Aufgabenp
    :LOGBOOK:
