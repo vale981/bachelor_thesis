@@ -174,7 +174,7 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
         iterations does not change more then epsilon the computation
         is considered to have converged
     :param alpha: controls the the convergence speed, should be
-        between 1 and 2
+        between 1 and 2 (the lower the faster)
 
     :returns: the intregal, the standard deviation, an array of
               increment borders which can be used in subsequent
