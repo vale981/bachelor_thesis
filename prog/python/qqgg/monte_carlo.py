@@ -150,3 +150,8 @@ def sample_unweighted_array(num, *args, report_efficiency=False, **kwargs):
             sample_arr[i] = sample
 
     return (sample_arr, next(samples)[1]) if report_efficiency else sample_arr
+
+
+def sample_unweighted_vegas(f, interval, upper_bound=None, seed=None,
+                               chunk_size=100, report_efficiency=False, **kwargs):
+    pass
