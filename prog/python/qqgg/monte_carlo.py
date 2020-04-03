@@ -153,11 +153,12 @@ def sample_unweighted_array(num, *args, report_efficiency=False, **kwargs):
 
 
 def integrate_vegas(f, interval, seed=None, num_increments=5,
-                  point_density=1000, epsilon=1e-3, alpha=1.5, **kwargs):
+                  point_density=1000, epsilon=1e-2, alpha=1.5, **kwargs):
     """Integrate the given function (in one dimension) with the vegas
     algorithm to reduce variance.  This implementation follows the
-    description given in JOURNAL OF COMPUTATIONAL 27, 192-203 (1978),
-    but does not calculate a cumulative estimate.
+    description given in JOURNAL OF COMPUTATIONAL 27, 192-203 (1978).
+
+    All iterations contribute to the final result.
 
     :param f: function of one variable, kwargs are passed to it
     :param tuple interval: a 2-tuple of numbers, specifiying the
@@ -170,8 +171,8 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
         interval
     :param epsilon: the breaking condition, if the magnitude of the
         difference between the increment positions in subsequent
-        iterations does not change more then epsilon*num_increments
-        the computation is considered to have converged
+        iterations does not change more then epsilon the computation
+        is considered to have converged
     :param alpha: controls the the convergence speed, should be
         between 1 and 2
 
@@ -215,9 +216,16 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
     K = num_increments*1000
     increment_borders = interval_borders[1:-1] - interval_borders[0]
 
+    integrals = []
+    variances = []
+
     while True:
         interval_lengths = interval_borders[1:] - interval_borders[:-1]
-        integral, integral_steps, variance = evaluate_integrand(interval_borders, interval_lengths)
+        integral, integral_steps, variance = \
+            evaluate_integrand(interval_borders, interval_lengths)
+
+        integrals.append(integral)
+        variances.append(variance)
 
         # alpha controls the convergence speed
         μ = np.abs(integral_steps)/integral
@@ -257,8 +265,13 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
                 rest = new_increments[i]
 
         interval_borders[1:-1] = interval_borders[0] + increment_borders
-        if np.linalg.norm(increment_borders - new_increment_borders)\
-           *num_increments < epsilon:
-            return integral, np.sqrt(variance), interval_borders
+        if np.linalg.norm(increment_borders - new_increment_borders) < epsilon:
+
+            integrals = np.array(integrals)
+            variances = np.array(variances)
+            integral = np.sum(integrals**3/variances**2) \
+                /np.sum(integrals**2/variances**2)
+            mean_variance = 1/np.sqrt(np.sum(integrals**2/variances**2))*integral
+            return integral, np.sqrt(mean_variance), interval_borders
 
         increment_borders = new_increment_borders
