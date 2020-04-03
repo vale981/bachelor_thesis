@@ -152,6 +152,77 @@ def sample_unweighted_array(num, *args, report_efficiency=False, **kwargs):
     return (sample_arr, next(samples)[1]) if report_efficiency else sample_arr
 
 
-def sample_unweighted_vegas(f, interval, upper_bound=None, seed=None,
-                               chunk_size=100, report_efficiency=False, **kwargs):
-    pass
+def integrate_vegas(f, interval, seed=None, num_increments=5,
+                  point_density=1000, **kwargs):
+
+
+    interval = _process_interval(interval)
+    interval_length = (interval[1] - interval[0])
+
+    # start with equally sized intervals
+    interval_borders = np.linspace(*interval, num_increments + 1, endpoint=True)
+
+    points_per_increment = int(point_density*interval_length/num_increments)
+    total_points = points_per_increment*num_increments
+
+    def evaluate_integrand(interval_borders):
+        intervals = np.array((interval_borders[:-1], interval_borders[1:]))
+        interval_lenghts = interval_borders[1:] - interval_borders[:-1]
+        sample_points = np.random.uniform(*intervals,
+                                          (points_per_increment, num_increments)).T
+        weighted_f_values = f(sample_points, **kwargs)*interval_lenghts[:, None]
+
+        weighted_f_squared_values = (f(sample_points, **kwargs) \
+            *interval_lenghts[:, None])**2*num_increments
+
+        integral_steps = weighted_f_values.mean(axis=1)
+        integral = integral_steps.sum()
+        variance = 1/(total_points - 1)\
+            *(weighted_f_squared_values.mean(axis=1).sum() - integral**2)
+
+        return integral_steps.sum(), integral_steps, variance
+
+    K = num_increments*1000
+    increment_borders = interval_borders[1:-1] - interval_borders[0]
+    ε = 1e-3
+    α = 1.5
+    while True:
+        interval_lengths = interval_borders[1:] - interval_borders[:-1]
+        integral, integral_steps, variance = evaluate_integrand(interval_borders)
+        new_increments = (K*((np.abs(integral_steps)/integral - 1)/(np.log(np.abs(integral_steps)/integral)))**α).astype(int)
+        #new_increments[-1] += K - new_increments.sum()
+        group_size = new_increments.sum()/num_increments  # = 1000
+
+        i = 0
+        j = 0
+        new_increment_borders = np.empty_like(increment_borders)
+        rest = new_increments[0]
+        head = group_size
+        current = 0
+        while i < (num_increments) and (j < (num_increments - 1)):
+            #breakpoint()
+            if new_increments[i] == 0:
+                i += 1
+                rest = new_increments[i]
+
+            current_increment_size = interval_lengths[i]/new_increments[i]
+
+            if head <= rest:
+                current += head*current_increment_size
+                new_increment_borders[j] = current
+                j += 1
+                rest -= head
+                head = group_size
+
+            else:
+                head -= rest
+                current += rest*current_increment_size
+                i += 1
+                if i >= num_increments:
+                    break
+                rest = new_increments[i]
+
+        interval_borders[1:-1] = interval_borders[0] + increment_borders
+        if np.linalg.norm(increment_borders - new_increment_borders)*num_increments < ε:
+            return integral, np.sqrt(variance), interval_borders
+        increment_borders = new_increment_borders
