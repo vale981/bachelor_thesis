@@ -183,7 +183,7 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
     :rtype: tuple
     """
 
-    Interval = _process_interval(interval)
+    interval = _process_interval(interval)
     interval_length = (interval[1] - interval[0])
 
     if seed:
