@@ -153,7 +153,8 @@ def sample_unweighted_array(num, *args, report_efficiency=False, **kwargs):
 
 
 def integrate_vegas(f, interval, seed=None, num_increments=5,
-                  point_density=1000, epsilon=1e-2, alpha=1.5, **kwargs):
+                  point_density=1000, epsilon=1e-2, alpha=1.5, acumulate=True,
+                  **kwargs):
     """Integrate the given function (in one dimension) with the vegas
     algorithm to reduce variance.  This implementation follows the
     description given in JOURNAL OF COMPUTATIONAL 27, 192-203 (1978).
@@ -266,6 +267,8 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
 
         interval_borders[1:-1] = interval_borders[0] + increment_borders
         if np.linalg.norm(increment_borders - new_increment_borders) < epsilon:
+            if not acumulate:
+                return integrals[-1], np.sqrt(variances[-1]), interval_borders
 
             integrals = np.array(integrals)
             variances = np.array(variances)
