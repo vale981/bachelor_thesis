@@ -88,11 +88,12 @@ Viele Gruesse, Frank
  - implementation as [[file:prog/python/qqgg/monte_carlo.py][module]]
  - [[file:prog/python/qqgg/analytical_xs.org::*Numerical Integration][Integration]]
  - [[file:prog/python/qqgg/analytical_xs.org::*Sampling and Analysis][Sampling and Analysis]]
-*** TODO Check Statistics
+*** DONE Check Statistics
  - 100 mal.... 67, check with random seed
  - error bars in histtype
-*** TODO Variablen Trafo geschickt waehlen.
- - stratified sampling, vegas?
+*** DONE Variablen Trafo geschickt waehlen.
+ - stratified sampling, vegas
+**** TODO Something fishy about that variance estimate in vegas!!!
 *** TODO Sherpa + Rivet
  - analyse + histogramme
  - manual

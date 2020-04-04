@@ -21,8 +21,6 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 * Implementation
 #+NAME: 777a013b-6c20-44bd-b58b-6a7690c21c0e
@@ -251,7 +249,7 @@ save_fig(fig, 'xs_integrand', 'xs', size=[4, 4])
 
 #+RESULTS:
 [[file:./.ob-jupyter/a84ac9746f0f4b0c2f1038dc249e557fc1fe48f5.png]]
-
+**** Integral over θ
 Intergrate σ with the mc method.
 #+begin_src jupyter-python :exports both :results raw drawer
   xs_pb_mc, xs_pb_mc_err = monte_carlo.integrate(xs_pb_int, interval, 1000)
@@ -260,7 +258,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-| 0.055441221086831506 | 0.0008656474309226884 |
+| 0.05323177940348952 | 0.000836179760412404 |
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -268,9 +266,9 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.0554\pm 0.0009}{\pico\barn}\)
+: \(\sigma = \SI{0.0543\pm 0.0008}{\pico\barn}\)
 
-
+**** Integration over η
 Plot the intgrand of the pseudo rap.
 #+begin_src jupyter-python :exports both :results raw drawer
 fig, ax = set_up_plot()
@@ -293,7 +291,7 @@ because the differential cross section does not difverge anymore.
 #+end_src
 
 #+RESULTS:
-| 0.05367271529012346 | 0.00015819977327237987 |
+| 0.05369352543075011 | 0.0001566582384086374 |
 
 And yet again export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -301,8 +299,50 @@ tex_value(*xs_pb_η, unit=r'\pico\barn', prefix=r'\sigma = ', save=('results', '
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05367\pm 0.00016}{\pico\barn}\)
+: \(\sigma = \SI{0.05398\pm 0.00016}{\pico\barn}\)
 
+**** Using =VEGAS=
+Now we use =VEGAS= on the θ parametrisation and see what happens.
+#+begin_src jupyter-python :exports both :results raw drawer
+  xs_pb_vegas, xs_pb_vegas_σ, xs_θ_intervals = \
+      monte_carlo.integrate_vegas(xs_pb_int, interval,
+                                  num_increments=20, alpha=4,
+                                  point_density=1000, acumulate=True)
+  xs_pb_vegas, xs_pb_vegas_σ
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: shtsh
+| 0.053806254940947366 | 5.91849792512895e-05 |
+:END:
+
+This is pretty good, although the variance reduction may be achieved
+partially by accumulating the results from all runns. The uncertainty
+is being overestimated!
+
+And export that as tex.
+#+begin_src jupyter-python :exports both :results raw drawer
+  tex_value(xs_pb_vegas, xs_pb_vegas_σ, unit=r'\pico\barn',
+            prefix=r'\sigma = ', save=('results', 'xs_mc_θ_vegas.tex'))
+#+end_src
+
+#+RESULTS:
+: \(\sigma = \SI{0.05383\pm 0.00007}{\pico\barn}\)
+
+Surprisingly, without acumulation, the result ain't much different.
+This depends, of course, on the iteration count.
+#+begin_src jupyter-python :exports both :results raw drawer
+  monte_carlo.integrate_vegas(xs_pb_int, interval, num_increments=20,
+                              alpha=4, point_density=1000,
+                              acumulate=False)[0:2]
+#+end_src
+
+#+RESULTS:
+| 0.05386167571815434 | 7.519896920354165e-05 |
+
+
+**** Testing the Statistics
 Let's battle test the statistics.
 #+begin_src jupyter-python :exports both :results raw drawer
   num_runs = 1000
@@ -317,9 +357,28 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.674
+: 0.671
 
 So we see: the standard deviation is sound.
+
+Doing the same thing with =VEGAS= shows, that we overestimate σ here.
+#+begin_src jupyter-python :exports both :results raw drawer
+    num_runs = 1000
+    num_within = 0
+
+    for _ in range(num_runs):
+        val, err, _ = \
+            monte_carlo.integrate_vegas(xs_pb_int, interval,
+                                        num_increments=20, alpha=4,
+                                        point_density=1000, acumulate=False)
+        if abs(xs_pb - val) <= err:
+            num_within += 1
+
+    num_within/num_runs
+#+end_src
+
+#+RESULTS:
+: 0.727
 
 *** Sampling and Analysis
 Define the sample number.
@@ -351,7 +410,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.02705475753321093
+: 0.026983702912102593
 
 Our distribution has a lot of variance, as can be seen by plotting it.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -362,7 +421,7 @@ Our distribution has a lot of variance, as can be seen by plotting it.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7ff6f9e629d0> |
+| <matplotlib.lines.Line2D | at | 0x7f71fa2accd0> |
 [[file:./.ob-jupyter/04d0c9300d134c04b087aef7bb0a1b6036038b64.png]]
 :END:
 
@@ -401,7 +460,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.07775726811259806
+: 0.08121827411167512
 
 Nice! And now draw some histograms.
 
@@ -430,7 +489,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/62a29c0e9910c0c3a52db2d94943811f956af818.png]]
+[[file:./.ob-jupyter/8d1918ded7e3dac99fb6ae915aa5118ecd63e3b0.png]]
 
 **** Observables
 Now we define some utilities to draw real 4-momentum samples.
@@ -502,13 +561,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  47.18813066,  20.64234473, -85.71565743],
-:        [100.        ,  15.71929112,  11.95618298, -98.03037068],
-:        [100.        ,  74.89660507,  59.11115883, -29.9394297 ],
+: array([[100.        ,  14.99955553,   6.52933179, -98.65283149],
+:        [100.        ,  48.11160501,  71.52596373, -50.68836134],
+:        [100.        ,  27.36251906,   1.55938536, -96.17099806],
 :        ...,
-:        [100.        ,  19.29194247,   7.026877  ,  97.86952516],
-:        [100.        ,  79.11073693,  55.29696215,  26.1483705 ],
-:        [100.        ,  26.68616492,  13.46194026,  95.42863704]])
+:        [100.        ,  98.44690501,  13.80044529,  10.85147935],
+:        [100.        ,  17.20635886,   4.27420589,  98.41581366],
+:        [100.        ,  66.84034758,  32.63142055,  66.83979599]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -518,8 +577,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ff6fb53b0d0> |
-[[file:./.ob-jupyter/13665238c516fd85aee4cf3d84017a3edefad70f.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f71fa804310> |
+[[file:./.ob-jupyter/6ff9fc176c82cc14773edef428f0ae9ceb5ea0e0.png]]
 :END:
 
 
@@ -531,8 +590,8 @@ And the same for the p_t (transverse momentum) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ff6fb5d23d0> |
-[[file:./.ob-jupyter/f1fe0ff3ce1e84dcde0355e1ebec7a39a09fd603.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f71fa8a4250> |
+[[file:./.ob-jupyter/bd4170c8985251730a62b9557035c97d315d01ca.png]]
 :END:
 
 That looks somewhat fishy, but it isn't.
@@ -561,7 +620,7 @@ An again we see that the efficiency is way, way! better...
 #+end_src
 
 #+RESULTS:
-: 0.4033333333333333
+: 0.3973333333333333
 
 Let's draw a histogram to compare with the previous results.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -570,7 +629,7 @@ Let's draw a histogram to compare with the previous results.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ff6f9c27a00> |
-[[file:./.ob-jupyter/08043c8f8e6f6981439dda8072b6e538f2f02e73.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f71fa59e820> |
+[[file:./.ob-jupyter/76ee7ba57aa85fd899d1845f3257bc31b49e5a16.png]]
 :END:
 Looks good to me :).
