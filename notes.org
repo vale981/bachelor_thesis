@@ -94,6 +94,7 @@ Viele Gruesse, Frank
 *** DONE Variablen Trafo geschickt waehlen.
  - stratified sampling, vegas
 **** TODO Something fishy about that variance estimate in vegas!!!
+ - overesimate even stronger if evaluation point number increased
 *** TODO Sherpa + Rivet
  - analyse + histogramme
  - manual
