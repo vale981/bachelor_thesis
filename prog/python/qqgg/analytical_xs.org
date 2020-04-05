@@ -281,8 +281,6 @@ save_fig(fig, 'xs_integrand_η', 'xs', size=[4, 4])
 #+RESULTS:
 [[file:./.ob-jupyter/09de667c0ccb1d17fef74918e3f462a1340df113.png]]
 
-As we see, the result is much better if we use pseudo rapidity,
-because the differential cross section does not difverge anymore.
 #+begin_src jupyter-python :exports both :results raw drawer
   xs_pb_η = monte_carlo.integrate(xs_pb_int_η,
                                   interval_η, 1000)
@@ -291,6 +289,11 @@ because the differential cross section does not difverge anymore.
 
 #+RESULTS:
 | 0.05369352543075011 | 0.0001566582384086374 |
+
+As we see, the result is a little better if we use pseudo rapidity,
+because the differential cross section does not difverge anymore.  But
+becase our η interval is covering the range where all the variance is
+occuring, the improvement is rather marginal.
 
 And yet again export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -633,3 +636,4 @@ Let's draw a histogram to compare with the previous results.
 [[file:./.ob-jupyter/76ee7ba57aa85fd899d1845f3257bc31b49e5a16.png]]
 :END:
 Looks good to me :).
+*** Sampling with =VEGAS=
