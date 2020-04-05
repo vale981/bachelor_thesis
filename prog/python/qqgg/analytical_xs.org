@@ -742,3 +742,5 @@ reduction visually.
 :END:
 
 I am batman!
+
+This is the ideal
