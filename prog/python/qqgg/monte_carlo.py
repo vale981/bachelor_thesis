@@ -85,6 +85,8 @@ def sample_unweighted(f, interval, upper_bound=None, seed=None,
     interval = _process_interval(interval)
     interval_length = (interval[1] - interval[0])
 
+    if seed:
+        np.random.seed(seed)
 
     upper_bound_fn, upper_bound_integral, upper_bound_integral_inverse = None, None, None
     # i know....
@@ -278,3 +280,39 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
             return integral, np.sqrt(mean_variance), interval_borders
 
         increment_borders = new_increment_borders
+
+def sample_stratified(f, increment_borders, seed=None, chunk_size=100,
+                    report_efficiency=False, **kwargs):
+    """Samples a distribution proportional to f by hit and miss.
+    Implemented as a generator.
+
+    :param f: function of one scalar to sample, should be positive,
+              superflous kwargs are passed to it
+    :param interval: the interval to sample from
+    :param seed: the seed for the rng, if not specified, the system
+        time is used
+    :param chunk_size: the size of the chunks of random numbers
+        allocated per unit interval
+    :yields: random nubers following the distribution of f
+    """
+
+    increment_count = increment_borders.size - 1
+    increment_lenghts = increment_borders[1:] - increment_borders[:-1]
+    weights = increment_count*increment_lenghts
+    increment_chunk_size = chunk_size/increment_count
+
+    upper_bounds = \
+        np.array([find_upper_bound(lambda x: f(x, **kwargs)*weight,
+                                   [left_border, right_border]) \
+                  for weight, left_border, right_border \
+                  in zip(weights,
+                        increment_borders[:-1],
+                        increment_borders[1:])])
+
+    def allocate_random_chunk():
+        return np.random.uniform([*increment_borders[:-1], 0],
+                            [*increment_borders[1:], 1],
+                            [*(increment_chunk_size* \
+                               increment_lenghts).astype(int), increment_count + 1])
+
+    breakpoint()
