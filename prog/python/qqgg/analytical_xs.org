@@ -164,6 +164,11 @@ plot_interval = [0.1, np.pi-.1]
 
 #+RESULTS:
 
+#+begin_note
+Note that we could utilize the symetry of the integrand throughout,
+but that doen't reduce variance and would complicate things now.
+#+end_note
+
 ** Analytical Integration
  And now calculate the cross section in picobarn.
  #+BEGIN_SRC jupyter-python :exports both :results raw file :file xs.tex
@@ -257,7 +262,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-| 0.05323177940348952 | 0.000836179760412404 |
+| 0.05346516777258366 | 0.0008394770936683888 |
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -265,7 +270,7 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.0543\pm 0.0008}{\pico\barn}\)
+: \(\sigma = \SI{0.0535\pm 0.0008}{\pico\barn}\)
 
 *** Integration over η
 Plot the intgrand of the pseudo rap.
@@ -288,7 +293,7 @@ save_fig(fig, 'xs_integrand_η', 'xs', size=[4, 4])
 #+end_src
 
 #+RESULTS:
-| 0.05369352543075011 | 0.0001566582384086374 |
+| 0.05374599933172363 | 0.00015913874688447323 |
 
 As we see, the result is a little better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.  But
@@ -301,7 +306,7 @@ tex_value(*xs_pb_η, unit=r'\pico\barn', prefix=r'\sigma = ', save=('results', '
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05398\pm 0.00016}{\pico\barn}\)
+: \(\sigma = \SI{0.05375\pm 0.00016}{\pico\barn}\)
 
 *** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
@@ -314,10 +319,7 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-: shtsh
-| 0.053806254940947366 | 5.91849792512895e-05 |
-:END:
+| 0.05383271556980879 | 5.8697299274703066e-05 |
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. The uncertainty
@@ -330,7 +332,7 @@ And export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05383\pm 0.00007}{\pico\barn}\)
+: \(\sigma = \SI{0.05383\pm 0.00006}{\pico\barn}\)
 
 Surprisingly, without acumulation, the result ain't much different.
 This depends, of course, on the iteration count.
@@ -341,7 +343,7 @@ This depends, of course, on the iteration count.
 #+end_src
 
 #+RESULTS:
-| 0.05386167571815434 | 7.519896920354165e-05 |
+| 0.05373265685410217 | 7.479245542403082e-05 |
 
 *** Testing the Statistics
 Let's battle test the statistics.
@@ -358,28 +360,26 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.671
+: 0.69
 
 So we see: the standard deviation is sound.
 
 Doing the same thing with =VEGAS= shows, that we overestimate σ here.
 #+begin_src jupyter-python :exports both :results raw drawer
-    num_runs = 1000
-    num_within = 0
-
-    for _ in range(num_runs):
-        val, err, _ = \
-            monte_carlo.integrate_vegas(xs_pb_int, interval,
-                                        num_increments=20, alpha=4,
-                                        point_density=1000, acumulate=False)
-        if abs(xs_pb - val) <= err:
-            num_within += 1
-
-    num_within/num_runs
+  num_runs = 1000
+  num_within = 0
+  for _ in range(num_runs):
+      val, err, _ = \
+          monte_carlo.integrate_vegas(xs_pb_int, interval,
+                                      num_increments=20, alpha=4,
+                                      point_density=1000, acumulate=False)
+      if abs(xs_pb - val) <= err:
+          num_within += 1
+  num_within/num_runs
 #+end_src
 
 #+RESULTS:
-: 0.727
+: 0.732
 
 ** Sampling and Analysis
 Define the sample number.
@@ -391,7 +391,7 @@ Define the sample number.
 Let's define shortcuts for our distributions. The 2π are just there
 for formal correctnes. Factors do not influecence the outcome.
 #+begin_src jupyter-python :exports both :results raw drawer
-  def dist_θ(x):
+  def dist_cosθ(x):
       return gev_to_pb(diff_xs_cosθ(x, charge, esp))*2*np.pi
 
   def dist_η(x):
@@ -405,32 +405,34 @@ for formal correctnes. Factors do not influecence the outcome.
 Now we monte-carlo sample our distribution. We observe that the efficiency his very bad!
 #+begin_src jupyter-python :exports both :results raw drawer
   cosθ_sample, cosθ_efficiency = \
-      monte_carlo.sample_unweighted_array(sample_num, dist_θ,
+      monte_carlo.sample_unweighted_array(sample_num, dist_cosθ,
                                           interval_cosθ, report_efficiency=True)
   cosθ_efficiency
 #+end_src
 
 #+RESULTS:
-: 0.026983702912102593
+: 0.028114017961733698
 
 Our distribution has a lot of variance, as can be seen by plotting it.
 #+begin_src jupyter-python :exports both :results raw drawer
-    pts = np.linspace(*interval_cosθ, 100)
-    fig, ax = set_up_plot()
-    ax.plot(pts, dist_θ(pts), label=r'$\frac{d\sigma}{d\Omega}$')
+  pts = np.linspace(*interval_cosθ, 100)
+  fig, ax = set_up_plot()
+  ax.plot(pts, dist_cosθ(pts))
+  ax.set_xlabel(r'$\cos\theta$')
+  ax.set_ylabel(r'$\frac{d\sigma}{d\Omega}$')
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f71fa2accd0> |
-[[file:./.ob-jupyter/04d0c9300d134c04b087aef7bb0a1b6036038b64.png]]
+: Text(0, 0.5, '$\\frac{d\\sigma}{d\\Omega}$')
+[[file:./.ob-jupyter/368891d7c82ba167083c1d8b382256526672bcd7.png]]
 :END:
 
 We define a friendly and easy to integrate upper limit function.
 #+begin_src jupyter-python :exports both :results raw drawer
-  upper_limit = dist_θ(interval_cosθ[0]) \
+  upper_limit = dist_cosθ(interval_cosθ[0]) \
       /interval_cosθ[0]**2
-  upper_base = dist_θ(0)
+  upper_base = dist_cosθ(0)
 
   def upper(x):
       return  upper_base + upper_limit*x**2
@@ -454,19 +456,26 @@ To increase our efficiency, we have to specify an upper bound. That is
 at least a little bit better. The numeric inversion is horribly inefficent.
 #+begin_src jupyter-python :exports both :results raw drawer
   cosθ_sample, cosθ_efficiency = \
-      monte_carlo.sample_unweighted_array(sample_num, dist_θ,
+      monte_carlo.sample_unweighted_array(sample_num, dist_cosθ,
                                           interval_cosθ, report_efficiency=True,
                                           upper_bound=[upper, upper_int])
   cosθ_efficiency
 #+end_src
 
 #+RESULTS:
-: 0.08121827411167512
+: 0.08066307106598984
 
 Nice! And now draw some histograms.
 
 We define an auxilliary method for convenience.
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/plot_utils.py
+  """
+  Some shorthands for common plotting tasks related to the investigation
+  of monte-carlo methods in one rimension.
+
+  Author: Valentin Boettcher <hiro at protagon.space>
+  """
+
   import matplotlib.pyplot as plt
 
   def draw_histo(points, xlabel, bins=20):
@@ -492,7 +501,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/8d1918ded7e3dac99fb6ae915aa5118ecd63e3b0.png]]
+[[file:./.ob-jupyter/8f2405ccc7ab2bfffb972a90264a643568e89f85.png]]
 
 *** Observables
 Now we define some utilities to draw real 4-momentum samples.
@@ -564,13 +573,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  14.99955553,   6.52933179, -98.65283149],
-:        [100.        ,  48.11160501,  71.52596373, -50.68836134],
-:        [100.        ,  27.36251906,   1.55938536, -96.17099806],
+: array([[100.        ,  56.93266391,   8.65886675, -81.75387334],
+:        [100.        ,  28.45447743,  31.37854034,  90.58548405],
+:        [100.        ,  88.4931335 ,  43.12076463, -17.5944588 ],
 :        ...,
-:        [100.        ,  98.44690501,  13.80044529,  10.85147935],
-:        [100.        ,  17.20635886,   4.27420589,  98.41581366],
-:        [100.        ,  66.84034758,  32.63142055,  66.83979599]])
+:        [100.        ,  15.78169833,   5.68269845,  98.5831879 ],
+:        [100.        ,  99.38740019,   0.90223224,  11.01501976],
+:        [100.        ,  16.78337449,   8.67307353,  98.19926749]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -580,8 +589,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f71fa804310> |
-[[file:./.ob-jupyter/6ff9fc176c82cc14773edef428f0ae9ceb5ea0e0.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ff7b0b2fbe0> |
+[[file:./.ob-jupyter/ab80fc171671776666c12e9013e2c35062068df7.png]]
 :END:
 
 
@@ -593,8 +602,8 @@ And the same for the p_t (transverse momentum) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f71fa8a4250> |
-[[file:./.ob-jupyter/bd4170c8985251730a62b9557035c97d315d01ca.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ff7b0eecf70> |
+[[file:./.ob-jupyter/98a8615c6eed49d95608c765d0b2e42bb6b5e526.png]]
 :END:
 
 That looks somewhat fishy, but it isn't.
@@ -623,7 +632,7 @@ An again we see that the efficiency is way, way! better...
 #+end_src
 
 #+RESULTS:
-: 0.3973333333333333
+: 0.4013333333333333
 
 Let's draw a histogram to compare with the previous results.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -632,8 +641,104 @@ Let's draw a histogram to compare with the previous results.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f71fa59e820> |
-[[file:./.ob-jupyter/76ee7ba57aa85fd899d1845f3257bc31b49e5a16.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ff7b069cc40> |
+[[file:./.ob-jupyter/b38fec2b5db9265a6b1e7c2e6c982914be5c75b7.png]]
 :END:
 Looks good to me :).
 *** Sampling with =VEGAS=
+Let's define some little helpers.
+#+begin_src jupyter-python :exports both :tangle tangled/plot_utils.py
+  def plot_increments(ax, increment_borders, label=None, *args, **kwargs):
+      """Plot the increment borders from a list.  The first and last one
+
+      :param ax: the axis on which to draw
+      :param list increment_borders: the borders of the increments
+      :param str label: the label to apply to one of the vertical lines
+      """
+
+      ax.axvline(x=increment_borders[1], label=label, *args, **kwargs)
+
+      for increment in increment_borders[2:-1]:
+          ax.axvline(x=increment, *args, **kwargs)
+
+  def plot_vegas_weighted_distribution(ax, points, dist, increment_borders, *args,
+                                     ,**kwargs):
+      """Plot the distribution with VEGAS weights applied.
+
+      :param ax: axis
+      :param points: points
+      :param dist: distribution
+      :param increment_borders: increment borders
+      """
+
+      num_increments = increment_borders.size
+      weighted_dist = dist.copy()
+
+      for left_border, right_border in zip(increment_borders[:-1],
+                                          increment_borders[1:]):
+          length = right_border - left_border
+          mask = (left_border <= points) & (points <= right_border)
+          weighted_dist[mask] = dist[mask]*num_increments*length
+
+      ax.plot(points, weighted_dist, *args, **kwargs)
+#+end_src
+
+#+RESULTS:
+
+To get the increments, we have to let =VEGAS= loose on our
+distribution. We throw away the integral, but keep the increments.
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  _, _, increments = monte_carlo.integrate_vegas(dist_cosθ,
+                                                 interval_cosθ,
+                                                 num_increments=10, alpha=1,
+                                                 epsilon=.01)
+  increments
+#+end_src
+
+#+RESULTS:
+: array([-0.9866143 , -0.94250098, -0.86713226, -0.71862544, -0.43795327,
+:         0.00532379,  0.44409926,  0.72107282,  0.86817008,  0.94306489,
+:         0.9866143 ])
+
+Visualizing the increment borders gives us the information we want.
+#+begin_src jupyter-python :exports both :results raw drawer
+  pts = np.linspace(*interval_cosθ, 100)
+  fig, ax = set_up_plot()
+  ax.plot(pts, dist_cosθ(pts))
+  ax.set_xlabel(r'$\cos\theta$')
+  ax.set_ylabel(r'$\frac{d\sigma}{d\Omega}$')
+  ax.set_xlim(*interval_cosθ)
+  plot_increments(ax, increments,
+                  label='Increment Borderds', color='gray', linestyle='--')
+  ax.legend()
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: <matplotlib.legend.Legend at 0x7ff7a9c66550>
+[[file:./.ob-jupyter/b5376e1ea65dbac8a3ad789822898cfe182d160b.png]]
+:END:
+
+We can now plot the reweighted distribution to observe the variance
+reduction visually.
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  pts = np.linspace(*interval_cosθ, 1000)
+  fig, ax = set_up_plot()
+  plot_vegas_weighted_distribution(ax, pts, dist_cosθ(pts), increments)
+  ax.set_xlabel(r'$\cos\theta$')
+  ax.set_ylabel(r'$\frac{d\sigma}{d\Omega}$')
+  ax.set_xlim(*interval_cosθ)
+  plot_increments(ax, increments,
+                  label='Increment Borderds', color='gray', linestyle='--')
+  ax.legend()
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: <matplotlib.legend.Legend at 0x7ff7a96fa370>
+[[file:./.ob-jupyter/d3d3a00692be7ce837615d168098d9e76af8d657.png]]
+:END:
+
+I am batman!
