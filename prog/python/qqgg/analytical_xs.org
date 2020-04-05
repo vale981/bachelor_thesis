@@ -144,7 +144,6 @@
 #+RESULTS: 777a013b-6c20-44bd-b58b-6a7690c21c0e
 
 * Calculations
-** XS qq -> gamma gamma
 First, set up the input parameters.
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer
 η = 2.5
@@ -165,48 +164,48 @@ plot_interval = [0.1, np.pi-.1]
 
 #+RESULTS:
 
-*** Analytical Integration
-And now calculate the cross section in picobarn.
-#+BEGIN_SRC jupyter-python :exports both :results raw file :file xs.tex
-  xs_gev = total_xs_eta(η, charge, esp)
-  xs_pb = gev_to_pb(xs_gev)
-  tex_value(xs_pb, unit=r'\pico\barn', prefix=r'\sigma = ',
-            prec=6, save=('results', 'xs.tex'))
-#+END_SRC
+** Analytical Integration
+ And now calculate the cross section in picobarn.
+ #+BEGIN_SRC jupyter-python :exports both :results raw file :file xs.tex
+   xs_gev = total_xs_eta(η, charge, esp)
+   xs_pb = gev_to_pb(xs_gev)
+   tex_value(xs_pb, unit=r'\pico\barn', prefix=r'\sigma = ',
+             prec=6, save=('results', 'xs.tex'))
+ #+END_SRC
 
-#+RESULTS:
-: \(\sigma = \SI{0.053793}{\pico\barn}\)
+ #+RESULTS:
+ : \(\sigma = \SI{0.053793}{\pico\barn}\)
 
-Lets plot the total xs as a function of η.
-#+begin_src jupyter-python :exports both :results raw drawer
-  fig, ax = set_up_plot()
-  η_s = np.linspace(0, 3, 1000)
-  ax.plot(η_s, gev_to_pb(total_xs_eta(η_s, charge, esp)))
-  ax.set_xlabel(r'$\eta$')
-  ax.set_ylabel(r'$\sigma$ [pb]')
-  ax.set_xlim([0, max(η_s)])
-  ax.set_ylim(0)
-  save_fig(fig, 'total_xs', 'xs', size=[2.5, 2])
-#+end_src
+ Lets plot the total xs as a function of η.
+ #+begin_src jupyter-python :exports both :results raw drawer
+   fig, ax = set_up_plot()
+   η_s = np.linspace(0, 3, 1000)
+   ax.plot(η_s, gev_to_pb(total_xs_eta(η_s, charge, esp)))
+   ax.set_xlabel(r'$\eta$')
+   ax.set_ylabel(r'$\sigma$ [pb]')
+   ax.set_xlim([0, max(η_s)])
+   ax.set_ylim(0)
+   save_fig(fig, 'total_xs', 'xs', size=[2.5, 2])
+ #+end_src
 
-#+RESULTS:
-[[file:./.ob-jupyter/b709b22e5727fe27a94a18f9d31d40567f035376.png]]
+ #+RESULTS:
+ [[file:./.ob-jupyter/b709b22e5727fe27a94a18f9d31d40567f035376.png]]
 
 
-Compared to sherpa, it's pretty close.
-#+NAME: 81b5ed93-0312-45dc-beec-e2ba92e22626
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer
-  sherpa = 0.05380
-  xs_pb - sherpa
-#+END_SRC
+ Compared to sherpa, it's pretty close.
+ #+NAME: 81b5ed93-0312-45dc-beec-e2ba92e22626
+ #+BEGIN_SRC jupyter-python :exports both :results raw drawer
+   sherpa = 0.05380
+   xs_pb - sherpa
+ #+END_SRC
 
-#+RESULTS: 81b5ed93-0312-45dc-beec-e2ba92e22626
-: -6.7112594623469635e-06
+ #+RESULTS: 81b5ed93-0312-45dc-beec-e2ba92e22626
+ : -6.7112594623469635e-06
 
-I had to set the runcard option ~EW_SCHEME: alpha0~ to use the pure
-QED coupling constant.
+ I had to set the runcard option ~EW_SCHEME: alpha0~ to use the pure
+ QED coupling constant.
 
-*** Numerical Integration
+** Numerical Integration
 Plot our nice distribution:
 #+begin_src jupyter-python :exports both :results raw drawer
 plot_points = np.linspace(*plot_interval, 1000)
@@ -249,7 +248,7 @@ save_fig(fig, 'xs_integrand', 'xs', size=[4, 4])
 
 #+RESULTS:
 [[file:./.ob-jupyter/a84ac9746f0f4b0c2f1038dc249e557fc1fe48f5.png]]
-**** Integral over θ
+*** Integral over θ
 Intergrate σ with the mc method.
 #+begin_src jupyter-python :exports both :results raw drawer
   xs_pb_mc, xs_pb_mc_err = monte_carlo.integrate(xs_pb_int, interval, 1000)
@@ -268,7 +267,7 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 #+RESULTS:
 : \(\sigma = \SI{0.0543\pm 0.0008}{\pico\barn}\)
 
-**** Integration over η
+*** Integration over η
 Plot the intgrand of the pseudo rap.
 #+begin_src jupyter-python :exports both :results raw drawer
 fig, ax = set_up_plot()
@@ -301,7 +300,7 @@ tex_value(*xs_pb_η, unit=r'\pico\barn', prefix=r'\sigma = ', save=('results', '
 #+RESULTS:
 : \(\sigma = \SI{0.05398\pm 0.00016}{\pico\barn}\)
 
-**** Using =VEGAS=
+*** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+begin_src jupyter-python :exports both :results raw drawer
   xs_pb_vegas, xs_pb_vegas_σ, xs_θ_intervals = \
@@ -341,8 +340,7 @@ This depends, of course, on the iteration count.
 #+RESULTS:
 | 0.05386167571815434 | 7.519896920354165e-05 |
 
-
-**** Testing the Statistics
+*** Testing the Statistics
 Let's battle test the statistics.
 #+begin_src jupyter-python :exports both :results raw drawer
   num_runs = 1000
@@ -380,7 +378,7 @@ Doing the same thing with =VEGAS= shows, that we overestimate σ here.
 #+RESULTS:
 : 0.727
 
-*** Sampling and Analysis
+** Sampling and Analysis
 Define the sample number.
 #+begin_src jupyter-python :exports both :results raw drawer
   sample_num = 1000
@@ -399,7 +397,7 @@ for formal correctnes. Factors do not influecence the outcome.
 
 #+RESULTS:
 
-**** Sampling the cosθ cross section
+*** Sampling the cosθ cross section
 
 Now we monte-carlo sample our distribution. We observe that the efficiency his very bad!
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -465,7 +463,9 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 Nice! And now draw some histograms.
 
 We define an auxilliary method for convenience.
-#+begin_src jupyter-python :exports both :results raw drawer
+#+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/plot_utils.py
+  import matplotlib.pyplot as plt
+
   def draw_histo(points, xlabel, bins=20):
       heights, edges = np.histogram(points, bins)
       centers = (edges[1:] + edges[:-1])/2
@@ -491,7 +491,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+RESULTS:
 [[file:./.ob-jupyter/8d1918ded7e3dac99fb6ae915aa5118ecd63e3b0.png]]
 
-**** Observables
+*** Observables
 Now we define some utilities to draw real 4-momentum samples.
 #+begin_src jupyter-python :exports both :tangle tangled/xs.py
   def sample_momenta(sample_num, interval, charge, esp, seed=None):
@@ -610,7 +610,7 @@ That looks somewhat fishy, but it isn't.
 [[file:./.ob-jupyter/739fdde6357d58890ef7847d0afc3277cffa9062.png]]
 this is strongly peaked at p_t=100GeV. (The jacobian goes like 1/x there!)
 
-**** Sampling the η cross section
+*** Sampling the η cross section
 An again we see that the efficiency is way, way! better...
 #+begin_src jupyter-python :exports both :results raw drawer
   η_sample, η_efficiency = \
