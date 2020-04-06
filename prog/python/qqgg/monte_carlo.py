@@ -187,16 +187,11 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
 
         weighted_f_values = f(sample_points, **kwargs)*interval_lengths[:, None]
 
-        # here the num_increments don't cancel, I could cancel one
-        # factor but I am not doing so for clariy
-        weighted_f_squared_values = (f(sample_points, **kwargs) \
-            *interval_lengths[:, None]*num_increments)**2
 
         # the mean here has absorbed the num_increments
         integral_steps = weighted_f_values.mean(axis=1)
         integral = integral_steps.sum()
-        variance = \
-            (weighted_f_squared_values.sum()/total_points - integral**2)/(total_points - 1)
+        variance = ((f(sample_points, **kwargs).std(axis=1)*interval_lengths)**2).sum() / (points_per_increment - 1)
         return integral, integral_steps, variance
 
     K = num_increments*1000
