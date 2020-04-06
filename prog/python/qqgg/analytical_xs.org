@@ -1,4 +1,9 @@
 #+PROPERTY: header-args :exports both :output-dir results :session xs :kernel python3
+#+HTML_HEAD: <link rel="stylesheet" href="tufte.css" />
+#+OPTIONS: html-style:nil
+#+HTML_CONTAINER: section
+#+TITLE: Investigaton of Monte-Carlo Methods
+#+AUTHOR: Valentin Boettcher
 
 * Init
 ** Required Modules
@@ -465,7 +470,8 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.07791911615649706
+: 0.08012365700385161
+<<cosθ-bare-eff>>
 
 Nice! And now draw some histograms.
 
@@ -635,6 +641,7 @@ An again we see that the efficiency is way, way! better...
 
 #+RESULTS:
 : 0.40768
+<<η-eff>>
 
 Let's draw a histogram to compare with the previous results.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -743,7 +750,10 @@ reduction visually.
 [[file:./.ob-jupyter/d2c93d61c2e37889a4e519dc1edd5eb32c6ca99c.png]]
 :END:
 
+
 I am batman!
+Now, draw a sample and look at the efficiency.
+
 #+begin_src jupyter-python :exports both :results raw drawer
   cosθ_sample_strat, cosθ_efficiency_strat = \
       monte_carlo.sample_unweighted_array(sample_num, dist_cosθ,
@@ -754,6 +764,9 @@ I am batman!
 
 #+RESULTS:
 : 0.5785
+
+If we compare that to [[cosθ-bare-eff]], we can see the improvement :P.
+It is even better the [[η-eff]].  The histogram looks just the same.
 
 #+begin_src jupyter-python :exports both :results raw drawer
 fig, _ = draw_histo(cosθ_sample_strat, r'$\cos\theta$')
