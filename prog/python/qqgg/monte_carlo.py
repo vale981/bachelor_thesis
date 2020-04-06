@@ -136,24 +136,6 @@ def sample_unweighted(f, interval, upper_bound=None, seed=None,
             yield (point, total_accepted/total_points) \
                 if report_efficiency else point
 
-def sample_unweighted_array(num, *args, report_efficiency=False, **kwargs):
-    """Sample `num` elements from a distribution.  The rest of the
-    arguments is analogous to `sample_unweighted`.
-    """
-
-    sample_arr = np.empty(num)
-    samples = sample_unweighted(*args, report_efficiency=report_efficiency,
-                                **kwargs)
-
-    for i, sample in zip(range(num), samples):
-        if report_efficiency:
-            sample_arr[i], _ = sample
-        else:
-            sample_arr[i] = sample
-
-    return (sample_arr, next(samples)[1]) if report_efficiency else sample_arr
-
-
 def integrate_vegas(f, interval, seed=None, num_increments=5,
                   point_density=1000, epsilon=1e-2, alpha=1.5, acumulate=True,
                   **kwargs):
@@ -299,20 +281,62 @@ def sample_stratified(f, increment_borders, seed=None, chunk_size=100,
     increment_count = increment_borders.size - 1
     increment_lenghts = increment_borders[1:] - increment_borders[:-1]
     weights = increment_count*increment_lenghts
-    increment_chunk_size = chunk_size/increment_count
+    increment_chunk = int(chunk_size/increment_count)
+    chunk_size = increment_chunk*increment_count
 
-    upper_bounds = \
+    upper_bound = \
         np.array([find_upper_bound(lambda x: f(x, **kwargs)*weight,
                                    [left_border, right_border]) \
                   for weight, left_border, right_border \
                   in zip(weights,
                         increment_borders[:-1],
-                        increment_borders[1:])])
+                        increment_borders[1:])]).max()
 
-    def allocate_random_chunk():
-        return np.random.uniform([*increment_borders[:-1], 0],
-                            [*increment_borders[1:], 1],
-                            [*(increment_chunk_size* \
-                               increment_lenghts).astype(int), increment_count + 1])
+    total_samples = 0
+    total_accepted = 0
 
-    breakpoint()
+    while True:
+        increment_samples = np.random.uniform(increment_borders[:-1],
+                                              increment_borders[1:],
+                                              [increment_chunk,
+                                               increment_count])
+        increment_y_samples = np.random.uniform(0, 1,
+                                                [increment_chunk,
+                                                 increment_count])
+        f_weighted = f(increment_samples)*weights  # numpy magic at work here
+        mask = f_weighted > increment_y_samples*upper_bound
+
+        if report_efficiency:
+            total_samples += chunk_size
+            total_accepted += np.count_nonzero(mask)
+
+        for point in increment_samples[mask]:
+            yield (point, total_accepted/total_samples) \
+                if report_efficiency else point
+
+def sample_unweighted_array(num, *args, increment_borders=None,
+                          report_efficiency=False, **kwargs):
+    """Sample `num` elements from a distribution.  The rest of the
+    arguments is analogous to `sample_unweighted`.
+    """
+
+    sample_arr = np.empty(num)
+    if 'chunk_size' not in kwargs:
+        kwargs['chunk_size'] = num*10
+    samples = \
+        sample_unweighted(*args,
+                          report_efficiency=report_efficiency,
+                          **kwargs) \
+                          if increment_borders is None else \
+                             sample_stratified(*args,
+                                               increment_borders=increment_borders,
+                                               report_efficiency=report_efficiency, **kwargs)
+
+
+    for i, sample in zip(range(num), samples):
+        if report_efficiency:
+            sample_arr[i], _ = sample
+        else:
+            sample_arr[i] = sample
+
+    return (sample_arr, next(samples)[1]) if report_efficiency else sample_arr

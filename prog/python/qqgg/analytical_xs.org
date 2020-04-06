@@ -21,6 +21,8 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 * Implementation
 #+NAME: 777a013b-6c20-44bd-b58b-6a7690c21c0e
@@ -262,7 +264,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-| 0.05346516777258366 | 0.0008394770936683888 |
+| 0.05338160186959831 | 0.0008391426563695812 |
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -270,7 +272,7 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.0535\pm 0.0008}{\pico\barn}\)
+: \(\sigma = \SI{0.0534\pm 0.0008}{\pico\barn}\)
 
 *** Integration over η
 Plot the intgrand of the pseudo rap.
@@ -293,7 +295,7 @@ save_fig(fig, 'xs_integrand_η', 'xs', size=[4, 4])
 #+end_src
 
 #+RESULTS:
-| 0.05374599933172363 | 0.00015913874688447323 |
+| 0.05357376653184792 | 0.00015904214943041251 |
 
 As we see, the result is a little better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.  But
@@ -306,7 +308,7 @@ tex_value(*xs_pb_η, unit=r'\pico\barn', prefix=r'\sigma = ', save=('results', '
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05375\pm 0.00016}{\pico\barn}\)
+: \(\sigma = \SI{0.05357\pm 0.00016}{\pico\barn}\)
 
 *** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
@@ -319,7 +321,7 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+end_src
 
 #+RESULTS:
-| 0.05383271556980879 | 5.8697299274703066e-05 |
+| 0.053732047403313145 | 6.599917745641934e-05 |
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. The uncertainty
@@ -332,7 +334,7 @@ And export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05383\pm 0.00006}{\pico\barn}\)
+: \(\sigma = \SI{0.05373\pm 0.00007}{\pico\barn}\)
 
 Surprisingly, without acumulation, the result ain't much different.
 This depends, of course, on the iteration count.
@@ -343,7 +345,7 @@ This depends, of course, on the iteration count.
 #+end_src
 
 #+RESULTS:
-| 0.05373265685410217 | 7.479245542403082e-05 |
+| 0.053972586551143995 | 8.059547531934951e-05 |
 
 *** Testing the Statistics
 Let's battle test the statistics.
@@ -360,7 +362,7 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.69
+: 0.686
 
 So we see: the standard deviation is sound.
 
@@ -379,7 +381,7 @@ Doing the same thing with =VEGAS= shows, that we overestimate σ here.
 #+end_src
 
 #+RESULTS:
-: 0.732
+: 0.752
 
 ** Sampling and Analysis
 Define the sample number.
@@ -411,7 +413,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.028114017961733698
+: 0.026783904317859316
 
 Our distribution has a lot of variance, as can be seen by plotting it.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -449,7 +451,7 @@ We define a friendly and easy to integrate upper limit function.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/1a720f93049e88987bdddac861b1c3847501e271.png]]
+[[file:./.ob-jupyter/8c7c128898710041f80d8fde24a5e3c63b084e1c.png]]
 
 
 To increase our efficiency, we have to specify an upper bound. That is
@@ -463,7 +465,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.08066307106598984
+: 0.07791911615649706
 
 Nice! And now draw some histograms.
 
@@ -501,7 +503,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/8f2405ccc7ab2bfffb972a90264a643568e89f85.png]]
+[[file:./.ob-jupyter/232ab8e8ba0cad843729bc144b2e252dbf878a99.png]]
 
 *** Observables
 Now we define some utilities to draw real 4-momentum samples.
@@ -573,13 +575,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  56.93266391,   8.65886675, -81.75387334],
-:        [100.        ,  28.45447743,  31.37854034,  90.58548405],
-:        [100.        ,  88.4931335 ,  43.12076463, -17.5944588 ],
+: array([[100.        ,  71.11224364,  66.31153844, -23.36297659],
+:        [100.        ,  58.54352186,  54.45149767,  60.06405289],
+:        [100.        ,  46.31471014,  30.52838901, -83.20435739],
 :        ...,
-:        [100.        ,  15.78169833,   5.68269845,  98.5831879 ],
-:        [100.        ,  99.38740019,   0.90223224,  11.01501976],
-:        [100.        ,  16.78337449,   8.67307353,  98.19926749]])
+:        [100.        ,  45.7527456 ,  30.1415044 ,  83.65510135],
+:        [100.        ,  33.32760816,  39.96210329, -85.39496961],
+:        [100.        ,  96.46223117,  21.72143559, -14.94045492]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -589,8 +591,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ff7b0b2fbe0> |
-[[file:./.ob-jupyter/ab80fc171671776666c12e9013e2c35062068df7.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f76ad3d08b0> |
+[[file:./.ob-jupyter/d79b1242a38a86dcf278461577afb324772302bf.png]]
 :END:
 
 
@@ -602,8 +604,8 @@ And the same for the p_t (transverse momentum) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ff7b0eecf70> |
-[[file:./.ob-jupyter/98a8615c6eed49d95608c765d0b2e42bb6b5e526.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f76acf46d30> |
+[[file:./.ob-jupyter/d98ab9ce26ed95da70f60706a946709c16d3e5dc.png]]
 :END:
 
 That looks somewhat fishy, but it isn't.
@@ -632,7 +634,7 @@ An again we see that the efficiency is way, way! better...
 #+end_src
 
 #+RESULTS:
-: 0.4013333333333333
+: 0.40768
 
 Let's draw a histogram to compare with the previous results.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -641,8 +643,8 @@ Let's draw a histogram to compare with the previous results.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ff7b069cc40> |
-[[file:./.ob-jupyter/b38fec2b5db9265a6b1e7c2e6c982914be5c75b7.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f76acf44520> |
+[[file:./.ob-jupyter/67c729625da77d98f246cc41287bc648e5f3e233.png]]
 :END:
 Looks good to me :).
 *** Sampling with =VEGAS=
@@ -697,8 +699,8 @@ distribution. We throw away the integral, but keep the increments.
 #+end_src
 
 #+RESULTS:
-: array([-0.9866143 , -0.94250098, -0.86713226, -0.71862544, -0.43795327,
-:         0.00532379,  0.44409926,  0.72107282,  0.86817008,  0.94306489,
+: array([-0.9866143 , -0.96792394, -0.92699951, -0.8308518 , -0.58953227,
+:        -0.00301925,  0.58870729,  0.83008478,  0.92657422,  0.96805422,
 :         0.9866143 ])
 
 Visualizing the increment borders gives us the information we want.
@@ -716,8 +718,8 @@ Visualizing the increment borders gives us the information we want.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7ff7a9c66550>
-[[file:./.ob-jupyter/b5376e1ea65dbac8a3ad789822898cfe182d160b.png]]
+: <matplotlib.legend.Legend at 0x7f76ac0e2a90>
+[[file:./.ob-jupyter/d36bc582af58790c173d3616d20c8365f0709d4e.png]]
 :END:
 
 We can now plot the reweighted distribution to observe the variance
@@ -737,10 +739,26 @@ reduction visually.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7ff7a96fa370>
-[[file:./.ob-jupyter/d3d3a00692be7ce837615d168098d9e76af8d657.png]]
+: <matplotlib.legend.Legend at 0x7f76ae0c4850>
+[[file:./.ob-jupyter/d2c93d61c2e37889a4e519dc1edd5eb32c6ca99c.png]]
 :END:
 
 I am batman!
+#+begin_src jupyter-python :exports both :results raw drawer
+  cosθ_sample_strat, cosθ_efficiency_strat = \
+      monte_carlo.sample_unweighted_array(sample_num, dist_cosθ,
+                                          increment_borders=increments,
+                                          report_efficiency=True)
+  cosθ_efficiency_strat
+#+end_src
 
-This is the ideal
+#+RESULTS:
+: 0.5785
+
+#+begin_src jupyter-python :exports both :results raw drawer
+fig, _ = draw_histo(cosθ_sample_strat, r'$\cos\theta$')
+save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
+#+end_src
+
+#+RESULTS:
+[[file:./.ob-jupyter/04dece7789d8b6daa17c861dce213c385c9344bc.png]]
