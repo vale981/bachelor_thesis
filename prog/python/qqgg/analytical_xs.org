@@ -326,7 +326,7 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+end_src
 
 #+RESULTS:
-| 0.053732047403313145 | 6.599917745641934e-05 |
+| 0.05381811134391227 | 5.139124553909084e-05 |
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. The uncertainty
@@ -339,7 +339,7 @@ And export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05373\pm 0.00007}{\pico\barn}\)
+: \(\sigma = \SI{0.05382\pm 0.00005}{\pico\barn}\)
 
 Surprisingly, without acumulation, the result ain't much different.
 This depends, of course, on the iteration count.
@@ -378,7 +378,7 @@ Doing the same thing with =VEGAS= shows, that we overestimate σ here.
   for _ in range(num_runs):
       val, err, _ = \
           monte_carlo.integrate_vegas(xs_pb_int, interval,
-                                      num_increments=4, alpha=1,
+                                      num_increments=8, alpha=1,
                                       point_density=1000, acumulate=False)
 
       if abs(xs_pb - val) <= err:
@@ -387,7 +387,7 @@ Doing the same thing with =VEGAS= shows, that we overestimate σ here.
 #+end_src
 
 #+RESULTS:
-: 0.639
+: 0.667
 
 ** Sampling and Analysis
 Define the sample number.
