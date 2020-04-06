@@ -309,7 +309,8 @@ occuring, the improvement is rather marginal.
 
 And yet again export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
-tex_value(*xs_pb_η, unit=r'\pico\barn', prefix=r'\sigma = ', save=('results', 'xs_mc_eta.tex'))
+  tex_value(*xs_pb_η, unit=r'\pico\barn', prefix=r'\sigma = ',
+            save=('results', 'xs_mc_eta.tex'))
 #+end_src
 
 #+RESULTS:
@@ -371,7 +372,7 @@ Let's battle test the statistics.
 
 So we see: the standard deviation is sound.
 
-Doing the same thing with =VEGAS= shows, that we overestimate σ here.
+Doing the same thing with =VEGAS= works as well.
 #+begin_src jupyter-python :exports both :results raw drawer
   num_runs = 1000
   num_within = 0
@@ -671,8 +672,8 @@ Let's define some little helpers.
       for increment in increment_borders[2:-1]:
           ax.axvline(x=increment, *args, **kwargs)
 
-  def plot_vegas_weighted_distribution(ax, points, dist, increment_borders, *args,
-                                     ,**kwargs):
+  def plot_vegas_weighted_distribution(ax, points, dist,
+                                       increment_borders, *args, **kwargs):
       """Plot the distribution with VEGAS weights applied.
 
       :param ax: axis
