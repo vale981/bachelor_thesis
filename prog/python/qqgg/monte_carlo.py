@@ -5,6 +5,7 @@ Author: Valentin Boettcher <hiro@protagon.space>
 import numpy as np
 from scipy.optimize import minimize_scalar, root
 
+
 def _process_interval(interval):
     assert len(interval) == 2, 'An interval has two endpoints'
 
@@ -13,7 +14,6 @@ def _process_interval(interval):
         a, b = b, a
 
     return [a, b]
-
 
 def integrate(f, interval, point_density=1000, seed=None, **kwargs):
     """Monte-Carlo integrates the functin `f` in an interval.
@@ -187,16 +187,17 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
 
         weighted_f_values = f(sample_points, **kwargs)*interval_lengths[:, None]
 
-        # here the num_increments don't cancel
+        # here the num_increments don't cancel, I could cancel one
+        # factor but I am not doing so for clariy
         weighted_f_squared_values = (f(sample_points, **kwargs) \
-            *interval_lengths[:, None])**2*num_increments
+            *interval_lengths[:, None]*num_increments)**2
 
+        # the mean here has absorbed the num_increments
         integral_steps = weighted_f_values.mean(axis=1)
         integral = integral_steps.sum()
-        variance = 1/(total_points - 1)\
-            *(weighted_f_squared_values.mean(axis=1).sum() - integral**2)
-
-        return integral_steps.sum(), integral_steps, variance
+        variance = \
+            (weighted_f_squared_values.sum()/total_points - integral**2)/(total_points - 1)
+        return integral, integral_steps, variance
 
     K = num_increments*1000
     increment_borders = interval_borders[1:-1] - interval_borders[0]

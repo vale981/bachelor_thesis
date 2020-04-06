@@ -367,7 +367,7 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.686
+: 0.677
 
 So we see: the standard deviation is sound.
 
@@ -378,15 +378,16 @@ Doing the same thing with =VEGAS= shows, that we overestimate σ here.
   for _ in range(num_runs):
       val, err, _ = \
           monte_carlo.integrate_vegas(xs_pb_int, interval,
-                                      num_increments=20, alpha=4,
+                                      num_increments=4, alpha=1,
                                       point_density=1000, acumulate=False)
+
       if abs(xs_pb - val) <= err:
           num_within += 1
   num_within/num_runs
 #+end_src
 
 #+RESULTS:
-: 0.752
+: 0.639
 
 ** Sampling and Analysis
 Define the sample number.
