@@ -6,6 +6,8 @@ import matplotlib.ticker as ticker
 import numpy as np
 import os
 import tikzplotlib
+from cycler import cycler
+
 ###############################################################################
 #                                   Utility                                   #
 ###############################################################################
@@ -55,7 +57,9 @@ matplotlib.rcParams.update({
     'font.family': 'serif',
     'text.usetex': False,
     'pgf.rcfonts': False,
+    'lines.linewidth': 1,
 })
+
 
 def pinmp_ticks(axis, ticks):
     axis.set_major_locator(ticker.MaxNLocator(ticks))
