@@ -33,8 +33,8 @@ def plot_increments(ax, increment_borders, label=None, *args, **kwargs):
     for increment in increment_borders[2:-1]:
         ax.axvline(x=increment, *args, **kwargs)
 
-def plot_vegas_weighted_distribution(ax, points, dist, increment_borders, *args,
-                                   **kwargs):
+def plot_vegas_weighted_distribution(ax, points, dist,
+                                     increment_borders, *args, **kwargs):
     """Plot the distribution with VEGAS weights applied.
 
     :param ax: axis
