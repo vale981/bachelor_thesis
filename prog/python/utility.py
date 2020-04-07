@@ -74,8 +74,8 @@ def set_up_plot(ticks=4, pimp_top=True, subplot=111, fig=None):
     pinmp_ticks(ax.xaxis, ticks)
     pinmp_ticks(ax.yaxis, ticks)
 
-    ax.grid(which='minor', alpha=.3)
-    ax.grid(which='major', alpha=.5)
+    ax.grid(which='minor', alpha=.1, linewidth=.2)
+    ax.grid(which='major', alpha=.3, linewidth=.2)
 
 
     if pimp_top:

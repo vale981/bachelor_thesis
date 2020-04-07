@@ -197,11 +197,11 @@ but that doen't reduce variance and would complicate things now.
    ax.set_ylabel(r'$\sigma$ [pb]')
    ax.set_xlim([0, max(η_s)])
    ax.set_ylim(0)
-   save_fig(fig, 'total_xs', 'xs', size=[2.5, 2])
+   save_fig(fig, 'total_xs', 'xs', size=[2.5, 2.5])
  #+end_src
 
  #+RESULTS:
- [[file:./.ob-jupyter/ac3b02ec166e0df1271348dbacacc2316d67028e.png]]
+ [[file:./.ob-jupyter/4522eb3fbeaa14978f9838371acb0650910b8dbf.png]]
 
 
  Compared to sherpa, it's pretty close.
@@ -220,20 +220,21 @@ but that doen't reduce variance and would complicate things now.
 ** Numerical Integration
 Plot our nice distribution:
 #+begin_src jupyter-python :exports both :results raw drawer
-plot_points = np.linspace(*plot_interval, 1000)
+  plot_points = np.linspace(*plot_interval, 1000)
 
-fig, ax = set_up_plot()
-ax.plot(plot_points, gev_to_pb(diff_xs(plot_points, charge=charge, esp=esp)))
-ax.set_xlabel(r'$\theta$')
-ax.set_ylabel(r'$d\sigma/d\Omega$ [pb]')
-ax.axvline(interval[0], color='gray', linestyle='--')
-ax.axvline(interval[1], color='gray', linestyle='--', label=rf'$|\eta|={η}$')
-ax.legend()
-save_fig(fig, 'diff_xs', 'xs', size=[2.5, 2])
+  fig, ax = set_up_plot()
+  ax.plot(plot_points, gev_to_pb(diff_xs(plot_points, charge=charge, esp=esp)))
+  ax.set_xlabel(r'$\theta$')
+  ax.set_ylabel(r'$d\sigma/d\Omega$ [pb]')
+  ax.set_xlim([plot_points.min(), plot_points.max()])
+  ax.axvline(interval[0], color='gray', linestyle='--')
+  ax.axvline(interval[1], color='gray', linestyle='--', label=rf'$|\eta|={η}$')
+  ax.legend()
+  save_fig(fig, 'diff_xs', 'xs', size=[2.5, 2.5])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/c9b71617a1208604b29d73e4f0197610e7cfe99d.png]]
+[[file:./.ob-jupyter/3dd905e7608b91a9d89503cb41660152f3b4b55c.png]]
 
 Define the integrand.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -260,7 +261,7 @@ Plot the integrand. # TODO: remove duplication
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/e0ff5a888d8b509a7651c44d8a1216595b725ba9.png]]
+[[file:./.ob-jupyter/61295cc20dae8773a18000aeb2061d2a0ebcb127.png]]
 *** Integral over θ
 Intergrate σ with the mc method.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -270,7 +271,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-| 0.053382020808528406 | 0.0008336167380952699 |
+| 0.05441643331124812 | 0.000850414167068247 |
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -278,7 +279,7 @@ tex_value(xs_pb_mc, unit=r'\pico\barn', prefix=r'\sigma = ', err=xs_pb_mc_err, s
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.0534\pm 0.0008}{\pico\barn}\)
+: \(\sigma = \SI{0.0544\pm 0.0009}{\pico\barn}\)
 
 *** Integration over η
 Plot the intgrand of the pseudo rap.
@@ -292,7 +293,7 @@ save_fig(fig, 'xs_integrand_η', 'xs', size=[4, 4])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/92b46e2139d3c345ee37be28aa256105a6c926c5.png]]
+[[file:./.ob-jupyter/fbaa531378c7a86046100d44eb3fafe1df80c4ac.png]]
 
 #+begin_src jupyter-python :exports both :results raw drawer
   xs_pb_η = monte_carlo.integrate(xs_pb_int_η,
@@ -301,7 +302,7 @@ save_fig(fig, 'xs_integrand_η', 'xs', size=[4, 4])
 #+end_src
 
 #+RESULTS:
-| 0.053779012613814334 | 0.0001579614357163564 |
+| 0.05387227556308623 | 0.00015784230303183058 |
 
 As we see, the result is a little better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.  But
@@ -315,7 +316,7 @@ And yet again export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05378\pm 0.00016}{\pico\barn}\)
+: \(\sigma = \SI{0.05387\pm 0.00016}{\pico\barn}\)
 
 *** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
@@ -328,7 +329,7 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+end_src
 
 #+RESULTS:
-| 0.053731811180199644 | 6.830920893509916e-05 |
+| 0.05382003923613133 | 5.515086040159631e-05 |
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. The uncertainty
@@ -341,7 +342,7 @@ And export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05373\pm 0.00007}{\pico\barn}\)
+: \(\sigma = \SI{0.05382\pm 0.00006}{\pico\barn}\)
 
 Surprisingly, without acumulation, the result ain't much different.
 This depends, of course, on the iteration count.
@@ -352,7 +353,7 @@ This depends, of course, on the iteration count.
 #+end_src
 
 #+RESULTS:
-| 0.053772195195401516 | 7.447829565707063e-05 |
+| 0.05378075568964776 | 7.452808684393069e-05 |
 
 *** Testing the Statistics
 Let's battle test the statistics.
@@ -369,7 +370,7 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.665
+: 0.694
 
 So we see: the standard deviation is sound.
 
@@ -389,7 +390,7 @@ Doing the same thing with =VEGAS= works as well.
 #+end_src
 
 #+RESULTS:
-: 0.685
+: 0.672
 
 ** Sampling and Analysis
 Define the sample number.
@@ -421,7 +422,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.027366713967159943
+: 0.027772146766673424
 
 Our distribution has a lot of variance, as can be seen by plotting it.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -435,7 +436,7 @@ Our distribution has a lot of variance, as can be seen by plotting it.
 #+RESULTS:
 :RESULTS:
 : Text(0, 0.5, '$\\frac{d\\sigma}{d\\Omega}$')
-[[file:./.ob-jupyter/c94d996aaf4307b7b2d810f95c45a2fea297e99a.png]]
+[[file:./.ob-jupyter/6921725d93ce91ce1e0364e6f745d46f3a76b3f2.png]]
 :END:
 
 We define a friendly and easy to integrate upper limit function.
@@ -459,7 +460,7 @@ We define a friendly and easy to integrate upper limit function.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/25410dc62d8f53bb26a96887adc2f78b7426615d.png]]
+[[file:./.ob-jupyter/ddfcebac4157ce417e5b868a88731d554c726141.png]]
 
 
 To increase our efficiency, we have to specify an upper bound. That is
@@ -473,7 +474,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.08113723900263531
+: 0.07994628015406446
 <<cosθ-bare-eff>>
 
 Nice! And now draw some histograms.
@@ -512,7 +513,166 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/3e8bc82501001f331aac198031a022a99e173885.png]]
+:RESULTS:
+# [goto error]
+#+begin_example
+
+  BrokenPipeErrorTraceback (most recent call last)
+  <ipython-input-188-c43713624618> in <module>
+        1 fig, _ = draw_histo(cosθ_sample, r'$\cos\theta$')
+  ----> 2 save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
+
+  ~/Documents/Projects/UNI/Bachelor/prog/python/utility.py in save_fig(fig, title, folder, size)
+      101
+      102     fig.savefig(f'./figs/{folder}/{title}.pdf')
+  --> 103     fig.savefig(f'./figs/{folder}/{title}.pgf')
+      104
+      105
+
+  /usr/lib/python3.8/site-packages/matplotlib/figure.py in savefig(self, fname, transparent, **kwargs)
+     2201             self.patch.set_visible(frameon)
+     2202
+  -> 2203         self.canvas.print_figure(fname, **kwargs)
+     2204
+     2205         if frameon:
+
+  /usr/lib/python3.8/site-packages/matplotlib/backend_bases.py in print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, **kwargs)
+     2096
+     2097             try:
+  -> 2098                 result = print_method(
+     2099                     filename,
+     2100                     dpi=dpi,
+
+  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in print_pgf(self, fname_or_fh, *args, **kwargs)
+      888             if not cbook.file_requires_unicode(file):
+      889                 file = codecs.getwriter("utf-8")(file)
+  --> 890             self._print_pgf_to_fh(file, *args, **kwargs)
+      891
+      892     def _print_pdf_to_fh(self, fh, *args, **kwargs):
+
+  /usr/lib/python3.8/site-packages/matplotlib/cbook/deprecation.py in wrapper(*args, **kwargs)
+      356                 f"%(removal)s.  If any parameter follows {name!r}, they "
+      357                 f"should be pass as keyword, not positionally.")
+  --> 358         return func(*args, **kwargs)
+      359
+      360     return wrapper
+
+  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _print_pgf_to_fh(self, fh, dryrun, bbox_inches_restore, *args, **kwargs)
+      870                                      RendererPgf(self.figure, fh),
+      871                                      bbox_inches_restore=bbox_inches_restore)
+  --> 872         self.figure.draw(renderer)
+      873
+      874         # end the pgfpicture environment
+
+  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
+       36                 renderer.start_filter()
+       37
+  ---> 38             return draw(artist, renderer, *args, **kwargs)
+       39         finally:
+       40             if artist.get_agg_filter() is not None:
+
+  /usr/lib/python3.8/site-packages/matplotlib/figure.py in draw(self, renderer)
+     1733
+     1734             self.patch.draw(renderer)
+  -> 1735             mimage._draw_list_compositing_images(
+     1736                 renderer, self, artists, self.suppressComposite)
+     1737
+
+  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
+      135     if not_composite or not has_images:
+      136         for a in artists:
+  --> 137             a.draw(renderer)
+      138     else:
+      139         # Composite any adjacent images together
+
+  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
+       36                 renderer.start_filter()
+       37
+  ---> 38             return draw(artist, renderer, *args, **kwargs)
+       39         finally:
+       40             if artist.get_agg_filter() is not None:
+
+  /usr/lib/python3.8/site-packages/matplotlib/axes/_base.py in draw(self, renderer, inframe)
+     2628             renderer.stop_rasterizing()
+     2629
+  -> 2630         mimage._draw_list_compositing_images(renderer, self, artists)
+     2631
+     2632         renderer.close_group('axes')
+
+  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
+      135     if not_composite or not has_images:
+      136         for a in artists:
+  --> 137             a.draw(renderer)
+      138     else:
+      139         # Composite any adjacent images together
+
+  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
+       36                 renderer.start_filter()
+       37
+  ---> 38             return draw(artist, renderer, *args, **kwargs)
+       39         finally:
+       40             if artist.get_agg_filter() is not None:
+
+  /usr/lib/python3.8/site-packages/matplotlib/axis.py in draw(self, renderer, *args, **kwargs)
+     1226
+     1227         ticks_to_draw = self._update_ticks()
+  -> 1228         ticklabelBoxes, ticklabelBoxes2 = self._get_tick_bboxes(ticks_to_draw,
+     1229                                                                 renderer)
+     1230
+
+  /usr/lib/python3.8/site-packages/matplotlib/axis.py in _get_tick_bboxes(self, ticks, renderer)
+     1171     def _get_tick_bboxes(self, ticks, renderer):
+     1172         """Return lists of bboxes for ticks' label1's and label2's."""
+  -> 1173         return ([tick.label1.get_window_extent(renderer)
+     1174                  for tick in ticks if tick.label1.get_visible()],
+     1175                 [tick.label2.get_window_extent(renderer)
+
+  /usr/lib/python3.8/site-packages/matplotlib/axis.py in <listcomp>(.0)
+     1171     def _get_tick_bboxes(self, ticks, renderer):
+     1172         """Return lists of bboxes for ticks' label1's and label2's."""
+  -> 1173         return ([tick.label1.get_window_extent(renderer)
+     1174                  for tick in ticks if tick.label1.get_visible()],
+     1175                 [tick.label2.get_window_extent(renderer)
+
+  /usr/lib/python3.8/site-packages/matplotlib/text.py in get_window_extent(self, renderer, dpi)
+      903             raise RuntimeError('Cannot get window extent w/o renderer')
+      904
+  --> 905         bbox, info, descent = self._get_layout(self._renderer)
+      906         x, y = self.get_unitless_position()
+      907         x, y = self.get_transform().transform((x, y))
+
+  /usr/lib/python3.8/site-packages/matplotlib/text.py in _get_layout(self, renderer)
+      297             clean_line, ismath = self._preprocess_math(line)
+      298             if clean_line:
+  --> 299                 w, h, d = renderer.get_text_width_height_descent(
+      300                     clean_line, self._fontproperties, ismath=ismath)
+      301             else:
+
+  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_text_width_height_descent(self, s, prop, ismath)
+      755
+      756         # get text metrics in units of latex pt, convert to display units
+  --> 757         w, h, d = (LatexManager._get_cached_or_new()
+      758                    .get_width_height_descent(s, prop))
+      759         # TODO: this should be latex_pt_to_in instead of mpl_pt_to_in
+
+  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_width_height_descent(self, text, prop)
+      356
+      357         # send textbox to LaTeX and wait for prompt
+  --> 358         self._stdin_writeln(textbox)
+      359         try:
+      360             self._expect_prompt()
+
+  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _stdin_writeln(self, s)
+      257         self.latex_stdin_utf8.write(s)
+      258         self.latex_stdin_utf8.write("\n")
+  --> 259         self.latex_stdin_utf8.flush()
+      260
+      261     def _expect(self, s):
+
+  BrokenPipeError: [Errno 32] Broken pipe
+#+end_example
+[[file:./.ob-jupyter/2109dc7fa61ccb899191ba1a68895df01b749783.png]]
+:END:
 
 *** Observables
 Now we define some utilities to draw real 4-momentum samples.
@@ -591,13 +751,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  34.68438203,  28.21611696, -89.44743924],
-:        [100.        ,  47.30213877,  35.31219787,  80.71899621],
-:        [100.        ,  92.82148885,  36.57576574,   6.81062174],
+: array([[100.        ,  38.24641519,  22.76579296,  89.5484807 ],
+:        [100.        ,  48.14652483,  29.97226738, -82.36246314],
+:        [100.        ,  65.02515029,  25.82470275, -71.44798498],
 :        ...,
-:        [100.        ,  57.30653234,  73.69684619,  35.8432171 ],
-:        [100.        ,  18.00393271,   5.53427576,  98.21013287],
-:        [100.        ,  71.66331811,  15.42119249, -68.01878902]])
+:        [100.        ,  77.44294062,  27.84365663,  56.80952151],
+:        [100.        ,  51.47029015,  16.47983968,  84.13812522],
+:        [100.        ,  40.1313622 ,  23.07278301, -88.64039966]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -607,8 +767,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9f4de34160> |
-[[file:./.ob-jupyter/a96cd332697229119cf01ee425f1d20d5cee0fb2.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9f4c6f0700> |
+[[file:./.ob-jupyter/095e1870e99249bdc8fc6132b3fb473a09d41a08.png]]
 :END:
 
 
@@ -620,8 +780,8 @@ And the same for the p_t (transverse momentum) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9f4d5b49a0> |
-[[file:./.ob-jupyter/f179f03ce3c0797a0323f636828c23f1b68091bc.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9f4c266f40> |
+[[file:./.ob-jupyter/47d65a874109d682e1f2ca862c1560d63060867c.png]]
 :END:
 
 That looks somewhat fishy, but it isn't.
@@ -637,7 +797,7 @@ That looks somewhat fishy, but it isn't.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/ec6b410ca8dd86985504bac4e801bf8336414887.png]]
+[[file:./.ob-jupyter/e127df693158dd4194b53f0a6f66ca2fca18af41.png]]
 this is strongly peaked at p_t=100GeV. (The jacobian goes like 1/x there!)
 
 *** Sampling the η cross section
@@ -650,7 +810,7 @@ An again we see that the efficiency is way, way! better...
 #+end_src
 
 #+RESULTS:
-: 0.4066
+: 0.4063
 <<η-eff>>
 
 Let's draw a histogram to compare with the previous results.
@@ -660,10 +820,13 @@ Let's draw a histogram to compare with the previous results.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9f4cd48b50> |
-[[file:./.ob-jupyter/5a168895d1bab706b21f7aa0476cee30dc96bc82.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f9f4bdf4310> |
+[[file:./.ob-jupyter/87c196391955136cfeb479ee23972bf971d855d3.png]]
 :END:
+
+
 Looks good to me :).
+
 *** Sampling with =VEGAS=
 Let's define some little helpers.
 #+begin_src jupyter-python :exports both :tangle tangled/plot_utils.py
@@ -716,8 +879,8 @@ distribution. We throw away the integral, but keep the increments.
 #+end_src
 
 #+RESULTS:
-: array([-0.9866143 , -0.9568834 , -0.89880566, -0.7731981 , -0.50508996,
-:         0.00428964,  0.51249399,  0.7775964 ,  0.90011062,  0.95706595,
+: array([-0.9866143 , -0.87001384, -0.7269742 , -0.51294698, -0.26484439,
+:         0.00164873,  0.26764024,  0.5151555 ,  0.72867548,  0.87054888,
 :         0.9866143 ])
 
 Visualizing the increment borders gives us the information we want.
@@ -735,8 +898,8 @@ Visualizing the increment borders gives us the information we want.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f9f4cbe39d0>
-[[file:./.ob-jupyter/2f93c795fd70016e122cf92c324d03a5cf06a327.png]]
+: <matplotlib.legend.Legend at 0x7f9f4bdd9940>
+[[file:./.ob-jupyter/1979e2f4e4298c8863a47e15c2ccd833b29302bc.png]]
 :END:
 
 We can now plot the reweighted distribution to observe the variance
@@ -756,8 +919,8 @@ reduction visually.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f9f4cb14850>
-[[file:./.ob-jupyter/c982484453c2c20fd1b6c2aa2bf4fde70ae77725.png]]
+: <matplotlib.legend.Legend at 0x7f9f4bb7ebb0>
+[[file:./.ob-jupyter/a506325aead3d6cf25f8e7cf5498c271cdc9ed7f.png]]
 :END:
 
 
@@ -773,7 +936,7 @@ Now, draw a sample and look at the efficiency.
 #+end_src
 
 #+RESULTS:
-: 0.3732
+: 0.0913
 
 If we compare that to [[cosθ-bare-eff]], we can see the improvement :P.
 It is even better the [[η-eff]].  The histogram looks just the same.
@@ -784,4 +947,4 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/1225a52ec975a00ef7e758afcf7726ba9cf41b5e.png]]
+[[file:./.ob-jupyter/a227f2678a85eae05938eadc8a2be8c9a7fd6835.png]]
