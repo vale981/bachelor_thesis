@@ -9,6 +9,7 @@ on:
     branches: [ master ]
     paths:
       - 'latex/**'
+      - 'results/**'
   pull_request:
     branches: [ master ]
 
