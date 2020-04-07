@@ -10,7 +10,7 @@
 \usepackage{graphicx, booktabs, float, scrhack}
 \usepackage{amsmath,amssymb}
 \usepackage[automark]{scrlayer-scrpage}
-%\usepackage[backend=biber,style=verbose,sortcase=false,language=english]{biblatex}
+\usepackage[backend=biber, language=english, style=phys]{biblatex}
 \usepackage{siunitx}
 \usepackage[pdfencoding=auto]{hyperref} % load late
 % \usepackage[activate={true,nocompatibility},final,tracking=true,spacing=true,factor=1100,stretch=10,shrink=10]{microtype}
@@ -57,9 +57,10 @@ labelformat=brace, position=top]{subcaption}
 \captionsetup{justification=centering}
 
 %% Labels
-\labelformat{section}{section #1}
-\labelformat{figure}{figure #1}
-\labelformat{table}{table #1}
+\labelformat{chapter}{chapter~#1}
+\labelformat{section}{section~#1}
+\labelformat{figure}{figure~#1}
+\labelformat{table}{table~#1}
 
 % Macros
 
@@ -93,3 +94,13 @@ labelformat=brace, position=top]{subcaption}
 
 %% Notes on Equations
 \newcommand{\shorteqnote}[1]{ &  & \text{\small\llap{#1}}}
+
+%% Sherpa
+\newcommand{\sherpa}{\texttt{Sherpa}}
+
+%% Expected Value and Variance
+\newcommand{\EX}[1]{\operatorname{E}\qty[#1]}
+\newcommand{\VAR}[1]{\operatorname{VAR}\qty[#1]}
+
+%% Uppercase Rho
+\newcommand{\Rho}{P}

@@ -1,0 +1,99 @@
+%%% Local Variables: ***
+%%% mode: latex ***
+%%% TeX-master: "../../document.tex"  ***
+%%% End: ***
+
+\section{Monte-Carlo Integration}
+\label{sec:mctheory}
+
+Consider a function
+\(f: \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\) and a
+probability density on \(\Omega\)
+\(\rho: \vb{x}\in\mathbb{R}^n\mapsto\mathbb{R}_{\geq 0}\) with
+\(\int_{\Omega}\rho(\vb{x})\dd{\vb{x}} = 1\).  By multiplying \(f\)
+with a \(1\) in the fashion of~\eqref{eq:baseintegral}, the Integral
+of \(f\) over \(\Omega\) can be interpreted as the expected value
+\(\EX{F/\Rho}\) of the random variable \(F/\Rho\)
+under the distribution \(\rho\).
+
+\begin{equation}
+  \label{eq:baseintegral}
+  I = \int_\Omega f(\vb{x}) \dd{\vb{x}} = \int_\Omega
+  \qty[\frac{f(\vb{x})}{\rho(\vb{x})}] \rho(\vb{x}) \dd{\vb{x}} = \EX{\frac{F}{\Rho}}
+\end{equation}
+
+The expected value \(\EX{F/\Rho}\) can be approximate by taking the
+mean of \(F/\Rho\) with \(N\) finite samples
+\(\{\vb{x}_i\}_{i\in\overline{1,N}}\sim\rho\) (distributed according to
+\(\rho\)), where \(N\) is usually a very large integer.
+
+\begin{equation}
+  \label{eq:approxexp}
+  \EX{\frac{F}{\Rho}} \approx
+  \frac{1}{N}\sum_{i=1}^N\frac{f(\vb{x_i})}{\rho(\vb{x_i})}
+  \xrightarrow{N\rightarrow\infty} I
+\end{equation}
+
+The convergence of~\eqref{eq:approxexp} is due to the nature of the
+expected value~\eqref{eq:evalue-mean} and
+variance~\eqref{eq:variance-mean} of the mean
+\(\overline{X} = \frac{1}{N}\sum_i X_i\) of \(N\) uncorrelated random
+variables \(\{X_i\}_{i\in\overline{1,N}}\) with the same distribution,
+expected value \(\EX{X_i}=\mathbb{E}\) and variance
+\(\sigma_i^2 = \sigma^2\).
+
+\begin{align}
+  \EX{\overline{X}} = \frac{1}{N}\sum_i\EX{X_i} = \mathbb{E} \label{eq:evalue-mean}\\
+  \sigma^2_{\overline{X}} = \sum_i\frac{\sigma_i^2}{N^2} =
+                            \frac{\sigma^2}{N}  \label{eq:variance-mean}
+\end{algin}
+
+Evidently \(\frac{\sigma^2}{N}\xrightarrow{N\rightarrow\infty} 0\)
+thus the~\eqref{eq:approxexp} really converges to \(I\). For finite
+\(N\) value of~\eqref{eq:approxexp} varies around \(I\) with the
+variance \(\VAR{F/\Rho}\cdot N^{-1}\) as in~\eqref{eq:varI}.
+
+\begin{align}
+  \VAR{\frac{F}{\Rho}} &= \int_\Omega \qty[I -
+  \frac{f(\vb{x})}{\rho(\vb{x})}]^2 \rho({\vb{x}}) \dd{\vb{x}} =
+  \int_\Omega \qty[\qty(\frac{f(\vb{x})}{\rho(\vb{x})})^2 -
+  I^2]\rho({\vb{x}}) \dd{\vb{x}}   \label{eq:varI}
+ \\
+  &\approx \frac{1}{N - 1}\sum_i \qty[I -
+  \frac{f(\vb{x_i})}{\rho(\vb{x_i})}]^2  \label{eq:varI-approx}
+\end{align}
+
+The name of the game is thus to reduce \(\VAR{F/\Rho}\) to speed up
+the convergence of~\eqref{eq:approxexp} and achieve higher accuracy
+with fewer function evaluations.
+
+The simplest choice for \(\rho\) is clearly given
+by~\eqref{eq:simplep}, the uniform distribution.
+
+\begin{equation}
+  \label{eq:simplep}
+  \rho(\vb{x}) = \frac{1}{\int_{\Omega}1\dd{\vb{x'}}} =
+  \frac{1}{\abs{\Omega}}
+\end{equation}
+
+With this distribution~\eqref{eq:approxexp}
+becomes~\eqref{eq:approxexp-uniform}. In other words, \(I\) is just
+the mean of \(f\) in \(\Omega\), henceforth
+called \(\bar{f}\), multiplied with the volume.
+
+\begin{equation}
+  \label{eq:approxexp-uniform}
+  \EX{\frac{F}{\Rho}} \approx
+  \frac{\abs{\Omega}}{N}\sum_{i=1}^N f(\vb{x_i}) = \abs{\Omega}\cdot\bar{f}
+\end{equation}
+
+The variance \(\VAR{I}=\VAR{F/\Rho}\) is now given
+by~\ref{eq:approxvar-I}. Note that the factor \(\abs{\omega}\) gets
+squared when approximating the integral to the sum.
+
+\begin{equation}
+  \label{eq:approxvar-I}
+  \VAR{I} = \abs{\Omega}\int_\Omega f(\vb{x})^2 -
+  I^2 \dd{\vb{x}} \equiv \abs{\Omega}\cdot\sigma_f^2 \approx
+  \frac{\abs{\Omega}^2}{N-1}\sum_{i}\qty[f(\vb{x}_i) - \bar{f}]^2
+\end{equation}

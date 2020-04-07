@@ -3,7 +3,7 @@ twoside=false,toc=listof,toc=bibliography,fleqn,leqno,
 captions=nooneline,captions=tableabove,english]{scrbook}
 
 \usepackage{hirostyle}
-%\addbibresource{thesis.bib}
+\addbibresource{thesis.bib}
 
 \title{Title}
 \author{Valentin Boettcher}
@@ -16,15 +16,15 @@ captions=nooneline,captions=tableabove,english]{scrbook}
 \input{./tex/qqgammagamma/calculation.tex}
 \input{./tex/qqgammagamma/comparison.tex}
 
-\listoffigures
-\listoftables
+\input{./tex/monte-carlo.tex}
+\input{./tex/monte-carlo/theory.tex}
+
 
 \appendix
 \input{./tex/appendix.tex}
 
-% Bibliography:
-
 \clearpage
-% \input{./tex/mybibliography.tex}
-
+\listoffigures
+\listoftables
+\printbibliography
 \end{document}
