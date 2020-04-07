@@ -7,4 +7,4 @@ thesis: document.tex
 .PHONY: clean
 
 clean:
-	rm -f $(OUTDIR)/*
+	rm -rf $(OUTDIR)/*
