@@ -8,3 +8,4 @@ thesis: document.tex
 
 clean:
 	rm -rf $(OUTDIR)/*
+	mkdir -p $(OUTDIR)/tikz
