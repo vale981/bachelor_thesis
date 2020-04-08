@@ -22,6 +22,14 @@ class IntegrationResult:
     sigma: float
     N: int
 
+    @property
+    def combined_result(self):
+        """
+        Get the result and accuracy combined as tuple.
+        """
+
+        return self.result, self.sigma
+
 def integrate(f, interval, epsilon=.01,
             seed=None, **kwargs) -> IntegrationResult:
     """Monte-Carlo integrates the functin `f` in an interval.
