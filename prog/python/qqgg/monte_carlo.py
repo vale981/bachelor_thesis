@@ -261,7 +261,7 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
     integrals = []
     variances = []
 
-    vegas_iterations = 0
+    vegas_iterations, integral, variance = 0, 0, 0
     while True:
         vegas_iterations += 1
         interval_lengths = interval_borders[1:] - interval_borders[:-1]
@@ -312,38 +312,40 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
 
         interval_borders[1:-1] = interval_borders[0] + increment_borders
         if np.linalg.norm(increment_borders - new_increment_borders) < epsilon:
-            # brute force increase of the sample size
-            if np.sqrt(variance) >= target_epsilon:
-                while True:
-                    integral, _, variance = \
-                        evaluate_integrand(interval_borders,
-                                           interval_lengths,
-                                           points_per_increment)
-
-                    integrals.append(integral)
-                    variances.append(variance)
-
-                    if np.sqrt(variance) <= target_epsilon:
-                        break
-
-                    points_per_increment += int(100 *
-                                                interval_length/num_increments)
-
-            if acumulate:
-                integrals = np.array(integrals)
-                variances = np.array(variances)
-                integral = np.sum(integrals**3/variances**2) \
-                    / np.sum(integrals**2/variances**2)
-                variance = 1/np.sqrt(np.sum(integrals**2/variances**2)) \
-                    * integral
-
-            return VegasIntegrationResult(integral,
-                                          np.sqrt(variance),
-                                          points_per_increment*num_increments,
-                                          interval_borders,
-                                          vegas_iterations)
+            break
 
         increment_borders = new_increment_borders
+
+    # brute force increase of the sample size
+    if np.sqrt(variance) >= target_epsilon:
+        while True:
+            integral, _, variance = \
+                evaluate_integrand(interval_borders,
+                                   interval_lengths,
+                                   points_per_increment)
+
+            integrals.append(integral)
+            variances.append(variance)
+
+            if np.sqrt(variance) <= target_epsilon:
+                break
+
+            points_per_increment += int(100 *
+                                        interval_length/num_increments)
+
+    if acumulate:
+        integrals = np.array(integrals)
+        variances = np.array(variances)
+        integral = np.sum(integrals**3/variances**2) \
+            / np.sum(integrals**2/variances**2)
+        variance = 1/np.sqrt(np.sum(integrals**2/variances**2)) \
+            * integral
+
+    return VegasIntegrationResult(integral,
+                                  np.sqrt(variance),
+                                  points_per_increment*num_increments,
+                                  interval_borders,
+                                  vegas_iterations)
 
 
 def sample_stratified(f, increment_borders, seed=None, chunk_size=100,
