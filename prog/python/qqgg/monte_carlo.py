@@ -18,6 +18,11 @@ def _process_interval(interval):
 
 @dataclass
 class IntegrationResult:
+    """
+    A simple container class to hold the result, uncertainty and
+    sampling size of the naive monte-carlo integration.
+    """
+
     result: float
     sigma: float
     N: int
@@ -32,7 +37,7 @@ class IntegrationResult:
 
 def integrate(f, interval, epsilon=.01,
             seed=None, **kwargs) -> IntegrationResult:
-    """Monte-Carlo integrates the functin `f` in an interval.
+    """Monte-Carlo integrates the function `f` over an interval.
 
     :param f: function of one variable, kwargs are passed to it
     :param tuple interval: a 2-tuple of numbers, specifiying the
@@ -168,9 +173,23 @@ def sample_unweighted(f, interval, upper_bound=None, seed=None,
             yield (point, total_accepted/total_points) \
                 if report_efficiency else point
 
+
+@dataclass
+class VegasIntegrationResult(IntegrationResult):
+    """
+    A simple container class to hold the result, uncertainty and
+    sampling size of the naive monte-carlo integration.
+
+    The ascertained increment borders, as well as the total sample
+    size are available as well.
+    """
+
+    increment_borders: np.ndarray
+    vegas_iterations: int
+
 def integrate_vegas(f, interval, seed=None, num_increments=5,
-                  point_density=1000, epsilon=1e-2, alpha=1.5, acumulate=True,
-                  **kwargs):
+                  target_epsilon=1e-3, epsilon=1e-2, alpha=1.5, acumulate=True,
+                  **kwargs) -> VegasIntegrationResult:
     """Integrate the given function (in one dimension) with the vegas
     algorithm to reduce variance.  This implementation follows the
     description given in JOURNAL OF COMPUTATIONAL 27, 192-203 (1978).
@@ -206,16 +225,22 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
     if seed:
         np.random.seed(seed)
 
-    # start with equally sized intervals
-    interval_borders = np.linspace(*interval, num_increments + 1, endpoint=True)
 
-    points_per_increment = int(point_density*interval_length/num_increments)
+    # no clever logic is being used to define the vegas iteration
+    # sample density for the sake of simplicity
+    points_per_increment = int(100*interval_length/num_increments)
     total_points = points_per_increment*num_increments
 
-    def evaluate_integrand(interval_borders, interval_lengths):
+    # start with equally sized intervals
+    interval_borders = np.linspace(*interval, num_increments + 1,
+                                   endpoint=True)
+
+    def evaluate_integrand(interval_borders, interval_lengths,
+                         samples_per_increment):
         intervals = np.array((interval_borders[:-1], interval_borders[1:]))
         sample_points = np.random.uniform(*intervals,
-                                          (points_per_increment, num_increments)).T
+                                          (samples_per_increment,
+                                           num_increments)).T
 
         weighted_f_values = f(sample_points, **kwargs)*interval_lengths[:, None]
 
@@ -223,7 +248,9 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
         # the mean here has absorbed the num_increments
         integral_steps = weighted_f_values.mean(axis=1)
         integral = integral_steps.sum()
-        variance = ((f(sample_points, **kwargs).std(axis=1)*interval_lengths)**2).sum() / (points_per_increment - 1)
+        variance = \
+            ((f(sample_points, **kwargs).std(axis=1)
+              * interval_lengths)**2).sum() / (samples_per_increment - 1)
         return integral, integral_steps, variance
 
     K = num_increments*1000
@@ -232,10 +259,13 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
     integrals = []
     variances = []
 
+    vegas_iterations = 0
     while True:
+        vegas_iterations += 1
         interval_lengths = interval_borders[1:] - interval_borders[:-1]
         integral, integral_steps, variance = \
-            evaluate_integrand(interval_borders, interval_lengths)
+            evaluate_integrand(interval_borders,
+                               interval_lengths, points_per_increment)
 
         integrals.append(integral)
         variances.append(variance)
@@ -279,15 +309,35 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
 
         interval_borders[1:-1] = interval_borders[0] + increment_borders
         if np.linalg.norm(increment_borders - new_increment_borders) < epsilon:
-            if not acumulate:
-                return integrals[-1], np.sqrt(variances[-1]), interval_borders
+            # brute force increase of the sample size
+            if np.sqrt(variance) >= target_epsilon:
+                while True:
+                    integral, _, variance = \
+                        evaluate_integrand(interval_borders,
+                                           interval_lengths,
+                                           points_per_increment)
 
-            integrals = np.array(integrals)
-            variances = np.array(variances)
-            integral = np.sum(integrals**3/variances**2) \
-                /np.sum(integrals**2/variances**2)
-            mean_variance = 1/np.sqrt(np.sum(integrals**2/variances**2))*integral
-            return integral, np.sqrt(mean_variance), interval_borders
+                    integrals.append(integral)
+                    variances.append(variance)
+
+                    if np.sqrt(variance) <= target_epsilon:
+                        break
+
+                    points_per_increment += int(100 * interval_length/num_increments)
+
+            if acumulate:
+                integrals = np.array(integrals)
+                variances = np.array(variances)
+                integral = np.sum(integrals**3/variances**2) \
+                    / np.sum(integrals**2/variances**2)
+                variance = 1/np.sqrt(np.sum(integrals**2/variances**2)) \
+                    * integral
+
+            return VegasIntegrationResult(integral,
+                                     np.sqrt(variance),
+                                     points_per_increment*num_increments,
+                                     interval_borders,
+                                     vegas_iterations)
 
         increment_borders = new_increment_borders
 
