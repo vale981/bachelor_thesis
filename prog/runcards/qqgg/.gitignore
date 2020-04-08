@@ -5,3 +5,4 @@
 !.gitignore
 !Sherpa.yaml
 !makefile
+!sherpa_xs
