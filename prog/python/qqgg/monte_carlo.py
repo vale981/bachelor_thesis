@@ -15,16 +15,21 @@ def _process_interval(interval):
 
     return [a, b]
 
-def integrate(f, interval, point_density=1000, seed=None, **kwargs):
+def integrate(f, interval, epsilon=.01, seed=None,
+            **kwargs):
     """Monte-Carlo integrates the functin `f` in an interval.
 
     :param f: function of one variable, kwargs are passed to it
     :param tuple interval: a 2-tuple of numbers, specifiying the
         integration range
+    :param epsilon: desired accuracy
+    :param seed: the seed for the rng, if not specified, the system
+        time is used
 
     :returns: the integration result
 
     :rtype: float
+
     """
 
     interval = _process_interval(interval)
@@ -32,18 +37,31 @@ def integrate(f, interval, point_density=1000, seed=None, **kwargs):
         np.random.seed(seed)
 
     interval_length = (interval[1] - interval[0])
-    num_points = int(interval_length * point_density)
-    points = np.random.uniform(interval[0], interval[1], num_points)
 
-    sample = f(points, **kwargs)
-    integral = np.sum(sample)/num_points*interval_length
+    # guess the correct N
+    probe_points = np.random.uniform(interval[0], interval[1],
+                                    int(interval_length*10))
 
-    # the deviation gets multiplied by the square root of the interval
-    # lenght, because it is the standard deviation of the integral.
-    deviation = np.std(sample)*np.sqrt(1/(num_points - 1))*interval_length
+    num_points = int((interval_length \
+                      * f(probe_points, **kwargs).std()/epsilon)**2 + 1)
 
-    return integral, deviation
+    # now we iterate until we hit the desired epsilon
+    while True:
+        points = np.random.uniform(interval[0], interval[1], num_points)
+        sample = f(points, **kwargs)
 
+        integral = np.sum(sample)/num_points*interval_length
+
+        # the deviation gets multiplied by the square root of the interval
+        # lenght, because it is the standard deviation of the integral.
+        sample_std = np.std(sample)*interval_length
+        deviation = sample_std*np.sqrt(1/(num_points - 1))
+
+        if deviation < epsilon:
+            return integral, deviation
+
+        # then we refine our guess
+        num_points = int((sample_std/epsilon)**2)
 
 def find_upper_bound(f, interval, **kwargs):
     """Find the upper bound of a function.
