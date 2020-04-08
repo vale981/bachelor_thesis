@@ -61,28 +61,28 @@ def integrate(f, interval, epsilon=.01,
 
     # guess the correct N
     probe_points = np.random.uniform(interval[0], interval[1],
-                                     int(interval_length*10))
+                                     int(interval_length * 10))
 
-    num_points = int((interval_length
-                      * f(probe_points, **kwargs).std()/epsilon)**2*1.1 + 1)
+    num_points = int((interval_length * f(probe_points, **
+                                          kwargs).std() / epsilon)**2 * 1.1 + 1)
 
     # now we iterate until we hit the desired epsilon
     while True:
         points = np.random.uniform(interval[0], interval[1], num_points)
         sample = f(points, **kwargs)
 
-        integral = np.sum(sample)/num_points*interval_length
+        integral = np.sum(sample) / num_points * interval_length
 
         # the deviation gets multiplied by the square root of the interval
         # lenght, because it is the standard deviation of the integral.
-        sample_std = np.std(sample)*interval_length
-        deviation = sample_std*np.sqrt(1/(num_points - 1))
+        sample_std = np.std(sample) * interval_length
+        deviation = sample_std * np.sqrt(1 / (num_points - 1))
 
         if deviation < epsilon:
             return IntegrationResult(integral, deviation, num_points)
 
         # then we refine our guess, the factor 1.1
-        num_points = int((sample_std/epsilon)**2*1.1)
+        num_points = int((sample_std / epsilon)**2 * 1.1)
 
 
 def find_upper_bound(f, interval, **kwargs):
@@ -133,8 +133,8 @@ def sample_unweighted(f, interval, upper_bound=None, seed=None,
     if not upper_bound:
         upper_bound_value = find_upper_bound(f, interval, **kwargs)
         def upper_bound_fn(x): return upper_bound_value
-        def upper_bound_integral(x): return upper_bound_value*x
-        def upper_bound_integral_inverse(y): return y/upper_bound_value
+        def upper_bound_integral(x): return upper_bound_value * x
+        def upper_bound_integral_inverse(y): return y / upper_bound_value
 
     elif len(upper_bound) == 2:
         upper_bound_fn, upper_bound_integral =\
@@ -156,7 +156,7 @@ def sample_unweighted(f, interval, upper_bound=None, seed=None,
     def allocate_random_chunk():
         return np.random.uniform([upper_bound_integral(interval[0]), 0],
                                  [upper_bound_integral(interval[1]), 1],
-                                 [int(chunk_size*interval_length), 2])
+                                 [int(chunk_size * interval_length), 2])
 
     total_points = 0
     total_accepted = 0
@@ -164,15 +164,15 @@ def sample_unweighted(f, interval, upper_bound=None, seed=None,
     while True:
         points = allocate_random_chunk()
         points[:, 0] = upper_bound_integral_inverse(points[:, 0])
-        sample_points = points[:, 0][np.where(f(points[:, 0]) >
-                                              points[:, 1]*upper_bound_fn(points[:, 0]))]
+        sample_points = points[:, 0][np.where(
+            f(points[:, 0]) > points[:, 1] * upper_bound_fn(points[:, 0]))]
 
         if report_efficiency:
             total_points += points.size
             total_accepted += sample_points.size
 
         for point in sample_points:
-            yield (point, total_accepted/total_points) \
+            yield (point, total_accepted / total_points) \
                 if report_efficiency else point
 
 
@@ -194,9 +194,9 @@ def reshuffle_increments(integral_steps, integral, interval_lengths,
                          num_increments, increment_borders, alpha, K):
 
     # alpha controls the convergence speed
-    μ = np.abs(integral_steps)/integral
-    new_increments = (K*((μ - 1)/(np.log(μ)))**alpha).astype(int)
-    group_size = new_increments.sum()/num_increments
+    μ = np.abs(integral_steps) / integral
+    new_increments = (K * ((μ - 1) / (np.log(μ)))**alpha).astype(int)
+    group_size = new_increments.sum() / num_increments
     new_increment_borders = np.empty_like(increment_borders)
 
     # this whole code does a very simple thing: it eats up
@@ -219,17 +219,17 @@ def reshuffle_increments(integral_steps, integral, interval_lengths,
             i += 1
             rest = new_increments[i]
 
-        current_increment_size = interval_lengths[i]/new_increments[i]
+        current_increment_size = interval_lengths[i] / new_increments[i]
 
         if head <= rest:
-            current += head*current_increment_size
+            current += head * current_increment_size
             new_increment_borders[j] = current
             rest -= head
             head = group_size
             j += 1
 
         else:
-            current += rest*current_increment_size
+            current += rest * current_increment_size
             head -= rest
             i += 1
             rest = new_increments[i]
@@ -277,8 +277,8 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
 
     # no clever logic is being used to define the vegas iteration
     # sample density for the sake of simplicity
-    points_per_increment = int(100*interval_length/num_increments)
-    total_points = points_per_increment*num_increments
+    points_per_increment = int(100 * interval_length / num_increments)
+    total_points = points_per_increment * num_increments
 
     # start with equally sized intervals
     interval_borders = np.linspace(*interval, num_increments + 1,
@@ -302,7 +302,7 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
               * interval_lengths)**2).sum() / (samples_per_increment - 1)
         return integral, integral_steps, variance
 
-    K = num_increments*1000
+    K = num_increments * 1000
     increment_borders = interval_borders[1:-1] - interval_borders[0]
 
     integrals = []
@@ -320,10 +320,14 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
         variances.append(variance)
 
         # it is debatable to pass so much that could be recomputed...
-        new_increment_borders = reshuffle_increments(integral_steps,
-                                                     integral, interval_lengths,
-                                                     num_increments,
-                                                     increment_borders, alpha, K)
+        new_increment_borders = reshuffle_increments(
+            integral_steps,
+            integral,
+            interval_lengths,
+            num_increments,
+            increment_borders,
+            alpha,
+            K)
 
         interval_borders[1:-1] = interval_borders[0] + increment_borders
         if np.linalg.norm(increment_borders
@@ -347,19 +351,19 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
                 break
 
             points_per_increment += int(100 *
-                                        interval_length/num_increments)
+                                        interval_length / num_increments)
 
     if acumulate:
         integrals = np.array(integrals)
         variances = np.array(variances)
-        integral = np.sum(integrals**3/variances**2) \
-            / np.sum(integrals**2/variances**2)
-        variance = 1/np.sqrt(np.sum(integrals**2/variances**2)) \
+        integral = np.sum(integrals**3 / variances**2) \
+            / np.sum(integrals**2 / variances**2)
+        variance = 1 / np.sqrt(np.sum(integrals**2 / variances**2)) \
             * integral
 
     return VegasIntegrationResult(integral,
                                   np.sqrt(variance),
-                                  points_per_increment*num_increments,
+                                  points_per_increment * num_increments,
                                   interval_borders,
                                   vegas_iterations)
 
@@ -381,12 +385,12 @@ def sample_stratified(f, increment_borders, seed=None, chunk_size=100,
 
     increment_count = increment_borders.size - 1
     increment_lenghts = increment_borders[1:] - increment_borders[:-1]
-    weights = increment_count*increment_lenghts
-    increment_chunk = int(chunk_size/increment_count)
-    chunk_size = increment_chunk*increment_count
+    weights = increment_count * increment_lenghts
+    increment_chunk = int(chunk_size / increment_count)
+    chunk_size = increment_chunk * increment_count
 
     upper_bound = \
-        np.array([find_upper_bound(lambda x: f(x, **kwargs)*weight,
+        np.array([find_upper_bound(lambda x: f(x, **kwargs) * weight,
                                    [left_border, right_border])
                   for weight, left_border, right_border
                   in zip(weights,
@@ -404,15 +408,15 @@ def sample_stratified(f, increment_borders, seed=None, chunk_size=100,
         increment_y_samples = np.random.uniform(0, 1,
                                                 [increment_chunk,
                                                  increment_count])
-        f_weighted = f(increment_samples)*weights  # numpy magic at work here
-        mask = f_weighted > increment_y_samples*upper_bound
+        f_weighted = f(increment_samples) * weights  # numpy magic at work here
+        mask = f_weighted > increment_y_samples * upper_bound
 
         if report_efficiency:
             total_samples += chunk_size
             total_accepted += np.count_nonzero(mask)
 
         for point in increment_samples[mask]:
-            yield (point, total_accepted/total_samples) \
+            yield (point, total_accepted / total_samples) \
                 if report_efficiency else point
 
 
@@ -424,7 +428,7 @@ def sample_unweighted_array(num, *args, increment_borders=None,
 
     sample_arr = np.empty(num)
     if 'chunk_size' not in kwargs:
-        kwargs['chunk_size'] = num*10
+        kwargs['chunk_size'] = num * 10
     samples = \
         sample_unweighted(*args,
                           report_efficiency=report_efficiency,
