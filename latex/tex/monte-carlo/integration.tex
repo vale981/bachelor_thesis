@@ -42,11 +42,11 @@ variables \(\{X_i\}_{i\in\overline{1,N}}\) with the same distribution,
 expected value \(\EX{X_i}=\mathbb{E}\) and variance
 \(\sigma_i^2 = \sigma^2\).
 
-\begin{align}
+\begin{gather}
   \EX{\overline{X}} = \frac{1}{N}\sum_i\EX{X_i} = \mathbb{E} \label{eq:evalue-mean}\\
   \sigma^2_{\overline{X}} = \sum_i\frac{\sigma_i^2}{N^2} =
                             \frac{\sigma^2}{N}  \label{eq:variance-mean}
-\end{align}
+\end{gather}
 
 Evidently \(\frac{\sigma^2}{N}\xrightarrow{N\rightarrow\infty} 0\)
 thus the~\eqref{eq:approxexp} really converges to \(I\). For finite
@@ -65,7 +65,22 @@ variance \(\VAR{F/\Rho}\cdot N^{-1}\) as in~\eqref{eq:varI}.
 
 The name of the game is thus to reduce \(\VAR{F/\Rho}\) to speed up
 the convergence of~\eqref{eq:approxexp} and achieve higher accuracy
-with fewer function evaluations.
+with fewer function evaluations. Some ways variance reductions can be
+accomplished are choosing a suitable \(\rho\) (importance sampling),
+by transforming the integral onto another variable, a combination of
+both approaches or by subdividing integration volume into several
+sub-volumes of different size while keeping the sample size constant
+in all sub-volumes (stratified sampling). Combining ideas from
+importance sampling and stratified sampling leads to the \vegas\
+algorithm~\cite{Lepage:19781an}.
+
+The convergence of~\eqref{eq:approxexp} is not dependent on the
+dimensional of the integration volume as opposed to many other
+numerical integration algorithms (trapezoid rule, Simpsons rule) that
+usually converge like \(N^{-k/n}\) with \(k\in\mathbb{N}\).
+
+\subsection{Naive Monte-Carlo Integration and Change of Variables}
+\label{sec:naivechange}
 
 The simplest choice for \(\rho\) is clearly given
 by~\eqref{eq:simplep}, the uniform distribution.
@@ -88,7 +103,7 @@ called \(\bar{f}\), multiplied with the volume.
 \end{equation}
 
 The variance \(\VAR{I}=\VAR{F/\Rho}\) is now given
-by~\ref{eq:approxvar-I}. Note that the factor \(\abs{\omega}\) gets
+by~\ref{eq:approxvar-I}. Note that the factor \(\abs{\Omega}\) gets
 squared when approximating the integral to the sum.
 
 \begin{equation}
@@ -97,3 +112,41 @@ squared when approximating the integral to the sum.
   I^2 \dd{\vb{x}} \equiv \abs{\Omega}\cdot\sigma_f^2 \approx
   \frac{\abs{\Omega}^2}{N-1}\sum_{i}\qty[f(\vb{x}_i) - \bar{f}]^2
 \end{equation}
+
+Applying this method to integrate
+\(2\pi\sin(\theta)\cdot\dv{\sigma}{\Omega}\) (see~\eqref{eq:crossec})
+over a \(\theta\) interval, equivalent to \(\eta\in [-2.5, 2.5]\) with
+a target accuracy of \(\varepsilon=10^{-3}\) results in
+\result{xs/python/xs_mc} with a sample size of
+\result{xs/python/xs_mc_N}.
+
+Changing variables and integrating~\eqref{eq:xs-eta} over \(\eta\)
+with the same target accuracy yields~\result{xs/python/xs_mc_eta} with
+a sample size of just~\result{xs/python/xs_mc_eta_N}. The dramatic
+reduction in variance and iteration count can be understood
+qualitatively by studying~\ref{fig:xs-int-comp}. The differential
+cross section in terms of \(\eta\)~(\ref{fig:xs-int-eta}) is less
+steep than the differential cross section in terms of
+\(\theta\)~(\ref{fig:xs-int-theta}) and takes on significant values
+all over the integration interval.
+
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[c]{.49\textwidth}
+    \plot{xs/xs_integrand}
+    \caption[\(2\pi\dv{\sigma}{\theata}\) with integration
+    boundaries]{\label{fig:xs-int-theta} The integrand arising from
+      differential cross section \(\dv{\sigma}{\theta}\) with the
+      integration borders visualized as gray lines.}
+  \end{subfigure}
+  \begin{subfigure}[c]{.49\textwidth}
+    \plot{xs/xs_integrand_eta}
+    \caption[\(2\pi\dv{\sigma}{\eta}\) with integration
+    boundaries]{\label{fig:xs-int-eta} The differential cross section
+      \(\dv{\sigma}{\eta}\) (see~\ref{eq:xs-eta}) scaled by \(2\pi\)
+      with the integration borders visualized as gray lines.}
+  \end{subfigure}
+  \caption{\label{fig:xs-int-comp} Comparison of two parametrisations of the differential cross
+  section.}
+\end{figure}
+
