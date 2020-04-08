@@ -27,7 +27,7 @@ def η_to_θ(η):
 def η_to_pt(η, p):
     return p/np.cosh(η)
 
-def tex_value(val, err=None, unit='', prefix='', prec=10, save=None):
+def tex_value(val, err=None, unit=None, prefix='', prec=0, save=None):
     """Generates LaTeX output of a value with units and error."""
 
     if err:
@@ -35,19 +35,28 @@ def tex_value(val, err=None, unit='', prefix='', prec=10, save=None):
     else:
         val = np.round(val, prec)
 
-    val_string = fr'\({prefix}\SI{{{val:.{prec}f}'
+    if prec == 0:
+        val = int(val)
+        if err:
+            err = int(err)
 
+    val_string = fr'{val:.{prec}f}' if prec > 0 else str(val)
     if err:
-        val_string += fr'\pm {err:.{prec}f}'
+        val_string += fr'\pm {err:.{prec}f}' if prec > 0 else str(err)
 
-    val_string += fr'}}{{{unit}}}\)'
+    ret_string = ''
 
-    if save:
+    if unit is None:
+        ret_string += fr'\({prefix}{val_string}\)'
+    else:
+        ret_string += fr'\({prefix}\SI{{{val_string}}}{{{unit}}}\)'
+
+    if save is not None:
         os.makedirs(save[0], exist_ok=True)
         with open(f'{save[0]}/{save[1]}', 'w') as f:
-            f.write(val_string)
+            f.write(ret_string)
 
-    return val_string
+    return ret_string
 
 ###############################################################################
 #                                  Plot Porn                                  #
