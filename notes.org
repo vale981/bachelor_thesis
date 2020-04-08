@@ -35,6 +35,7 @@
 ** Monte Carlo
  - [[file:literature/mc/general_purp_evt.pdf::170][Allgemeines zu MC integration, sampling]]
  - [[file:literature/mc/vegas.pdf][VEGAS]]
+ - [[file:literature/mc/vegas_algo.pdf][VEGAS Algorithm]]
 * Aufgaben
 ** Erste Aufgabenp
    :LOGBOOK:
