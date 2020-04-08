@@ -53,7 +53,6 @@ def integrate(f, interval, epsilon=.01,
 
     # now we iterate until we hit the desired epsilon
     while True:
-        print('plong')
         points = np.random.uniform(interval[0], interval[1], num_points)
         sample = f(points, **kwargs)
 
