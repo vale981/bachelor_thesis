@@ -238,8 +238,8 @@ def reshuffle_increments(integral_steps, integral, interval_lengths,
 
 
 def integrate_vegas(f, interval, seed=None, num_increments=5,
-                    target_epsilon=1e-3, epsilon=1e-2, alpha=1.5, acumulate=True,
-                    **kwargs) -> VegasIntegrationResult:
+                    target_epsilon=1e-3, increment_epsilon=1e-2, alpha=1.5,
+                    acumulate=True, **kwargs) -> VegasIntegrationResult:
     """Integrate the given function (in one dimension) with the vegas
     algorithm to reduce variance.  This implementation follows the
     description given in JOURNAL OF COMPUTATIONAL 27, 192-203 (1978).
@@ -255,10 +255,10 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
         the interval
     :param point_density: the number of random points per unit
         interval
-    :param epsilon: the breaking condition, if the magnitude of the
-        difference between the increment positions in subsequent
-        iterations does not change more then epsilon the computation
-        is considered to have converged
+    :param increment_epsilon: the breaking condition, if the magnitude
+        of the difference between the increment positions in
+        subsequent iterations does not change more then epsilon the
+        computation is considered to have converged
     :param alpha: controls the the convergence speed, should be
         between 1 and 2 (the lower the faster)
 
@@ -326,7 +326,8 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
                                                      increment_borders, alpha, K)
 
         interval_borders[1:-1] = interval_borders[0] + increment_borders
-        if np.linalg.norm(increment_borders - new_increment_borders) < epsilon:
+        if np.linalg.norm(increment_borders
+                          - new_increment_borders) < increment_epsilon:
             break
 
         increment_borders = new_increment_borders
