@@ -190,6 +190,53 @@ class VegasIntegrationResult(IntegrationResult):
     vegas_iterations: int
 
 
+def reshuffle_increments(integral_steps, integral, interval_lengths,
+                         num_increments, increment_borders, alpha, K):
+
+    # alpha controls the convergence speed
+    μ = np.abs(integral_steps)/integral
+    new_increments = (K*((μ - 1)/(np.log(μ)))**alpha).astype(int)
+    group_size = new_increments.sum()/num_increments
+    new_increment_borders = np.empty_like(increment_borders)
+
+    # this whole code does a very simple thing: it eats up
+    # sub-increments until it has `group_size` of them
+    i = 0  # position in increment count list
+    j = 0  # position in new_incerement_borders
+
+    # the number of sub-increments still available
+    rest = new_increments[0]
+
+    # the number of sub-increments needed to fill one increment
+    head = group_size
+
+    # the current position in the interval relative to its
+    # beginning
+    current = 0
+
+    while i < num_increments and (j < (num_increments - 1)):
+        if new_increments[i] == 0:
+            i += 1
+            rest = new_increments[i]
+
+        current_increment_size = interval_lengths[i]/new_increments[i]
+
+        if head <= rest:
+            current += head*current_increment_size
+            new_increment_borders[j] = current
+            rest -= head
+            head = group_size
+            j += 1
+
+        else:
+            current += rest*current_increment_size
+            head -= rest
+            i += 1
+            rest = new_increments[i]
+
+    return new_increment_borders
+
+
 def integrate_vegas(f, interval, seed=None, num_increments=5,
                     target_epsilon=1e-3, epsilon=1e-2, alpha=1.5, acumulate=True,
                     **kwargs) -> VegasIntegrationResult:
@@ -272,43 +319,11 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
         integrals.append(integral)
         variances.append(variance)
 
-        # alpha controls the convergence speed
-        μ = np.abs(integral_steps)/integral
-        new_increments = (K*((μ - 1)/(np.log(μ)))**alpha).astype(int)
-        group_size = new_increments.sum()/num_increments
-
-        new_increment_borders = np.empty_like(increment_borders)
-
-        # this whole code does a very simple thing: it eats up
-        # sub-increments until it has `group_size` of them
-        i = 0  # position in increment count list
-        j = 0  # position in new_incerement_borders
-        # the number of sub-increments still available
-        rest = new_increments[0]
-        head = group_size  # the number of sub-increments needed to
-        # fill one increment
-        current = 0  # the current position in the interval relative
-        # to its beginning
-
-        while i < num_increments and (j < (num_increments - 1)):
-            if new_increments[i] == 0:
-                i += 1
-                rest = new_increments[i]
-
-            current_increment_size = interval_lengths[i]/new_increments[i]
-
-            if head <= rest:
-                current += head*current_increment_size
-                new_increment_borders[j] = current
-                rest -= head
-                head = group_size
-                j += 1
-
-            else:
-                current += rest*current_increment_size
-                head -= rest
-                i += 1
-                rest = new_increments[i]
+        # it is debatable to pass so much that could be recomputed...
+        new_increment_borders = reshuffle_increments(integral_steps,
+                                                     integral, interval_lengths,
+                                                     num_increments,
+                                                     increment_borders, alpha, K)
 
         interval_borders[1:-1] = interval_borders[0] + increment_borders
         if np.linalg.norm(increment_borders - new_increment_borders) < epsilon:
