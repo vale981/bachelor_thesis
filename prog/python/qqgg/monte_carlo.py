@@ -317,7 +317,6 @@ def integrate_vegas(
     # no clever logic is being used to define the vegas iteration
     # sample density for the sake of simplicity
     points_per_increment = int(1000 * interval_length / num_increments)
-    total_points = points_per_increment * num_increments
 
     # start with equally sized intervals
     interval_borders = np.linspace(*interval, num_increments + 1, endpoint=True)
@@ -375,6 +374,8 @@ def integrate_vegas(
 
         increment_borders = new_increment_borders
 
+    interval_lengths = interval_borders[1:] - interval_borders[:-1]
+
     # brute force increase of the sample size
     if np.sqrt(variance) >= epsilon:
         tick = 3
@@ -389,16 +390,11 @@ def integrate_vegas(
             if np.sqrt(variance) <= epsilon:
                 break
 
-            print(
-                "Adding",
-                100 ** np.log(tick) * interval_length / num_increments,
-                np.sqrt(variance) - epsilon,
-            )
-
             # adaptive scaling of sample size incrementation
             points_per_increment += int(
                 1000 ** np.log(tick) * interval_length / num_increments
             )
+
             tick += 2
 
     # as a bonus, we utilize all prior integration results
