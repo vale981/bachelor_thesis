@@ -8,4 +8,6 @@ thesis: document.tex
 
 clean:
 	rm -rf $(OUTDIR)/*
+	rm -r tikz/*
 	mkdir -p $(OUTDIR)/tikz
+	touch tikz/placeholder
