@@ -4,7 +4,7 @@ Author: Valentin Boettcher <hiro@protagon.space>
 """
 import numpy as np
 from scipy.optimize import minimize_scalar, root
-
+from dataclasses import dataclass
 
 def _process_interval(interval):
     assert len(interval) == 2, 'An interval has two endpoints'
@@ -15,8 +15,15 @@ def _process_interval(interval):
 
     return [a, b]
 
-def integrate(f, interval, epsilon=.01, seed=None,
-            **kwargs):
+
+@dataclass
+class IntegrationResult:
+    result: float
+    sigma: float
+    N: int
+
+def integrate(f, interval, epsilon=.01,
+            seed=None, **kwargs) -> IntegrationResult:
     """Monte-Carlo integrates the functin `f` in an interval.
 
     :param f: function of one variable, kwargs are passed to it
@@ -28,8 +35,7 @@ def integrate(f, interval, epsilon=.01, seed=None,
 
     :returns: the integration result
 
-    :rtype: float
-
+    :rtype: IntegrationResult
     """
 
     interval = _process_interval(interval)
@@ -43,10 +49,11 @@ def integrate(f, interval, epsilon=.01, seed=None,
                                     int(interval_length*10))
 
     num_points = int((interval_length \
-                      * f(probe_points, **kwargs).std()/epsilon)**2 + 1)
+                      * f(probe_points, **kwargs).std()/epsilon)**2*1.1 + 1)
 
     # now we iterate until we hit the desired epsilon
     while True:
+        print('plong')
         points = np.random.uniform(interval[0], interval[1], num_points)
         sample = f(points, **kwargs)
 
@@ -58,10 +65,10 @@ def integrate(f, interval, epsilon=.01, seed=None,
         deviation = sample_std*np.sqrt(1/(num_points - 1))
 
         if deviation < epsilon:
-            return integral, deviation
+            return IntegrationResult(integral, deviation, num_points)
 
-        # then we refine our guess
-        num_points = int((sample_std/epsilon)**2)
+        # then we refine our guess, the factor 1.1
+        num_points = int((sample_std/epsilon)**2*1.1)
 
 def find_upper_bound(f, interval, **kwargs):
     """Find the upper bound of a function.
