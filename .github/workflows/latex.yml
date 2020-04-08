@@ -30,7 +30,11 @@ jobs:
           # LaTeX engine to be used
           args: -pdflua -latexoption=-file-line-error -latexoption=-interaction=nonstopmode -interaction=nonstopmode --shell-escape
           extra_system_packages: python-pygments
-
+      - name: Upload the PDF as Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: thesis.pdf
+          path: ./latex/document.pdf
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
