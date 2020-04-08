@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 
 def _process_interval(interval):
-    assert len(interval) == 2, 'An interval has two endpoints'
+    assert len(interval) == 2, "An interval has two endpoints"
 
     a, b = interval
     if b < a:
@@ -37,8 +37,7 @@ class IntegrationResult:
         return self.result, self.sigma
 
 
-def integrate(f, interval, epsilon=.01,
-              seed=None, **kwargs) -> IntegrationResult:
+def integrate(f, interval, epsilon=0.01, seed=None, **kwargs) -> IntegrationResult:
     """Monte-Carlo integrates the function `f` over an interval.
 
     :param f: function of one variable, kwargs are passed to it
@@ -57,14 +56,16 @@ def integrate(f, interval, epsilon=.01,
     if seed:
         np.random.seed(seed)
 
-    interval_length = (interval[1] - interval[0])
+    interval_length = interval[1] - interval[0]
 
     # guess the correct N
-    probe_points = np.random.uniform(interval[0], interval[1],
-                                     int(interval_length * 10))
+    probe_points = np.random.uniform(
+        interval[0], interval[1], int(interval_length * 10)
+    )
 
-    num_points = int((interval_length * f(probe_points, **
-                                          kwargs).std() / epsilon)**2 * 1.1 + 1)
+    num_points = int(
+        (interval_length * f(probe_points, **kwargs).std() / epsilon) ** 2 * 1.1 + 1
+    )
 
     # now we iterate until we hit the desired epsilon
     while True:
@@ -82,7 +83,7 @@ def integrate(f, interval, epsilon=.01,
             return IntegrationResult(integral, deviation, num_points)
 
         # then we refine our guess, the factor 1.1
-        num_points = int((sample_std / epsilon)**2 * 1.1)
+        num_points = int((sample_std / epsilon) ** 2 * 1.1)
 
 
 def find_upper_bound(f, interval, **kwargs):
@@ -96,16 +97,24 @@ def find_upper_bound(f, interval, **kwargs):
     :rtype: float
     """
 
-    upper_bound = minimize_scalar(lambda *args: -f(*args, **kwargs),
-                                  bounds=interval, method='bounded')
+    upper_bound = minimize_scalar(
+        lambda *args: -f(*args, **kwargs), bounds=interval, method="bounded"
+    )
     if upper_bound.success:
         return -upper_bound.fun
     else:
-        raise RuntimeError('Could not find an upper bound.')
+        raise RuntimeError("Could not find an upper bound.")
 
 
-def sample_unweighted(f, interval, upper_bound=None, seed=None,
-                      chunk_size=100, report_efficiency=False, **kwargs):
+def sample_unweighted(
+    f,
+    interval,
+    upper_bound=None,
+    seed=None,
+    chunk_size=100,
+    report_efficiency=False,
+    **kwargs
+):
     """Samples a distribution proportional to f by hit and miss.
     Implemented as a generator.
 
@@ -122,41 +131,56 @@ def sample_unweighted(f, interval, upper_bound=None, seed=None,
     """
 
     interval = _process_interval(interval)
-    interval_length = (interval[1] - interval[0])
+    interval_length = interval[1] - interval[0]
 
     if seed:
         np.random.seed(seed)
 
-    upper_bound_fn, upper_bound_integral, upper_bound_integral_inverse = None, None, None
+    upper_bound_fn, upper_bound_integral, upper_bound_integral_inverse = (
+        None,
+        None,
+        None,
+    )
     # i know....
 
     if not upper_bound:
         upper_bound_value = find_upper_bound(f, interval, **kwargs)
-        def upper_bound_fn(x): return upper_bound_value
-        def upper_bound_integral(x): return upper_bound_value * x
-        def upper_bound_integral_inverse(y): return y / upper_bound_value
+
+        def upper_bound_fn(x):
+            return upper_bound_value
+
+        def upper_bound_integral(x):
+            return upper_bound_value * x
+
+        def upper_bound_integral_inverse(y):
+            return y / upper_bound_value
 
     elif len(upper_bound) == 2:
-        upper_bound_fn, upper_bound_integral =\
-            upper_bound
+        upper_bound_fn, upper_bound_integral = upper_bound
 
         def upper_inv(points):  # not for performance right now...
-            return np.array([root(lambda y: upper_bound_integral(y) - x, x0=0,
-                                  jac=upper_bound_fn).x for x in points]).T
+            return np.array(
+                [
+                    root(
+                        lambda y: upper_bound_integral(y) - x, x0=0, jac=upper_bound_fn
+                    ).x
+                    for x in points
+                ]
+            ).T
 
         upper_bound_integral_inverse = upper_inv
 
     elif len(upper_bound) == 3:
-        upper_bound_fn, upper_bound_integral, upper_bound_integral_inverse =\
-            upper_bound
+        upper_bound_fn, upper_bound_integral, upper_bound_integral_inverse = upper_bound
     else:
-        raise ValueError(
-            'The upper bound must be `None` or a three element sequence!')
+        raise ValueError("The upper bound must be `None` or a three element sequence!")
 
     def allocate_random_chunk():
-        return np.random.uniform([upper_bound_integral(interval[0]), 0],
-                                 [upper_bound_integral(interval[1]), 1],
-                                 [int(chunk_size * interval_length), 2])
+        return np.random.uniform(
+            [upper_bound_integral(interval[0]), 0],
+            [upper_bound_integral(interval[1]), 1],
+            [int(chunk_size * interval_length), 2],
+        )
 
     total_points = 0
     total_accepted = 0
@@ -164,16 +188,16 @@ def sample_unweighted(f, interval, upper_bound=None, seed=None,
     while True:
         points = allocate_random_chunk()
         points[:, 0] = upper_bound_integral_inverse(points[:, 0])
-        sample_points = points[:, 0][np.where(
-            f(points[:, 0]) > points[:, 1] * upper_bound_fn(points[:, 0]))]
+        sample_points = points[:, 0][
+            np.where(f(points[:, 0]) > points[:, 1] * upper_bound_fn(points[:, 0]))
+        ]
 
         if report_efficiency:
             total_points += points.size
             total_accepted += sample_points.size
 
         for point in sample_points:
-            yield (point, total_accepted / total_points) \
-                if report_efficiency else point
+            yield (point, total_accepted / total_points) if report_efficiency else point
 
 
 @dataclass
@@ -190,12 +214,19 @@ class VegasIntegrationResult(IntegrationResult):
     vegas_iterations: int
 
 
-def reshuffle_increments(integral_steps, integral, interval_lengths,
-                         num_increments, increment_borders, alpha, K):
+def reshuffle_increments(
+    integral_steps,
+    integral,
+    interval_lengths,
+    num_increments,
+    increment_borders,
+    alpha,
+    K,
+):
 
     # alpha controls the convergence speed
     μ = np.abs(integral_steps) / integral
-    new_increments = (K * ((μ - 1) / (np.log(μ)))**alpha).astype(int)
+    new_increments = (K * ((μ - 1) / (np.log(μ))) ** alpha).astype(int)
     group_size = new_increments.sum() / num_increments
     new_increment_borders = np.empty_like(increment_borders)
 
@@ -237,9 +268,17 @@ def reshuffle_increments(integral_steps, integral, interval_lengths,
     return new_increment_borders
 
 
-def integrate_vegas(f, interval, seed=None, num_increments=5,
-                    target_epsilon=1e-3, increment_epsilon=1e-2, alpha=1.5,
-                    acumulate=True, **kwargs) -> VegasIntegrationResult:
+def integrate_vegas(
+    f,
+    interval,
+    seed=None,
+    num_increments=5,
+    epsilon=1e-3,
+    increment_epsilon=1e-2,
+    alpha=1.5,
+    acumulate=True,
+    **kwargs
+) -> VegasIntegrationResult:
     """Integrate the given function (in one dimension) with the vegas
     algorithm to reduce variance.  This implementation follows the
     description given in JOURNAL OF COMPUTATIONAL 27, 192-203 (1978).
@@ -270,7 +309,7 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
     """
 
     interval = _process_interval(interval)
-    interval_length = (interval[1] - interval[0])
+    interval_length = interval[1] - interval[0]
 
     if seed:
         np.random.seed(seed)
@@ -281,25 +320,22 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
     total_points = points_per_increment * num_increments
 
     # start with equally sized intervals
-    interval_borders = np.linspace(*interval, num_increments + 1,
-                                   endpoint=True)
+    interval_borders = np.linspace(*interval, num_increments + 1, endpoint=True)
 
-    def evaluate_integrand(interval_borders, interval_lengths,
-                           samples_per_increment):
+    def evaluate_integrand(interval_borders, interval_lengths, samples_per_increment):
         intervals = np.array((interval_borders[:-1], interval_borders[1:]))
-        sample_points = np.random.uniform(*intervals,
-                                          (samples_per_increment,
-                                           num_increments)).T
+        sample_points = np.random.uniform(
+            *intervals, (samples_per_increment, num_increments)
+        ).T
 
-        weighted_f_values = f(sample_points, **kwargs) * \
-            interval_lengths[:, None]
+        weighted_f_values = f(sample_points, **kwargs) * interval_lengths[:, None]
 
         # the mean here has absorbed the num_increments
         integral_steps = weighted_f_values.mean(axis=1)
         integral = integral_steps.sum()
-        variance = \
-            ((f(sample_points, **kwargs).std(axis=1)
-              * interval_lengths)**2).sum() / (samples_per_increment - 1)
+        variance = (
+            (f(sample_points, **kwargs).std(axis=1) * interval_lengths) ** 2
+        ).sum() / (samples_per_increment - 1)
         return integral, integral_steps, variance
 
     K = num_increments * 1000
@@ -312,9 +348,9 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
     while True:
         vegas_iterations += 1
         interval_lengths = interval_borders[1:] - interval_borders[:-1]
-        integral, integral_steps, variance = \
-            evaluate_integrand(interval_borders,
-                               interval_lengths, points_per_increment)
+        integral, integral_steps, variance = evaluate_integrand(
+            interval_borders, interval_lengths, points_per_increment
+        )
 
         integrals.append(integral)
         variances.append(variance)
@@ -327,49 +363,54 @@ def integrate_vegas(f, interval, seed=None, num_increments=5,
             num_increments,
             increment_borders,
             alpha,
-            K)
+            K,
+        )
 
         interval_borders[1:-1] = interval_borders[0] + increment_borders
-        if np.linalg.norm(increment_borders
-                          - new_increment_borders) < increment_epsilon:
+        if (
+            np.linalg.norm(increment_borders - new_increment_borders)
+            < increment_epsilon
+        ):
             break
 
         increment_borders = new_increment_borders
 
     # brute force increase of the sample size
-    if np.sqrt(variance) >= target_epsilon:
+    if np.sqrt(variance) >= epsilon:
         while True:
-            integral, _, variance = \
-                evaluate_integrand(interval_borders,
-                                   interval_lengths,
-                                   points_per_increment)
+            integral, _, variance = evaluate_integrand(
+                interval_borders, interval_lengths, points_per_increment
+            )
 
             integrals.append(integral)
             variances.append(variance)
 
-            if np.sqrt(variance) <= target_epsilon:
+            if np.sqrt(variance) <= epsilon:
                 break
 
-            points_per_increment += int(100 *
-                                        interval_length / num_increments)
+            points_per_increment += int(100 * interval_length / num_increments)
 
+    # as a bonus, we utilize all prior integration results
     if acumulate:
         integrals = np.array(integrals)
         variances = np.array(variances)
-        integral = np.sum(integrals**3 / variances**2) \
-            / np.sum(integrals**2 / variances**2)
-        variance = 1 / np.sqrt(np.sum(integrals**2 / variances**2)) \
-            * integral
+        integral = np.sum(integrals ** 3 / variances ** 2) / np.sum(
+            integrals ** 2 / variances ** 2
+        )
+        variance = 1 / np.sqrt(np.sum(integrals ** 2 / variances ** 2)) * integral
 
-    return VegasIntegrationResult(integral,
-                                  np.sqrt(variance),
-                                  points_per_increment * num_increments,
-                                  interval_borders,
-                                  vegas_iterations)
+    return VegasIntegrationResult(
+        integral,
+        np.sqrt(variance),
+        points_per_increment * num_increments,
+        interval_borders,
+        vegas_iterations,
+    )
 
 
-def sample_stratified(f, increment_borders, seed=None, chunk_size=100,
-                      report_efficiency=False, **kwargs):
+def sample_stratified(
+    f, increment_borders, seed=None, chunk_size=100, report_efficiency=False, **kwargs
+):
     """Samples a distribution proportional to f by hit and miss.
     Implemented as a generator.
 
@@ -389,25 +430,29 @@ def sample_stratified(f, increment_borders, seed=None, chunk_size=100,
     increment_chunk = int(chunk_size / increment_count)
     chunk_size = increment_chunk * increment_count
 
-    upper_bound = \
-        np.array([find_upper_bound(lambda x: f(x, **kwargs) * weight,
-                                   [left_border, right_border])
-                  for weight, left_border, right_border
-                  in zip(weights,
-                         increment_borders[:-1],
-                         increment_borders[1:])]).max()
+    upper_bound = np.array(
+        [
+            find_upper_bound(
+                lambda x: f(x, **kwargs) * weight, [left_border, right_border]
+            )
+            for weight, left_border, right_border in zip(
+                weights, increment_borders[:-1], increment_borders[1:]
+            )
+        ]
+    ).max()
 
     total_samples = 0
     total_accepted = 0
 
     while True:
-        increment_samples = np.random.uniform(increment_borders[:-1],
-                                              increment_borders[1:],
-                                              [increment_chunk,
-                                               increment_count])
-        increment_y_samples = np.random.uniform(0, 1,
-                                                [increment_chunk,
-                                                 increment_count])
+        increment_samples = np.random.uniform(
+            increment_borders[:-1],
+            increment_borders[1:],
+            [increment_chunk, increment_count],
+        )
+        increment_y_samples = np.random.uniform(
+            0, 1, [increment_chunk, increment_count]
+        )
         f_weighted = f(increment_samples) * weights  # numpy magic at work here
         mask = f_weighted > increment_y_samples * upper_bound
 
@@ -416,27 +461,32 @@ def sample_stratified(f, increment_borders, seed=None, chunk_size=100,
             total_accepted += np.count_nonzero(mask)
 
         for point in increment_samples[mask]:
-            yield (point, total_accepted / total_samples) \
-                if report_efficiency else point
+            yield (
+                point,
+                total_accepted / total_samples,
+            ) if report_efficiency else point
 
 
-def sample_unweighted_array(num, *args, increment_borders=None,
-                            report_efficiency=False, **kwargs):
+def sample_unweighted_array(
+    num, *args, increment_borders=None, report_efficiency=False, **kwargs
+):
     """Sample `num` elements from a distribution.  The rest of the
     arguments is analogous to `sample_unweighted`.
     """
 
     sample_arr = np.empty(num)
-    if 'chunk_size' not in kwargs:
-        kwargs['chunk_size'] = num * 10
-    samples = \
-        sample_unweighted(*args,
-                          report_efficiency=report_efficiency,
-                          **kwargs) \
-        if increment_borders is None else \
-        sample_stratified(*args,
-                          increment_borders=increment_borders,
-                          report_efficiency=report_efficiency, **kwargs)
+    if "chunk_size" not in kwargs:
+        kwargs["chunk_size"] = num * 10
+    samples = (
+        sample_unweighted(*args, report_efficiency=report_efficiency, **kwargs)
+        if increment_borders is None
+        else sample_stratified(
+            *args,
+            increment_borders=increment_borders,
+            report_efficiency=report_efficiency,
+            **kwargs
+        )
+    )
 
     for i, sample in zip(range(num), samples):
         if report_efficiency:
