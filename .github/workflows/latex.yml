@@ -9,6 +9,7 @@ on:
     branches: [ master ]
     paths:
       - 'latex/**'
+      - '.github/workflows/latex.yml'
   pull_request:
     branches: [ master ]
 
