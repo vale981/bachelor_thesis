@@ -150,3 +150,21 @@ all over the integration interval.
   section.}
 \end{figure}
 
+\subsection{Integration with \vegas}
+\label{sec:mcintvegas}
+
+Stratified sampling gives optimal results, when the variance in every
+sub-volume is the same. In importance sampling the optimal probability
+distribution is given by~\eqref{eq:optimalrho}, where
+\(f(\Omega) \geq 0\) is presumed without loss of generality.
+
+\begin{equation}
+  \label{eq:optimalrho}
+  \rho(\vb{x}) = \frac{f(\vb{x})}{\int_\Omega f(\vb{y})\dd{y}}
+\end{equation}
+
+The idea behind \vegas\ is to subdivide \(\Omega\) into hypercubes and
+define \(\rho\) as step-function on those hypercubes, iteratively
+approximating~\eqref{eq:optimalrho}.~\cite{Lepage:19781an} In the end,
+the samples are concentrated where \(f\) takes on the highest values
+and changes most rapidly.()
