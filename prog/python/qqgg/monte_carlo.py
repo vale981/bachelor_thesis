@@ -277,6 +277,7 @@ def integrate_vegas(
     increment_epsilon=1e-2,
     alpha=1.5,
     acumulate=True,
+    vegas_point_density=1000,
     **kwargs
 ) -> VegasIntegrationResult:
     """Integrate the given function (in one dimension) with the vegas
@@ -316,7 +317,7 @@ def integrate_vegas(
 
     # no clever logic is being used to define the vegas iteration
     # sample density for the sake of simplicity
-    points_per_increment = int(1000 * interval_length / num_increments)
+    points_per_increment = int(vegas_point_density * interval_length / num_increments)
 
     # start with equally sized intervals
     interval_borders = np.linspace(*interval, num_increments + 1, endpoint=True)

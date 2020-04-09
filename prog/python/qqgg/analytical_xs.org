@@ -267,7 +267,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.05409249508068646, sigma=0.0007897018499681794, N=3286)
+: IntegrationResult(result=0.05248827203795376, sigma=0.0008945590740907255, N=2297)
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -277,7 +277,7 @@ We gonna export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 3286\)
+: \(N = 2297\)
 
 *** Integration over η
 Plot the intgrand of the pseudo rap.
@@ -303,7 +303,7 @@ Plot the intgrand of the pseudo rap.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.05514934067591144, sigma=0.0009042241764415168, N=135)
+: IntegrationResult(result=0.05291690687712277, sigma=0.0009703539621964307, N=148)
 
 As we see, the result is a little better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.  But
@@ -318,44 +318,62 @@ And yet again export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 135\)
+: \(N = 148\)
 
 *** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+begin_src jupyter-python :exports both :results raw drawer
-  xs_pb_vegas, xs_pb_vegas_σ, xs_θ_intervals = \
+  xs_pb_vegas = \
       monte_carlo.integrate_vegas(xs_pb_int, interval,
-                                  num_increments=20, alpha=4,
-                                  point_density=1000, acumulate=True)
-  xs_pb_vegas, xs_pb_vegas_σ
+                                  num_increments=40, alpha=1,
+                                  epsilon=1e-3, acumulate=True,
+                                  vegas_point_density=100)
+  xs_pb_vegas
 #+end_src
 
 #+RESULTS:
-| 0.0538027817458234 | 5.484354854125085e-05 |
+: VegasIntegrationResult(result=0.05365827014333479, sigma=0.00028118813407066693, N=280, increment_borders=array([0.16380276, 0.21120474, 0.26150507, 0.31522527, 0.37194866,
+:        0.43128807, 0.49361151, 0.5579654 , 0.62461414, 0.69368686,
+:        0.76489723, 0.83824451, 0.91357461, 0.99060516, 1.06952704,
+:        1.15007713, 1.23205525, 1.315458  , 1.3999114 , 1.48501938,
+:        1.57056538, 1.65611897, 1.7412609 , 1.8256734 , 1.90917853,
+:        1.99125712, 2.07176235, 2.15043547, 2.22738913, 2.30242589,
+:        2.37561689, 2.44661398, 2.51567186, 2.58268125, 2.64728119,
+:        2.70932943, 2.76923258, 2.82546227, 2.8789142 , 2.92957196,
+:        2.9777899 ]), vegas_iterations=2)
 
 This is pretty good, although the variance reduction may be achieved
-partially by accumulating the results from all runns. The uncertainty
-is being overestimated!
+partially by accumulating the results from all runns.
 
 And export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
-  tex_value(xs_pb_vegas, xs_pb_vegas_σ, unit=r'\pico\barn',
+  tex_value(*xs_pb_vegas.combined_result, unit=r'\pico\barn',
             prefix=r'\sigma = ', save=('results', 'xs_mc_θ_vegas.tex'))
+  tex_value(xs_pb_vegas.N, prefix=r'N = ', save=('results', 'xs_mc_θ_vegas_N.tex'))
 #+end_src
 
 #+RESULTS:
-: \(\sigma = \SI{0.05380\pm 0.00005}{\pico\barn}\)
+: \(N = 280\)
 
 Surprisingly, without acumulation, the result ain't much different.
 This depends, of course, on the iteration count.
 #+begin_src jupyter-python :exports both :results raw drawer
-  monte_carlo.integrate_vegas(xs_pb_int, interval, num_increments=20,
-                              alpha=4, point_density=1000,
-                              acumulate=False)[0:2]
+  monte_carlo.integrate_vegas(xs_pb_int, interval,
+                                  num_increments=40, alpha=1,
+                                  epsilon=1e-3, acumulate=False,
+                                  vegas_point_density=100)
 #+end_src
 
 #+RESULTS:
-| 0.05374045987757417 | 8.173017257626389e-05 |
+: VegasIntegrationResult(result=0.053480306879967146, sigma=0.0003227182080050114, N=280, increment_borders=array([0.16380276, 0.21194072, 0.26237481, 0.31554682, 0.3718792 ,
+:        0.4314954 , 0.49353128, 0.55796022, 0.62471853, 0.69374415,
+:        0.76481859, 0.83779667, 0.91289272, 0.98989874, 1.06866181,
+:        1.1491159 , 1.23135158, 1.31483016, 1.39929204, 1.48444304,
+:        1.56998602, 1.65556941, 1.74075987, 1.82529434, 1.90877827,
+:        1.99097275, 2.07147707, 2.15039069, 2.22738615, 2.30236645,
+:        2.37551451, 2.44671394, 2.51577668, 2.58251328, 2.64700264,
+:        2.70944676, 2.76956868, 2.82598971, 2.87947921, 2.92993782,
+:        2.9777899 ]), vegas_iterations=2)
 
 *** Testing the Statistics
 Let's battle test the statistics.
@@ -373,7 +391,7 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.689
+: 0.673
 
 So we see: the standard deviation is sound.
 
@@ -382,10 +400,11 @@ Doing the same thing with =VEGAS= works as well.
   num_runs = 1000
   num_within = 0
   for _ in range(num_runs):
-      val, err, _ = \
+      val, err = \
           monte_carlo.integrate_vegas(xs_pb_int, interval,
-                                      num_increments=8, alpha=1,
-                                      point_density=1000, acumulate=False)
+                                      num_increments=10, alpha=1,
+                                      epsilon=1e-3, acumulate=False,
+                                      vegas_point_density=100).combined_result
 
       if abs(xs_pb - val) <= err:
           num_within += 1
@@ -393,7 +412,7 @@ Doing the same thing with =VEGAS= works as well.
 #+end_src
 
 #+RESULTS:
-: 0.67
+: 0.668
 
 ** Sampling and Analysis
 Define the sample number.
@@ -425,7 +444,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.028076221366308534
+: 0.026175755118589095
 
 Our distribution has a lot of variance, as can be seen by plotting it.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -477,7 +496,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.07981958240421651
+: 0.07966754510439894
 <<cosθ-bare-eff>>
 
 Nice! And now draw some histograms.
@@ -516,7 +535,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/57f63adafce401329082b5362df69e3bfd651738.png]]
+[[file:./.ob-jupyter/d06c0dad3722d2f6e427acf6892407be7bf80c4f.png]]
 
 *** Observables
 Now we define some utilities to draw real 4-momentum samples.
@@ -595,13 +614,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  48.96033819,  57.4112904 , -65.62643537],
-:        [100.        ,  41.96222688,  20.41198939,  88.44502363],
-:        [100.        ,  58.16555642,  25.62592984, -77.20155287],
+: array([[100.        ,  81.88217166,  50.63787932,  27.03914092],
+:        [100.        ,  14.40203444,  18.81502004,  97.15233618],
+:        [100.        ,  33.24120721,  36.40473704,  87.00412211],
 :        ...,
-:        [100.        ,  60.81855224,   5.52673184,  79.1868609 ],
-:        [100.        ,  39.11244981,  43.57566968,  81.06403198],
-:        [100.        ,  63.55704011,  12.99669204,  76.10248779]])
+:        [100.        ,  13.2305455 ,  19.1923713 ,  97.24507982],
+:        [100.        ,  93.66807224,  30.89103303, -16.49352364],
+:        [100.        ,  21.33377369,  15.20041587,  96.5081212 ]])
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -611,8 +630,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f62fa6b4430> |
-[[file:./.ob-jupyter/e04af38d1dcc52c09ded26b65234a071f2386835.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ffa58cec130> |
+[[file:./.ob-jupyter/9ffc3347f60078df2f405b4973643efbae3ffaec.png]]
 :END:
 
 
@@ -624,8 +643,8 @@ And the same for the p_t (transverse momentum) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f62fa951b20> |
-[[file:./.ob-jupyter/b9671fcec48bc029f5fe7e1cafb23a219045d90b.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ffa58d9a2b0> |
+[[file:./.ob-jupyter/3fe7346c6b28200f239b2ef4c37a744ae6664d4e.png]]
 :END:
 
 That looks somewhat fishy, but it isn't.
@@ -654,7 +673,7 @@ An again we see that the efficiency is way, way! better...
 #+end_src
 
 #+RESULTS:
-: 0.40801
+: 0.40713
 <<η-eff>>
 
 Let's draw a histogram to compare with the previous results.
@@ -664,8 +683,8 @@ Let's draw a histogram to compare with the previous results.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f62fa6b4c10> |
-[[file:./.ob-jupyter/e2afd8b997280a89d7bcbf617018797c57909f79.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7ffa58b64100> |
+[[file:./.ob-jupyter/222d1b95320f32331830f40cb41f32bfbe992d6c.png]]
 :END:
 
 
@@ -723,9 +742,19 @@ distribution. We throw away the integral, but keep the increments.
 #+end_src
 
 #+RESULTS:
-: array([-0.9866143 , -0.90976814, -0.80054812, -0.61044436, -0.33330198,
-:         0.00274503,  0.33807643,  0.61258903,  0.80033334,  0.90956851,
-:         0.9866143 ])
+:RESULTS:
+# [goto error]
+:
+: TypeErrorTraceback (most recent call last)
+: <ipython-input-39-f472455e6daf> in <module>
+: ----> 1 _, _, increments = monte_carlo.integrate_vegas(dist_cosθ,
+:       2                                                interval_cosθ,
+:       3                                                num_increments=10, alpha=1,
+:       4                                                epsilon=.01)
+:       5 increments
+:
+: TypeError: cannot unpack non-iterable VegasIntegrationResult object
+:END:
 
 Visualizing the increment borders gives us the information we want.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -742,8 +771,18 @@ Visualizing the increment borders gives us the information we want.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f62fa1a18e0>
-[[file:./.ob-jupyter/487a63dc470d0aa11e8ea6c8fedd3509fc81bb47.png]]
+# [goto error]
+:
+: NameErrorTraceback (most recent call last)
+: <ipython-input-40-fa90ee80c2c8> in <module>
+:       5 ax.set_ylabel(r'$\frac{d\sigma}{d\Omega}$')
+:       6 ax.set_xlim(*interval_cosθ)
+: ----> 7 plot_increments(ax, increments,
+:       8                 label='Increment Borderds', color='gray', linestyle='--')
+:       9 ax.legend()
+:
+: NameError: name 'increments' is not defined
+[[file:./.ob-jupyter/70148644dbbb3c028f64a5165a541c2007121c3e.png]]
 :END:
 
 We can now plot the reweighted distribution to observe the variance
@@ -763,8 +802,18 @@ reduction visually.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f62fa15b550>
-[[file:./.ob-jupyter/a4d7908401fba70cd0d8550f21c2151a0f3a2b8c.png]]
+# [goto error]
+:
+: NameErrorTraceback (most recent call last)
+: <ipython-input-41-5e55c7452163> in <module>
+:       1 pts = np.linspace(*interval_cosθ, 1000)
+:       2 fig, ax = set_up_plot()
+: ----> 3 plot_vegas_weighted_distribution(ax, pts, dist_cosθ(pts), increments)
+:       4 ax.set_xlabel(r'$\cos\theta$')
+:       5 ax.set_ylabel(r'$\frac{d\sigma}{d\Omega}$')
+:
+: NameError: name 'increments' is not defined
+[[file:./.ob-jupyter/5a741bd047f0bfd903fcc605765e0bbe78466404.png]]
 :END:
 
 
@@ -780,7 +829,19 @@ Now, draw a sample and look at the efficiency.
 #+end_src
 
 #+RESULTS:
-: 0.1365
+:RESULTS:
+# [goto error]
+:
+: NameErrorTraceback (most recent call last)
+: <ipython-input-42-b4e91460832f> in <module>
+:       1 cosθ_sample_strat, cosθ_efficiency_strat = \
+:       2     monte_carlo.sample_unweighted_array(sample_num, dist_cosθ,
+: ----> 3                                         increment_borders=increments,
+:       4                                         report_efficiency=True)
+:       5 cosθ_efficiency_strat
+:
+: NameError: name 'increments' is not defined
+:END:
 
 If we compare that to [[cosθ-bare-eff]], we can see the improvement :P.
 It is even better the [[η-eff]].  The histogram looks just the same.
@@ -791,4 +852,13 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/fe3cad135a6a8264071e025a7e8debdb15a79677.png]]
+:RESULTS:
+# [goto error]
+:
+: NameErrorTraceback (most recent call last)
+: <ipython-input-43-5c8daa495880> in <module>
+: ----> 1 fig, _ = draw_histo(cosθ_sample_strat, r'$\cos\theta$')
+:       2 save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
+:
+: NameError: name 'cosθ_sample_strat' is not defined
+:END:
