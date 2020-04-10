@@ -3,7 +3,7 @@
 %%% TeX-master: "../../document.tex"  ***
 %%% End: ***
 
-\section{Monte-Carlo Integration}
+\section{Monte-Carlo Integration}%
 \label{sec:mcint}
 
 Consider a function
@@ -77,7 +77,12 @@ algorithm~\cite{Lepage:19781an}.
 The convergence of~\eqref{eq:approxexp} is not dependent on the
 dimensional of the integration volume as opposed to many other
 numerical integration algorithms (trapezoid rule, Simpsons rule) that
-usually converge like \(N^{-k/n}\) with \(k\in\mathbb{N}\).
+usually converge like \(N^{-k/n}\) with \(k\in\mathbb{N}\).  When
+implementing monte-carlo methods, the random samples can be obtained
+through hardware or software random number generators (RNGs). Most
+implementations utilize software RNGs because supply pseudo-random
+numbers in a reproducible way, which facilitates deniability and
+comparability.
 
 \subsection{Naive Monte-Carlo Integration and Change of Variables}
 \label{sec:naivechange}
@@ -204,7 +209,7 @@ sample density and lower weights, flattening out the integrand.
   \centering \plot{xs/xs_integrand_vegas}
   \caption[\(2\pi\dv{\sigma}{\theta}\) with integration
   boundaries]{\label{fig:xs-int-vegas} The same integrand as
-    in~\ref{fig:xs-int-theta} with \vegas\-generated intcrements and
+    in~\ref{fig:xs-int-theta} with \vegas-generated increments and
     weighting applied (\(f/\rho\)).}
 \end{figure}
 
