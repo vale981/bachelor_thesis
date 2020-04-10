@@ -134,7 +134,7 @@ all over the integration interval.
   \centering
   \begin{subfigure}[c]{.49\textwidth}
     \plot{xs/xs_integrand}
-    \caption[\(2\pi\dv{\sigma}{\theata}\) with integration
+    \caption[\(2\pi\dv{\sigma}{\theta}\) with integration
     boundaries]{\label{fig:xs-int-theta} The integrand arising from
       differential cross section \(\dv{\sigma}{\theta}\) with the
       integration borders visualized as gray lines.}
@@ -163,8 +163,52 @@ distribution is given by~\eqref{eq:optimalrho}, where
   \rho(\vb{x}) = \frac{f(\vb{x})}{\int_\Omega f(\vb{y})\dd{y}}
 \end{equation}
 
-The idea behind \vegas\ is to subdivide \(\Omega\) into hypercubes and
-define \(\rho\) as step-function on those hypercubes, iteratively
+The idea behind \vegas\ is to subdivide \(\Omega\) into hypercubes,
+define \(\rho\) as step-function on those hypercubes and iteratively
 approximating~\eqref{eq:optimalrho}.~\cite{Lepage:19781an} In the end,
 the samples are concentrated where \(f\) takes on the highest values
-and changes most rapidly.()
+and changes most rapidly. This is done by subdividing the hypercubes
+into smaller chunks, based on their contribution to the integral and
+then changing the hypercube borders until all hypercubes contain the
+same number of chunks. Note that no knowledge about the integrand is
+required. The probability density used by \vegas\ is given
+in~\eqref{eq:vegasrho} with \(K\) being the number of hypercubes,
+\(\Omega_i\) being the hypercubes and  the
+characteristic function.
+
+\begin{equation}
+  \label{eq:vegasrho}
+  \rho(\vb{x}) = K\cdot
+  \begin{cases}
+    \frac{1}{\abs{\Omega_i}} & \vb{x}\in\Omega_{i\in\overline{1,K}} \\
+    0 & \text{otherwise}
+  \end{cases}
+\end{equation}
+
+In one dimension the hypercubes become simple interval
+increments. Applying \vegas\ to~\eqref{eq:crossec} with
+\result{xs/python/xs_mc_θ_vegas_K} increments yields
+\result{xs/python/xs_mc_θ_vegas} with
+\result{xs/python/xs_mc_θ_vegas_N} samples. This result is comparable
+with tho one obtained by parameter transformation
+in~\ref{sec:naivechange}.  The sample count \(N\) is the number of
+samples of the final integration and not the total number of
+evaluations of \(f\) and is mentioned here, to illustrate the effect
+of using importance sampling. The resulting increments and the
+weighted integrand \(f/\rho\) are depicted in~\ref{fig:xs-int-vegas},
+along with the original integrand and it is intuitively clear, that the
+variance is being reduced. Smaller increments correspond to higher
+sample density and lower weights, flattening out the integrand.
+
+\begin{figure}[ht]
+  \centering \plot{xs/xs_integrand_vegas}
+  \caption[\(2\pi\dv{\sigma}{\theta}\) with integration
+  boundaries]{\label{fig:xs-int-vegas} The same integrand as
+    in~\ref{fig:xs-int-theta} with \vegas\-generated intcrements and
+    weighting applied (\(f/\rho\)).}
+\end{figure}
+
+Generally the result gets better with more increments, but at the cost
+of more \vegas\ iterations. The intermediate values of those
+iterations can be accumulated to improve the accuracy of the end
+result.~\cite[197]{Lepage:19781an}
