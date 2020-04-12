@@ -29,7 +29,7 @@ def η_to_pt(η, p):
     return p / np.cosh(η)
 
 
-def tex_value(val, err=None, unit=None, prefix="", prec=0, save=None):
+def tex_value(val, err=None, unit=None, prefix="", suffix="", prec=0, save=None):
     """Generates LaTeX output of a value with units and error."""
 
     if err:
@@ -46,12 +46,14 @@ def tex_value(val, err=None, unit=None, prefix="", prec=0, save=None):
     if err:
         val_string += fr"\pm {err:.{prec}f}" if prec > 0 else str(err)
 
-    ret_string = ""
+    ret_string = r"\(" + prefix
 
     if unit is None:
-        ret_string += fr"\({prefix}{val_string}\)"
+        ret_string += val_string
     else:
-        ret_string += fr"\({prefix}\SI{{{val_string}}}{{{unit}}}\)"
+        ret_string += fr"\SI{{{val_string}}}{{{unit}}}"
+
+    ret_string += suffix + r"\)"
 
     if save is not None:
         os.makedirs(save[0], exist_ok=True)

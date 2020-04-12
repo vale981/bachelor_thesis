@@ -7,9 +7,9 @@
 \label{sec:mcint}
 
 Consider a function
-\(f: \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\) and a
+\(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\) and a
 probability density on \(\Omega\)
-\(\rho: \vb{x}\in\mathbb{R}^n\mapsto\mathbb{R}_{\geq 0}\) with
+\(\rho\colon \vb{x}\in\mathbb{R}^n\mapsto\mathbb{R}_{\geq 0}\) with
 \(\int_{\Omega}\rho(\vb{x})\dd{\vb{x}} = 1\).  By multiplying \(f\)
 with a \(1\) in the fashion of~\eqref{eq:baseintegral}, the Integral
 of \(f\) over \(\Omega\) can be interpreted as the expected value
@@ -190,6 +190,14 @@ characteristic function.
   \end{cases}
 \end{equation}
 
+\begin{figure}[ht]
+  \centering \plot{xs/xs_integrand_vegas}
+  \caption[\(2\pi\dv{\sigma}{\theta}\) scaled to increments found by
+  \vegas\ ]{\label{fig:xs-int-vegas} The same integrand as
+    in~\ref{fig:xs-int-theta} with \vegas-generated increments and
+    weighting applied (\(f/\rho\)).}
+\end{figure}
+
 In one dimension the hypercubes become simple interval
 increments. Applying \vegas\ to~\eqref{eq:crossec} with
 \result{xs/python/xs_mc_θ_vegas_K} increments yields
@@ -204,14 +212,6 @@ weighted integrand \(f/\rho\) are depicted in~\ref{fig:xs-int-vegas},
 along with the original integrand and it is intuitively clear, that the
 variance is being reduced. Smaller increments correspond to higher
 sample density and lower weights, flattening out the integrand.
-
-\begin{figure}[ht]
-  \centering \plot{xs/xs_integrand_vegas}
-  \caption[\(2\pi\dv{\sigma}{\theta}\) with integration
-  boundaries]{\label{fig:xs-int-vegas} The same integrand as
-    in~\ref{fig:xs-int-theta} with \vegas-generated increments and
-    weighting applied (\(f/\rho\)).}
-\end{figure}
 
 Generally the result gets better with more increments, but at the cost
 of more \vegas\ iterations. The intermediate values of those
