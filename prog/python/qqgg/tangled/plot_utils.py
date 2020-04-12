@@ -11,8 +11,10 @@ def plot_increments(ax, increment_borders, label=None, *args, **kwargs):
     for increment in increment_borders[1:-1]:
         ax.axvline(x=increment, *args, **kwargs)
 
-def plot_vegas_weighted_distribution(ax, points, dist,
-                                     increment_borders, *args, **kwargs):
+
+def plot_vegas_weighted_distribution(
+    ax, points, dist, increment_borders, *args, **kwargs
+):
     """Plot the distribution with VEGAS weights applied.
 
     :param ax: axis
@@ -24,13 +26,32 @@ def plot_vegas_weighted_distribution(ax, points, dist,
     num_increments = increment_borders.size
     weighted_dist = dist.copy()
 
-    for left_border, right_border in zip(increment_borders[:-1],
-                                        increment_borders[1:]):
+    for left_border, right_border in zip(increment_borders[:-1], increment_borders[1:]):
         length = right_border - left_border
         mask = (left_border <= points) & (points <= right_border)
-        weighted_dist[mask] = dist[mask]*num_increments*length
+        weighted_dist[mask] = dist[mask] * num_increments * length
 
     ax.plot(points, weighted_dist, *args, **kwargs)
+
+
+def plot_stratified_rho(ax, points, increment_borders, *args, **kwargs):
+    """Plot the weighting distribution resulting from the increment
+    borders.
+
+    :param ax: axis
+    :param points: points
+    :param increment_borders: increment borders
+
+    """
+
+    num_increments = increment_borders.size
+    ρ = np.empty_like(points)
+    for left_border, right_border in zip(increment_borders[:-1], increment_borders[1:]):
+        length = right_border - left_border
+        mask = (left_border <= points) & (points <= right_border)
+        ρ[mask] = 1 / (num_increments * length)
+
+    ax.plot(points, ρ, *args, **kwargs)
 
 """
 Some shorthands for common plotting tasks related to the investigation

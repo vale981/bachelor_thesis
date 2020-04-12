@@ -1,0 +1,198 @@
+%%% Local Variables: ***
+%%% mode: latex ***
+%%% TeX-master: "../../document.tex"  ***
+%%% End: ***
+
+\section{Monte-Carlo Sampling}%
+\label{sec:mcsamp}
+
+Drawing representative samples from a probability distribution (for
+example a differential cross section) from which one can the calculate
+samples from the distribution of other observables without explicit
+transformation of the distribution is another important problem. Here
+the one-dimensional case is discussed. The general case follows by
+sampling the dimensions sequentially.
+
+Consider a function \(f\colon x\in\Omega\mapsto\mathbb{R}_{\geq 0}\)
+where \(\Omega = [0, 1]\) without loss of generality. Such a function
+is proportional to a probability density \(\tilde{f}\). When \(X\) is
+a uniformly distributed random variable on~\([0, 1]\) then a sample
+\({x_i}\) of this variable can be transformed into a sample of
+\(Y\sim\tilde{f}\). Let \(x\) be a single sample of \(X\), then a
+sample \(y\) of \(Y\) can be obtained by solving~\eqref{eq:takesample}
+for \(y\).
+
+\begin{equation}
+  \label{eq:takesample}
+  \int_{0}^{y}f(x')\dd{x'} = x\cdot\int_0^1f(x')\dd{x'} = x\cdot A
+\end{equation}
+
+This can be shown by observing that, according
+to~\eqref{eq:takesample}, the probability that
+\(y\in[y', y'+\dd{y}']\) is the same as the probability that
+\(x\in A^{-1}\qty[\int_{0}^{y'+\dd{y}'}f(x')\dd{x'},
+\int_{0}^{y'}f(x')\dd{x'}]\) which is
+\(A^{-1}\qty(\int_{0}^{y'+\dd{y}'}f(x')\dd{x'} -
+\int_{0}^{y'}f(x')\dd{x'}) = A^{-1} f(y')\dd{y}'\). So \(y\) is really
+distributed according to \(f/A\).
+
+If the antiderivative \(F\) of is known, then the solution
+of~\eqref{eq:takesample} is given by~\eqref{eq:solutionsamp}.
+
+\begin{equation}
+  \label{eq:solutionsamp}
+  y = F^{-1}(x\cdot A + F(0))
+\end{equation}
+
+Note that \(F\) is always invertible because \(F\) is
+increasing monotonically. Of course \(F\) and its inverse can be
+obtained numerically or one can change variables to simplify.
+
+\subsection{Hit or Miss}%
+\label{sec:hitmiss}
+
+The problem can be reformulated by introducing a
+positive function \(g\colon x\in\Omega\mapsto\mathbb{R}_{\geq 0}\)
+with \(\forall x\in\Omega\colon g(x)\geq
+f(x)\).
+
+Observing~\eqref{eq:takesample2d} suggests, that one generates
+samples which are distributed according to \(g/B\), where \(B=\int_0^1g(x)\dd{x}\) and then accepts them
+with the probability~\(f/g\), so that \(g\) cancels out. This method
+is called ``hit or miss''.
+
+\begin{equation}
+  \label{eq:takesample2d}
+  \int_{0}^{y}f(x')\dd{x'} =
+  \int_{0}^{y}g(x')\cdot\frac{f(x')}{g(x')}\dd{x'}
+  = \int_{0}^{y}g(x')\int_{0}^{\frac{f(x')}{g(x')}}\dd{z}\dd{x'}
+\end{equation}
+
+The thus obtained samples are then distributed according to \(f/B\) so
+that~\eqref{eq:impsampeff} holds.
+
+\begin{equation}
+  \label{eq:impsampeff}
+  \int_0^1\frac{f(x)}{B}\dd{x} = \frac{A}{B} = \mathfrak{e}\leq 1
+\end{equation}
+
+This means that not all samples are being accepted and gives a measure
+on the efficiency \(\mathfrak{e}\) of the sampling method. The closer
+\(g\) is to \(f\) the higher is \(\mathfrak{e}\).
+
+Choosing \(g\) like~\eqref{eq:primitiveg} yields \(y = x\cdot A\), so
+that the procedure simplifies to choosing random numbers
+\(x\in [0,1]\) and accepting them with the probability
+\(f(x)/g(x)\). The efficiency of this approach is related to how much
+\(f\) differs from \(f_{\text{max}}\) which in turn related to the
+variance of \(f\). Minimizing variance will therefore improve sampling
+performance.
+
+\begin{equation}
+  \label{eq:primitiveg}
+  g=\max_{x\in\Omega}f(x)=f_{\text{max}}
+\end{equation}
+
+Using the upper bound defined in~\eqref{eq:primitiveg} with the
+distribution for \(\cos\theta\) derived from the differential cross
+section~\eqref{eq:crossec} given in~\eqref{eq:distcos}
+(\(\mathfrak{C}\) being a constant) results in a sampling efficiency
+of~\result{xs/python/naive_th_samp}.
+
+\begin{equation}
+  \label{eq:distcos}
+  f_{\cos\theta}(x=\cos\theta) = \mathfrak{C}\cdot\frac{1+x^2}{1-x^2}
+\end{equation}
+
+This very low efficiency stems from the fact, that \(f_{\cos\theta}\)
+is a lot smaller than its upper bound for most of the sampling
+interval.
+
+\begin{wrapfigure}{l}{.5\textwidth}
+  \plot{xs_sampling/upper_bound}
+  \caption{\label{fig:distcos} The distribution~\eqref{eq:distcos} and an upper bound of
+    the form \(a + b\cdot x^2\).}
+\end{wrapfigure}
+
+Utilizing an upper bound of the form \(a + b\cdot x^2\) with \(a, b\)
+constant improves the efficiency
+to~\result{xs/python/tuned_th_samp}. The distribution, as well as the
+upper bound are depicted in~\ref{fig:distcos}
+
+\subsection{Stratified Sampling}%
+\label{sec:stratsamp}
+
+Revisiting the idea behind~\eqref{eq:takesample2d} but choosing
+\(g=\rho\) where \(\rho\) is a probability density on \(\Omega\)
+leads to another two-stage process. Note that without loss of
+generality one can choose \(\Omega = [0, 1]\) as is done here.
+
+Assume that a sample \(\{x_i\}\) of \(f/\rho\) has been obtained
+through by the means of~\ref{sec:mcsamp}
+and~\ref{sec:hitmiss}. Accepting each sample item \(x_i\) with the
+probability \(\rho(x_i)\) will cancel out the \(\rho^{-1}\) factor and
+the resulting sample will be distributed according to \(f\). Now,
+instead of discarding samples, one can combine this idea with the hit
+and miss method with a constant upper bound. Define
+\(h=\max_{x\in\Omega}f(x)/\rho(x)\), take a sample
+\(\{\tilde{x}_i\}\sim\rho\) distributed according to \(\rho\) and accept
+each sample point with the probability \(f(x_i)/(\rho(x_i)\cdot
+h)\). The resulting probability that \(x_i\in[x, x+\dd{x}]\) is
+\(\rho(x)\cdot f(x)/(\rho(x)\cdot h)\dd{x}=f(x)\dd{x}/h\). The efficiency
+of this method is given by~\eqref{eq:strateff}.
+
+\begin{equation}
+  \label{eq:strateff}
+  \mathfrak{e} = \int_0^1\rho(x)\frac{f(x)}{\rho(x)\cdot h}\dd{x} = \frac{A}{h}
+\end{equation}
+
+It may seem startling that \(h\) determines the efficiency, because
+\(h\) is a (global) maximum and \(A\) is an integral
+but~\eqref{eq:hlessa} states that \(\mathfrak{e}\) is well-formed
+(\(\mathfrak{e}\leq 1\)). Albeit \(h\) is determined through a single
+point, being the maximum is a global property and there is also the
+constrain \(\int_0^1\rho(x)\dd{x}=1\) to be considered.
+
+\begin{equation}
+  \label{eq:hlessa}
+  A = \int_0^1\rho(x)\frac{f(x)}{\rho(x)}\dd{x} \leq
+  \int_0^1\rho(x)\cdot h\dd{x} = h
+\end{equation}
+
+
+The closer \(h\) approaches \(A\) the better the efficiency gets. In
+the optimal case \(\rho=f/A\) and thus \(h=A\) or
+\(\mathfrak{e} = 1\). Now this distribution can be approximated in the
+way discussed in~\ref{sec:mcintvegas} by using the hypercubes found
+by~\vegas. The distribution \(\rho\) takes on the
+form~\eqref{eq:vegasrho}. The effect of this approach is visualized
+in~\ref{fig:vegasdist} and the resulting sampling efficiency
+\result{xs/python/strat_th_samp} (using
+\result{xs/python/vegas_samp_num_increments} increments) is a great
+improvement over the hit or miss method in \ref{sec:hitmiss}. By using
+more increments better efficiencies can be achieved , although the
+run-time of \vegas\ increases. The advantage of \vegas\ in this
+situation is, that the computation of the increments has to be done
+only once and can be reused. Furthermore, no special knowledge about
+the input distribution \(f\) is required.
+
+
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}{.49\textwidth}
+    \plot{xs_sampling/vegas_strat_dist}
+    \caption[The distribution for \(\cos\theta\), derived from the
+    differential cross-section and the \vegas-weighted
+    distribution]{\label{fig:vegasdist} The distribution for
+      \(\cos\theta\) (see~\eqref{eq:distcos}) and the \vegas-weighted
+      distribution. The inc It is intuitively clear, how variance is
+      being reduced.}
+  \end{subfigure}
+  \begin{subfigure}{.49\textwidth}
+    \plot{xs_sampling/vegas_rho}
+    \caption[The weighting distribution generated by
+    \vegas.]{\label{fig:vegasrho} The weighting distribution generated by
+    \vegas. It is clear, that it closely follows the original
+    distribution~\eqref{eq:distcos}.}
+  \end{subfigure}
+\end{figure}
