@@ -120,6 +120,10 @@ constant improves the efficiency
 to~\result{xs/python/tuned_th_samp}. The distribution, as well as the
 upper bound are depicted in~\ref{fig:distcos}
 
+When transforming the differential cross-section to the pseudo
+rapidity \(\eta\) the efficiency of the hit or miss method rises
+to~\result{xs/python/eta_eff}, again due to the decrease in variance.
+
 \subsection{Stratified Sampling}%
 \label{sec:stratsamp}
 
@@ -171,7 +175,7 @@ in~\ref{fig:vegasdist} and the resulting sampling efficiency
 \result{xs/python/strat_th_samp} (using
 \result{xs/python/vegas_samp_num_increments} increments) is a great
 improvement over the hit or miss method in \ref{sec:hitmiss}. By using
-more increments better efficiencies can be achieved , although the
+more increments better efficiencies can be achieved, although the
 run-time of \vegas\ increases. The advantage of \vegas\ in this
 situation is, that the computation of the increments has to be done
 only once and can be reused. Furthermore, no special knowledge about
@@ -213,11 +217,13 @@ applying \(\gamma\). This is equivalent to
 substituting \(y=\gamma^{-1}(z)\) in~\eqref{eq:takesample} and solving
 for \(z\)
 
-The probability that \(z\in[z', z'+\dd{z'}]\) now is the same as
-\[\displaystyle x\in A^{-1}\qty[\int_{0}^{\gamma^{-1}(z')}f(x')\dd{x'},
-  \int_{0}^{\gamma^{-1}(z')+\gamma^{-1}'(z')\dd{z'}}f(x')\dd{x'}]\]
+The probability that \(z\in[z', z'+\dd{z'}]\) now is the same as the
+probability that
+\[\displaystyle x\in
+  A^{-1}\qty[\int_{0}^{\gamma^{-1}(z')}f(x')\dd{x'},
+  \int_{0}^{\gamma^{-1}(z')+\partial_z(\gamma^{-1})(z')\dd{z'}}f(x')\dd{x'}]\]
 which is
-\(A^{-1}\cdot f(\gamma^{-1}(z'))\cdot \gamma^{-1}'(z')\dd{z'}\). That
+\(A^{-1}\cdot f(\gamma^{-1}(z'))\cdot \partial_z(\gamma^{-1})(z')\dd{z'}\). That
 is the same result, as if the distribution had been transformed with a
 Jacobian.
 
@@ -225,4 +231,47 @@ Using the distribution~\eqref{eq:distcos} for \(\cos\theta\) and
 choosing the polar angle \(\phi\) uniformly random, a sample of
 4-momenta can be generated and histograms observables can be drawn.
 
-The observable considered are the transverse impulse \(p_{\mathrm{T}}\)
+The observable considered here are the transverse momentum \(\pt\) and
+the pseudo rapidity \(\eta\) which can be computed from 4-momentum as
+described in~\eqref{eq:observables}.
+
+\begin{align}
+  \label{eq:observables}
+  \pt &= \sqrt{(p_1)^2+(p_2)^2} & \eta &=
+                                         \frac{\abs{\vb{p}}}{\pt}\cdot\sign(p^3) \\
+\end{align}
+
+Generating \result{xs/python/4imp-sample-size} samples, the histograms
+in~\ref{fig:histos} are created.
+
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[b]{.49\textwidth}
+    \centering
+    \plot{xs_sampling/histo_eta}
+    \caption{\label{fig:histeta} Histogram of the pseudo-rapidity
+      (\(\eta\)) distribution.}
+  \end{subfigure}
+  \begin{subfigure}[b]{.49\textwidth}
+    \centering
+    \plot{xs_sampling/histo_pt}
+    \caption{\label{fig:histpt} Histogram of the transverse momentum
+      (\(\pt\)) distribution.}
+  \end{subfigure}
+  \caption{\label{fig:histos} Histograms of observables, generated
+    from a sample of 4-momenta.}
+\end{figure}
+
+Where~\ref{fig:histpt} shows clear resemblance
+of~\ref{fig:xs-int-eta}, the sharp peak in~\ref{fig:histpt} around
+\(\pt=\SI{100}{\giga\electronvolt}\) seems surprising. When
+transforming the differential cross section to \(\pt\) it can be seen
+in~\ref{fig:diff-xs-pt} that there really is a singularity at
+\(\pt =\abs{\vb{p}}\).
+
+\begin{figure}[ht]
+  \centering
+  \plot{xs_sampling/diff_xs_p_t}
+  \caption{\label{fig:diff-xs-pt} The differential cross section
+    transformed to \(\pt\).}
+\end{figure}
