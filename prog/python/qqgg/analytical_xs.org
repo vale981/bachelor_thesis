@@ -510,9 +510,14 @@ Doing the same thing with =VEGAS= works as well.
 Define the sample number.
 #+begin_src jupyter-python :exports both :results raw drawer
   sample_num = 10000
+  tex_value(
+      sample_num, prefix="N = ", save=("results", "4imp-sample-size.tex"),
+  )
 #+end_src
 
 #+RESULTS:
+: \(N = 10000\)
+
 Let's define shortcuts for our distributions. The 2π are just there
 for formal correctnes. Factors do not influecence the outcome.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -634,16 +639,18 @@ We define an auxilliary method for convenience.
 
   import matplotlib.pyplot as plt
 
+
   def draw_histo(points, xlabel, bins=20):
       heights, edges = np.histogram(points, bins)
-      centers = (edges[1:] + edges[:-1])/2
+      centers = (edges[1:] + edges[:-1]) / 2
       deviations = np.sqrt(heights)
 
       fig, ax = set_up_plot()
-      ax.errorbar(centers, heights, deviations, linestyle='none', color='orange')
-      ax.step(edges,  [heights[0], *heights], color='#1f77b4')
+      ax.errorbar(centers, heights, deviations, linestyle="none", color="orange")
+      ax.step(edges, [heights[0], *heights], color="#1f77b4")
 
       ax.set_xlabel(xlabel)
+      ax.set_ylabel("Count")
       ax.set_xlim([points.min(), points.max()])
       return fig, ax
 #+end_src
@@ -748,27 +755,23 @@ Lets try it out.
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
   η_sample = obs.η(momentum_sample)
-  draw_histo(η_sample, r'$\eta$')
+  fig, ax = draw_histo(η_sample, r'$\eta$')
+  save_fig(fig, 'histo_eta', 'xs_sampling', size=[3, 3])
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fdc61b281c0> |
-[[file:./.ob-jupyter/70bba86ac5a32fa98320660ad1a612e022dd2500.png]]
-:END:
+[[file:./.ob-jupyter/542e18d02cf0cc50ce8950eae17686ea441c9640.png]]
 
 
 And the same for the p_t (transverse momentum) distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
   p_t_sample = obs.p_t(momentum_sample)
-  draw_histo(p_t_sample, r'$p_T$ [GeV]')
+  fig, ax = draw_histo(p_t_sample, r"$p_T$ [GeV]")
+  save_fig(fig, "histo_pt", "xs_sampling", size=[3, 3])
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fdc63a7be50> |
-[[file:./.ob-jupyter/8bc1776d4fe983e2a7569dd1a24a90fcd98149be.png]]
-:END:
+[[file:./.ob-jupyter/7c55dbdf25ad46b0b212786a13c168250858139a.png]]
 
 That looks somewhat fishy, but it isn't.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -779,24 +782,29 @@ That looks somewhat fishy, but it isn't.
   ax.set_xlim(interval_pt[0], interval_pt[1] + 1)
   ax.set_ylim([0, gev_to_pb(diff_xs_p_t(interval_pt[1] -.01, charge, esp))])
   ax.set_ylabel(r'$\frac{d\sigma}{dp_t}$ [pb]')
-  save_fig(fig, 'diff_xs_p_t', 'xs_sampling', size=[4, 3])
+  save_fig(fig, 'diff_xs_p_t', 'xs_sampling', size=[4, 2])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/e127df693158dd4194b53f0a6f66ca2fca18af41.png]]
+[[file:./.ob-jupyter/29724b8c1f2b0005a05f64f999cf95d248ee0082.png]]
 this is strongly peaked at p_t=100GeV. (The jacobian goes like 1/x there!)
 
 *** Sampling the η cross section
 An again we see that the efficiency is way, way! better...
 #+begin_src jupyter-python :exports both :results raw drawer
-  η_sample, η_efficiency = \
-      monte_carlo.sample_unweighted_array(sample_num, dist_η,
-                                          interval_η, report_efficiency=True)
-  η_efficiency
+  η_sample, η_efficiency = monte_carlo.sample_unweighted_array(
+      sample_num, dist_η, interval_η, report_efficiency=True
+  )
+  tex_value(
+      η_efficiency * 100,
+      prefix=r"\mathfrak{e} = ",
+      suffix=r"\%",
+      save=("results", "eta_eff.tex"),
+  )
 #+end_src
 
 #+RESULTS:
-: 0.40742
+: \(\mathfrak{e} = 41\%\)
 <<η-eff>>
 
 Let's draw a histogram to compare with the previous results.
@@ -806,8 +814,8 @@ Let's draw a histogram to compare with the previous results.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fdc66286d60> |
-[[file:./.ob-jupyter/5647c16279a5d69687db839f0d991b712b75695b.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fdc65c61190> |
+[[file:./.ob-jupyter/3827b82a7c56c5133d0679274162d837a08cd713.png]]
 :END:
 
 
