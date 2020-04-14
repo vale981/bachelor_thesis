@@ -509,7 +509,7 @@ Doing the same thing with =VEGAS= works as well.
 ** Sampling and Analysis
 Define the sample number.
 #+begin_src jupyter-python :exports both :results raw drawer
-  sample_num = 1000
+  sample_num = 10000
 #+end_src
 
 #+RESULTS:
@@ -731,18 +731,19 @@ And import them.
 
 Lets try it out.
 #+begin_src jupyter-python :exports both :results raw drawer
-  momentum_sample = sample_momenta(2000, interval_cosθ, charge, esp)
+  momentum_sample = sample_momenta(sample_num, interval_cosθ, charge, esp)
   momentum_sample
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  51.43049717,  14.44028733,  84.53627661],
-:        [100.        ,  22.38941992,   8.17730861,  97.11768891],
-:        [100.        ,  92.96060232,  36.1778225 ,   7.03502492],
+: array([[100.        ,  68.71456475,  32.96837019, -64.74098516],
+:        [100.        ,  12.54360859,  13.24977676,  98.32141831],
+:        [100.        ,  21.9635704 ,   5.05742581,  97.42701894],
 :        ...,
-:        [100.        ,  58.51749523,  39.12481334,  71.02782366],
-:        [100.        ,  17.81837922,   0.45314315, -98.39867897],
-:        [100.        ,  14.28628219,  13.43366679, -98.05834354]])
+:        [100.        ,  26.34078021,   5.1590155 ,  96.33040982],
+:        [100.        ,  13.21102864,  18.92843358,  97.29945079],
+:        [100.        ,  49.03485534,  15.39750961, -85.78169769]])
+
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -752,8 +753,8 @@ Now let's make a histogram of the η distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fdc66437a00> |
-[[file:./.ob-jupyter/5d308a578fbe0b2317cdff89898fe74b30d10f29.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fdc61b281c0> |
+[[file:./.ob-jupyter/70bba86ac5a32fa98320660ad1a612e022dd2500.png]]
 :END:
 
 
@@ -765,8 +766,8 @@ And the same for the p_t (transverse momentum) distribution.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fdc663fcca0> |
-[[file:./.ob-jupyter/fa810ad5a33fa1e352ff9c9a02e16fa30d2b6460.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fdc63a7be50> |
+[[file:./.ob-jupyter/8bc1776d4fe983e2a7569dd1a24a90fcd98149be.png]]
 :END:
 
 That looks somewhat fishy, but it isn't.

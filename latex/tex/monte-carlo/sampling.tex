@@ -30,8 +30,8 @@ for \(y\).
 This can be shown by observing that, according
 to~\eqref{eq:takesample}, the probability that
 \(y\in[y', y'+\dd{y}']\) is the same as the probability that
-\(x\in A^{-1}\qty[\int_{0}^{y'+\dd{y}'}f(x')\dd{x'},
-\int_{0}^{y'}f(x')\dd{x'}]\) which is
+\(x\in A^{-1}\qty[\int_{0}^{y'}f(x')\dd{x'},
+\int_{0}^{y'+\dd{y}'}f(x')\dd{x'}]\) which is
 \(A^{-1}\qty(\int_{0}^{y'+\dd{y}'}f(x')\dd{x'} -
 \int_{0}^{y'}f(x')\dd{x'}) = A^{-1} f(y')\dd{y}'\). So \(y\) is really
 distributed according to \(f/A\).
@@ -56,10 +56,11 @@ positive function \(g\colon x\in\Omega\mapsto\mathbb{R}_{\geq 0}\)
 with \(\forall x\in\Omega\colon g(x)\geq
 f(x)\).
 
-Observing~\eqref{eq:takesample2d} suggests, that one generates
-samples which are distributed according to \(g/B\), where \(B=\int_0^1g(x)\dd{x}\) and then accepts them
-with the probability~\(f/g\), so that \(g\) cancels out. This method
-is called ``hit or miss''.
+Observing~\eqref{eq:takesample2d} suggests, that one generates samples
+which are distributed according to \(g/B\), where
+\(B=\int_0^1g(x)\dd{x}\) and then accepts them with the
+probability~\(f/g\), so that \(g\) cancels out. This method is called
+``hit or miss''.
 
 \begin{equation}
   \label{eq:takesample2d}
@@ -196,3 +197,32 @@ the input distribution \(f\) is required.
     distribution~\eqref{eq:distcos}.}
   \end{subfigure}
 \end{figure}
+
+
+\subsection{Observables}
+\label{sec:obs}
+
+Having obtained a sample of a distribution, distributions of other
+observables can be calculated from those samples without having to
+transform the distribution into new variables. This is due to the
+discrete nature of the samples. Suppose there is an observable
+\(\gamma\colon\Omega\mapsto\mathbb{R}\). Now to take a sample
+\(\{x_i\}\) of \(\gamma\) we sample \(f\)\footnote{As defined
+  in~\ref{sec:mcsamp}.} and convert the sample values by simply
+applying \(\gamma\). This is equivalent to
+substituting \(y=\gamma^{-1}(z)\) in~\eqref{eq:takesample} and solving
+for \(z\)
+
+The probability that \(z\in[z', z'+\dd{z'}]\) now is the same as
+\[\displaystyle x\in A^{-1}\qty[\int_{0}^{\gamma^{-1}(z')}f(x')\dd{x'},
+  \int_{0}^{\gamma^{-1}(z')+\gamma^{-1}'(z')\dd{z'}}f(x')\dd{x'}]\]
+which is
+\(A^{-1}\cdot f(\gamma^{-1}(z'))\cdot \gamma^{-1}'(z')\dd{z'}\). That
+is the same result, as if the distribution had been transformed with a
+Jacobian.
+
+Using the distribution~\eqref{eq:distcos} for \(\cos\theta\) and
+choosing the polar angle \(\phi\) uniformly random, a sample of
+4-momenta can be generated and histograms observables can be drawn.
+
+The observable considered are the transverse impulse \(p_{\mathrm{T}}\)
