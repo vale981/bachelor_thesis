@@ -32,6 +32,7 @@
  - [[file:literature/feynman/Thomson.pdf::533][Completeness Pol. Vectors]]
 ** Rivet
  - [[https://gitlab.com/hepcedar/rivet/tree/master/doc/tutorials][getting started]]
+ - [[https://gitlab.com/hepcedar/rivet/tree/master/doc/tutorials][sherpa and rivet tutorial]]
 ** Monte Carlo
  - [[file:literature/mc/general_purp_evt.pdf::170][Allgemeines zu MC integration, sampling]]
  - [[file:literature/mc/vegas.pdf][VEGAS]]
@@ -98,6 +99,8 @@ Viele Gruesse, Frank
  - overesimate even stronger if evaluation point number increased
 *** TODO Sherpa + Rivet
  - analyse + histogramme
+ - Analysis: ~MC_DIPHOTON~, [[https://rivet.hepforge.org/analyses/MC_DIPHOTON.html][analysis reference]]
+ -
  - manual
 ** Parton Density functions
  - [[https://lhapdf.hepforge.org/][pdf library]]
