@@ -2,10 +2,10 @@
 OUTPUT: 3
 
 # no events
-EVENTS: 0
+EVENTS: 10000
 
-# don't save results
-GENERATE_RESULT_DIRECTORY: false
+# save results
+GENERATE_RESULT_DIRECTORY: true
 
 # set up $d$ $\bar{d}$ beams, each at 100 GeV
 BEAMS: [1, -1]
@@ -41,3 +41,8 @@ SELECTORS:
 
 # no transverse impulses
 BEAM_REMNANTS: false
+
+ANALYSIS: Rivet
+RIVET:
+  -a:
+    - MC_DIPHOTON_SIMPLE
