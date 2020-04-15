@@ -933,3 +933,54 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 
 #+RESULTS:
 [[file:./.ob-jupyter/f63bf2a2e7f07c33a9823f12cd2883f4f712c71e.png]]
+*** Some Histograms with Rivet
+**** Init
+#+begin_src jupyter-python :exports both :results raw drawer
+  import yoda
+#+end_src
+
+#+RESULTS:
+
+**** Plot the Histos
+#+begin_src jupyter-python :exports both :results raw drawer
+  yoda_file = yoda.read('../../runcards/qqgg/analysis/Analysis.yoda')
+#+end_src
+
+#+RESULTS:
+
+#+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/plot_utils.py
+  def draw_yoda_histo(h, xlabel):
+      edges = np.append(h.xMins(), h.xMax())
+      heights = np.append(h.yVals(), h.yVals()[-1])
+      centers = (edges[1:] + edges[:-1]) / 2
+
+      fig, ax = set_up_plot()
+      ax.errorbar(h.xVals(), h.yVals(), h.yErrs(), linestyle="none", color="orange")
+      ax.step(edges, heights, color="#1f77b4", where="post")
+
+      ax.set_xlabel(xlabel)
+      ax.set_ylabel("Count")
+      ax.set_xlim([h.xMin(), h.xMax()])
+      ax.set_ylim(0)
+      return fig, ax
+#+end_src
+
+#+RESULTS:
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  sherpa_histos = {
+      'pT': r'$p_T$',
+      'eta': r'$\eta$',
+      'cos_theta': r'$\cos\theta$'
+  }
+
+  for key, label in sherpa_histos.items():
+      draw_yoda_histo(yoda_file['/MC_DIPHOTON_SIMPLE/' + key], r'Sherpa ' + label)
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/f595090390f02f4aa9cfb4c65460ff7a0ccb0c38.png]]
+[[file:./.ob-jupyter/c41ec3a63c542b64425269e7506343e62179ea66.png]]
+[[file:./.ob-jupyter/0f4183a6bb2b744cf7f305a453f9d14a969260c1.png]]
+:END:
