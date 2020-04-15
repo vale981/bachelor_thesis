@@ -34,9 +34,9 @@ public:
     declare(ifs, "IFS");
 
     auto energy = info().energies()[0].first;
-    book(_h_pT, "pT", 50, 0.0, energy);
+    book(_h_pT, "pT", 50, 16.3, energy);
     book(_h_eta, "eta", 50, -2.5, 2.5);
-    book(_h_cos_theta, "cos_theta", 50, -1, 1);
+    book(_h_cos_theta, "cos_theta", 50, -.986, .986);
   }
 
   /// Perform the per-event analysis
@@ -54,6 +54,12 @@ public:
   }
 
   //@}
+
+  void finalize() {
+    normalize(_h_pT);
+    normalize(_h_eta);
+    normalize(_h_cos_theta);
+  }
 
   /// @name Histograms
   //@{

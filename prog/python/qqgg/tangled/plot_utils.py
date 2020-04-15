@@ -63,10 +63,13 @@ Author: Valentin Boettcher <hiro at protagon.space>
 import matplotlib.pyplot as plt
 
 
-def draw_histo(points, xlabel, bins=20):
+def draw_histo(points, xlabel, bins=50):
     heights, edges = np.histogram(points, bins)
     centers = (edges[1:] + edges[:-1]) / 2
     deviations = np.sqrt(heights)
+    integral = heights @ (edges[1:] - edges[:-1])
+    heights = heights/integral
+    deviations = deviations/integral
 
     fig, ax = set_up_plot()
     ax.errorbar(centers, heights, deviations, linestyle="none", color="orange")
@@ -89,5 +92,4 @@ def draw_yoda_histo(h, xlabel):
     ax.set_xlabel(xlabel)
     ax.set_ylabel("Count")
     ax.set_xlim([h.xMin(), h.xMax()])
-    ax.set_ylim(0)
     return fig, ax
