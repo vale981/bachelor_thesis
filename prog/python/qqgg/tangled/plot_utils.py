@@ -76,3 +76,18 @@ def draw_histo(points, xlabel, bins=20):
     ax.set_ylabel("Count")
     ax.set_xlim([points.min(), points.max()])
     return fig, ax
+
+def draw_yoda_histo(h, xlabel):
+    edges = np.append(h.xMins(), h.xMax())
+    heights = np.append(h.yVals(), h.yVals()[-1])
+    centers = (edges[1:] + edges[:-1]) / 2
+
+    fig, ax = set_up_plot()
+    ax.errorbar(h.xVals(), h.yVals(), h.yErrs(), linestyle="none", color="orange")
+    ax.step(edges, heights, color="#1f77b4", where="post")
+
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel("Count")
+    ax.set_xlim([h.xMin(), h.xMax()])
+    ax.set_ylim(0)
+    return fig, ax
