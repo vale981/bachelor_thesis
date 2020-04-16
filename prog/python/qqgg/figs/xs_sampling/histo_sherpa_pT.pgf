@@ -1857,7 +1857,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=1.771267in,y=0.332222in,,top]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Sherpa \(\displaystyle p_T\)}%
+\pgftext[x=1.771267in,y=0.332222in,,top]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont Sherpa \(\displaystyle p_T\) [GeV]}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfpathrectangle{\pgfqpoint{0.825347in}{0.608333in}}{\pgfqpoint{1.891840in}{2.193056in}}%
