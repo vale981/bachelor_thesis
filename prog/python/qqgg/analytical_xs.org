@@ -983,16 +983,18 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 
 #+begin_src jupyter-python :exports both :results raw drawer
   yoda_file = yoda.read("../../runcards/qqgg/analysis/Analysis.yoda")
-  sherpa_histos = {"pT": r"$p_T$", "eta": r"$\eta$", "cos_theta": r"$\cos\theta$"}
+  sherpa_histos = {"pT": r"$p_T$ [GeV]", "eta": r"$\eta$", "cos_theta": r"$\cos\theta$"}
 
   for key, label in sherpa_histos.items():
-      fig, _ = draw_yoda_histo(yoda_file["/MC_DIPHOTON_SIMPLE/" + key], r"Sherpa " + label)
+      fig, _ = draw_yoda_histo(
+          yoda_file["/MC_DIPHOTON_SIMPLE/" + key], r"Sherpa " + label
+      )
       save_fig(fig, "histo_sherpa_" + key, "xs_sampling", size=(3, 3))
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-[[file:./.ob-jupyter/e779e9e8081ac63faee9de5e332bb0ef2721b10d.png]]
+[[file:./.ob-jupyter/c1f4d8e88a3a3e602e28e771b24c0f129f9854cf.png]]
 [[file:./.ob-jupyter/1daef5b1773483e0e176cac4a738f1c671c7becb.png]]
 [[file:./.ob-jupyter/a1bf8dec2faba69b35d48499c06ada0588ae713b.png]]
 :END:
