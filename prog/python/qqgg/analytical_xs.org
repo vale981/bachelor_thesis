@@ -26,8 +26,6 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 * Implementation
 #+NAME: 777a013b-6c20-44bd-b58b-6a7690c21c0e
@@ -269,7 +267,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.05358404078618163, sigma=0.000953835360995162, N=2235)
+: IntegrationResult(result=0.054374269511586644, sigma=0.0009683114962275483, N=2123)
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -279,7 +277,7 @@ We gonna export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 2235\)
+: \(N = 2123\)
 
 *** Integration over η
 Plot the intgrand of the pseudo rap.
@@ -305,7 +303,7 @@ Plot the intgrand of the pseudo rap.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.055523746776676305, sigma=0.0009089861200665858, N=132)
+: IntegrationResult(result=0.055151085713932124, sigma=0.000932443763615135, N=140)
 
 As we see, the result is a little better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.  But
@@ -320,7 +318,7 @@ And yet again export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 132\)
+: \(N = 140\)
 
 *** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
@@ -339,9 +337,9 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.05477933469947995, sigma=0.0005464033201501461, N=275, increment_borders=array([0.16380276, 0.27991826, 0.43340919, 0.64645778, 0.93844306,
-:        1.32975527, 1.79354996, 2.19156759, 2.48665472, 2.70233584,
-:        2.85992404, 2.9777899 ]), vegas_iterations=6)
+: VegasIntegrationResult(result=0.05367272259033393, sigma=0.00042389745443520844, N=275, increment_borders=array([0.16380276, 0.25021069, 0.37424685, 0.55594852, 0.83854962,
+:        1.27086143, 1.85730705, 2.29700734, 2.57637351, 2.76334644,
+:        2.89011895, 2.9777899 ]), vegas_iterations=12)
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. Here this gives
@@ -373,9 +371,9 @@ This depends, of course, on the iteration count.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.05386213649547038, sigma=0.000214710450736408, N=275, increment_borders=array([0.16380276, 0.24054509, 0.35219899, 0.52067314, 0.78278849,
-:        1.2472692 , 1.90998155, 2.36082938, 2.62602169, 2.79218893,
-:        2.90125859, 2.9777899 ]), vegas_iterations=22)
+: VegasIntegrationResult(result=0.05405856822809377, sigma=0.0003046830887499666, N=275, increment_borders=array([0.16380276, 0.25854516, 0.39088443, 0.58108696, 0.86570559,
+:        1.29975004, 1.8564745 , 2.28724136, 2.56829826, 2.75438203,
+:        2.88442585, 2.9777899 ]), vegas_iterations=10)
 
 Let's define some little helpers.
 #+begin_src jupyter-python :exports both :tangle tangled/plot_utils.py
@@ -468,7 +466,7 @@ And now we plot the integrand with the incremens.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/4201109c36075ef2b1275a867f9409e8b5cb6b4d.png]]
+[[file:./.ob-jupyter/78a75e477d40b8f25bec0cbd897e7b4a28692052.png]]
 *** Testing the Statistics
 Let's battle test the statistics.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -485,7 +483,7 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.699
+: 0.709
 
 So we see: the standard deviation is sound.
 
@@ -506,7 +504,7 @@ Doing the same thing with =VEGAS= works as well.
 #+end_src
 
 #+RESULTS:
-: 0.676
+: 0.66
 
 ** Sampling and Analysis
 Define the sample number.
@@ -543,7 +541,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.027662906315565422
+: 0.027612227729295263
 
 Let's save that.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -612,7 +610,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.07886854988293246
+: 0.07879506593284073
 <<cosθ-bare-eff>>
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -669,7 +667,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/5a3debb266b5aaf9a5498e5d2f2c4871883026b7.png]]
+[[file:./.ob-jupyter/ed86cefdd74c6101b31f179b9f00fbb432d301f4.png]]
 
 *** Observables
 Now we define some utilities to draw real 4-momentum samples.
@@ -748,13 +746,13 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  22.827316  ,   6.11817842, -97.16728635],
-:        [100.        ,  16.19929306,  16.70382181,  97.25515535],
-:        [100.        ,  28.72380823,  39.36083088, -87.3250699 ],
+: array([[100.        ,  36.96504312,  56.43920882,  73.81193193],
+:        [100.        ,  47.94386939,   1.7718024 , -87.73964955],
+:        [100.        ,  43.23224845,   8.595659  , -89.76127974],
 :        ...,
-:        [100.        ,  41.72357554,  19.18612929,  88.83150166],
-:        [100.        ,  79.51786684,  31.27362715, -51.95064098],
-:        [100.        ,  71.63758087,  12.86041792,  68.57599185]])
+:        [100.        ,  40.84435458,  21.7798789 , -88.64183873],
+:        [100.        ,  64.07275183,   2.13440481, -76.74716144],
+:        [100.        ,  74.77621972,   2.38367531, -66.35386241]])
 
 
 Now let's make a histogram of the η distribution.
@@ -765,7 +763,7 @@ Now let's make a histogram of the η distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/21f1a1f2e2b073af6931b52fa0bb86dc00ae9fe7.png]]
+[[file:./.ob-jupyter/0b892cf798f9076952bba488f555810dde8d545d.png]]
 
 
 And the same for the p_t (transverse momentum) distribution.
@@ -776,7 +774,7 @@ And the same for the p_t (transverse momentum) distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/1971340d1ac972eff862795223beb3f7dddae68d.png]]
+[[file:./.ob-jupyter/e68d91f84c00e5f32d34b7b2cb6cfe928f932387.png]]
 
 That looks somewhat fishy, but it isn't.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -819,8 +817,8 @@ Let's draw a histogram to compare with the previous results.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb32ea61190> |
-[[file:./.ob-jupyter/e1d269b4f35928a3f43f27545eda27a04b543fbf.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f048b5dcd30> |
+[[file:./.ob-jupyter/ba156696bf5eda240423e9955e96feba14d5085c.png]]
 :END:
 
 
@@ -842,8 +840,8 @@ distribution. We throw away the integral, but keep the increments.
 #+end_src
 
 #+RESULTS:
-: array([-0.9866143 , -0.96968028, -0.93015306, -0.83701271, -0.59406047,
-:         0.01417513,  0.61343971,  0.84248094,  0.93241173,  0.97023383,
+: array([-0.9866143 , -0.96987487, -0.93118512, -0.8386111 , -0.60462504,
+:        -0.00295135,  0.59955266,  0.83691601,  0.93048622,  0.96936191,
 :         0.9866143 ])
 
 Visualizing the increment borders gives us the information we want.
@@ -861,8 +859,8 @@ Visualizing the increment borders gives us the information we want.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fb32e1b2a90>
-[[file:./.ob-jupyter/783977a016a450b29ca271eaf14022b5320cf74a.png]]
+: <matplotlib.legend.Legend at 0x7f048b526550>
+[[file:./.ob-jupyter/ee7d83a88fc6da8c8c42394fdbc7af711b403fdb.png]]
 :END:
 
 We can now plot the reweighted distribution to observe the variance
@@ -886,7 +884,7 @@ reduction visually.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/544c45c10a48dae94e954cd16467bba8c4218944.png]]
+[[file:./.ob-jupyter/dae850ded9399ef8c8b575034825afdc31e132b8.png]]
 
 
 I am batman! Let's plot the weighting distribution.
@@ -901,7 +899,7 @@ I am batman! Let's plot the weighting distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/a746bc94f4abbc62b175f4fa1114371e70de98a8.png]]
+[[file:./.ob-jupyter/758fabbe0acd858b5abd3212b95a719feb3b592e.png]]
 
 Now, draw a sample and look at the efficiency.
 
@@ -914,7 +912,7 @@ Now, draw a sample and look at the efficiency.
 #+end_src
 
 #+RESULTS:
-: 0.58227
+: 0.59549
 
 #+begin_src jupyter-python :exports both :results raw drawer
   tex_value(
@@ -926,7 +924,7 @@ Now, draw a sample and look at the efficiency.
 #+end_src
 
 #+RESULTS:
-: \(\mathfrak{e} = 58\%\)
+: \(\mathfrak{e} = 60\%\)
 
 If we compare that to [[cosθ-bare-eff]], we can see the improvement :P.
 It is even better the [[η-eff]].  The histogram looks just the same.
@@ -937,7 +935,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/0d037b42944f525250830ca522c858b5e91fba6c.png]]
+[[file:./.ob-jupyter/7af688111aaf5c200408d255ecedbba515802aff.png]]
 *** Some Histograms with Rivet
 **** Init
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -980,7 +978,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 
 #+RESULTS:
 :RESULTS:
-[[file:./.ob-jupyter/c1f4d8e88a3a3e602e28e771b24c0f129f9854cf.png]]
-[[file:./.ob-jupyter/1daef5b1773483e0e176cac4a738f1c671c7becb.png]]
-[[file:./.ob-jupyter/a1bf8dec2faba69b35d48499c06ada0588ae713b.png]]
+[[file:./.ob-jupyter/cf2cb2e44b671f0139fbbb981d96ea768695e6ce.png]]
+[[file:./.ob-jupyter/ae1120056a4d2a10767e78aee0977da3043b0fcd.png]]
+[[file:./.ob-jupyter/c8ebd56346c55709ceffb3773658af74bfba006f.png]]
 :END:
