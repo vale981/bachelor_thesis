@@ -97,10 +97,10 @@ Viele Gruesse, Frank
  - stratified sampling, vegas
 **** TODO Something fishy about that variance estimate in vegas!!!
  - overesimate even stronger if evaluation point number increased
-*** TODO Sherpa + Rivet
+*** DONE Sherpa + Rivet
  - analyse + histogramme
  - Analysis: ~MC_DIPHOTON~, [[https://rivet.hepforge.org/analyses/MC_DIPHOTON.html][analysis reference]]
- -
+ - sherpa configure: ~../configure --enable-rivet=/usr/bin/rivet --prefix=/usr --enable-hepmc2=/usr~
  - manual
 ** Parton Density functions
  - [[https://lhapdf.hepforge.org/][pdf library]]
