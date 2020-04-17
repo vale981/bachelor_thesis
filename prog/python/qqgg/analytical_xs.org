@@ -269,7 +269,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.05446762390249323, sigma=0.0008255267345438883, N=3062)
+: IntegrationResult(result=0.05358404078618163, sigma=0.000953835360995162, N=2235)
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -279,7 +279,7 @@ We gonna export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 3062\)
+: \(N = 2235\)
 
 *** Integration over η
 Plot the intgrand of the pseudo rap.
@@ -305,7 +305,7 @@ Plot the intgrand of the pseudo rap.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.055248826717273894, sigma=0.000850578242116393, N=146)
+: IntegrationResult(result=0.055523746776676305, sigma=0.0009089861200665858, N=132)
 
 As we see, the result is a little better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.  But
@@ -320,7 +320,7 @@ And yet again export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 146\)
+: \(N = 132\)
 
 *** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
@@ -339,9 +339,9 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.05298831377390104, sigma=0.00047316856812983164, N=275, increment_borders=array([0.16380276, 0.26548101, 0.40499559, 0.60444615, 0.89082264,
-:        1.30461587, 1.82011605, 2.23778302, 2.52798618, 2.72944603,
-:        2.87319285, 2.9777899 ]), vegas_iterations=8)
+: VegasIntegrationResult(result=0.05477933469947995, sigma=0.0005464033201501461, N=275, increment_borders=array([0.16380276, 0.27991826, 0.43340919, 0.64645778, 0.93844306,
+:        1.32975527, 1.79354996, 2.19156759, 2.48665472, 2.70233584,
+:        2.85992404, 2.9777899 ]), vegas_iterations=6)
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. Here this gives
@@ -373,9 +373,9 @@ This depends, of course, on the iteration count.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.0535800515088519, sigma=0.00040500997978091293, N=275, increment_borders=array([0.16380276, 0.28247078, 0.44038447, 0.65707635, 0.95860989,
-:        1.36018749, 1.82461022, 2.21635638, 2.50506504, 2.71436708,
-:        2.86527609, 2.9777899 ]), vegas_iterations=6)
+: VegasIntegrationResult(result=0.05386213649547038, sigma=0.000214710450736408, N=275, increment_borders=array([0.16380276, 0.24054509, 0.35219899, 0.52067314, 0.78278849,
+:        1.2472692 , 1.90998155, 2.36082938, 2.62602169, 2.79218893,
+:        2.90125859, 2.9777899 ]), vegas_iterations=22)
 
 Let's define some little helpers.
 #+begin_src jupyter-python :exports both :tangle tangled/plot_utils.py
@@ -468,7 +468,7 @@ And now we plot the integrand with the incremens.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/758cf975863edaae1cd9d3b4683ce494e736ddb7.png]]
+[[file:./.ob-jupyter/4201109c36075ef2b1275a867f9409e8b5cb6b4d.png]]
 *** Testing the Statistics
 Let's battle test the statistics.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -485,7 +485,7 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.665
+: 0.699
 
 So we see: the standard deviation is sound.
 
@@ -506,7 +506,7 @@ Doing the same thing with =VEGAS= works as well.
 #+end_src
 
 #+RESULTS:
-: 0.691
+: 0.676
 
 ** Sampling and Analysis
 Define the sample number.
@@ -543,7 +543,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.027528608061949504
+: 0.027662906315565422
 
 Let's save that.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -612,7 +612,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.07922836784545058
+: 0.07886854988293246
 <<cosθ-bare-eff>>
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -642,13 +642,13 @@ We define an auxilliary method for convenience.
   import matplotlib.pyplot as plt
 
 
-  def draw_histo(points, xlabel, bins=50):
-      heights, edges = np.histogram(points, bins)
+  def draw_histo(points, xlabel, bins=50, range=None, **kwargs):
+      heights, edges = np.histogram(points, bins, range=range, **kwargs)
       centers = (edges[1:] + edges[:-1]) / 2
       deviations = np.sqrt(heights)
       integral = heights @ (edges[1:] - edges[:-1])
-      heights = heights/integral
-      deviations = deviations/integral
+      heights = heights / integral
+      deviations = deviations / integral
 
       fig, ax = set_up_plot()
       ax.errorbar(centers, heights, deviations, linestyle="none", color="orange")
@@ -656,7 +656,7 @@ We define an auxilliary method for convenience.
 
       ax.set_xlabel(xlabel)
       ax.set_ylabel("Count")
-      ax.set_xlim([points.min(), points.max()])
+      ax.set_xlim(range if range is not None else [points.min(), points.max()])
       return fig, ax
 #+end_src
 
@@ -669,7 +669,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/f900cd1f2938395ee04417e0c8369c23d883622c.png]]
+[[file:./.ob-jupyter/5a3debb266b5aaf9a5498e5d2f2c4871883026b7.png]]
 
 *** Observables
 Now we define some utilities to draw real 4-momentum samples.
@@ -748,35 +748,35 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  81.88196716,  43.22434263, -37.77564902],
-:        [100.        ,  24.77634994,  23.19908007,  94.06346351],
-:        [100.        ,  89.63521528,  37.54354171, -23.57987825],
+: array([[100.        ,  22.827316  ,   6.11817842, -97.16728635],
+:        [100.        ,  16.19929306,  16.70382181,  97.25515535],
+:        [100.        ,  28.72380823,  39.36083088, -87.3250699 ],
 :        ...,
-:        [100.        ,  21.790537  ,  11.38406619, -96.93077702],
-:        [100.        ,  48.21722876,  20.13959487, -85.26133689],
-:        [100.        ,  25.93488982,   1.49987455, -96.56672236]])
+:        [100.        ,  41.72357554,  19.18612929,  88.83150166],
+:        [100.        ,  79.51786684,  31.27362715, -51.95064098],
+:        [100.        ,  71.63758087,  12.86041792,  68.57599185]])
 
 
 Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
   η_sample = obs.η(momentum_sample)
-  fig, ax = draw_histo(η_sample, r'$\eta$')
+  fig, ax = draw_histo(η_sample, r'$\eta$', range=interval_η)
   save_fig(fig, 'histo_eta', 'xs_sampling', size=[3, 3])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/48d534ff204e6aa5636746b1fccef3658ca24720.png]]
+[[file:./.ob-jupyter/21f1a1f2e2b073af6931b52fa0bb86dc00ae9fe7.png]]
 
 
 And the same for the p_t (transverse momentum) distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
   p_t_sample = obs.p_t(momentum_sample)
-  fig, ax = draw_histo(p_t_sample, r"$p_T$ [GeV]")
+  fig, ax = draw_histo(p_t_sample, r"$p_T$ [GeV]", range=interval_pt)
   save_fig(fig, "histo_pt", "xs_sampling", size=[3, 3])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/4634a469d94a5a88eecf2d1f00068180fe285bbb.png]]
+[[file:./.ob-jupyter/1971340d1ac972eff862795223beb3f7dddae68d.png]]
 
 That looks somewhat fishy, but it isn't.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -819,22 +819,8 @@ Let's draw a histogram to compare with the previous results.
 
 #+RESULTS:
 :RESULTS:
-# [goto error]
-#+begin_example
-
-  TypeErrorTraceback (most recent call last)
-  <ipython-input-152-135da139cc01> in <module>
-  ----> 1 draw_histo(η_sample, r'$\eta$')
-
-  <ipython-input-143-0369283d77d0> in draw_histo(points, xlabel, bins)
-       14     deviations = np.sqrt(heights)
-       15     integral = heights @ (edges[1:] - edges[:-1])
-  ---> 16     heights /= integral
-       17     deviations /= integral
-       18
-
-  TypeError: ufunc 'true_divide' output (typecode 'd') could not be coerced to provided output parameter (typecode 'l') according to the casting rule ''same_kind''
-#+end_example
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb32ea61190> |
+[[file:./.ob-jupyter/e1d269b4f35928a3f43f27545eda27a04b543fbf.png]]
 :END:
 
 
@@ -856,8 +842,8 @@ distribution. We throw away the integral, but keep the increments.
 #+end_src
 
 #+RESULTS:
-: array([-0.9866143 , -0.9696821 , -0.93140574, -0.84140036, -0.60391287,
-:        -0.0080662 ,  0.59861242,  0.83680834,  0.93037032,  0.96942902,
+: array([-0.9866143 , -0.96968028, -0.93015306, -0.83701271, -0.59406047,
+:         0.01417513,  0.61343971,  0.84248094,  0.93241173,  0.97023383,
 :         0.9866143 ])
 
 Visualizing the increment borders gives us the information we want.
@@ -875,8 +861,8 @@ Visualizing the increment borders gives us the information we want.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fb32e85b6d0>
-[[file:./.ob-jupyter/225f173c081af4bd603b1f1c8a148ad3c6950364.png]]
+: <matplotlib.legend.Legend at 0x7fb32e1b2a90>
+[[file:./.ob-jupyter/783977a016a450b29ca271eaf14022b5320cf74a.png]]
 :END:
 
 We can now plot the reweighted distribution to observe the variance
@@ -900,7 +886,7 @@ reduction visually.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/3627649a346f32e23d7dc55f4f54ead6f7c8c631.png]]
+[[file:./.ob-jupyter/544c45c10a48dae94e954cd16467bba8c4218944.png]]
 
 
 I am batman! Let's plot the weighting distribution.
@@ -915,7 +901,7 @@ I am batman! Let's plot the weighting distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/535b557096180f27688951eedf76fc9347051519.png]]
+[[file:./.ob-jupyter/a746bc94f4abbc62b175f4fa1114371e70de98a8.png]]
 
 Now, draw a sample and look at the efficiency.
 
@@ -928,7 +914,7 @@ Now, draw a sample and look at the efficiency.
 #+end_src
 
 #+RESULTS:
-: 0.57751
+: 0.58227
 
 #+begin_src jupyter-python :exports both :results raw drawer
   tex_value(
@@ -951,7 +937,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/a897f7c69f8ce079d652c731b2097849480a8a50.png]]
+[[file:./.ob-jupyter/0d037b42944f525250830ca522c858b5e91fba6c.png]]
 *** Some Histograms with Rivet
 **** Init
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -977,7 +963,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
       ax.set_ylabel("Count")
       ax.set_xlim([h.xMin(), h.xMax()])
       return fig, ax
-#+end_src
+#+end_srctypes pytohn
 
 #+RESULTS:
 
@@ -986,7 +972,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
   sherpa_histos = {"pT": r"$p_T$ [GeV]", "eta": r"$\eta$", "cos_theta": r"$\cos\theta$"}
 
   for key, label in sherpa_histos.items():
-      fig, _ = draw_yoda_histo(
+      fig, ax = draw_yoda_histo(
           yoda_file["/MC_DIPHOTON_SIMPLE/" + key], r"Sherpa " + label
       )
       save_fig(fig, "histo_sherpa_" + key, "xs_sampling", size=(3, 3))
