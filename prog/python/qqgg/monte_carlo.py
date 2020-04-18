@@ -3,7 +3,6 @@ Simple monte carlo integration implementation.
 Author: Valentin Boettcher <hiro@protagon.space>
 """
 import numpy as np
-import inspect
 import functools
 from scipy.optimize import minimize_scalar, root, shgo
 from dataclasses import dataclass
@@ -127,6 +126,7 @@ def sample_unweighted_vector(
     if not upper_bound:
         result = shgo(_negate(f), bounds=interval)
         if not result.success:
+            print(result)
             raise RuntimeError("Could not find an upper bound.")
 
         upper_bound = -result.fun + 0.1
