@@ -1,7 +1,4 @@
 #+PROPERTY: header-args :exports both :output-dir results :session xs :kernel python3
-#+HTML_HEAD: <link rel="stylesheet" href="tufte.css" />
-#+OPTIONS: html-style:nil
-#+HTML_CONTAINER: section
 #+TITLE: Investigaton of Monte-Carlo Methods
 #+AUTHOR: Valentin Boettcher
 
@@ -28,6 +25,7 @@
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
 
 * Implementation
+** Center of Mass Frame
 #+NAME: 777a013b-6c20-44bd-b58b-6a7690c21c0e
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :exports code :tangle tangled/xs.py
   """
@@ -49,7 +47,7 @@
       charge -- charge of the particle in units of the elementary charge
       """
 
-      return charge**4/(137.036*esp)**2/6
+      return charge ** 4 / (137.036 * esp) ** 2 / 6
 
 
   def diff_xs(θ, charge, esp):
@@ -66,7 +64,8 @@
       """
 
       f = energy_factor(charge, esp)
-      return f*((np.cos(θ)**2+1)/np.sin(θ)**2)
+      return f * ((np.cos(θ) ** 2 + 1) / np.sin(θ) ** 2)
+
 
   def diff_xs_cosθ(cosθ, charge, esp):
       """
@@ -82,7 +81,7 @@
       """
 
       f = energy_factor(charge, esp)
-      return f*((cosθ**2+1)/(1-cosθ**2))
+      return f * ((cosθ ** 2 + 1) / (1 - cosθ ** 2))
 
 
   def diff_xs_eta(η, charge, esp):
@@ -99,7 +98,7 @@
       """
 
       f = energy_factor(charge, esp)
-      return f*(np.tanh(η)**2 + 1)
+      return f * (np.tanh(η) ** 2 + 1)
 
 
   def diff_xs_p_t(p_t, charge, esp):
@@ -116,8 +115,8 @@
       """
 
       f = energy_factor(charge, esp)
-      sqrt_fact = np.sqrt(1-(2*p_t/esp)**2)
-      return f/p_t*(1/sqrt_fact + sqrt_fact)
+      sqrt_fact = np.sqrt(1 - (2 * p_t / esp) ** 2)
+      return f / p_t * (1 / sqrt_fact + sqrt_fact)
 
 
   def total_xs_eta(η, charge, esp):
@@ -138,16 +137,15 @@
           η = (-η, η)
 
       if len(η) != 2:
-          raise ValueError('Invalid η cut.')
+          raise ValueError("Invalid η cut.")
 
       def F(x):
-          return np.tanh(x) - 2*x
+          return np.tanh(x) - 2 * x
 
-      return 2*np.pi*f*(F(η[0]) - F(η[1]))
+      return 2 * np.pi * f * (F(η[0]) - F(η[1]))
 #+END_SRC
 
 #+RESULTS: 777a013b-6c20-44bd-b58b-6a7690c21c0e
-
 * Calculations
 First, set up the input parameters.
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer
@@ -377,6 +375,16 @@ This depends, of course, on the iteration count.
 
 Let's define some little helpers.
 #+begin_src jupyter-python :exports both :tangle tangled/plot_utils.py
+  """
+  Some shorthands for common plotting tasks related to the investigation
+  of monte-carlo methods in one rimension.
+
+  Author: Valentin Boettcher <hiro at protagon.space>
+  """
+
+  import matplotlib.pyplot as plt
+
+
   def plot_increments(ax, increment_borders, label=None, *args, **kwargs):
       """Plot the increment borders from a list.  The first and last one
 
@@ -630,16 +638,6 @@ Nice! And now draw some histograms.
 
 We define an auxilliary method for convenience.
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/plot_utils.py
-  """
-  Some shorthands for common plotting tasks related to the investigation
-  of monte-carlo methods in one rimension.
-
-  Author: Valentin Boettcher <hiro at protagon.space>
-  """
-
-  import matplotlib.pyplot as plt
-
-
   def draw_histo(points, xlabel, bins=50, range=None, **kwargs):
       heights, edges = np.histogram(points, bins, range=range, **kwargs)
       centers = (edges[1:] + edges[:-1]) / 2

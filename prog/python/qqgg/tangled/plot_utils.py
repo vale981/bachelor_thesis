@@ -1,3 +1,13 @@
+"""
+Some shorthands for common plotting tasks related to the investigation
+of monte-carlo methods in one rimension.
+
+Author: Valentin Boettcher <hiro at protagon.space>
+"""
+
+import matplotlib.pyplot as plt
+
+
 def plot_increments(ax, increment_borders, label=None, *args, **kwargs):
     """Plot the increment borders from a list.  The first and last one
 
@@ -52,16 +62,6 @@ def plot_stratified_rho(ax, points, increment_borders, *args, **kwargs):
         ρ[mask] = 1 / (num_increments * length)
 
     ax.plot(points, ρ, *args, **kwargs)
-
-"""
-Some shorthands for common plotting tasks related to the investigation
-of monte-carlo methods in one rimension.
-
-Author: Valentin Boettcher <hiro at protagon.space>
-"""
-
-import matplotlib.pyplot as plt
-
 
 def draw_histo(points, xlabel, bins=50, range=None, **kwargs):
     heights, edges = np.histogram(points, bins, range=range, **kwargs)

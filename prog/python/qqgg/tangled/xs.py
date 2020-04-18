@@ -21,7 +21,7 @@ def energy_factor(charge, esp):
     charge -- charge of the particle in units of the elementary charge
     """
 
-    return charge**4/(137.036*esp)**2/6
+    return charge ** 4 / (137.036 * esp) ** 2 / 6
 
 
 def diff_xs(θ, charge, esp):
@@ -38,7 +38,8 @@ def diff_xs(θ, charge, esp):
     """
 
     f = energy_factor(charge, esp)
-    return f*((np.cos(θ)**2+1)/np.sin(θ)**2)
+    return f * ((np.cos(θ) ** 2 + 1) / np.sin(θ) ** 2)
+
 
 def diff_xs_cosθ(cosθ, charge, esp):
     """
@@ -54,7 +55,7 @@ def diff_xs_cosθ(cosθ, charge, esp):
     """
 
     f = energy_factor(charge, esp)
-    return f*((cosθ**2+1)/(1-cosθ**2))
+    return f * ((cosθ ** 2 + 1) / (1 - cosθ ** 2))
 
 
 def diff_xs_eta(η, charge, esp):
@@ -71,7 +72,7 @@ def diff_xs_eta(η, charge, esp):
     """
 
     f = energy_factor(charge, esp)
-    return f*(np.tanh(η)**2 + 1)
+    return f * (np.tanh(η) ** 2 + 1)
 
 
 def diff_xs_p_t(p_t, charge, esp):
@@ -88,8 +89,8 @@ def diff_xs_p_t(p_t, charge, esp):
     """
 
     f = energy_factor(charge, esp)
-    sqrt_fact = np.sqrt(1-(2*p_t/esp)**2)
-    return f/p_t*(1/sqrt_fact + sqrt_fact)
+    sqrt_fact = np.sqrt(1 - (2 * p_t / esp) ** 2)
+    return f / p_t * (1 / sqrt_fact + sqrt_fact)
 
 
 def total_xs_eta(η, charge, esp):
@@ -110,12 +111,12 @@ def total_xs_eta(η, charge, esp):
         η = (-η, η)
 
     if len(η) != 2:
-        raise ValueError('Invalid η cut.')
+        raise ValueError("Invalid η cut.")
 
     def F(x):
-        return np.tanh(x) - 2*x
+        return np.tanh(x) - 2 * x
 
-    return 2*np.pi*f*(F(η[0]) - F(η[1]))
+    return 2 * np.pi * f * (F(η[0]) - F(η[1]))
 
 def sample_momenta(sample_num, interval, charge, esp, seed=None):
     """Samples `sample_num` unweighted photon 4-momenta from the

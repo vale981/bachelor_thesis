@@ -10,6 +10,12 @@ import os
 ###############################################################################
 
 
+def minkowski_product(v_1, v_2):
+    """Performs the standard 4-vector product between `v_1` and `v_2`"""
+
+    return v_1[0] * v_2[0] - (v_1[1:] @ v_2[1:])
+
+
 def gev_to_pb(xs):
     """Converts a cross section from 1/GeV^2 to pb."""
     return xs / (electron_volt ** 2) * (hbar * c) ** 2 * 1e22
