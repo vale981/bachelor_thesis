@@ -20,7 +20,7 @@
  - [[file:literature/feynman/tk-vorlesung.pdf::64][Kapitel 4.4]]
    - Beispiel zur Berechnung
 
-** Particle Physics
+** ParTicle Physics
 *** Thomson
     :LOGBOOK:
     CLOCK: [2020-03-18 Wed 16:32]--[2020-03-18 Wed 21:01] =>  4:29
@@ -37,6 +37,8 @@
  - [[file:literature/mc/general_purp_evt.pdf::170][Allgemeines zu MC integration, sampling]]
  - [[file:literature/mc/vegas.pdf][VEGAS]]
  - [[file:literature/mc/vegas_algo.pdf][VEGAS Algorithm]]
+** PDFs
+ - [[file:literature/pdf/lhapdf6.pdf][LHAPDF6]]
 * Aufgaben
 ** Erste Aufgabenp
    :LOGBOOK:
@@ -126,6 +128,9 @@ Viele Gruesse, Frank
 ** Globaler Spin bei pol. Vektoren?
 ** Spin nicht erhalten?
 ** Abweichungen im vergeich weiter diskutieren?
+** Flavours im Proton
+** Sind quark verhaeltnisse in PDF enthalten (2:1 fuer proton)
+** beide finalstate photonen behalten?
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!
