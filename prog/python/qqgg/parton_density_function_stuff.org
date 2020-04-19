@@ -32,7 +32,9 @@ interval = η_to_θ([-η, η])
 interval_cosθ = np.cos(interval)
 #+end_src
 
-#+RESULTS:00* Lab Frame XS
+#+RESULTS:
+
+* Lab Frame XS
 We begin by implementing the same sermon for the lab frame.
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/pdf.py
   """
@@ -370,8 +372,6 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f6a2e0b9970> |
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f6a2d81e340> |
 [[file:./.ob-jupyter/667dbb2182e20a5740079a92f769bededd4cf4ee.png]]
 :END:
-
-We should take more samples to decrease the Variance. But it takes soooo long.
