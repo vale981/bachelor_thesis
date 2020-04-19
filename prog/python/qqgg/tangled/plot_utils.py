@@ -6,6 +6,8 @@ Author: Valentin Boettcher <hiro at protagon.space>
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
+from utility import *
 
 
 def plot_increments(ax, increment_borders, label=None, *args, **kwargs):
@@ -81,55 +83,15 @@ def draw_histo(points, xlabel, bins=50, range=None, **kwargs):
     return fig, ax
 
 def draw_yoda_histo(h, xlabel):
-      edges = np.append(h.xMins(), h.xMax())
-      heights = np.append(h.yVals(), h.yVals()[-1])
-      centers = (edges[1:] + edges[:-1]) / 2
+    edges = np.append(h.xMins(), h.xMax())
+    heights = np.append(h.yVals(), h.yVals()[-1])
+    centers = (edges[1:] + edges[:-1]) / 2
 
-      fig, ax = set_up_plot()
-      ax.errorbar(h.xVals(), h.yVals(), h.yErrs(), linestyle="none", color="orange")
-      ax.step(edges, heights, color="#1f77b4", where="post")
+    fig, ax = set_up_plot()
+    ax.errorbar(h.xVals(), h.yVals(), h.yErrs(), linestyle="none", color="orange")
+    ax.step(edges, heights, color="#1f77b4", where="post")
 
-      ax.set_xlabel(xlabel)
-      ax.set_ylabel("Count")
-      ax.set_xlim([h.xMin(), h.xMax()])
-      return fig, ax
-#+end_srctypes pytohn
-
-#+RESULTS:
-
-#+begin_src jupyter-python :exports both :results raw drawer
-  yoda_file = yoda.read("../../runcards/qqgg/analysis/Analysis.yoda")
-  sherpa_histos = {"pT": r"$p_T$ [GeV]", "eta": r"$\eta$", "cos_theta": r"$\cos\theta$"}
-
-  for key, label in sherpa_histos.items():
-      fig, ax = draw_yoda_histo(
-          yoda_file["/MC_DIPHOTON_SIMPLE/" + key], r"Sherpa " + label
-      )
-      save_fig(fig, "histo_sherpa_" + key, "xs_sampling", size=(3, 3))
-
-def draw_yoda_histo(h, xlabel):
-      edges = np.append(h.xMins(), h.xMax())
-      heights = np.append(h.yVals(), h.yVals()[-1])
-      centers = (edges[1:] + edges[:-1]) / 2
-
-      fig, ax = set_up_plot()
-      ax.errorbar(h.xVals(), h.yVals(), h.yErrs(), linestyle="none", color="orange")
-      ax.step(edges, heights, color="#1f77b4", where="post")
-
-      ax.set_xlabel(xlabel)
-      ax.set_ylabel("Count")
-      ax.set_xlim([h.xMin(), h.xMax()])
-      return fig, ax
-#+end_srctypes pytohn
-
-#+RESULTS:
-
-#+begin_src jupyter-python :exports both :results raw drawer
-  yoda_file = yoda.read("../../runcards/qqgg/analysis/Analysis.yoda")
-  sherpa_histos = {"pT": r"$p_T$ [GeV]", "eta": r"$\eta$", "cos_theta": r"$\cos\theta$"}
-
-  for key, label in sherpa_histos.items():
-      fig, ax = draw_yoda_histo(
-          yoda_file["/MC_DIPHOTON_SIMPLE/" + key], r"Sherpa " + label
-      )
-      save_fig(fig, "histo_sherpa_" + key, "xs_sampling", size=(3, 3))
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel("Count")
+    ax.set_xlim([h.xMin(), h.xMax()])
+    return fig, ax

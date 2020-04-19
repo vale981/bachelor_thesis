@@ -8,8 +8,10 @@ Author: Valentin Boettcher <hiro@protagon.space>
 import numpy as np
 import monte_carlo
 import lhapdf
+from numba import jit, vectorize, float64
 
 
+@vectorize([float64(float64, float64, float64, float64)], nopython=True)
 def energy_factor(e_proton, charge, x_1, x_2):
     """Calculates the factor common to all other values in this module.
 
@@ -79,6 +81,7 @@ def momenta(e_proton, x_1, x_2, cosθ):
     return np.array([q_1, q_2, g_3, g_4])
 
 
+@vectorize([float64(float64, float64, float64, float64, float64)], nopython=True)
 def diff_xs(e_proton, charge, cosθ, x_1, x_2):
     """Calculates the differential cross section as a function of the
     cosine of the azimuth angle θ of one photon in units of 1/GeV².
@@ -100,6 +103,7 @@ def diff_xs(e_proton, charge, cosθ, x_1, x_2):
     )
 
 
+@vectorize([float64(float64, float64, float64, float64, float64)], nopython=True)
 def diff_xs_η(e_proton, charge, η, x_1, x_2):
     """Calculates the differential cross section as a function of the
     cosine of the pseudo rapidity η of one photon in units of 1/GeV².
@@ -117,11 +121,16 @@ def diff_xs_η(e_proton, charge, η, x_1, x_2):
     tanh_η = np.tanh(η)
     f = energy_factor(e_proton, charge, x_1, x_2)
 
-    return (
-        (x_1 ** 2 * (1 - tanh_η) ** 2 + x_2 ** 2 * (1 + tanh_η) ** 2)
-        / ((1 - tanh_η ** 2) * (x_1 * (1 - tanh_η) + x_2 * (1 + tanh_η)))
-        * (1 - tanh_η ** 2)
+    return (x_1 ** 2 * (1 - tanh_η) ** 2 + x_2 ** 2 * (1 + tanh_η) ** 2) / (
+        x_1 * (1 - tanh_η) + x_2 * (1 + tanh_η)
     )
+
+
+@vectorize([float64(float64, float64, float64)], nopython=True)
+def averaged_tchanel_q2(e_proton, x_1, x_2):
+    return 2 * x_1 * x_2 * e_proton ** 2
+
+from numba.extending import get_cython_function_address
 
 def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
     """Creates a function that takes an event (type np.ndarray) of the
@@ -134,7 +143,7 @@ def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
 
     :param xs: cross section function with signature (energy hadron, cosθ, x_1, x_2)
     :param q2: the momentum transfer Q^2 as a function with the signature
-    (e_hadron, cosθ, x_1, x_2)
+    (e_hadron, x_1, x_2)
     :param quarks: the constituent quarks np.ndarray of the form [[id, charge], ...],
     the default is a proton
     :param pdf: the PDF to use, the default is "NNPDF31_lo_as_0118"
@@ -151,18 +160,21 @@ def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
             "The PDF doesn't support the quark flavor " + flavor
         )
 
+    xfxQ2 = pdf.xfxQ2
+
+    # @jit(float64(float64[4])) Unfortunately that does not work as yet!
     def distribution(event: np.ndarray) -> float:
         cosθ, x_1, x_2 = event
 
-        q2_value = q(e_hadron, cosθ, x_1, x_2)
+        q2_value = q(e_hadron, x_1, x_2)
         result = 0
 
         for quark, charge in quarks:
             xs_value = xs(e_hadron, charge, cosθ, x_1, x_2)
             result += (
-                pdf.xfxQ2(quark, x_1, q2_value)
+                xfxQ2(quark, x_1, q2_value)
                 / x_1
-                * pdf.xfxQ2(quark, x_2, q2_value)
+                * xfxQ2(quark, x_2, q2_value)
                 / x_2
                 * xs_value
             )

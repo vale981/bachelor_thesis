@@ -15,6 +15,7 @@
 ** Utilities
 #+BEGIN_SRC jupyter-python :exports both
 %run ../utility.py
+%run tangled/plot_utils.py
 %load_ext autoreload
 %aimport monte_carlo
 %autoreload 1
@@ -48,8 +49,10 @@ We begin by implementing the same sermon for the lab frame.
   import numpy as np
   import monte_carlo
   import lhapdf
+  from numba import jit, vectorize, float64
 
 
+  @vectorize([float64(float64, float64, float64, float64)], nopython=True)
   def energy_factor(e_proton, charge, x_1, x_2):
       """Calculates the factor common to all other values in this module.
 
@@ -119,6 +122,7 @@ We begin by implementing the same sermon for the lab frame.
       return np.array([q_1, q_2, g_3, g_4])
 
 
+  @vectorize([float64(float64, float64, float64, float64, float64)], nopython=True)
   def diff_xs(e_proton, charge, cosθ, x_1, x_2):
       """Calculates the differential cross section as a function of the
       cosine of the azimuth angle θ of one photon in units of 1/GeV².
@@ -140,6 +144,7 @@ We begin by implementing the same sermon for the lab frame.
       )
 
 
+  @vectorize([float64(float64, float64, float64, float64, float64)], nopython=True)
   def diff_xs_η(e_proton, charge, η, x_1, x_2):
       """Calculates the differential cross section as a function of the
       cosine of the pseudo rapidity η of one photon in units of 1/GeV².
@@ -157,16 +162,22 @@ We begin by implementing the same sermon for the lab frame.
       tanh_η = np.tanh(η)
       f = energy_factor(e_proton, charge, x_1, x_2)
 
-      return (
-          (x_1 ** 2 * (1 - tanh_η) ** 2 + x_2 ** 2 * (1 + tanh_η) ** 2)
-          / ((1 - tanh_η ** 2) * (x_1 * (1 - tanh_η) + x_2 * (1 + tanh_η)))
-          ,* (1 - tanh_η ** 2)
+      return (x_1 ** 2 * (1 - tanh_η) ** 2 + x_2 ** 2 * (1 + tanh_η) ** 2) / (
+          x_1 * (1 - tanh_η) + x_2 * (1 + tanh_η)
       )
+
+
+  @vectorize([float64(float64, float64, float64)], nopython=True)
+  def averaged_tchanel_q2(e_proton, x_1, x_2):
+      return 2 * x_1 * x_2 * e_proton ** 2
 #+end_src
+
 #+RESULTS:
 
 * Tying in the PDF
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/pdf.py
+  from numba.extending import get_cython_function_address
+
   def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
       """Creates a function that takes an event (type np.ndarray) of the
       form [cosθ, impulse fractions of quarks in hadron 1, impulse
@@ -178,7 +189,7 @@ We begin by implementing the same sermon for the lab frame.
 
       :param xs: cross section function with signature (energy hadron, cosθ, x_1, x_2)
       :param q2: the momentum transfer Q^2 as a function with the signature
-      (e_hadron, cosθ, x_1, x_2)
+      (e_hadron, x_1, x_2)
       :param quarks: the constituent quarks np.ndarray of the form [[id, charge], ...],
       the default is a proton
       :param pdf: the PDF to use, the default is "NNPDF31_lo_as_0118"
@@ -195,18 +206,21 @@ We begin by implementing the same sermon for the lab frame.
               "The PDF doesn't support the quark flavor " + flavor
           )
 
+      xfxQ2 = pdf.xfxQ2
+
+      # @jit(float64(float64[4])) Unfortunately that does not work as yet!
       def distribution(event: np.ndarray) -> float:
           cosθ, x_1, x_2 = event
 
-          q2_value = q(e_hadron, cosθ, x_1, x_2)
+          q2_value = q(e_hadron, x_1, x_2)
           result = 0
 
           for quark, charge in quarks:
               xs_value = xs(e_hadron, charge, cosθ, x_1, x_2)
               result += (
-                  pdf.xfxQ2(quark, x_1, q2_value)
+                  xfxQ2(quark, x_1, q2_value)
                   / x_1
-                  ,* pdf.xfxQ2(quark, x_2, q2_value)
+                  ,* xfxQ2(quark, x_2, q2_value)
                   / x_2
                   ,* xs_value
               )
@@ -237,7 +251,7 @@ nicer.
 Now, let's try it out.
 #+begin_src jupyter-python :exports both :results raw drawer
   dist, x_limits = get_xs_distribution_with_pdf(
-      diff_xs, lambda e_proton, _, x_1, x_2: 2 * x_1 * x_2 * e_proton ** 2, e_proton
+      diff_xs, averaged_tchanel_q2, e_proton
   )
 #+end_src
 
@@ -253,7 +267,7 @@ Let's plot it for some random values 😃.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fb94995f430> |
+| <matplotlib.lines.Line2D | at | 0x7fb941cd4b80> |
 [[file:./.ob-jupyter/a5954d2e2b47ff630695004830c3de94c2e34723.png]]
 :END:
 
@@ -274,23 +288,17 @@ But first we have to find an upper bound, which is expensive!
 
 Beware!, this is darn slow, becaus the efficiency is soooo low.
 #+begin_src jupyter-python :exports both :results raw drawer
-  momenta = sample_momenta(1000, dist, intervals, e_proton, upper_bound=upper_bound)
-#+end_src
-
-Horrible efficiency.
-#+begin_src jupyter-python :exports both :results raw drawer
-  momenta[1]
+  sample_momenta(100, dist, intervals, e_proton, upper_bound=upper_bound)[1]
 #+end_src
 
 #+RESULTS:
-: 0.0009849764038619734
+: 0.0011336723125792729
 
-
-** Switching Horses: Sampling η
+** TODO Switching Horses: Sampling η
 We set up a new distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
   dist_η, x_limits = get_xs_distribution_with_pdf(
-      diff_xs_η, lambda e_proton, _, x_1, x_2: 2 * x_1 * x_2 * e_proton ** 2, e_proton
+      diff_xs_η, averaged_tchanel_q2, e_proton
   )
 #+end_src
 
@@ -308,21 +316,54 @@ Plotting it, we can see that the variance is reduced.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fb949772be0> |
+| <matplotlib.lines.Line2D | at | 0x7fb941f6c460> |
 [[file:./.ob-jupyter/b5e9e8b157f5596913671e301fefee82daf805a9.png]]
 :END:
 
-Now we sample some events.
+Now we sample some events. Doing this in parallel helps. We let the os
+figure out the cpu mapping.
 #+begin_src jupyter-python :exports both :results raw drawer
+  from multiprocessing import Pool
+  import os
   intervals_η = [interval_η, [0.01, 1], [0.01, 1]]
-  samp_η, eff_η = monte_carlo.sample_unweighted_array(
-      1000, dist_η, intervals_η, report_efficiency=True
-  )
-  eff_η
+  result = None
+
+  def _draw(n):
+      rand = os.urandom(2)
+      return monte_carlo.sample_unweighted_array(
+          n, dist_η, intervals_η, seed=int.from_bytes(rand, "big")
+      )
+
+  num_proc = 8
+  num_samp = 100000
+  with Pool(num_proc) as p:
+      result = p.map(_draw, [int(num_samp/num_proc + 1) for _ in range(num_proc)])
+  result = np.concatenate(result)
+
+  result
 #+end_src
 
 #+RESULTS:
-: 0.009654054992429138
+: array([[-1.4068744 ,  0.42336237,  0.11719838],
+:        [ 0.40627558,  0.15550581,  0.05632906],
+:        [-1.37303579,  0.01976801,  0.14302427],
+:        ...,
+:        [-1.74788671,  0.39655784,  0.01929707],
+:        [ 2.04366109,  0.02030932,  0.0756727 ],
+:        [ 1.2298751 ,  0.03751999,  0.328602  ]])
 
 The efficiency is still quite horrible, but at least an order of
 mag. better than with cosθ.
+
+Let's look at a histogramm of eta samples.
+#+begin_src jupyter-python :exports both :results raw drawer
+  draw_histo(result[:, 0], "asht")
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb94199f5e0> |
+[[file:./.ob-jupyter/bef8f09af4816e84b360d7648ed68b35124f0357.png]]
+:END:
+
+We should take more samples to decrease the Variance. But it takes soooo long.
