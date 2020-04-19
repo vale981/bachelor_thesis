@@ -370,7 +370,7 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f6a2d85a8b0> |
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f6a2e0b9970> |
 [[file:./.ob-jupyter/667dbb2182e20a5740079a92f769bededd4cf4ee.png]]
 :END:
 
