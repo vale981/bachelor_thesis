@@ -87,6 +87,16 @@ def integrate(f, interval, epsilon=0.01, seed=None, **kwargs) -> IntegrationResu
         num_points = int((sample_std / epsilon) ** 2 * 1.1)
 
 
+def _negate(f):
+    """A helper that multiplies the given function with -1."""
+
+    @functools.wraps(f)
+    def negated(*args, **kwargs):
+        return -f(*args, **kwargs)
+
+    return negated
+
+
 def find_upper_bound(f, interval, **kwargs):
     """Find the upper bound of a function.
 
@@ -107,14 +117,13 @@ def find_upper_bound(f, interval, **kwargs):
         raise RuntimeError("Could not find an upper bound.")
 
 
-def _negate(f):
-    """A helper that multiplies the given function with -1."""
+def find_upper_bound_vector(f, interval):
+    result = shgo(_negate(f), bounds=interval, options=dict(maxfev=100))
+    if not result.success:
+        raise RuntimeError("Could not find an upper bound.", result)
 
-    @functools.wraps(f)
-    def negated(*args, **kwargs):
-        return -f(*args, **kwargs)
-
-    return negated
+    upper_bound = -result.fun + 0.1
+    return upper_bound
 
 
 def sample_unweighted_vector(
@@ -123,13 +132,11 @@ def sample_unweighted_vector(
     dimension = len(interval)
     interval = np.array([_process_interval(i) for i in interval])
 
-    if not upper_bound:
-        result = shgo(_negate(f), bounds=interval)
-        if not result.success:
-            print(result)
-            raise RuntimeError("Could not find an upper bound.")
+    if seed:
+        np.random.seed(seed)
 
-        upper_bound = -result.fun + 0.1
+    if not upper_bound:
+        upper_bound = find_upper_bound_vector(f, interval)
 
     def allocate_random_chunk():
         return np.random.uniform(

@@ -49,6 +49,7 @@ We begin by implementing the same sermon for the lab frame.
   import monte_carlo
   import lhapdf
 
+
   def energy_factor(e_proton, charge, x_1, x_2):
       """Calculates the factor common to all other values in this module.
 
@@ -60,24 +61,62 @@ We begin by implementing the same sermon for the lab frame.
       """
       return charge ** 4 / (137.036 * e_proton) ** 2 / (24 * x_1 * x_2)
 
+
   def momenta(e_proton, x_1, x_2, cosθ):
       """Given the Energy of the incoming protons `e_proton` and the
       momentum fractions `x_1` and `x_2` as well as the cosine of the
       azimuth angle of the first photon the 4-momenta of all particles
       are calculated.
       """
-      q_1 = e_proton * x_1 * np.array([1, 0, 0, 1])
-      q_2 = e_proton * x_2 * np.array([1, 0, 0, -1])
-      g_3 = (
+      x_1 = np.asarray(x_1)
+      x_2 = np.asarray(x_2)
+      cosθ = np.asarray(cosθ)
+      assert (
+          x_1.shape == x_2.shape == cosθ.shape
+      ), "Invalid shapes for the event parameters."
+
+      q_1 = (
           e_proton
+          ,* x_1
+          ,* np.array(
+              [
+                  np.ones_like(cosθ),
+                  np.zeros_like(cosθ),
+                  np.zeros_like(cosθ),
+                  np.ones_like(cosθ),
+              ]
+          )
+      )
+      q_2 = (
+          e_proton
+          ,* x_2
+          ,* np.array(
+              [
+                  np.ones_like(cosθ),
+                  np.zeros_like(cosθ),
+                  np.zeros_like(cosθ),
+                  -np.ones_like(cosθ),
+              ]
+          )
+      )
+      g_3 = (
+          2
+          ,* e_proton
           ,* x_1
           ,* x_2
           / (2 * x_2 + (x_1 - x_2) * (1 - cosθ))
-          ,* np.array([1, cosθ, 0, np.sqrt(1-cosθ**2)])
+          ,* np.array(
+              [1 * np.ones_like(cosθ), np.sqrt(1 - cosθ ** 2), np.zeros_like(cosθ), cosθ]
+          )
       )
       g_4 = q_1 + q_2 - g_3
 
-      return q_1, q_2, g_3, g_4
+      q_1 = q_1.reshape(4, cosθ.size).T
+      q_2 = q_2.reshape(4, cosθ.size).T
+      g_3 = g_3.reshape(4, cosθ.size).T
+      g_4 = g_4.reshape(4, cosθ.size).T
+
+      return np.array([q_1, q_2, g_3, g_4])
 
 
   def diff_xs(e_proton, charge, cosθ, x_1, x_2):
@@ -100,11 +139,29 @@ We begin by implementing the same sermon for the lab frame.
           (1 - cosθ ** 2) * (x_1 * (1 - cosθ) + x_2 * (1 + cosθ))
       )
 
-  def t_channel_q2(e_proton, cosθ, x_1, x_2):
-      p, _, p_tag, _ = momenta(e_proton, x_1, x_2, cosθ)
-      q = (p - p_tag)
 
-      return -minkowski_product(q, q)
+  def diff_xs_η(e_proton, charge, η, x_1, x_2):
+      """Calculates the differential cross section as a function of the
+      cosine of the pseudo rapidity η of one photon in units of 1/GeV².
+
+      Here dΩ=dηdφ
+
+      :param e_proton: proton energy per beam [GeV]
+      :param charge: charge of the quark
+      :param x_1: momentum fraction of the first quark
+      :param x_2: momentum fraction of the second quark
+      :param η: pseudo rapidity
+
+      :return: the differential cross section [GeV^{-2}]
+      """
+      tanh_η = np.tanh(η)
+      f = energy_factor(e_proton, charge, x_1, x_2)
+
+      return (
+          (x_1 ** 2 * (1 - tanh_η) ** 2 + x_2 ** 2 * (1 + tanh_η) ** 2)
+          / ((1 - tanh_η ** 2) * (x_1 * (1 - tanh_η) + x_2 * (1 + tanh_η)))
+          ,* (1 - tanh_η ** 2)
+      )
 #+end_src
 #+RESULTS:
 
@@ -112,11 +169,12 @@ We begin by implementing the same sermon for the lab frame.
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/pdf.py
   def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
       """Creates a function that takes an event (type np.ndarray) of the
-      form [cosθ, impulse fractions of quarks in hadron
-      1, impulse fractions of quarks in hadron 2] and returns the
-      differential cross section for such an event. I would have used an
-      object as argument, wasn't for the sampling function that needs a
-      vector valued function.
+      form [cosθ, impulse fractions of quarks in hadron 1, impulse
+      fractions of quarks in hadron 2] and returns the differential
+      cross section for such an event. I would have used an object as
+      argument, wasn't for the sampling function that needs a vector
+      valued function. Cosθ can actually be any angular-like parameter
+      as long as the xs has the corresponding parameter.
 
       :param xs: cross section function with signature (energy hadron, cosθ, x_1, x_2)
       :param q2: the momentum transfer Q^2 as a function with the signature
@@ -165,14 +223,12 @@ calculate the 4-momentum kinematics twice. Maybe that can be done
 nicer.
 
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/pdf.py
-  def sample_momenta(num_samples, dist, interval, e_hadron):
-      cosθ, x_1, x_2 = monte_carlo.sample_unweighted_array(
-          num_samples, dist, interval
-      ).T
-
-      print(cosθ, x_1, x_2)
-
-      return momenta(e_hadron, x_1, x_2, cosθ)[2:]  # only final state...
+  def sample_momenta(num_samples, dist, interval, e_hadron, upper_bound=None):
+      res, eff = monte_carlo.sample_unweighted_array(
+          num_samples, dist, interval, upper_bound=upper_bound, report_efficiency=True
+      )
+      cosθ, x_1, x_2 = res.T
+      return momenta(e_hadron, x_1[None, :], x_2[None, :], cosθ[None, :]), eff
 #+end_src
 
 #+RESULTS:
@@ -180,7 +236,9 @@ nicer.
 ** Test Driving
 Now, let's try it out.
 #+begin_src jupyter-python :exports both :results raw drawer
-  dist, x_limits = get_xs_distribution_with_pdf(diff_xs, t_channel_q2, e_proton)
+  dist, x_limits = get_xs_distribution_with_pdf(
+      diff_xs, lambda e_proton, _, x_1, x_2: 2 * x_1 * x_2 * e_proton ** 2, e_proton
+  )
 #+end_src
 
 #+RESULTS:
@@ -195,48 +253,76 @@ Let's plot it for some random values 😃.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f66ad2b7730> |
-[[file:./.ob-jupyter/913f9fb389429a41ed5d66d9e575f32075c84cbc.png]]
+| <matplotlib.lines.Line2D | at | 0x7fb94995f430> |
+[[file:./.ob-jupyter/a5954d2e2b47ff630695004830c3de94c2e34723.png]]
 :END:
 
 Having set both x to the same value, we get a symmetric distribution as expected.
 Just the magnitude is a little startling! The value 1/3 is intentional!
 
-Around π/2 is a pretty flat minimum. That is where the t-chanel Q^2 is
-highest! If we had set the Q to a constant, we'd have a smoother curve!
-
 Now we gonna take some samples!
+But first we have to find an upper bound, which is expensive!
+
 #+begin_src jupyter-python :exports both :results raw drawer
-  intervals = [[0, .5], [.1, .9], [.1, .9]]
-  sample_momenta(10, dist, intervals, e_proton)
+  intervals = [interval_cosθ, [.01, 1], [.01, 1]]
+  upper_bound = monte_carlo.find_upper_bound_vector(dist, intervals)
+  upper_bound
+#+end_src
+
+#+RESULTS:
+: 2786.6683559915655
+
+Beware!, this is darn slow, becaus the efficiency is soooo low.
+#+begin_src jupyter-python :exports both :results raw drawer
+  momenta = sample_momenta(1000, dist, intervals, e_proton, upper_bound=upper_bound)
+#+end_src
+
+Horrible efficiency.
+#+begin_src jupyter-python :exports both :results raw drawer
+  momenta[1]
+#+end_src
+
+#+RESULTS:
+: 0.0009849764038619734
+
+
+** Switching Horses: Sampling η
+We set up a new distribution.
+#+begin_src jupyter-python :exports both :results raw drawer
+  dist_η, x_limits = get_xs_distribution_with_pdf(
+      diff_xs_η, lambda e_proton, _, x_1, x_2: 2 * x_1 * x_2 * e_proton ** 2, e_proton
+  )
+#+end_src
+
+#+RESULTS:
+
+Plotting it, we can see that the variance is reduced.
+#+begin_src jupyter-python :exports both :results raw drawer
+  fig, ax = set_up_plot()
+  ax2 = ax.twinx()
+  pts = np.linspace(*interval_η, 1000)
+
+  ax.plot(pts, [dist_η([η, 0.8, 0.3]) for η in pts])
+  ax2.plot(pts, [dist_η([η, 0.3, 0.3]) for η in pts])
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-: [0.13234737 0.12043593 0.42376436 0.21068905 0.04495147 0.46528616
-:  0.36288445 0.30053913 0.06371362 0.25714972] [0.48563401 0.55734072 0.12821674 0.14067357 0.34875539 0.11647309
-:  0.32558127 0.18600004 0.24889455 0.24432684] [0.29258207 0.19733423 0.71968599 0.17801927 0.10111332 0.27935239
-:  0.16855262 0.24938601 0.55594294 0.43948943]
-# [goto error]
-#+begin_example
-
-  ValueErrorTraceback (most recent call last)
-  <ipython-input-139-b13494cee2f5> in <module>
-        1 intervals = [[0, .5], [.1, .9], [.1, .9]]
-  ----> 2 sample_momenta(10, dist, intervals, e_proton)
-
-  <ipython-input-138-07fabfca4c56> in sample_momenta(num_samples, dist, interval, e_hadron)
-        6     print(cosθ, x_1, x_2)
-        7
-  ----> 8     return momenta(e_hadron, x_1, x_2, cosθ)[2:]  # only final state...
-
-  <ipython-input-86-e6a6da602030> in momenta(e_proton, x_1, x_2, cosθ)
-       27     are calculated.
-       28     """
-  ---> 29     q_1 = e_proton * x_1 * np.array([1, 0, 0, 1])
-       30     q_2 = e_proton * x_2 * np.array([1, 0, 0, -1])
-       31     g_3 = (
-
-  ValueError: operands could not be broadcast together with shapes (10,) (4,)
-#+end_example
+| <matplotlib.lines.Line2D | at | 0x7fb949772be0> |
+[[file:./.ob-jupyter/b5e9e8b157f5596913671e301fefee82daf805a9.png]]
 :END:
+
+Now we sample some events.
+#+begin_src jupyter-python :exports both :results raw drawer
+  intervals_η = [interval_η, [0.01, 1], [0.01, 1]]
+  samp_η, eff_η = monte_carlo.sample_unweighted_array(
+      1000, dist_η, intervals_η, report_efficiency=True
+  )
+  eff_η
+#+end_src
+
+#+RESULTS:
+: 0.009654054992429138
+
+The efficiency is still quite horrible, but at least an order of
+mag. better than with cosθ.
