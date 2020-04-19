@@ -383,6 +383,8 @@ Let's define some little helpers.
   """
 
   import matplotlib.pyplot as plt
+  import numpy as np
+  from utility import *
 
 
   def plot_increments(ax, increment_borders, label=None, *args, **kwargs):
@@ -959,7 +961,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
       ax.set_ylabel("Count")
       ax.set_xlim([h.xMin(), h.xMax()])
       return fig, ax
-#+end_srctypes pytohn
+#+end_src
 
 #+RESULTS:
 
