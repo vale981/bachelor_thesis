@@ -22,8 +22,6 @@
 #+END_SRC
 
 #+RESULTS:
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -34,9 +32,7 @@ interval = η_to_θ([-η, η])
 interval_cosθ = np.cos(interval)
 #+end_src
 
-#+RESULTS:
-
-* Lab Frame XS
+#+RESULTS:00* Lab Frame XS
 We begin by implementing the same sermon for the lab frame.
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/pdf.py
   """
@@ -294,7 +290,7 @@ Beware!, this is darn slow, becaus the efficiency is soooo low.
 #+RESULTS:
 : 0.0011336723125792729
 
-** TODO Switching Horses: Sampling η
+** Switching Horses: Sampling η
 We set up a new distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
   dist_η, x_limits = get_xs_distribution_with_pdf(
@@ -316,54 +312,66 @@ Plotting it, we can see that the variance is reduced.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fb941f6c460> |
+| <matplotlib.lines.Line2D | at | 0x7f6a34cfd100> |
 [[file:./.ob-jupyter/b5e9e8b157f5596913671e301fefee82daf805a9.png]]
 :END:
 
 Now we sample some events. Doing this in parallel helps. We let the os
 figure out the cpu mapping.
 #+begin_src jupyter-python :exports both :results raw drawer
-  from multiprocessing import Pool
-  import os
-  intervals_η = [interval_η, [0.01, 1], [0.01, 1]]
   result = None
+  import os.path
 
-  def _draw(n):
-      rand = os.urandom(2)
-      return monte_carlo.sample_unweighted_array(
-          n, dist_η, intervals_η, seed=int.from_bytes(rand, "big")
-      )
+  _path = "cache/samples.np"
+  if os.path.isfile(_path):
+      result = np.fromfile(_path)
+      result = result.reshape(result.size // 3, 3)
+  else:
+      from multiprocessing import Pool
+      import os
 
-  num_proc = 8
-  num_samp = 100000
-  with Pool(num_proc) as p:
-      result = p.map(_draw, [int(num_samp/num_proc + 1) for _ in range(num_proc)])
-  result = np.concatenate(result)
+      intervals_η = [interval_η, [0.01, 1], [0.01, 1]]
+
+      def _draw(n):
+          rand = os.urandom(2)
+          return monte_carlo.sample_unweighted_array(
+              n, dist_η, intervals_η, seed=int.from_bytes(rand, "big")
+          )
+
+      num_proc = 8
+      num_samp = 10_000_000
+      with Pool(num_proc) as p:
+          result = p.map(_draw, [int(num_samp / num_proc + 1) for _ in range(num_proc)])
+          result = np.concatenate(result)
+      result.tofile("./cache/samples.np")
 
   result
 #+end_src
 
 #+RESULTS:
-: array([[-1.4068744 ,  0.42336237,  0.11719838],
-:        [ 0.40627558,  0.15550581,  0.05632906],
-:        [-1.37303579,  0.01976801,  0.14302427],
+: array([[-0.76416103,  0.3008758 ,  0.01946426],
+:        [ 1.65764609,  0.28210798,  0.3609708 ],
+:        [-2.36590502,  0.20522417,  0.06746521],
 :        ...,
-:        [-1.74788671,  0.39655784,  0.01929707],
-:        [ 2.04366109,  0.02030932,  0.0756727 ],
-:        [ 1.2298751 ,  0.03751999,  0.328602  ]])
+:        [ 2.35690164,  0.06437832,  0.14881004],
+:        [ 1.52001625,  0.03632975,  0.07488716],
+:        [-0.03479727,  0.45513594,  0.02337567]])
 
 The efficiency is still quite horrible, but at least an order of
 mag. better than with cosθ.
 
+Geez. I'd hate having to run this more than once. Let's write it to a
+file.
+
 Let's look at a histogramm of eta samples.
 #+begin_src jupyter-python :exports both :results raw drawer
-  draw_histo(result[:, 0], "asht")
+  draw_histo(result[:, 0], "asht", bins=100)
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb94199f5e0> |
-[[file:./.ob-jupyter/bef8f09af4816e84b360d7648ed68b35124f0357.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f6a2d85a8b0> |
+[[file:./.ob-jupyter/667dbb2182e20a5740079a92f769bededd4cf4ee.png]]
 :END:
 
 We should take more samples to decrease the Variance. But it takes soooo long.
