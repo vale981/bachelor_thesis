@@ -12,8 +12,19 @@ import os
 
 def minkowski_product(v_1, v_2):
     """Performs the standard 4-vector product between `v_1` and `v_2`"""
+    assert v_1.shape == v_2.shape, "Invalid input shapes."
 
-    return v_1[0] * v_2[0] - (v_1[1:] @ v_2[1:])
+    if len(v_1.shape) == 1 or len(v_1.shape) == 1:
+        v_1 = v_1.reshape(4)
+        v_2 = v_2.reshape(4)
+
+        return v_1[0] * v_2[0] - (v_1[1:] @ v_2[1:])
+
+    prod = v_1[:, 0] * v_2[:, 0] - np.sum(v_1[:, 1:] * v_2[:, 1:], axis=1)
+
+    if prod.size == 1:
+        return prod.item(0)
+    return prod
 
 
 def gev_to_pb(xs):
