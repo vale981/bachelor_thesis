@@ -530,37 +530,48 @@ def sample_stratified(
 
 
 def sample_unweighted_array(
-    num, f, interval, *args, increment_borders=None, report_efficiency=False, **kwargs
+    num,
+    f,
+    *args,
+    interval=None,
+    increment_borders=None,
+    report_efficiency=False,
+    **kwargs
 ):
     """Sample `num` elements from a distribution.  The rest of the
     arguments is analogous to `sample_unweighted`.
     """
 
-    interval = np.array(interval)
-    vectorized = len(interval.shape) > 1
-    sample_arr = np.empty((num, interval.shape[0]) if vectorized else num)
+    sample_arr = None
     samples = None
 
-    if len(interval.shape) > 1:
-        samples = sample_unweighted_vector(
-            f, interval, *args, report_efficiency=report_efficiency, **kwargs
-        )
-    else:
-        if "chunk_size" not in kwargs:
-            kwargs["chunk_size"] = num * 10
-
-        samples = (
-            sample_unweighted(
+    if interval is not None:
+        interval = np.array(interval)
+        vectorized = len(interval.shape) > 1
+        sample_arr = np.empty((num, interval.shape[0]) if vectorized else num)
+        if len(interval.shape) > 1:
+            samples = sample_unweighted_vector(
                 f, interval, *args, report_efficiency=report_efficiency, **kwargs
             )
-            if increment_borders is None
-            else sample_stratified(
-                *args,
-                increment_borders=increment_borders,
-                report_efficiency=report_efficiency,
-                **kwargs
+        else:
+            if "chunk_size" not in kwargs:
+                kwargs["chunk_size"] = num * 10
+
+            samples = sample_unweighted(
+                f, interval, *args, report_efficiency=report_efficiency, **kwargs
             )
+
+    elif increment_borders is not None:
+        sample_arr = np.empty(num)
+        samples = sample_stratified(
+            f,
+            *args,
+            increment_borders=increment_borders,
+            report_efficiency=report_efficiency,
+            **kwargs
         )
+    else:
+        raise TypeError("Neiter interval nor increment_borders specified!")
 
     for i, sample in zip(range(num), samples):
         if report_efficiency:

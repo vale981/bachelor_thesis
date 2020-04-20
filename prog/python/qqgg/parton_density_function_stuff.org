@@ -314,7 +314,7 @@ Plotting it, we can see that the variance is reduced.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f6a34cfd100> |
+| <matplotlib.lines.Line2D | at | 0x7f562641f7c0> |
 [[file:./.ob-jupyter/b5e9e8b157f5596913671e301fefee82daf805a9.png]]
 :END:
 
@@ -372,6 +372,6 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f6a2d81e340> |
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f5624269ca0> |
 [[file:./.ob-jupyter/667dbb2182e20a5740079a92f769bededd4cf4ee.png]]
 :END:
