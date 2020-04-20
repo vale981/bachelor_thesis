@@ -23,6 +23,8 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 * Implementation
 ** Center of Mass Frame
@@ -265,7 +267,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.054374269511586644, sigma=0.0009683114962275483, N=2123)
+: IntegrationResult(result=0.052122306114862786, sigma=0.0008976937688337722, N=2499)
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -275,7 +277,7 @@ We gonna export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 2123\)
+: \(N = 2499\)
 
 *** Integration over η
 Plot the intgrand of the pseudo rap.
@@ -301,7 +303,7 @@ Plot the intgrand of the pseudo rap.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.055151085713932124, sigma=0.000932443763615135, N=140)
+: IntegrationResult(result=0.05516763764241838, sigma=0.0009401394981766643, N=135)
 
 As we see, the result is a little better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.  But
@@ -316,7 +318,7 @@ And yet again export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 140\)
+: \(N = 135\)
 
 *** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
@@ -327,17 +329,16 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
       interval,
       num_increments=num_increments,
       alpha=1,
-      epsilon=1e-3,
+      increment_epsilon=0.001,
       acumulate=False,
-      vegas_point_density=100,
   )
   xs_pb_vegas
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.05367272259033393, sigma=0.00042389745443520844, N=275, increment_borders=array([0.16380276, 0.25021069, 0.37424685, 0.55594852, 0.83854962,
-:        1.27086143, 1.85730705, 2.29700734, 2.57637351, 2.76334644,
-:        2.89011895, 2.9777899 ]), vegas_iterations=12)
+: VegasIntegrationResult(result=0.05374332974380386, sigma=0.00013119911512982728, N=2805, increment_borders=array([0.16380276, 0.23734611, 0.34564805, 0.5092056 , 0.77014734,
+:        1.22678512, 1.91270094, 2.3742263 , 2.6333199 , 2.79565774,
+:        2.90399568, 2.9777899 ]), vegas_iterations=9726)
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. Here this gives
@@ -362,16 +363,15 @@ This depends, of course, on the iteration count.
       interval,
       num_increments=num_increments,
       alpha=1,
-      epsilon=1e-3,
+      increment_epsilon=0.001,
       acumulate=True,
-      vegas_point_density=100,
   )
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.05405856822809377, sigma=0.0003046830887499666, N=275, increment_borders=array([0.16380276, 0.25854516, 0.39088443, 0.58108696, 0.86570559,
-:        1.29975004, 1.8564745 , 2.28724136, 2.56829826, 2.75438203,
-:        2.88442585, 2.9777899 ]), vegas_iterations=10)
+: VegasIntegrationResult(result=0.05379279312214714, sigma=1.7484144066819456e-05, N=2805, increment_borders=array([0.16380276, 0.2374103 , 0.34521773, 0.50861646, 0.76848007,
+:        1.22710819, 1.91382611, 2.37367332, 2.63339598, 2.79661594,
+:        2.90460705, 2.9777899 ]), vegas_iterations=3483)
 
 Let's define some little helpers.
 #+begin_src jupyter-python :exports both :tangle tangled/plot_utils.py
@@ -476,7 +476,7 @@ And now we plot the integrand with the incremens.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/78a75e477d40b8f25bec0cbd897e7b4a28692052.png]]
+[[file:./.ob-jupyter/97ae6a6129a4a8faac22c9005832a9e1488befef.png]]
 *** Testing the Statistics
 Let's battle test the statistics.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -493,7 +493,7 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.709
+: 0.701
 
 So we see: the standard deviation is sound.
 
@@ -514,7 +514,7 @@ Doing the same thing with =VEGAS= works as well.
 #+end_src
 
 #+RESULTS:
-: 0.66
+: 0.672
 
 ** Sampling and Analysis
 Define the sample number.
@@ -551,7 +551,27 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.027612227729295263
+:RESULTS:
+# [goto error]
+#+begin_example
+
+  TypeErrorTraceback (most recent call last)
+  <ipython-input-198-b267fe9317cd> in <module>
+        1 cosθ_sample, cosθ_efficiency = \
+  ----> 2     monte_carlo.sample_unweighted_array(sample_num, dist_cosθ,
+        3                                         interval_cosθ, report_efficiency=True)
+        4 cosθ_efficiency
+
+  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/monte_carlo.py in sample_unweighted_array(num, f, interval, increment_borders, report_efficiency, *args, **kwargs)
+      572         )
+      573     else:
+  --> 574         raise TypeError("Neiter interval nor increment_borders specified!")
+      575
+      576     for i, sample in zip(range(num), samples):
+
+  TypeError: Neiter interval nor increment_borders specified!
+#+end_example
+:END:
 
 Let's save that.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -620,7 +640,28 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.07879506593284073
+:RESULTS:
+# [goto error]
+#+begin_example
+
+  TypeErrorTraceback (most recent call last)
+  <ipython-input-202-22a484717aae> in <module>
+        1 cosθ_sample_tuned, cosθ_efficiency_tuned = \
+  ----> 2     monte_carlo.sample_unweighted_array(sample_num, dist_cosθ,
+        3                                         interval_cosθ, report_efficiency=True,
+        4                                         upper_bound=[upper, upper_int])
+        5 cosθ_efficiency_tuned
+
+  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/monte_carlo.py in sample_unweighted_array(num, f, interval, increment_borders, report_efficiency, *args, **kwargs)
+      572         )
+      573     else:
+  --> 574         raise TypeError("Neiter interval nor increment_borders specified!")
+      575
+      576     for i, sample in zip(range(num), samples):
+
+  TypeError: Neiter interval nor increment_borders specified!
+#+end_example
+:END:
 <<cosθ-bare-eff>>
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -667,7 +708,7 @@ save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/ed86cefdd74c6101b31f179b9f00fbb432d301f4.png]]
+[[file:./.ob-jupyter/8e54f68b8100db4c3ea9e98825c67c859758d934.png]]
 
 *** Observables
 Now we define some utilities to draw real 4-momentum samples.
@@ -746,13 +787,32 @@ Lets try it out.
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  36.96504312,  56.43920882,  73.81193193],
-:        [100.        ,  47.94386939,   1.7718024 , -87.73964955],
-:        [100.        ,  43.23224845,   8.595659  , -89.76127974],
-:        ...,
-:        [100.        ,  40.84435458,  21.7798789 , -88.64183873],
-:        [100.        ,  64.07275183,   2.13440481, -76.74716144],
-:        [100.        ,  74.77621972,   2.38367531, -66.35386241]])
+:RESULTS:
+# [goto error]
+#+begin_example
+
+  TypeErrorTraceback (most recent call last)
+  <ipython-input-208-bd7585e9f6a0> in <module>
+  ----> 1 momentum_sample = sample_momenta(sample_num, interval_cosθ, charge, esp)
+        2 momentum_sample
+
+  <ipython-input-206-9b3d8989b9a6> in sample_momenta(sample_num, interval, charge, esp, seed)
+       15     """
+       16     cosθ_sample = \
+  ---> 17         monte_carlo.sample_unweighted_array(sample_num,
+       18                                             lambda x:
+       19                                               diff_xs_cosθ(x, charge, esp),
+
+  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/monte_carlo.py in sample_unweighted_array(num, f, interval, increment_borders, report_efficiency, *args, **kwargs)
+      572         )
+      573     else:
+  --> 574         raise TypeError("Neiter interval nor increment_borders specified!")
+      575
+      576     for i, sample in zip(range(num), samples):
+
+  TypeError: Neiter interval nor increment_borders specified!
+#+end_example
+:END:
 
 
 Now let's make a histogram of the η distribution.
@@ -763,7 +823,7 @@ Now let's make a histogram of the η distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/0b892cf798f9076952bba488f555810dde8d545d.png]]
+[[file:./.ob-jupyter/3c43725ca1e01b8cc00477b0d3b01b6701e65836.png]]
 
 
 And the same for the p_t (transverse momentum) distribution.
@@ -774,7 +834,7 @@ And the same for the p_t (transverse momentum) distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/e68d91f84c00e5f32d34b7b2cb6cfe928f932387.png]]
+[[file:./.ob-jupyter/cacf3bf46ee6b4b2cfd969010ed6ee92bc4a6544.png]]
 
 That looks somewhat fishy, but it isn't.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -807,7 +867,28 @@ An again we see that the efficiency is way, way! better...
 #+end_src
 
 #+RESULTS:
-: \(\mathfrak{e} = 41\%\)
+:RESULTS:
+# [goto error]
+#+begin_example
+
+  TypeErrorTraceback (most recent call last)
+  <ipython-input-212-ad8c40d00e48> in <module>
+  ----> 1 η_sample, η_efficiency = monte_carlo.sample_unweighted_array(
+        2     sample_num, dist_η, interval_η, report_efficiency=True
+        3 )
+        4 tex_value(
+        5     η_efficiency * 100,
+
+  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/monte_carlo.py in sample_unweighted_array(num, f, interval, increment_borders, report_efficiency, *args, **kwargs)
+      572         )
+      573     else:
+  --> 574         raise TypeError("Neiter interval nor increment_borders specified!")
+      575
+      576     for i, sample in zip(range(num), samples):
+
+  TypeError: Neiter interval nor increment_borders specified!
+#+end_example
+:END:
 <<η-eff>>
 
 Let's draw a histogram to compare with the previous results.
@@ -817,8 +898,8 @@ Let's draw a histogram to compare with the previous results.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f048b5dcd30> |
-[[file:./.ob-jupyter/ba156696bf5eda240423e9955e96feba14d5085c.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f15fef337c0> |
+[[file:./.ob-jupyter/cafb1285c1aac19a880995757bb617dc13671985.png]]
 :END:
 
 
@@ -840,8 +921,8 @@ distribution. We throw away the integral, but keep the increments.
 #+end_src
 
 #+RESULTS:
-: array([-0.9866143 , -0.96987487, -0.93118512, -0.8386111 , -0.60462504,
-:        -0.00295135,  0.59955266,  0.83691601,  0.93048622,  0.96936191,
+: array([-0.9866143 , -0.96956705, -0.93035805, -0.83748641, -0.59838645,
+:         0.00744834,  0.60584137,  0.84012257,  0.93129207,  0.96949031,
 :         0.9866143 ])
 
 Visualizing the increment borders gives us the information we want.
@@ -859,8 +940,8 @@ Visualizing the increment borders gives us the information we want.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f048b526550>
-[[file:./.ob-jupyter/ee7d83a88fc6da8c8c42394fdbc7af711b403fdb.png]]
+: <matplotlib.legend.Legend at 0x7f15fea7c490>
+[[file:./.ob-jupyter/6996486982a372c24bb2bc1e82c111c4f4f3f908.png]]
 :END:
 
 We can now plot the reweighted distribution to observe the variance
@@ -884,7 +965,7 @@ reduction visually.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/dae850ded9399ef8c8b575034825afdc31e132b8.png]]
+[[file:./.ob-jupyter/2c062bb9c19e2317486326ffd59f30ebf2a7a35f.png]]
 
 
 I am batman! Let's plot the weighting distribution.
@@ -899,7 +980,7 @@ I am batman! Let's plot the weighting distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/758fabbe0acd858b5abd3212b95a719feb3b592e.png]]
+[[file:./.ob-jupyter/242a779e52d60ac390200eb1c503500dbd23404d.png]]
 
 Now, draw a sample and look at the efficiency.
 
@@ -912,7 +993,7 @@ Now, draw a sample and look at the efficiency.
 #+end_src
 
 #+RESULTS:
-: 0.59549
+: 0.5929585798816568
 
 #+begin_src jupyter-python :exports both :results raw drawer
   tex_value(
@@ -924,7 +1005,7 @@ Now, draw a sample and look at the efficiency.
 #+end_src
 
 #+RESULTS:
-: \(\mathfrak{e} = 60\%\)
+: \(\mathfrak{e} = 59\%\)
 
 If we compare that to [[cosθ-bare-eff]], we can see the improvement :P.
 It is even better the [[η-eff]].  The histogram looks just the same.
@@ -935,7 +1016,8 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/7af688111aaf5c200408d255ecedbba515802aff.png]]
+[[file:./.ob-jupyter/8ae758dbb63db99ecb2422167f32fafd5a9e4c48.png]]
+
 *** Some Histograms with Rivet
 **** Init
 #+begin_src jupyter-python :exports both :results raw drawer
