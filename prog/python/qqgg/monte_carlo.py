@@ -579,12 +579,12 @@ def sample_unweighted_array(
             proc = cpu_count() * 2
 
         result = None
-        num = (num + 1) // proc
+        num_per_worker = int(num / proc + 1)
         _FUN = f  # there is no other way :(
 
         workers = [
             SamplingWorker(
-                num_samples=num,
+                num_samples=num_per_worker,
                 interval=interval,
                 increment_borders=increment_borders,
                 report_efficiency=report_efficiency,
@@ -601,9 +601,9 @@ def sample_unweighted_array(
 
         if report_efficiency:
             eff = result[:, 1].mean()
-            sample_arr = np.concatenate(result[:, 0])
+            sample_arr = np.concatenate(result[:, 0])[0:num]
         else:
-            sample_arr = np.concatenate(result)
+            sample_arr = np.concatenate(result)[0:num]
 
     else:
         samples = None

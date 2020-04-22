@@ -65,6 +65,65 @@ def plot_stratified_rho(ax, points, increment_borders, *args, **kwargs):
 
     ax.plot(points, ρ, *args, **kwargs)
 
+import matplotlib.gridspec as gridspec
+
+
+def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
+    fig, (ax_hist, ax_ratio) = set_up_plot(
+        2, 1, sharex=True, gridspec_kw=dict(height_ratios=[3, 1], **kwargs)
+    )
+
+    reference, edges = histograms[0]["hist"]
+    reference_error = np.sqrt(reference)
+
+    ref_int = hist_integral(histograms[0]["hist"])
+    reference = reference / ref_int
+    reference_error = reference_error / ref_int
+
+    for histogram in histograms:
+        heights, _ = histogram["hist"]
+        integral = hist_integral([heights, edges])
+        errors = np.sqrt(heights) / integral
+        heights = heights / integral
+
+        draw_histogram(
+            ax_hist,
+            [heights, edges],
+            errorbars=errors,
+            hist_kwargs=(
+                histogram["hist_kwargs"] if "hist_kwargs" in histogram else dict()
+            ),
+            errorbar_kwargs=(
+                histogram["errorbar_kwargs"]
+                if "errorbar_kwargs" in histogram
+                else dict()
+            ),
+            normalize_to=normalize_to,
+        )
+
+        draw_histogram(
+            ax_ratio,
+            [heights / reference, edges],
+            errorbars=errors / reference,
+            hist_kwargs=(
+                histogram["hist_kwargs"] if "hist_kwargs" in histogram else dict()
+            ),
+            errorbar_kwargs=(
+                histogram["errorbar_kwargs"]
+                if "errorbar_kwargs" in histogram
+                else dict()
+            ),
+            normalize_to=None,
+        )
+
+    return fig, (ax_hist, ax_ratio)
+
+
+def hist_integral(hist):
+    heights, edges = hist
+    return heights @ (edges[1:] - edges[:-1])
+
+
 def draw_histogram(
     ax,
     histogram,
@@ -85,51 +144,59 @@ def draw_histogram(
 
     heights, edges = histogram
     centers = (edges[1:] + edges[:-1]) / 2
-    deviations = np.sqrt(heights)
+    deviations = (
+        (errorbars if isinstance(errorbars, (np.ndarray, list)) else np.sqrt(heights))
+        if errorbars is not False
+        else None
+    )
 
     if normalize_to is not None:
-        integral = heights @ (edges[1:] - edges[:-1])
+        integral = hist_integral(histogram)
         heights = heights / integral * normalize_to
-        deviations = deviations / integral * normalize_to
+        if errorbars is not False:
+            deviations = deviations / integral * normalize_to
 
-    ax.errorbar(centers, heights, deviations, linestyle="none", **errorbar_kwargs)
+    if errorbars is not False:
+        ax.errorbar(centers, heights, deviations, linestyle="none", **errorbar_kwargs)
+
     ax.step(edges, [heights[0], *heights], **hist_kwargs)
-    print([edges[0], edges[-1]])
     ax.set_xlim(*[edges[0], edges[-1]])
 
     return ax
 
 
-def draw_histo_auto(points, xlabel, bins=50, range=None, **kwargs):
+def draw_histo_auto(points, xlabel, bins=50, range=None, rethist=False, **kwargs):
     """Creates a histogram figure from sample points, normalized to unity.
 
     :param points: samples
     :param xlabel: label of the x axis
     :param bins: number of bins
     :param range: the range of the values
+    :param rethist: whether to return the histogram as third argument
     :returns: figure, axis
     """
 
     hist = np.histogram(points, bins, range=range, **kwargs)
-
     fig, ax = set_up_plot()
     draw_histogram(ax, hist, normalize_to=1)
 
     ax.set_xlabel(xlabel)
     ax.set_ylabel("Count")
 
-    return fig, ax
+    return (fig, ax, hist) if rethist else (fig, ax)
 
-def draw_yoda_histo(h, xlabel):
-    edges = np.append(h.xMins(), h.xMax())
-    heights = np.append(h.yVals(), h.yVals()[-1])
-    centers = (edges[1:] + edges[:-1]) / 2
+def yoda_to_numpy(histo):
+    histo.normalize(histo.numEntries() * (histo.xMax() - histo.xMin()))
+    edges = np.append(histo.xMins(), histo.xMax())
+    heights = histo.yVals().astype(int)
 
+    return heights, edges
+
+
+def draw_yoda_histo_auto(h, xlabel, **kwargs):
+    hist  = yoda_to_numpy(h)
     fig, ax = set_up_plot()
-    ax.errorbar(h.xVals(), h.yVals(), h.yErrs(), linestyle="none", color="orange")
-    ax.step(edges, heights, color="#1f77b4", where="post")
+    draw_histogram(ax, hist, errorbars=True, normalize_to=1, **kwargs)
 
     ax.set_xlabel(xlabel)
-    ax.set_ylabel("Count")
-    ax.set_xlim([h.xMin(), h.xMax()])
     return fig, ax

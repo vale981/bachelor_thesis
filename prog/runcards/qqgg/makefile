@@ -10,6 +10,6 @@ sherpa_xs: Sherpa.yaml
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 analysis: Sherpa.yaml
-	RIVET_ANALYSIS_PATH="$(ROOT_DIR)/../../analysis/qqgg_simple/" Sherpa
+	RIVET_ANALYSIS_PATH="$(ROOT_DIR)/../../analysis/qqgg_simple/" mpirun --use-hwthread-cpus --use-hwthread-cpus  Sherpa
 	rivet-mkhtml Analysis.yoda -o analysis
 	cp Analysis.yoda analysis
