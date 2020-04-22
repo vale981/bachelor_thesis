@@ -136,6 +136,7 @@ def sample_momenta(sample_num, interval, charge, esp, seed=None, **kwargs):
     :rtype: np.ndarray
 
     """
+
     cosθ_sample = monte_carlo.sample_unweighted_array(
         sample_num, lambda x: diff_xs_cosθ(x, charge, esp), interval_cosθ, **kwargs
     )

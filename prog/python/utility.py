@@ -140,11 +140,7 @@ def pinmp_ticks(axis, ticks):
     return axis
 
 
-def set_up_plot(ticks=4, pimp_top=True, subplot=111, fig=None):
-    if fig is None:
-        fig = plt.figure()
-    ax = fig.add_subplot(subplot)
-
+def set_up_axis(ax, ticks=4, pimp_top=True):
     pinmp_ticks(ax.xaxis, ticks)
     pinmp_ticks(ax.yaxis, ticks)
 
@@ -156,7 +152,24 @@ def set_up_plot(ticks=4, pimp_top=True, subplot=111, fig=None):
     else:
         ax.tick_params(right=True, which="both")
 
-    return fig, ax
+    return ax
+
+
+@functools.wraps(plt.subplot)
+def set_up_plot(*args, ticks=4, pimp_top=True, **kwargs):
+    fig, axes = plt.subplots(*args, squeeze=True, **kwargs)
+
+    if hasattr(axes, "__len__"):
+        shape = axes.shape
+
+        axes = np.array(
+            [set_up_axis(ax, ticks, pimp_top) for ax in axes.flatten()]
+        ).reshape(shape)
+
+    else:
+        axes = set_up_axis(axes)
+
+    return fig, axes
 
 
 def cm2inch(*tupl):
