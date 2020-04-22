@@ -65,21 +65,59 @@ def plot_stratified_rho(ax, points, increment_borders, *args, **kwargs):
 
     ax.plot(points, ρ, *args, **kwargs)
 
-def draw_histo(points, xlabel, bins=50, range=None, **kwargs):
-    heights, edges = np.histogram(points, bins, range=range, **kwargs)
+def draw_histogram(
+    ax,
+    histogram,
+    errorbars=True,
+    hist_kwargs=dict(color="#1f77b4"),
+    errorbar_kwargs=dict(color="orange"),
+    normalize_to=None,
+):
+    """Draws a histogram with optional errorbars using the step style.
+
+    :param ax: axis to draw on
+    :param histogram: an array of the form [heights, edges]
+    :param hist_kwargs: keyword args to pass to `ax.step`
+    :param errorbar_kwargs: keyword args to pass to `ax.errorbar`
+    :param normalize_to: if set, the histogram will be normalized to the value
+    :returns: the given axis
+    """
+
+    heights, edges = histogram
     centers = (edges[1:] + edges[:-1]) / 2
     deviations = np.sqrt(heights)
-    integral = heights @ (edges[1:] - edges[:-1])
-    heights = heights / integral
-    deviations = deviations / integral
+
+    if normalize_to is not None:
+        integral = heights @ (edges[1:] - edges[:-1])
+        heights = heights / integral * normalize_to
+        deviations = deviations / integral * normalize_to
+
+    ax.errorbar(centers, heights, deviations, linestyle="none", **errorbar_kwargs)
+    ax.step(edges, [heights[0], *heights], **hist_kwargs)
+    print([edges[0], edges[-1]])
+    ax.set_xlim(*[edges[0], edges[-1]])
+
+    return ax
+
+
+def draw_histo_auto(points, xlabel, bins=50, range=None, **kwargs):
+    """Creates a histogram figure from sample points, normalized to unity.
+
+    :param points: samples
+    :param xlabel: label of the x axis
+    :param bins: number of bins
+    :param range: the range of the values
+    :returns: figure, axis
+    """
+
+    hist = np.histogram(points, bins, range=range, **kwargs)
 
     fig, ax = set_up_plot()
-    ax.errorbar(centers, heights, deviations, linestyle="none", color="orange")
-    ax.step(edges, [heights[0], *heights], color="#1f77b4")
+    draw_histogram(ax, hist, normalize_to=1)
 
     ax.set_xlabel(xlabel)
     ax.set_ylabel("Count")
-    ax.set_xlim(range if range is not None else [points.min(), points.max()])
+
     return fig, ax
 
 def draw_yoda_histo(h, xlabel):

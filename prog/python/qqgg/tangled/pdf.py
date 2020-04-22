@@ -174,7 +174,7 @@ def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
             result += (
                 xfxQ2(quark, x_1, q2_value)
                 / x_1
-                * xfxQ2(quark, x_2, q2_value)
+                * xfxQ2(-quark, x_2, q2_value)
                 / x_2
                 * xs_value
             )
