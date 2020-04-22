@@ -118,7 +118,7 @@ def total_xs_eta(η, charge, esp):
 
     return 2 * np.pi * f * (F(η[0]) - F(η[1]))
 
-@numpy_cache('momentum_cache')
+@numpy_cache("momentum_cache")
 def sample_momenta(sample_num, interval, charge, esp, seed=None, **kwargs):
     """Samples `sample_num` unweighted photon 4-momenta from the
     cross-section. Superflous kwargs are passed on to
@@ -144,7 +144,7 @@ def sample_momenta(sample_num, interval, charge, esp, seed=None, **kwargs):
 
     def make_momentum(esp, cosθ, φ):
         sinθ = np.sqrt(1 - cosθ ** 2)
-        return np.array([1, sinθ * np.cos(φ), sinθ * np.sin(φ), cosθ]) * esp / 2
+        return np.array([1, sinθ * np.cos(φ), sinθ * np.sin(φ), cosθ],) * esp / 2
 
     momenta = np.array(
         [make_momentum(esp, cosθ, φ) for cosθ, φ in np.array([cosθ_sample, φ_sample]).T]

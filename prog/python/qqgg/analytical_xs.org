@@ -553,7 +553,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.02743643612557337
+: 0.02744127583441648
 
 Let's save that.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -627,7 +627,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.0791191294078345
+: 0.07903728511692736
 <<cosθ-bare-eff>>
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -778,12 +778,12 @@ The histogram for cosθ.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/52f3091ff35d68fb63063d2e10d311a494e72ef4.png]]
+[[file:./.ob-jupyter/00141b21f62165685b960a3dd7cc1313a2e4e0d5.png]]
 
 *** Observables
 Now we define some utilities to draw real 4-momentum samples.
 #+begin_src jupyter-python :exports both :tangle tangled/xs.py
-  @numpy_cache('momentum_cache')
+  @numpy_cache("momentum_cache")
   def sample_momenta(sample_num, interval, charge, esp, seed=None, **kwargs):
       """Samples `sample_num` unweighted photon 4-momenta from the
       cross-section. Superflous kwargs are passed on to
@@ -809,7 +809,7 @@ Now we define some utilities to draw real 4-momentum samples.
 
       def make_momentum(esp, cosθ, φ):
           sinθ = np.sqrt(1 - cosθ ** 2)
-          return np.array([1, sinθ * np.cos(φ), sinθ * np.sin(φ), cosθ]) * esp / 2
+          return np.array([1, sinθ * np.cos(φ), sinθ * np.sin(φ), cosθ],) * esp / 2
 
       momenta = np.array(
           [make_momentum(esp, cosθ, φ) for cosθ, φ in np.array([cosθ_sample, φ_sample]).T]
@@ -870,13 +870,13 @@ Lets try it out.
 #+RESULTS:
 :RESULTS:
 : Trying cache
-: array([[100.        ,  78.35413155,  34.46901415, -51.69639381],
-:        [100.        ,  81.07148059,  14.47424175, -56.72663713],
-:        [100.        ,  77.36318011,   8.21342863,  62.82895792],
+: array([[100.        ,  54.98191622,  34.53483728, -76.05480855],
+:        [100.        ,  87.95719691,  30.53342542, -36.48618154],
+:        [100.        ,  29.02952127,  15.22393108, -94.47496397],
 :        ...,
-:        [100.        ,  80.58135399,  25.08124354, -53.64304812],
-:        [100.        ,  25.93965904,  34.44071517,  90.22733082],
-:        [100.        ,  40.226258  ,   1.92028743,  91.53229301]])
+:        [100.        ,  37.62519445,  37.66247038, -84.65153907],
+:        [100.        ,  75.22515369,   0.79738586,  65.88277793],
+:        [100.        ,  26.58309333,   4.84203005, -96.28028819]])
 :END:
 
 
@@ -890,7 +890,7 @@ Now let's make a histogram of the η distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/3cb17d97c64d5f1a124eabf9585960d0d8d351b0.png]]
+[[file:./.ob-jupyter/7752e9a1c6e940c7b7b80cfc71a2f0cfe4cd534a.png]]
 
 
 And the same for the p_t (transverse momentum) distribution.
@@ -903,7 +903,7 @@ And the same for the p_t (transverse momentum) distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/66bfdb7d4601822122756fbd33048b315d15cc29.png]]
+[[file:./.ob-jupyter/07eb7195522d9aad2b943f9ac737bbd14ed868a7.png]]
 
 That looks somewhat fishy, but it isn't.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -965,7 +965,7 @@ Let's draw a histogram to compare with the previous results.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/ea810d8ad8b8ca3c43580ac3d6dbc9f217c513a7.png]]
+[[file:./.ob-jupyter/1ee3a58a828af5c0a279f9fe1af3396ef2b5976a.png]]
 
 Looks good to me :).
 
@@ -985,8 +985,8 @@ distribution. We throw away the integral, but keep the increments.
 #+end_src
 
 #+RESULTS:
-: array([-0.9866143 , -0.96970261, -0.9313044 , -0.83929434, -0.60693423,
-:        -0.00699652,  0.60153398,  0.83913868,  0.9310874 ,  0.96992885,
+: array([-0.9866143 , -0.96976042, -0.93075303, -0.83891468, -0.60711507,
+:        -0.00500229,  0.60270647,  0.83831517,  0.9306461 ,  0.96956432,
 :         0.9866143 ])
 
 Visualizing the increment borders gives us the information we want.
@@ -1004,8 +1004,8 @@ Visualizing the increment borders gives us the information we want.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f484cce65e0>
-[[file:./.ob-jupyter/27f987a9462f00ef9f6758bfa18de04948e842f8.png]]
+: <matplotlib.legend.Legend at 0x7f484f084550>
+[[file:./.ob-jupyter/924b629ef52d9aef5936291f2ae319aeb6b73a8b.png]]
 :END:
 
 We can now plot the reweighted distribution to observe the variance
@@ -1029,7 +1029,7 @@ reduction visually.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/67cfb4d2d954fa87e052b25cfe66cb4adb5c3a97.png]]
+[[file:./.ob-jupyter/635818f228a95fa88b7fe94a79ab750950b499bc.png]]
 
 
 I am batman! Let's plot the weighting distribution.
@@ -1044,7 +1044,7 @@ I am batman! Let's plot the weighting distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/7ea42bec0fdbab7eb941bed1f1fef3a6683170ac.png]]
+[[file:./.ob-jupyter/1786e19ed4e4c696c4b1ca17d34f62b2113cfbf3.png]]
 
 Now, draw a sample and look at the efficiency.
 
@@ -1061,7 +1061,7 @@ Now, draw a sample and look at the efficiency.
 #+end_src
 
 #+RESULTS:
-: 0.5879135338345864
+: 0.5954571428571428
 
 #+begin_src jupyter-python :exports both :results raw drawer
   tex_value(
@@ -1073,7 +1073,7 @@ Now, draw a sample and look at the efficiency.
 #+end_src
 
 #+RESULTS:
-: \(\mathfrak{e} = 59\%\)
+: \(\mathfrak{e} = 60\%\)
 
 If we compare that to [[cosθ-bare-eff]], we can see the improvement :P.
 It is even better the [[η-eff]].  The histogram looks just the same.
@@ -1084,7 +1084,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/cc7d015cba5713359f075b4c01c754e0ad92977c.png]]
+[[file:./.ob-jupyter/bc48dc495d9bc8b96549de58d04489942f8c89dd.png]]
 
 *** Some Histograms with Rivet
 **** Init
@@ -1099,7 +1099,9 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/plot_utils.py
   def yoda_to_numpy(histo):
-      histo.normalize(histo.numEntries() * (histo.xMax() - histo.xMin()))
+      histo.normalize(
+          histo.numEntries() * ((histo.xMax() - histo.xMin()) / histo.numBins())
+      )
       edges = np.append(histo.xMins(), histo.xMax())
       heights = histo.yVals().astype(int)
 
@@ -1107,7 +1109,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 
 
   def draw_yoda_histo_auto(h, xlabel, **kwargs):
-      hist  = yoda_to_numpy(h)
+      hist = yoda_to_numpy(h)
       fig, ax = set_up_plot()
       draw_histogram(ax, hist, errorbars=True, normalize_to=1, **kwargs)
 
@@ -1131,24 +1133,24 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
       fig, (ax_hist, ax_ratio) = draw_ratio_plot(
           [
               dict(
-                  hist=sherpa_hist["reference"],
-                  hist_kwargs=dict(label=label),
-              ),
-              dict(
                   hist=yoda_hist,
                   hist_kwargs=dict(
-                      label="Sherpa " + label
+                      label="Sherpa Reference"
                   ),
+              ),
+              dict(
+                  hist=sherpa_hist["reference"],
+                  hist_kwargs=dict(label="Own Implementation"),
               ),
           ],
       )
-
-      save_fig(fig, "histo_sherpa_" + key, "xs_sampling", size=(4, 4))
+      ax_ratio.set_xlabel(label)
+      save_fig(fig, "histo_sherpa_" + key, "xs_sampling", size=(4, 3.5))
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-[[file:./.ob-jupyter/ec6db0dc7993e72fcca5007c13d113e7ed446cfa.png]]
-[[file:./.ob-jupyter/8789008762d583cf6a19452c8d55474730cf974c.png]]
-[[file:./.ob-jupyter/1df99392bbc41afbdeeb5d32239421a8c33f7599.png]]
+[[file:./.ob-jupyter/9a210477e46c72af0aeae6694709a6e98c1e873d.png]]
+[[file:./.ob-jupyter/e8903a60a5c4a197a114ffc31ec50782ab5a0cda.png]]
+[[file:./.ob-jupyter/64f65f5f1b2447da7c43ade0c72b130a78d119ad.png]]
 :END:
