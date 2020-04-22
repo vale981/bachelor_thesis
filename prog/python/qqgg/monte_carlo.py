@@ -2,7 +2,11 @@
 Simple monte carlo integration implementation.
 Author: Valentin Boettcher <hiro@protagon.space>
 """
+
+import os
+import os.path
 import numpy as np
+from multiprocessing import Pool, cpu_count
 import functools
 from scipy.optimize import minimize_scalar, root, shgo
 from dataclasses import dataclass
@@ -529,54 +533,119 @@ def sample_stratified(
             ) if report_efficiency else point
 
 
+class SamplingWorker:
+    def __init__(self, num_samples, **kwargs):
+        self.num_samples = num_samples
+        self.kwargs = kwargs
+
+    def draw_sample(self):
+        global _FUN
+        seed = int.from_bytes(os.urandom(2), "big")
+        return sample_unweighted_array(self.num_samples, _FUN, **self.kwargs, seed=seed)
+
+
+_FUN = None
+
+
 def sample_unweighted_array(
     num,
     f,
-    *args,
     interval=None,
     increment_borders=None,
     report_efficiency=False,
+    proc=None,
+    cache=None,
     **kwargs
 ):
     """Sample `num` elements from a distribution.  The rest of the
     arguments is analogous to `sample_unweighted`.
     """
+    global _FUN
+    if cache is not None and os.path.isfile(cache + ".npy"):
+        result = np.load(cache + ".npy")
+        eff = None
+        eff_path = cache + ".eff.npy"
+        if report_efficiency:
+            if os.path.isfile(eff_path):
+                eff = np.load(eff_path)[0]
+
+        return (result, eff) if report_efficiency else result
 
     sample_arr = None
-    samples = None
+    eff = None
 
-    if interval is not None:
-        interval = np.array(interval)
-        vectorized = len(interval.shape) > 1
-        sample_arr = np.empty((num, interval.shape[0]) if vectorized else num)
-        if len(interval.shape) > 1:
-            samples = sample_unweighted_vector(
-                f, interval, *args, report_efficiency=report_efficiency, **kwargs
+    if proc is not None:
+        if isinstance(proc, str) and proc == "auto":
+            proc = cpu_count() * 2
+
+        result = None
+        num = (num + 1) // proc
+        _FUN = f  # there is no other way :(
+
+        workers = [
+            SamplingWorker(
+                num_samples=num,
+                interval=interval,
+                increment_borders=increment_borders,
+                report_efficiency=report_efficiency,
+                proc=None,
+                cache=None,
+                **kwargs
             )
-        else:
-            if "chunk_size" not in kwargs:
-                kwargs["chunk_size"] = num * 10
+            for _ in range(proc)
+        ]
 
-            samples = sample_unweighted(
-                f, interval, *args, report_efficiency=report_efficiency, **kwargs
-            )
+        with Pool(proc) as p:
+            result = p.map(SamplingWorker.draw_sample, workers)
+            result = np.array(result)
 
-    elif increment_borders is not None:
-        sample_arr = np.empty(num)
-        samples = sample_stratified(
-            f,
-            *args,
-            increment_borders=increment_borders,
-            report_efficiency=report_efficiency,
-            **kwargs
-        )
-    else:
-        raise TypeError("Neiter interval nor increment_borders specified!")
-
-    for i, sample in zip(range(num), samples):
         if report_efficiency:
-            sample_arr[i], _ = sample
+            eff = result[:, 1].mean()
+            sample_arr = np.concatenate(result[:, 0])
         else:
-            sample_arr[i] = sample
+            sample_arr = np.concatenate(result)
 
-    return (sample_arr, next(samples)[1]) if report_efficiency else sample_arr
+    else:
+        samples = None
+
+        if interval is not None:
+            interval = np.array(interval)
+            vectorized = len(interval.shape) > 1
+            sample_arr = np.empty((num, interval.shape[0]) if vectorized else num)
+            if len(interval.shape) > 1:
+                samples = sample_unweighted_vector(
+                    f, interval, report_efficiency=report_efficiency, **kwargs
+                )
+            else:
+                if "chunk_size" not in kwargs:
+                    kwargs["chunk_size"] = num * 10
+
+                samples = sample_unweighted(
+                    f, interval, report_efficiency=report_efficiency, **kwargs
+                )
+
+        elif increment_borders is not None:
+            sample_arr = np.empty(num)
+            samples = sample_stratified(
+                f,
+                increment_borders=increment_borders,
+                report_efficiency=report_efficiency,
+                **kwargs
+            )
+        else:
+            raise TypeError("Neiter interval nor increment_borders specified!")
+
+        for i, sample in zip(range(num), samples):
+            if report_efficiency:
+                sample_arr[i], _ = sample
+            else:
+                sample_arr[i] = sample
+
+        eff = next(samples)[1] if report_efficiency else None
+
+    if cache is not None:
+        np.save(cache + ".npy", sample_arr)
+        if report_efficiency:
+            np.save(cache + ".eff.npy", [eff])
+
+    return (sample_arr, eff) if report_efficiency else sample_arr

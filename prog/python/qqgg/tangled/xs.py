@@ -118,9 +118,11 @@ def total_xs_eta(η, charge, esp):
 
     return 2 * np.pi * f * (F(η[0]) - F(η[1]))
 
-def sample_momenta(sample_num, interval, charge, esp, seed=None):
+@numpy_cache('momentum_cache')
+def sample_momenta(sample_num, interval, charge, esp, seed=None, **kwargs):
     """Samples `sample_num` unweighted photon 4-momenta from the
-    cross-section.
+    cross-section. Superflous kwargs are passed on to
+    `sample_unweighted_array`.
 
     :param sample_num: number of samples to take
     :param interval: cosθ interval to sample from
@@ -132,18 +134,18 @@ def sample_momenta(sample_num, interval, charge, esp, seed=None):
     :returns: an array of 4 photon momenta
 
     :rtype: np.ndarray
+
     """
-    cosθ_sample = \
-        monte_carlo.sample_unweighted_array(sample_num,
-                                            lambda x:
-                                              diff_xs_cosθ(x, charge, esp),
-                                           interval_cosθ)
+    cosθ_sample = monte_carlo.sample_unweighted_array(
+        sample_num, lambda x: diff_xs_cosθ(x, charge, esp), interval_cosθ, **kwargs
+    )
     φ_sample = np.random.uniform(0, 1, sample_num)
 
     def make_momentum(esp, cosθ, φ):
-        sinθ = np.sqrt(1-cosθ**2)
-        return np.array([1, sinθ*np.cos(φ), sinθ*np.sin(φ), cosθ])*esp/2
+        sinθ = np.sqrt(1 - cosθ ** 2)
+        return np.array([1, sinθ * np.cos(φ), sinθ * np.sin(φ), cosθ]) * esp / 2
 
-    momenta = np.array([make_momentum(esp, cosθ, φ) \
-                         for cosθ, φ in np.array([cosθ_sample, φ_sample]).T])
+    momenta = np.array(
+        [make_momentum(esp, cosθ, φ) for cosθ, φ in np.array([cosθ_sample, φ_sample]).T]
+    )
     return momenta
