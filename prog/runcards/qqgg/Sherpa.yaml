@@ -2,7 +2,7 @@
 OUTPUT: 3
 
 # no events
-EVENTS: 10000
+EVENTS: 1000000
 
 # save results
 GENERATE_RESULT_DIRECTORY: true
