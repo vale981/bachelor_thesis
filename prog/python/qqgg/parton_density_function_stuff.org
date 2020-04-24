@@ -22,6 +22,8 @@
 #+END_SRC
 
 #+RESULTS:
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -30,6 +32,7 @@ e_proton = 100  # GeV
 interval_η = [-η, η]
 interval = η_to_θ([-η, η])
 interval_cosθ = np.cos(interval)
+num_samples = 10_000
 #+end_src
 
 #+RESULTS:
@@ -236,9 +239,14 @@ calculate the 4-momentum kinematics twice. Maybe that can be done
 nicer.
 
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/pdf.py
-  def sample_momenta(num_samples, dist, interval, e_hadron, upper_bound=None):
+  def sample_momenta(num_samples, dist, interval, e_hadron, upper_bound=None, **kwargs):
       res, eff = monte_carlo.sample_unweighted_array(
-          num_samples, dist, interval, upper_bound=upper_bound, report_efficiency=True
+          num_samples,
+          dist,
+          interval,
+          upper_bound=upper_bound,
+          report_efficiency=True,
+          ,**kwargs
       )
       cosθ, x_1, x_2 = res.T
       return momenta(e_hadron, x_1[None, :], x_2[None, :], cosθ[None, :]), eff
@@ -266,8 +274,8 @@ Let's plot it for some random values 😃.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fb11a322c40> |
-[[file:./.ob-jupyter/a5954d2e2b47ff630695004830c3de94c2e34723.png]]
+| <matplotlib.lines.Line2D | at | 0x7f1f47902c10> |
+[[file:./.ob-jupyter/f12b49e327ad8ec823397b3bbe910e0d021f4dcd.png]]
 :END:
 
 Having set both x to the same value, we get a symmetric distribution as expected.
@@ -283,39 +291,24 @@ But first we have to find an upper bound, which is expensive!
 #+end_src
 
 #+RESULTS:
-: 2786.6683559915655
+: 2171.468698483163
 
 Beware!, this is darn slow, becaus the efficiency is soooo low.
 #+begin_src jupyter-python :exports both :results raw drawer
-  sample_momenta(100, dist, intervals, e_proton, upper_bound=upper_bound)[1]
+
+  sample_momenta(
+      100,
+      dist,
+      intervals,
+      e_proton,
+      upper_bound=upper_bound,
+      proc="auto",
+      cache="cache/pdf/samp_costh_test",
+  )[1]
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  TypeErrorTraceback (most recent call last)
-  <ipython-input-10-cc6814bf2dff> in <module>
-  ----> 1 sample_momenta(100, dist, intervals, e_proton, upper_bound=upper_bound)[1]
-
-  <ipython-input-6-abb92c78af23> in sample_momenta(num_samples, dist, interval, e_hadron, upper_bound)
-        1 def sample_momenta(num_samples, dist, interval, e_hadron, upper_bound=None):
-  ----> 2     res, eff = monte_carlo.sample_unweighted_array(
-        3         num_samples, dist, interval, upper_bound=upper_bound, report_efficiency=True
-        4     )
-        5     cosθ, x_1, x_2 = res.T
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/monte_carlo.py in sample_unweighted_array(num, f, interval, increment_borders, report_efficiency, *args, **kwargs)
-      572         )
-      573     else:
-  --> 574         raise TypeError("Neiter interval nor increment_borders specified!")
-      575
-      576     for i, sample in zip(range(num), samples):
-
-  TypeError: Neiter interval nor increment_borders specified!
-#+end_example
-:END:
+: 0.00041597900424616594
 
 ** Switching Horses: Sampling η
 We set up a new distribution.
@@ -339,8 +332,8 @@ Plotting it, we can see that the variance is reduced.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fb1154e17c0> |
-[[file:./.ob-jupyter/b5e9e8b157f5596913671e301fefee82daf805a9.png]]
+| <matplotlib.lines.Line2D | at | 0x7f1f44296940> |
+[[file:./.ob-jupyter/257473d72b7c4ffd6650dd4a736a2feaacac28cb.png]]
 :END:
 
 Lets plot how the pdf looks.
@@ -354,7 +347,7 @@ Lets plot how the pdf looks.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fb111c4a5b0> |
+| <matplotlib.lines.Line2D | at | 0x7f1f4574b0d0> |
 [[file:./.ob-jupyter/db6aa636b2795408e0e7b762c7e43ed22136feaf.png]]
 :END:
 
@@ -363,84 +356,27 @@ Now we sample some events. Doing this in parallel helps. We let the os
 figure out the cpu mapping.
 
 #+begin_src jupyter-python :exports both :results raw drawer
+  intervals_η = [interval_η, [.01, 1], [.01, 1]]
+
   result, eff = monte_carlo.sample_unweighted_array(
-      10_000_000,
+      num_samples,
       dist_η,
       interval=intervals_η,
       proc="auto",
       report_efficiency=True,
-      cache="cache/huge",
+      cache="cache/pdf/huge",
   )
   result
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  TypeErrorTraceback (most recent call last)
-  <ipython-input-266-1e94dc16f128> in <module>
-  ----> 1 result, eff = monte_carlo.sample_unweighted_array(
-        2     10_000_000,
-        3     dist_η,
-        4     interval=intervals_η,
-        5     proc="auto",
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/monte_carlo.py in sample_unweighted_array(num, f, interval, increment_borders, report_efficiency, proc, cache, **kwargs)
-      585         _FUN = f  # there is no other way :(
-      586
-  --> 587         workers = [
-      588             SamplingWorker.remote(
-      589                 num_samples=num,
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/monte_carlo.py in <listcomp>(.0)
-      586
-      587         workers = [
-  --> 588             SamplingWorker.remote(
-      589                 num_samples=num,
-      590                 interval=interval,
-
-  /usr/lib/python3.8/site-packages/ray/actor.py in remote(self, *args, **kwargs)
-      377             A handle to the newly created actor.
-      378         """
-  --> 379         return self._remote(args=args, kwargs=kwargs)
-      380
-      381     def options(self, **options):
-
-  /usr/lib/python3.8/site-packages/ray/actor.py in _remote(self, args, kwargs, num_cpus, num_gpus, memory, object_store_memory, resources, is_direct_call, max_concurrency, name, detached)
-      527                 # So, here pass actor_creation_function_descriptor to make
-      528                 # sure export actor class correct.
-  --> 529                 worker.function_actor_manager.export_actor_class(
-      530                     meta.modified_class,
-      531                     meta.actor_creation_function_descriptor,
-
-  /usr/lib/python3.8/site-packages/ray/function_manager.py in export_actor_class(self, Class, actor_creation_function_descriptor, actor_method_names)
-      357             "class_name": actor_creation_function_descriptor.class_name,
-      358             "module": actor_creation_function_descriptor.module_name,
-  --> 359             "class": pickle.dumps(Class),
-      360             "job_id": job_id.binary(),
-      361             "collision_identifier": self.compute_collision_identifier(Class),
-
-  /usr/lib/python3.8/site-packages/ray/cloudpickle/cloudpickle_fast.py in dumps(obj, protocol, buffer_callback)
-       70         cp = CloudPickler(file, protocol=protocol,
-       71                           buffer_callback=buffer_callback)
-  ---> 72         cp.dump(obj)
-       73         return file.getvalue()
-       74
-
-  /usr/lib/python3.8/site-packages/ray/cloudpickle/cloudpickle_fast.py in dump(self, obj)
-      615     def dump(self, obj):
-      616         try:
-  --> 617             return Pickler.dump(self, obj)
-      618         except RuntimeError as e:
-      619             if "recursion" in e.args[0]:
-
-  /usr/lib/python3.8/site-packages/lhapdf.cpython-38-x86_64-linux-gnu.so in lhapdf.PDF.__reduce_cython__()
-
-  TypeError: self._ptr cannot be converted to a Python object for pickling
-#+end_example
-:END:
+: array([[ 2.00392989,  0.03589851,  0.13781655],
+:        [-0.77083958,  0.01088047,  0.1545276 ],
+:        [-1.36224887,  0.02099844,  0.05346773],
+:        ...,
+:        [-0.22217984,  0.01724194,  0.06289104],
+:        [-1.26972433,  0.23321426,  0.01352318],
+:        [ 1.76699256,  0.01239091,  0.10577669]])
 
 
 
@@ -452,11 +388,11 @@ file.
 
 Let's look at a histogramm of eta samples.
 #+begin_src jupyter-python :exports both :results raw drawer
-  draw_histo(result[:, 0], "asht", bins=100)
+  draw_histo_auto(result[:, 0], "asht", bins=100)
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fb080632490> |
-[[file:./.ob-jupyter/29ac0eecec5e1fb3efacb59e786c1a3231d26d54.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f1f3dd9f340> |
+[[file:./.ob-jupyter/3658a99592960354e2b5997443ea0a9de8426d9a.png]]
 :END:

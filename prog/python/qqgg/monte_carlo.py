@@ -10,6 +10,7 @@ from multiprocessing import Pool, cpu_count
 import functools
 from scipy.optimize import minimize_scalar, root, shgo
 from dataclasses import dataclass
+import utility
 
 
 def _process_interval(interval):
@@ -547,6 +548,7 @@ class SamplingWorker:
 _FUN = None
 
 
+@utility.numpy_cache("cache")
 def sample_unweighted_array(
     num,
     f,
@@ -554,22 +556,12 @@ def sample_unweighted_array(
     increment_borders=None,
     report_efficiency=False,
     proc=None,
-    cache=None,
     **kwargs
 ):
     """Sample `num` elements from a distribution.  The rest of the
     arguments is analogous to `sample_unweighted`.
     """
     global _FUN
-    if cache is not None and os.path.isfile(cache + ".npy"):
-        result = np.load(cache + ".npy")
-        eff = None
-        eff_path = cache + ".eff.npy"
-        if report_efficiency:
-            if os.path.isfile(eff_path):
-                eff = np.load(eff_path)[0]
-
-        return (result, eff) if report_efficiency else result
 
     sample_arr = None
     eff = None
@@ -642,10 +634,5 @@ def sample_unweighted_array(
                 sample_arr[i] = sample
 
         eff = next(samples)[1] if report_efficiency else None
-
-    if cache is not None:
-        np.save(cache + ".npy", sample_arr)
-        if report_efficiency:
-            np.save(cache + ".eff.npy", [eff])
 
     return (sample_arr, eff) if report_efficiency else sample_arr
