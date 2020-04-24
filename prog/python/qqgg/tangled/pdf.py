@@ -132,6 +132,7 @@ def averaged_tchanel_q2(e_proton, x_1, x_2):
 
 from numba.extending import get_cython_function_address
 
+
 def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
     """Creates a function that takes an event (type np.ndarray) of the
     form [cosθ, impulse fractions of quarks in hadron 1, impulse
@@ -172,10 +173,10 @@ def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
         for quark, charge in quarks:
             xs_value = xs(e_hadron, charge, cosθ, x_1, x_2)
             result += (
-                xfxQ2(quark, x_1, q2_value)
-                / x_1
-                * xfxQ2(-quark, x_2, q2_value)
-                / x_2
+                (xfxQ2(quark, x_1, q2_value) + xfxQ2(-quark, x_1, q2_value))
+                / (2 * x_1)
+                * (xfxQ2(quark, x_2, q2_value) + xfxQ2(-quark, x_2, q2_value))
+                / (2 * x_2)
                 * xs_value
             )
 

@@ -32,7 +32,7 @@ e_proton = 100  # GeV
 interval_η = [-η, η]
 interval = η_to_θ([-η, η])
 interval_cosθ = np.cos(interval)
-num_samples = 10_000
+num_samples = 3_000
 #+end_src
 
 #+RESULTS:
@@ -180,6 +180,7 @@ We begin by implementing the same sermon for the lab frame.
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/pdf.py
   from numba.extending import get_cython_function_address
 
+
   def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
       """Creates a function that takes an event (type np.ndarray) of the
       form [cosθ, impulse fractions of quarks in hadron 1, impulse
@@ -220,10 +221,10 @@ We begin by implementing the same sermon for the lab frame.
           for quark, charge in quarks:
               xs_value = xs(e_hadron, charge, cosθ, x_1, x_2)
               result += (
-                  xfxQ2(quark, x_1, q2_value)
-                  / x_1
-                  ,* xfxQ2(-quark, x_2, q2_value)
-                  / x_2
+                  (xfxQ2(quark, x_1, q2_value) + xfxQ2(-quark, x_1, q2_value))
+                  / (2 * x_1)
+                  ,* (xfxQ2(quark, x_2, q2_value) + xfxQ2(-quark, x_2, q2_value))
+                  / (2 * x_2)
                   ,* xs_value
               )
 
@@ -274,7 +275,7 @@ Let's plot it for some random values 😃.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f1f47902c10> |
+| <matplotlib.lines.Line2D | at | 0x7fca5ee5dbb0> |
 [[file:./.ob-jupyter/f12b49e327ad8ec823397b3bbe910e0d021f4dcd.png]]
 :END:
 
@@ -308,7 +309,10 @@ Beware!, this is darn slow, becaus the efficiency is soooo low.
 #+end_src
 
 #+RESULTS:
-: 0.00041597900424616594
+:RESULTS:
+: sample_unweighted_array
+: 0.0004240744427426794
+:END:
 
 ** Switching Horses: Sampling η
 We set up a new distribution.
@@ -332,23 +336,23 @@ Plotting it, we can see that the variance is reduced.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f1f44296940> |
-[[file:./.ob-jupyter/257473d72b7c4ffd6650dd4a736a2feaacac28cb.png]]
+| <matplotlib.lines.Line2D | at | 0x7fca5b671280> |
+[[file:./.ob-jupyter/8fcbc6b5ce43840c893bc34aff9178d3c9cbf5fe.png]]
 :END:
 
 Lets plot how the pdf looks.
 #+begin_src jupyter-python :exports both :results raw drawer
   pdf = lhapdf.mkPDF("NNPDF31_lo_as_0118", 0).xfxQ2
-  pts = np.linspace(0, 1, 1000)
+  pts = np.linspace(0.1, 1, 1000)
 
   fig, ax = set_up_plot()
-  ax.plot(pts, [pdf(.01, pt, 2*100**2) for pt in pts])
+  ax.plot(pts, [pdf(2, pt, 2*100**2)/pt for pt in pts])
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f1f4574b0d0> |
-[[file:./.ob-jupyter/db6aa636b2795408e0e7b762c7e43ed22136feaf.png]]
+| <matplotlib.lines.Line2D | at | 0x7fca5bb7bd60> |
+[[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
 :END:
 
 
@@ -364,19 +368,19 @@ figure out the cpu mapping.
       interval=intervals_η,
       proc="auto",
       report_efficiency=True,
-      cache="cache/pdf/huge",
+      #cache="cache/pdf/huge",
   )
   result
 #+end_src
 
 #+RESULTS:
-: array([[ 2.00392989,  0.03589851,  0.13781655],
-:        [-0.77083958,  0.01088047,  0.1545276 ],
-:        [-1.36224887,  0.02099844,  0.05346773],
+: array([[ 1.3399508 ,  0.02307023,  0.06686396],
+:        [ 2.32026227,  0.03462208,  0.42094429],
+:        [-2.33108558,  0.01082153,  0.01427812],
 :        ...,
-:        [-0.22217984,  0.01724194,  0.06289104],
-:        [-1.26972433,  0.23321426,  0.01352318],
-:        [ 1.76699256,  0.01239091,  0.10577669]])
+:        [-1.95937336,  0.18571132,  0.0883617 ],
+:        [ 1.0941634 ,  0.20425188,  0.12512649],
+:        [-1.94326146,  0.03546833,  0.16993543]])
 
 
 
@@ -388,11 +392,11 @@ file.
 
 Let's look at a histogramm of eta samples.
 #+begin_src jupyter-python :exports both :results raw drawer
-  draw_histo_auto(result[:, 0], "asht", bins=100)
+  draw_histo_auto(result[:, 0], r"$\eta$", bins=100)
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f1f3dd9f340> |
-[[file:./.ob-jupyter/3658a99592960354e2b5997443ea0a9de8426d9a.png]]
+| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7fca5b460f10> |
+[[file:./.ob-jupyter/a09a3d7a5a19938f065660ea42fe47e9ecd04bba.png]]
 :END:
