@@ -23,8 +23,6 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 * Implementation
 ** Center of Mass Frame
@@ -267,7 +265,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.05380076774689264, sigma=0.0009156046547219115, N=2383)
+: IntegrationResult(result=0.05378648054059906, sigma=0.000937752421054302, N=2191)
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -277,7 +275,7 @@ We gonna export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 2383\)
+: \(N = 2191\)
 
 *** Integration over η
 Plot the intgrand of the pseudo rap.
@@ -303,7 +301,7 @@ Plot the intgrand of the pseudo rap.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.053381188045107726, sigma=0.0009626020740618223, N=137)
+: IntegrationResult(result=0.05358650745863841, sigma=0.0009625499313527285, N=131)
 
 As we see, the result is a little better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.  But
@@ -318,7 +316,7 @@ And yet again export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 137\)
+: \(N = 131\)
 
 *** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
@@ -336,9 +334,9 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.05353797358506919, sigma=0.00013283395611126086, N=2805, increment_borders=array([0.16380276, 0.2374099 , 0.34568281, 0.5094011 , 0.76958263,
-:        1.23235422, 1.91714873, 2.37499285, 2.63412137, 2.79640826,
-:        2.90423418, 2.9777899 ]), vegas_iterations=9500)
+: VegasIntegrationResult(result=0.054023061813239806, sigma=0.00013466995320612007, N=2805, increment_borders=array([0.16380276, 0.23700021, 0.34462362, 0.50810449, 0.76851565,
+:        1.22948173, 1.91477323, 2.37356001, 2.63313669, 2.79599811,
+:        2.90457286, 2.9777899 ]), vegas_iterations=6067)
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. Here this gives
@@ -369,9 +367,9 @@ This depends, of course, on the iteration count.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.053785157752621354, sigma=1.887850854134335e-05, N=2805, increment_borders=array([0.16380276, 0.23716945, 0.34540806, 0.50930035, 0.76937514,
-:        1.22945366, 1.91539567, 2.37452676, 2.63392477, 2.79705411,
-:        2.9048259 , 2.9777899 ]), vegas_iterations=2563)
+: VegasIntegrationResult(result=0.05379154293247947, sigma=1.201764609981918e-05, N=2805, increment_borders=array([0.16380276, 0.23693318, 0.34469593, 0.5085223 , 0.76755511,
+:        1.22588716, 1.91279852, 2.3717465 , 2.63277683, 2.79612676,
+:        2.90435134, 2.9777899 ]), vegas_iterations=15586)
 
 Let's define some little helpers.
 #+begin_src jupyter-python :exports both :tangle tangled/plot_utils.py
@@ -383,10 +381,6 @@ Let's define some little helpers.
   """
 
   import matplotlib.pyplot as plt
-  import matplotlib.gridspec as gridspec
-  import yoda as yo
-  from collections.abc import Iterable
-  import yoda.plotting as yplt
   import numpy as np
   from utility import *
 
@@ -480,7 +474,7 @@ And now we plot the integrand with the incremens.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/c858aab0b5a9a63e9de1e3666cf53a4c59da95dc.png]]
+[[file:./.ob-jupyter/2a36b9e4f2adc947114302c4523d5e60474f5170.png]]
 *** Testing the Statistics
 Let's battle test the statistics.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -497,7 +491,7 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.691
+: 0.695
 
 So we see: the standard deviation is sound.
 
@@ -518,7 +512,7 @@ Doing the same thing with =VEGAS= works as well.
 #+end_src
 
 #+RESULTS:
-: 0.686
+: 0.704
 
 ** Sampling and Analysis
 Define the sample number.
@@ -651,6 +645,67 @@ Nice! And now draw some histograms.
 
 We define an auxilliary method for convenience.
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/plot_utils.py
+  import matplotlib.gridspec as gridspec
+
+
+  def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
+      fig, (ax_hist, ax_ratio) = set_up_plot(
+          2, 1, sharex=True, gridspec_kw=dict(height_ratios=[3, 1], hspace=0), **kwargs
+      )
+
+      reference, edges = histograms[0]["hist"]
+      reference_error = np.sqrt(reference)
+
+      ref_int = hist_integral(histograms[0]["hist"])
+      reference = reference / ref_int
+      reference_error = reference_error / ref_int
+
+      for histogram in histograms:
+          heights, _ = histogram["hist"]
+          integral = hist_integral([heights, edges])
+          errors = np.sqrt(heights) / integral
+          heights = heights / integral
+
+          draw_histogram(
+              ax_hist,
+              [heights, edges],
+              errorbars=errors,
+              hist_kwargs=(
+                  histogram["hist_kwargs"] if "hist_kwargs" in histogram else dict()
+              ),
+              errorbar_kwargs=(
+                  histogram["errorbar_kwargs"]
+                  if "errorbar_kwargs" in histogram
+                  else dict()
+              ),
+              normalize_to=normalize_to,
+          )
+
+          set_up_axis(ax_ratio, pimp_top=False)
+          ax_ratio.set_ylabel('ratio')
+          draw_histogram(
+              ax_ratio,
+              [heights / reference, edges],
+              errorbars=errors / reference,
+              hist_kwargs=(
+                  histogram["hist_kwargs"] if "hist_kwargs" in histogram else dict()
+              ),
+              errorbar_kwargs=(
+                  histogram["errorbar_kwargs"]
+                  if "errorbar_kwargs" in histogram
+                  else dict()
+              ),
+              normalize_to=None,
+          )
+
+      return fig, (ax_hist, ax_ratio)
+
+
+  def hist_integral(hist):
+      heights, edges = hist
+      return heights @ (edges[1:] - edges[:-1])
+
+
   def draw_histogram(
       ax,
       histogram,
@@ -683,38 +738,24 @@ We define an auxilliary method for convenience.
           if errorbars is not False:
               deviations = deviations / integral * normalize_to
 
-      if errorbars is not False:
-          ax.errorbar(centers, heights, deviations, linestyle="none", **errorbar_kwargs)
+      hist_plot = ax.step(edges, [heights[0], *heights], **hist_kwargs)
 
-      ax.step(edges, [heights[0], *heights], **hist_kwargs)
+      if errorbars is not False:
+          ax.errorbar(
+              centers,
+              heights,
+              deviations,
+              linestyle="none",
+              color=hist_plot[0].get_color(),
+              ,**errorbar_kwargs
+          )
+
       ax.set_xlim(*[edges[0], edges[-1]])
 
       return ax
 
 
-  @functools.wraps(yplt.plot)
-  def yoda_plot_wrapper(*args, **kwargs):
-      fig, axs = yplt.plot(*args, **kwargs)
-      if isinstance(axs, Iterable):
-          axs = [set_up_axis(ax) for ax in axs if ax is not None]
-      else:
-          axs = set_up_axis(axs)
-
-      return fig, axs
-
-  def samples_to_yoda(samples, bins, range=None, **kwargs):
-      if range is None:
-          range = [min(samples), max(samples)]
-
-      hist = yo.Histo1D(bins, *range, **kwargs)
-      for sample in samples:
-          hist.fill(sample)
-
-      return hist
-
-  def draw_histo_auto(
-      points, xlabel, title="", bins=50, range=None, rethist=False, **kwargs
-  ):
+  def draw_histo_auto(points, xlabel, bins=50, range=None, rethist=False, **kwargs):
       """Creates a histogram figure from sample points, normalized to unity.
 
       :param points: samples
@@ -725,36 +766,27 @@ We define an auxilliary method for convenience.
       :returns: figure, axis
       """
 
-      hist = yo.Histo1D(
-          bins, *(range if range is not None else [min(points), max(points)]), title
-      )
+      hist = np.histogram(points, bins, range=range, **kwargs)
+      fig, ax = set_up_plot()
+      draw_histogram(ax, hist, normalize_to=1)
 
-      for point in points:
-          hist.fill(point)
+      ax.set_xlabel(xlabel)
+      ax.set_ylabel("Count")
 
-      plot = yoda_plot_wrapper(hist, xlabel=xlabel, **kwargs)
-      return (*plot, hist) if rethist else plot
+      return (fig, ax, hist) if rethist else (fig, ax)
 #+end_src
 
 #+RESULTS:
 
 The histogram for cosθ.
 #+begin_src jupyter-python :exports both :results raw drawer
-  from importlib import reload
-
-  reload(yplt)
-  fig, _, hist_cosθ = draw_histo_auto(
-      cosθ_sample,
-      r"$\cos\theta$",
-      title=r"own implementation",
-      rethist=True,
-      range=interval_cosθ,
-  )
-  save_fig(fig, "histo_cos_theta", "xs", size=(4, 3))
+  fig, _ = draw_histo_auto(cosθ_sample, r'$\cos\theta$')
+  save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
+  hist_cosθ = np.histogram(cosθ_sample, bins=50, range=interval_cosθ)
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/49232645b7698576da98f5f1f2f0261107395fe9.png]]
+[[file:./.ob-jupyter/00141b21f62165685b960a3dd7cc1313a2e4e0d5.png]]
 
 *** Observables
 Now we define some utilities to draw real 4-momentum samples.
@@ -860,184 +892,26 @@ Now let's make a histogram of the η distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
   η_sample = obs.η(momentum_sample)
   fig, ax, hist_obs_η = draw_histo_auto(
-      η_sample, r"$\eta$", title="own implementation", range=interval_η, rethist=True
+      η_sample, r"$eta$", range=interval_η, rethist=True
   )
-  hist_obs_η.normalize(1)
   save_fig(fig, "histo_eta", "xs_sampling", size=[3, 3])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/e7445bb91107a4571a4fc36cd56be9bc4ae9c72b.png]]
+[[file:./.ob-jupyter/7752e9a1c6e940c7b7b80cfc71a2f0cfe4cd534a.png]]
 
 
 And the same for the p_t (transverse momentum) distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
   p_t_sample = obs.p_t(momentum_sample)
   fig, ax, hist_obs_pt = draw_histo_auto(
-      p_t_sample,
-      r"$p_T$ [GeV]",
-      title="own implementation",
-      range=interval_pt,
-      rethist=True,
+      p_t_sample, r"$p_T$ [GeV]", range=interval_pt, rethist=True
   )
   save_fig(fig, "histo_pt", "xs_sampling", size=[3, 3])
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  BrokenPipeErrorTraceback (most recent call last)
-  <ipython-input-202-d07958ed2945> in <module>
-        7     rethist=True,
-        8 )
-  ----> 9 save_fig(fig, "histo_pt", "xs_sampling", size=[3, 3])
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/utility.py in save_fig(fig, title, folder, size)
-      189
-      190     fig.savefig(f"./figs/{folder}/{title}.pdf")
-  --> 191     fig.savefig(f"./figs/{folder}/{title}.pgf")
-      192
-      193
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in savefig(self, fname, transparent, **kwargs)
-     2201             self.patch.set_visible(frameon)
-     2202
-  -> 2203         self.canvas.print_figure(fname, **kwargs)
-     2204
-     2205         if frameon:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backend_bases.py in print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, **kwargs)
-     2096
-     2097             try:
-  -> 2098                 result = print_method(
-     2099                     filename,
-     2100                     dpi=dpi,
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in print_pgf(self, fname_or_fh, *args, **kwargs)
-      888             if not cbook.file_requires_unicode(file):
-      889                 file = codecs.getwriter("utf-8")(file)
-  --> 890             self._print_pgf_to_fh(file, *args, **kwargs)
-      891
-      892     def _print_pdf_to_fh(self, fh, *args, **kwargs):
-
-  /usr/lib/python3.8/site-packages/matplotlib/cbook/deprecation.py in wrapper(*args, **kwargs)
-      356                 f"%(removal)s.  If any parameter follows {name!r}, they "
-      357                 f"should be pass as keyword, not positionally.")
-  --> 358         return func(*args, **kwargs)
-      359
-      360     return wrapper
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _print_pgf_to_fh(self, fh, dryrun, bbox_inches_restore, *args, **kwargs)
-      870                                      RendererPgf(self.figure, fh),
-      871                                      bbox_inches_restore=bbox_inches_restore)
-  --> 872         self.figure.draw(renderer)
-      873
-      874         # end the pgfpicture environment
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in draw(self, renderer)
-     1733
-     1734             self.patch.draw(renderer)
-  -> 1735             mimage._draw_list_compositing_images(
-     1736                 renderer, self, artists, self.suppressComposite)
-     1737
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axes/_base.py in draw(self, renderer, inframe)
-     2628             renderer.stop_rasterizing()
-     2629
-  -> 2630         mimage._draw_list_compositing_images(renderer, self, artists)
-     2631
-     2632         renderer.close_group('axes')
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in draw(self, renderer, *args, **kwargs)
-     1239         self._update_label_position(renderer)
-     1240
-  -> 1241         self.label.draw(renderer)
-     1242
-     1243         self._update_offset_text_position(ticklabelBoxes, ticklabelBoxes2)
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in draw(self, renderer)
-      683
-      684         with _wrap_text(self) as textobj:
-  --> 685             bbox, info, descent = textobj._get_layout(renderer)
-      686             trans = textobj.get_transform()
-      687
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in _get_layout(self, renderer)
-      297             clean_line, ismath = self._preprocess_math(line)
-      298             if clean_line:
-  --> 299                 w, h, d = renderer.get_text_width_height_descent(
-      300                     clean_line, self._fontproperties, ismath=ismath)
-      301             else:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_text_width_height_descent(self, s, prop, ismath)
-      755
-      756         # get text metrics in units of latex pt, convert to display units
-  --> 757         w, h, d = (LatexManager._get_cached_or_new()
-      758                    .get_width_height_descent(s, prop))
-      759         # TODO: this should be latex_pt_to_in instead of mpl_pt_to_in
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_width_height_descent(self, text, prop)
-      356
-      357         # send textbox to LaTeX and wait for prompt
-  --> 358         self._stdin_writeln(textbox)
-      359         try:
-      360             self._expect_prompt()
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _stdin_writeln(self, s)
-      257         self.latex_stdin_utf8.write(s)
-      258         self.latex_stdin_utf8.write("\n")
-  --> 259         self.latex_stdin_utf8.flush()
-      260
-      261     def _expect(self, s):
-
-  BrokenPipeError: [Errno 32] Broken pipe
-#+end_example
-[[file:./.ob-jupyter/c2044eb9ceab3f0f7409038dac878edd166d0695.png]]
-:END:
+[[file:./.ob-jupyter/07eb7195522d9aad2b943f9ac737bbd14ed868a7.png]]
 
 That looks somewhat fishy, but it isn't.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -1059,12 +933,12 @@ this is strongly peaked at p_t=100GeV. (The jacobian goes like 1/x there!)
 An again we see that the efficiency is way, way! better...
 #+begin_src jupyter-python :exports both :results raw drawer
   η_sample, η_efficiency = monte_carlo.sample_unweighted_array(
-      1000,
+      sample_num,
       dist_η,
       interval_η,
       report_efficiency=True,
       proc="auto",
-      #cache="cache/sample_bare_eta",
+      cache="cache/sample_bare_eta",
   )
   tex_value(
       η_efficiency * 100,
@@ -1080,34 +954,26 @@ An again we see that the efficiency is way, way! better...
 
 Let's draw a histogram to compare with the previous results.
 #+begin_src jupyter-python :exports both :results raw drawer
-  η_hist = samples_to_yoda(η_sample, 50, title="sampled from $d\sigma / d\eta$")
-  reload(yplt)
-  η_hist.normalize(1)
-  η_hist.setAnnotation('ratioref', True)
+  η_hist = np.histogram(η_sample, bins=50)
+  fig, (ax_hist, ax_ratio) = draw_ratio_plot(
+      [
+          dict(hist=η_hist, hist_kwargs=dict(label=r"sampled from $d\sigma / d\eta$"),),
+          dict(
+              hist=hist_obs_η,
+              hist_kwargs=dict(
+                  label=r"sampled from $d\sigma / d\cos\theta$", color="black"
+              ),
+          ),
+      ],
+  )
 
-  yoda_plot_wrapper([hist_obs_η, η_hist], errorbars=True)
-  # fig, (ax_hist, ax_ratio) = draw_ratio_plot(
-  #     [
-  #         dict(hist=η_hist, hist_kwargs=dict(label=r"sampled from $d\sigma / d\eta$"),),
-  #         dict(
-  #             hist=hist_obs_η,
-  #             hist_kwargs=dict(
-  #                 label=r"sampled from $d\sigma / d\cos\theta$", color="black"
-  #             ),
-  #         ),
-  #     ],
-  # )
-
-  # ax_hist.legend(loc="upper center", fontsize="small")
-  # ax_ratio.set_xlabel(r"$\eta$")
-  #save_fig(fig, "comparison_eta", "xs_sampling", size=(4, 4))
+  ax_hist.legend(loc="upper center", fontsize="small")
+  ax_ratio.set_xlabel(r"$\eta$")
+  save_fig(fig, "comparison_eta", "xs_sampling", size=(4, 4))
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-| <Figure | size | 576x432 | with | 2 | Axes> | (<matplotlib.axes._subplots.AxesSubplot at 0x7f923b1ea070> <matplotlib.axes._subplots.AxesSubplot at 0x7f923b18bdc0>) |
-[[file:./.ob-jupyter/6dce4295f367ad8f79bff356780e25c8093a4a1a.png]]
-:END:
+[[file:./.ob-jupyter/172aa63c901d42651e1bd2e4d834702052881b03.png]]
 
 Looks good to me :).
 
@@ -1127,8 +993,8 @@ distribution. We throw away the integral, but keep the increments.
 #+end_src
 
 #+RESULTS:
-: array([-0.9866143 , -0.96980073, -0.93072072, -0.83891589, -0.6017223 ,
-:         0.00829172,  0.6071626 ,  0.83981042,  0.93107467,  0.96951636,
+: array([-0.9866143 , -0.96970744, -0.93106302, -0.838359  , -0.60074914,
+:         0.00116799,  0.60518774,  0.8409529 ,  0.93115044,  0.96958873,
 :         0.9866143 ])
 
 Visualizing the increment borders gives us the information we want.
@@ -1146,8 +1012,8 @@ Visualizing the increment borders gives us the information we want.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f924d64e730>
-[[file:./.ob-jupyter/73205cd9684fbc1ac074507ee8b55aacdfbf43f3.png]]
+: <matplotlib.legend.Legend at 0x7f7cef8f7910>
+[[file:./.ob-jupyter/135df39477282a6a84cb6775e6e33ba30027d901.png]]
 :END:
 
 We can now plot the reweighted distribution to observe the variance
@@ -1171,7 +1037,7 @@ reduction visually.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/cd667dd694e4f5e1dc0a7d646d140160e3be8467.png]]
+[[file:./.ob-jupyter/bb992ad6136cabc8c9ba3f54cf04564bbb9481d4.png]]
 
 
 I am batman! Let's plot the weighting distribution.
@@ -1186,7 +1052,7 @@ I am batman! Let's plot the weighting distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/16af6d02607855540cb4897009774f0c5f537a8b.png]]
+[[file:./.ob-jupyter/15a1ba02afddb7520a5bcf78ef34e651a05d0d11.png]]
 
 Now, draw a sample and look at the efficiency.
 
@@ -1226,53 +1092,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  TypeErrorTraceback (most recent call last)
-  <ipython-input-148-ff4d6a24ae42> in <module>
-  ----> 1 fig, _ = draw_histo_auto(cosθ_sample_strat, r'$\cos\theta$')
-        2 save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
-
-  <ipython-input-132-507ea080dcd6> in draw_histo_auto(points, xlabel, bins, range, rethist, **kwargs)
-       70
-       71
-  ---> 72     return yoda_nplot_wrapper(hist, xlabel=xlabel, **kwargs)
-
-  <ipython-input-132-507ea080dcd6> in yoda_nplot_wrapper(*args, **kwargs)
-       42 @functools.wraps(yplt.nplot)
-       43 def yoda_nplot_wrapper(*args, **kwargs):
-  ---> 44     fig, axs = yplt.nplot(*args, **kwargs)
-       45     if isinstance(axs, iterable):
-       46         axs = [set_up_axis(ax) for ax in axs]
-
-  /usr/lib/python3.8/site-packages/yoda/plotting.py in nplot(hs, outfiles, ratio, show, nproc, **plotkeys)
-      446     else:
-      447         ## Run this way in the 1 proc case for easier debugging
-  --> 448         rtn = [_plot1arg(args) for args in argslist]
-      449
-      450     if show:
-
-  /usr/lib/python3.8/site-packages/yoda/plotting.py in <listcomp>(.0)
-      446     else:
-      447         ## Run this way in the 1 proc case for easier debugging
-  --> 448         rtn = [_plot1arg(args) for args in argslist]
-      449
-      450     if show:
-
-  /usr/lib/python3.8/site-packages/yoda/plotting.py in _plot1arg(args)
-      397 def _plot1arg(args):
-      398     "Helper function for mplot, until Py >= 3.3 multiprocessing.pool.starmap() is available"
-  --> 399     print(args)
-      400     return plot(*args)
-      401
-
-  include/generated/Bin1D_Dbn1D.pyx in yoda.core.Bin1D_Dbn1D.__repr__()
-
-  TypeError: must be real number, not builtin_function_or_method
-#+end_example
-:END:
+[[file:./.ob-jupyter/bc48dc495d9bc8b96549de58d04489942f8c89dd.png]]
 
 *** Some Histograms with Rivet
 **** Init
@@ -1281,6 +1101,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
+: Welcome to JupyROOT 6.20/04
 
 **** Plot the Histos
 #+RESULTS:
@@ -1325,6 +1146,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
                   hist_kwargs=dict(
                       label="Sherpa Reference"
                   ),
+                  errorbars=True,
               ),
               dict(
                   hist=sherpa_hist["reference"],
@@ -1333,38 +1155,13 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
           ],
       )
       ax_ratio.set_xlabel(label)
+      ax_hist.legend(fontsize='small')
       save_fig(fig, "histo_sherpa_" + key, "xs_sampling", size=(4, 3.5))
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-# [goto error]
-:
-: NameErrorTraceback (most recent call last)
-: <ipython-input-151-c0fdcee231b0> in <module>
-:       1 yoda_file = yoda.read("../../runcards/qqgg/analysis/Analysis.yoda")
-:       2 sherpa_histos = {
-: ----> 3     "pT": dict(reference=hist_obs_pt, label="$p_T$ [GeV]"),
-:       4     "eta": dict(reference=hist_obs_η, label=r"$\eta$"),
-:       5     "cos_theta": dict(reference=hist_cosθ, label=r"$\cos\theta$"),
-:
-: NameError: name 'hist_obs_pt' is not defined
-:END:
-
-#+begin_src jupyter-python :exports both :results raw drawer
-  %aimport yoda.plotting
-  hist = yoda_file["/MC_DIPHOTON_SIMPLE/pT"]
-  hist.setAnnotation('ratioref', True)
-  hist.setAnnotation('Title', "LOL")
-  #hist.annotationsDict()
-  fig, (ax_hist, ax_ratio) =yoda.plotting.plot([yoda_file["/MC_DIPHOTON_SIMPLE/pT"], yoda_file["/MC_DIPHOTON_SIMPLE/eta"]], ratio=True)
-  set_up_axis(ax_hist)
-  set_up_axis(ax_ratio)
-  ax_hist.legend()
-#+end_src
-
-#+RESULTS:
-:RESULTS:
-: <matplotlib.legend.Legend at 0x7f924b270910>
-[[file:./.ob-jupyter/bd6ab45edebf2e8126960c45a8f9897440779265.png]]
+[[file:./.ob-jupyter/8526f4d62551118e729d80f06851ae67d31b28b4.png]]
+[[file:./.ob-jupyter/b37f5272c36f1b68cca42d9f8c83d27008023fef.png]]
+[[file:./.ob-jupyter/3faf2ae6a32cb4a1b25fb82aa59e1c983e6f6f25.png]]
 :END:

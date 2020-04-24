@@ -147,10 +147,7 @@ def set_up_axis(ax, ticks=4, pimp_top=True):
     ax.grid(which="minor", alpha=0.1, linewidth=0.2)
     ax.grid(which="major", alpha=0.3, linewidth=0.2)
 
-    if pimp_top:
-        ax.tick_params(right=True, top=True, which="both")
-    else:
-        ax.tick_params(right=True, which="both")
+    ax.tick_params(right=True, top=pimp_top, which="both")
 
     return ax
 
