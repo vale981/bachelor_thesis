@@ -40,12 +40,11 @@ def numpy_cache(cache_arg_name):
 
                 if os.path.isfile(path):
                     name, result = np.load(path, allow_pickle=True)
-                    print(f.__name__)
                     if f.__name__ == name[0]:
                         return result
 
                     raise RuntimeError(
-                        f"Try to read to cache from function '{name[0]}'."
+                        "Trying to read to cache from another function:" + name
                     )
 
                 del kwargs[cache_arg_name]
