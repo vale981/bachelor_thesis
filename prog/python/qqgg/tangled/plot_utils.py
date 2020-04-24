@@ -102,7 +102,7 @@ def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
         )
 
         set_up_axis(ax_ratio, pimp_top=False)
-        ax_ratio.set_ylabel('ratio')
+        ax_ratio.set_ylabel("ratio")
         draw_histogram(
             ax_ratio,
             [heights / reference, edges],
@@ -131,7 +131,7 @@ def draw_histogram(
     histogram,
     errorbars=True,
     hist_kwargs=dict(color="#1f77b4"),
-    errorbar_kwargs=dict(color="orange"),
+    errorbar_kwargs=dict(),
     normalize_to=None,
 ):
     """Draws a histogram with optional errorbars using the step style.
@@ -161,14 +161,10 @@ def draw_histogram(
     hist_plot = ax.step(edges, [heights[0], *heights], **hist_kwargs)
 
     if errorbars is not False:
-        ax.errorbar(
-            centers,
-            heights,
-            deviations,
-            linestyle="none",
-            color=hist_plot[0].get_color(),
-            **errorbar_kwargs
-        )
+        if "color" not in errorbar_kwargs:
+            errorbar_kwargs["color"] = hist_plot[0].get_color()
+
+        ax.errorbar(centers, heights, deviations, linestyle="none", **errorbar_kwargs)
 
     ax.set_xlim(*[edges[0], edges[-1]])
 

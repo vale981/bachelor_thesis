@@ -5,6 +5,7 @@ import matplotlib.ticker as ticker
 import functools
 import numpy as np
 import os
+import errno
 
 ###############################################################################
 #                                   Utility                                   #
@@ -31,15 +32,34 @@ def numpy_cache(cache_arg_name):
         @functools.wraps(f)
         def caching_wrapper(*args, **kwargs):
             if cache_arg_name in kwargs:
+                if not kwargs[cache_arg_name]:
+                    del kwargs[cache_arg_name]
+                    return f(*args, **kwargs)
+
                 path = kwargs[cache_arg_name] + ".npy"
-                print("Trying cache")
+
                 if os.path.isfile(path):
-                    return np.load(path)
+                    name, result = np.load(path, allow_pickle=True)
+                    print(f.__name__)
+                    if f.__name__ == name[0]:
+                        return result
+
+                    raise RuntimeError(
+                        f"Try to read to cache from function '{name[0]}'."
+                    )
 
                 del kwargs[cache_arg_name]
 
                 result = f(*args, **kwargs)
-                np.save(path, result)
+
+                if not os.path.exists(os.path.dirname(path)):
+                    try:
+                        os.makedirs(os.path.dirname(path))
+                    except OSError as exc:  # Guard against race condition
+                        if exc.errno != errno.EEXIST:
+                            raise
+
+                np.save(path, ([f.__name__], result))
 
                 return result
 
