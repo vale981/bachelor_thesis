@@ -6,6 +6,10 @@ Author: Valentin Boettcher <hiro at protagon.space>
 """
 
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import yoda as yo
+from collections.abc import Iterable
+import yoda.plotting as yplt
 import numpy as np
 from utility import *
 
@@ -65,65 +69,6 @@ def plot_stratified_rho(ax, points, increment_borders, *args, **kwargs):
 
     ax.plot(points, ρ, *args, **kwargs)
 
-import matplotlib.gridspec as gridspec
-
-
-def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
-    fig, (ax_hist, ax_ratio) = set_up_plot(
-        2, 1, sharex=True, gridspec_kw=dict(height_ratios=[3, 1], **kwargs)
-    )
-
-    reference, edges = histograms[0]["hist"]
-    reference_error = np.sqrt(reference)
-
-    ref_int = hist_integral(histograms[0]["hist"])
-    reference = reference / ref_int
-    reference_error = reference_error / ref_int
-
-    for histogram in histograms:
-        heights, _ = histogram["hist"]
-        integral = hist_integral([heights, edges])
-        errors = np.sqrt(heights) / integral
-        heights = heights / integral
-
-        draw_histogram(
-            ax_hist,
-            [heights, edges],
-            errorbars=errors,
-            hist_kwargs=(
-                histogram["hist_kwargs"] if "hist_kwargs" in histogram else dict()
-            ),
-            errorbar_kwargs=(
-                histogram["errorbar_kwargs"]
-                if "errorbar_kwargs" in histogram
-                else dict()
-            ),
-            normalize_to=normalize_to,
-        )
-
-        draw_histogram(
-            ax_ratio,
-            [heights / reference, edges],
-            errorbars=errors / reference,
-            hist_kwargs=(
-                histogram["hist_kwargs"] if "hist_kwargs" in histogram else dict()
-            ),
-            errorbar_kwargs=(
-                histogram["errorbar_kwargs"]
-                if "errorbar_kwargs" in histogram
-                else dict()
-            ),
-            normalize_to=None,
-        )
-
-    return fig, (ax_hist, ax_ratio)
-
-
-def hist_integral(hist):
-    heights, edges = hist
-    return heights @ (edges[1:] - edges[:-1])
-
-
 def draw_histogram(
     ax,
     histogram,
@@ -165,7 +110,29 @@ def draw_histogram(
     return ax
 
 
-def draw_histo_auto(points, xlabel, bins=50, range=None, rethist=False, **kwargs):
+@functools.wraps(yplt.plot)
+def yoda_plot_wrapper(*args, **kwargs):
+    fig, axs = yplt.plot(*args, **kwargs)
+    if isinstance(axs, Iterable):
+        axs = [set_up_axis(ax) for ax in axs if ax is not None]
+    else:
+        axs = set_up_axis(axs)
+
+    return fig, axs
+
+def samples_to_yoda(samples, bins, range=None, **kwargs):
+    if range is None:
+        range = [min(samples), max(samples)]
+
+    hist = yo.Histo1D(bins, *range, **kwargs)
+    for sample in samples:
+        hist.fill(sample)
+
+    return hist
+
+def draw_histo_auto(
+    points, xlabel, title="", bins=50, range=None, rethist=False, **kwargs
+):
     """Creates a histogram figure from sample points, normalized to unity.
 
     :param points: samples
@@ -176,14 +143,15 @@ def draw_histo_auto(points, xlabel, bins=50, range=None, rethist=False, **kwargs
     :returns: figure, axis
     """
 
-    hist = np.histogram(points, bins, range=range, **kwargs)
-    fig, ax = set_up_plot()
-    draw_histogram(ax, hist, normalize_to=1)
+    hist = yo.Histo1D(
+        bins, *(range if range is not None else [min(points), max(points)]), title
+    )
 
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel("Count")
+    for point in points:
+        hist.fill(point)
 
-    return (fig, ax, hist) if rethist else (fig, ax)
+    plot = yoda_plot_wrapper(hist, xlabel=xlabel, **kwargs)
+    return (*plot, hist) if rethist else plot
 
 def yoda_to_numpy(histo):
     histo.normalize(
