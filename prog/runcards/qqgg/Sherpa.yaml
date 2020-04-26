@@ -1,7 +1,7 @@
 # general options
 OUTPUT: 3
 
-# no events
+# event count
 EVENTS: 1000000
 
 # save results

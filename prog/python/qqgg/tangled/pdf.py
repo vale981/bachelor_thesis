@@ -130,10 +130,22 @@ def diff_xs_η(e_proton, charge, η, x_1, x_2):
 def averaged_tchanel_q2(e_proton, x_1, x_2):
     return 2 * x_1 * x_2 * e_proton ** 2
 
+
+def cut_pT_from_eta(greater_than=0):
+    def cut(e_proton, η, x1, x2):
+        cosθ = np.cos(η_to_θ(η))
+        _, _, p1, p2 = momenta(e_proton, x1, x2, cosθ)
+        return (
+            np.sqrt((p1[0][1:3] ** 2).sum()) > greater_than
+            and np.sqrt((p2[0][1:3] ** 2).sum()) > greater_than
+        )
+
+    return cut
+
 from numba.extending import get_cython_function_address
 
 
-def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
+def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None, cut=None):
     """Creates a function that takes an event (type np.ndarray) of the
     form [cosθ, impulse fractions of quarks in hadron 1, impulse
     fractions of quarks in hadron 2] and returns the differential
@@ -148,9 +160,11 @@ def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
     :param quarks: the constituent quarks np.ndarray of the form [[id, charge], ...],
     the default is a proton
     :param pdf: the PDF to use, the default is "NNPDF31_lo_as_0118"
+    :param cut: cut function with signature (energy hadron, cosθ, x_1,
+    x_2) to return 0, when the event does not fit the cut
+
     :returns: differential cross section summed over flavors and weighted with the pdfs
     :rtype: function
-
     """
 
     pdf = pdf or lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
@@ -165,6 +179,10 @@ def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None):
 
     # @jit(float64(float64[4])) Unfortunately that does not work as yet!
     def distribution(event: np.ndarray) -> float:
+
+        if cut and not cut(e_hadron, *event):
+            return 0
+
         cosθ, x_1, x_2 = event
 
         q2_value = q(e_hadron, x_1, x_2)

@@ -1,8 +1,8 @@
 # general options
 OUTPUT: 3
 
-# no events
-EVENTS: 100000  # TODO: Increase!
+# event count
+EVENTS: 10000  # TODO: Increase!
 
 # save results
 GENERATE_RESULT_DIRECTORY: true
@@ -39,9 +39,10 @@ FRAGMENTATION: None
 SHOWER: None
 MI_HANDLER: None
 
-# cut to $\abs{\eta} \leq 2.5$
+# cut to $\abs{\eta} \leq 2.5$, and $p_T \geq 20$
 SELECTORS:
-- [PT, 22, 20, 6500]
+- [Eta, 22, -2.5, 2.5]
+- [PT, 22, 20, 13000]
 
 # no transverse impulses
 BEAM_REMNANTS: false
