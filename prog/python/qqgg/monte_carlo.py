@@ -43,9 +43,7 @@ class IntegrationResult:
         return self.result, self.sigma
 
 
-def integrate(
-    f, interval, epsilon=0.01, seed=None, cut_fn=None, **kwargs
-) -> IntegrationResult:
+def integrate(f, interval, epsilon=0.01, seed=None, **kwargs) -> IntegrationResult:
     """Monte-Carlo integrates the function `f` over an interval.
 
     :param f: function of one variable, kwargs are passed to it
