@@ -33,40 +33,23 @@ def momenta(e_proton, x_1, x_2, cosθ):
     x_1 = np.asarray(x_1)
     x_2 = np.asarray(x_2)
     cosθ = np.asarray(cosθ)
+
     assert (
         x_1.shape == x_2.shape == cosθ.shape
     ), "Invalid shapes for the event parameters."
 
-    q_1 = (
-        e_proton
-        * x_1
-        * np.array(
-            [
-                np.ones_like(cosθ),
-                np.zeros_like(cosθ),
-                np.zeros_like(cosθ),
-                np.ones_like(cosθ),
-            ]
-        )
-    )
-    q_2 = (
-        e_proton
-        * x_2
-        * np.array(
-            [
-                np.ones_like(cosθ),
-                np.zeros_like(cosθ),
-                np.zeros_like(cosθ),
-                -np.ones_like(cosθ),
-            ]
-        )
-    )
+    β = (x_1 - x_2) / (x_1 + x_2)
+    ones = np.ones_like(cosθ)
+    zeros = np.zeros_like(cosθ)
+
+    q_1 = e_proton * x_1 * np.array([ones, zeros, zeros, ones,])
+    q_2 = e_proton * x_2 * np.array([ones, zeros, zeros, ones,])
     g_3 = (
-        2
-        * e_proton
-        * x_1
-        * x_2
-        / (2 * x_2 + (x_1 - x_2) * (1 - cosθ))
+        e_proton
+        * 2
+        * (x_1 * x_2)
+        * (x_1 + x_2 - (x_1 - x_2) * cosθ)
+        / (x_1 + x_2) ** 2
         * np.array(
             [1 * np.ones_like(cosθ), np.sqrt(1 - cosθ ** 2), np.zeros_like(cosθ), cosθ]
         )
@@ -79,28 +62,6 @@ def momenta(e_proton, x_1, x_2, cosθ):
     g_4 = g_4.reshape(4, cosθ.size).T
 
     return np.array([q_1, q_2, g_3, g_4])
-
-
-@vectorize([float64(float64, float64, float64, float64, float64)], nopython=True)
-def diff_xs(e_proton, charge, cosθ, x_1, x_2):
-    """Calculates the differential cross section as a function of the
-    cosine of the azimuth angle θ of one photon in units of 1/GeV².
-
-    Here dΩ=d(cosθ)dφ
-
-    :param e_proton: proton energy per beam [GeV]
-    :param charge: charge of the quark
-    :param x_1: momentum fraction of the first quark
-    :param x_2: momentum fraction of the second quark
-    :param cosθ: the angle
-
-    :return: the differential cross section [GeV^{-2}]
-    """
-
-    f = energy_factor(e_proton, charge, x_1, x_2)
-    return (x_1 ** 2 * (1 - cosθ) ** 2 + x_2 ** 2 * (1 + cosθ) ** 2) / (
-        (1 - cosθ ** 2) * (x_1 * (1 - cosθ) + x_2 * (1 + cosθ))
-    )
 
 
 @vectorize([float64(float64, float64, float64, float64, float64)], nopython=True)
@@ -118,12 +79,11 @@ def diff_xs_η(e_proton, charge, η, x_1, x_2):
 
     :return: the differential cross section [GeV^{-2}]
     """
-    tanh_η = np.tanh(η)
+
+    rap = np.arctanh((x_1 - x_2) / (x_1 + x_2))
     f = energy_factor(e_proton, charge, x_1, x_2)
 
-    return (x_1 ** 2 * (1 - tanh_η) ** 2 + x_2 ** 2 * (1 + tanh_η) ** 2) / (
-        x_1 * (1 - tanh_η) + x_2 * (1 + tanh_η)
-    )
+    return f * ((np.tanh(η - rap)) ** 2 + 1)
 
 
 @vectorize([float64(float64, float64, float64)], nopython=True)
