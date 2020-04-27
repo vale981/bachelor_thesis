@@ -124,15 +124,16 @@ def find_upper_bound(f, interval, **kwargs):
 
 def find_upper_bound_vector(f, interval):
     result = shgo(_negate(f), bounds=interval, options=dict(maxfev=100))
+
     if not result.success:
         raise RuntimeError("Could not find an upper bound.", result)
 
-    upper_bound = -result.fun + 0.1
+    upper_bound = -result.fun
     return upper_bound
 
 
 def sample_unweighted_vector(
-    f, interval, seed=None, upper_bound=None, report_efficiency=False, num=None
+    f, interval, seed=None, upper_bound=None, report_efficiency=False
 ):
     dimension = len(interval)
     interval = np.array([_process_interval(i) for i in interval])
