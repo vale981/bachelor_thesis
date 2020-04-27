@@ -252,7 +252,7 @@ Plotting it, we can see that the variance is reduced.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f3574d07820> |
+| <matplotlib.lines.Line2D | at | 0x7f3562675a90> |
 [[file:./.ob-jupyter/5597ca6056db11908cfca64c2090d67e3b94cc9e.png]]
 :END:
 
@@ -267,7 +267,7 @@ Lets plot how the pdf looks.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f3572b7b8b0> |
+| <matplotlib.lines.Line2D | at | 0x7f35627bde50> |
 [[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
 :END:
 
@@ -276,7 +276,7 @@ Now we sample some events. Doing this in parallel helps. We let the os
 figure out the cpu mapping.
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  intervals_η = [interval_η, [.1, 1], [.1, 1]]
+  intervals_η = [interval_η, [.05, 1], [.05, 1]]
 
   result, eff = monte_carlo.sample_unweighted_array(
       10000,
@@ -291,7 +291,7 @@ figure out the cpu mapping.
 #+end_src
 
 #+RESULTS:
-: 0.003007891162077376
+: 0.0009801272637920972
 
 
 
@@ -303,11 +303,9 @@ file.
 
 Let's look at a histogramm of eta samples.
 #+begin_src jupyter-python :exports both :results raw drawer
-  draw_histo_auto(result[:, 0], r"$\eta$", bins=100)
+  fig, ax = draw_histo_auto(result[:, 0], r"$\eta$", bins=100)
+  ax.set_yscale("log")
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-| <Figure | size | 432x288 | with | 1 | Axes> | <matplotlib.axes._subplots.AxesSubplot | at | 0x7f35728b26a0> |
-[[file:./.ob-jupyter/ec474fc3576110c487c7fb31403cbab0a063efa9.png]]
-:END:
+[[file:./.ob-jupyter/721ccfd2a691a94a1e437f282bf2d95f5de25f0c.png]]
