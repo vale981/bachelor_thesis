@@ -14,13 +14,17 @@ import utility
 
 
 def _process_interval(interval):
+    interval = np.asarray(interval)
+    if len(interval.shape) > 1:
+        return np.array([_process_interval(i) for i in interval])
+
     assert len(interval) == 2, "An interval has two endpoints"
 
     a, b = interval
     if b < a:
         a, b = b, a
 
-    return [a, b]
+    return np.array([a, b])
 
 
 @dataclass
@@ -46,6 +50,9 @@ class IntegrationResult:
 def integrate(f, interval, epsilon=0.01, seed=None, **kwargs) -> IntegrationResult:
     """Monte-Carlo integrates the function `f` over an interval.
 
+    If the integrand is multi-dimensional it must accept an array of
+    argument arrays. Think about your axes!
+
     :param f: function of one variable, kwargs are passed to it
     :param tuple interval: a 2-tuple of numbers, specifiying the
         integration range
@@ -56,33 +63,40 @@ def integrate(f, interval, epsilon=0.01, seed=None, **kwargs) -> IntegrationResu
     :returns: the integration result
 
     :rtype: IntegrationResult
+
     """
 
     interval = _process_interval(interval)
+
+    if len(interval.shape) == 1:
+        return integrate(f, [interval], epsilon, seed, **kwargs)
+
     if seed:
         np.random.seed(seed)
 
-    interval_length = interval[1] - interval[0]
+    integration_volume = (interval[:, 1] - interval[:, 0]).prod()
 
     # guess the correct N
     probe_points = np.random.uniform(
-        interval[0], interval[1], int(interval_length * 10)
+        interval[:, 0], interval[:, 1], (int(integration_volume * 10), len(interval))
     )
 
     num_points = int(
-        (interval_length * f(probe_points, **kwargs).std() / epsilon) ** 2 * 1.1 + 1
+        (integration_volume * f(probe_points, **kwargs).std() / epsilon) ** 2 * 1.1 + 1
     )
 
     # now we iterate until we hit the desired epsilon
     while True:
-        points = np.random.uniform(interval[0], interval[1], num_points)
+        points = np.random.uniform(
+            interval[:, 0], interval[:, 1], (num_points, len(interval))
+        )
         sample = f(points, **kwargs)
 
-        integral = np.sum(sample) / num_points * interval_length
+        integral = np.sum(sample) / num_points * integration_volume
 
         # the deviation gets multiplied by the square root of the interval
         # lenght, because it is the standard deviation of the integral.
-        sample_std = np.std(sample) * interval_length
+        sample_std = np.std(sample) * integration_volume
         deviation = sample_std * np.sqrt(1 / (num_points - 1))
 
         if deviation < epsilon:
