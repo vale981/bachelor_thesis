@@ -24,7 +24,7 @@ def energy_factor(e_proton, charge, x_1, x_2):
     return charge ** 4 / (137.036 * e_proton) ** 2 / (24 * x_1 * x_2)
 
 
-def momenta(e_proton, x_1, x_2, cosθ):
+def momenta(e_proton, x_1, x_2, cosθ, φ=None):
     """Given the Energy of the incoming protons `e_proton` and the
     momentum fractions `x_1` and `x_2` as well as the cosine of the
     azimuth angle of the first photon the 4-momenta of all particles
@@ -34,25 +34,37 @@ def momenta(e_proton, x_1, x_2, cosθ):
     x_2 = np.asarray(x_2)
     cosθ = np.asarray(cosθ)
 
+    if φ is None:
+        φ = 0
+        cosφ = np.ones_like(cosθ)
+        sinφ = 0
+
+    else:
+        if φ == "rand":
+            φ = np.random.uniform(0, 2 * np.pi, cosθ.shape)
+        else:
+            φ = np.asarray(φ)
+        sinφ = np.sin(φ)
+        cosφ = np.cos(φ)
+
     assert (
         x_1.shape == x_2.shape == cosθ.shape
     ), "Invalid shapes for the event parameters."
 
-    β = (x_1 - x_2) / (x_1 + x_2)
+    sinθ = np.sqrt(1 - cosθ ** 2)
+
     ones = np.ones_like(cosθ)
     zeros = np.zeros_like(cosθ)
 
     q_1 = e_proton * x_1 * np.array([ones, zeros, zeros, ones,])
-    q_2 = e_proton * x_2 * np.array([ones, zeros, zeros, ones,])
+    q_2 = e_proton * x_2 * np.array([ones, zeros, zeros, -ones,])
     g_3 = (
-        e_proton
-        * 2
-        * (x_1 * x_2)
-        * (x_1 + x_2 - (x_1 - x_2) * cosθ)
-        / (x_1 + x_2) ** 2
-        * np.array(
-            [1 * np.ones_like(cosθ), np.sqrt(1 - cosθ ** 2), np.zeros_like(cosθ), cosθ]
-        )
+        2
+        * e_proton
+        * x_1
+        * x_2
+        / (x_1 + x_2 - (x_1 - x_2) * cosθ)
+        * np.array([1 * np.ones_like(cosθ), sinθ * sinφ, cosφ * sinθ, cosθ])
     )
     g_4 = q_1 + q_2 - g_3
 
@@ -107,20 +119,20 @@ from numba.extending import get_cython_function_address
 
 def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None, cut=None):
     """Creates a function that takes an event (type np.ndarray) of the
-    form [cosθ, impulse fractions of quarks in hadron 1, impulse
+    form [angle_arg, impulse fractions of quarks in hadron 1, impulse
     fractions of quarks in hadron 2] and returns the differential
     cross section for such an event. I would have used an object as
     argument, wasn't for the sampling function that needs a vector
-    valued function. Cosθ can actually be any angular-like parameter
+    valued function. Angle_Arg can actually be any angular-like parameter
     as long as the xs has the corresponding parameter.
 
-    :param xs: cross section function with signature (energy hadron, cosθ, x_1, x_2)
+    :param xs: cross section function with signature (energy hadron, angle_arg, x_1, x_2)
     :param q2: the momentum transfer Q^2 as a function with the signature
     (e_hadron, x_1, x_2)
     :param quarks: the constituent quarks np.ndarray of the form [[id, charge], ...],
     the default is a proton
     :param pdf: the PDF to use, the default is "NNPDF31_lo_as_0118"
-    :param cut: cut function with signature (energy hadron, cosθ, x_1,
+    :param cut: cut function with signature (energy hadron, angle_arg, x_1,
     x_2) to return 0, when the event does not fit the cut
 
     :returns: differential cross section summed over flavors and weighted with the pdfs
@@ -128,7 +140,9 @@ def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None, cut=Non
     """
 
     pdf = pdf or lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
-    quarks = quarks or np.array([[2, 2 / 3], [1, -1 / 3]])  # proton
+    quarks = quarks or np.array(
+        [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
+    )  # proton
     supported_quarks = pdf.flavors()
     for flavor in quarks[:, 0]:
         assert flavor in supported_quarks, (
@@ -139,22 +153,21 @@ def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None, cut=Non
 
     # @jit(float64(float64[4])) Unfortunately that does not work as yet!
     def distribution(event: np.ndarray) -> float:
-
         if cut and not cut(e_hadron, *event):
             return 0
 
-        cosθ, x_1, x_2 = event
+        angle_arg, x_1, x_2 = event
 
         q2_value = q(e_hadron, x_1, x_2)
         result = 0
 
         for quark, charge in quarks:
-            xs_value = xs(e_hadron, charge, cosθ, x_1, x_2)
+            xs_value = xs(e_hadron, charge, angle_arg, x_1, x_2)
             result += (
                 (xfxQ2(quark, x_1, q2_value) + xfxQ2(-quark, x_1, q2_value))
-                / (2 * x_1)
-                * (xfxQ2(quark, x_2, q2_value) + xfxQ2(-quark, x_2, q2_value))
-                / (2 * x_2)
+                / x_1
+                * (xfxQ2(-quark, x_2, q2_value) + xfxQ2(quark, x_2, q2_value))
+                / x_2
                 * xs_value
             )
 

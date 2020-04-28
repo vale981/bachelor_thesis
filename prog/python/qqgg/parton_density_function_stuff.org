@@ -64,7 +64,7 @@ We begin by implementing the same sermon for the lab frame.
       return charge ** 4 / (137.036 * e_proton) ** 2 / (24 * x_1 * x_2)
 
 
-  def momenta(e_proton, x_1, x_2, cosθ):
+  def momenta(e_proton, x_1, x_2, cosθ, φ=None):
       """Given the Energy of the incoming protons `e_proton` and the
       momentum fractions `x_1` and `x_2` as well as the cosine of the
       azimuth angle of the first photon the 4-momenta of all particles
@@ -74,25 +74,37 @@ We begin by implementing the same sermon for the lab frame.
       x_2 = np.asarray(x_2)
       cosθ = np.asarray(cosθ)
 
+      if φ is None:
+          φ = 0
+          cosφ = np.ones_like(cosθ)
+          sinφ = 0
+
+      else:
+          if φ == "rand":
+              φ = np.random.uniform(0, 2 * np.pi, cosθ.shape)
+          else:
+              φ = np.asarray(φ)
+          sinφ = np.sin(φ)
+          cosφ = np.cos(φ)
+
       assert (
           x_1.shape == x_2.shape == cosθ.shape
       ), "Invalid shapes for the event parameters."
 
-      β = (x_1 - x_2) / (x_1 + x_2)
+      sinθ = np.sqrt(1 - cosθ ** 2)
+
       ones = np.ones_like(cosθ)
       zeros = np.zeros_like(cosθ)
 
       q_1 = e_proton * x_1 * np.array([ones, zeros, zeros, ones,])
-      q_2 = e_proton * x_2 * np.array([ones, zeros, zeros, ones,])
+      q_2 = e_proton * x_2 * np.array([ones, zeros, zeros, -ones,])
       g_3 = (
-          e_proton
-          ,* 2
-          ,* (x_1 * x_2)
-          ,* (x_1 + x_2 - (x_1 - x_2) * cosθ)
-          / (x_1 + x_2) ** 2
-          ,* np.array(
-              [1 * np.ones_like(cosθ), np.sqrt(1 - cosθ ** 2), np.zeros_like(cosθ), cosθ]
-          )
+          2
+          ,* e_proton
+          ,* x_1
+          ,* x_2
+          / (x_1 + x_2 - (x_1 - x_2) * cosθ)
+          ,* np.array([1 * np.ones_like(cosθ), sinθ * sinφ, cosφ * sinθ, cosθ])
       )
       g_4 = q_1 + q_2 - g_3
 
@@ -152,20 +164,20 @@ We begin by implementing the same sermon for the lab frame.
 
   def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None, cut=None):
       """Creates a function that takes an event (type np.ndarray) of the
-      form [cosθ, impulse fractions of quarks in hadron 1, impulse
+      form [angle_arg, impulse fractions of quarks in hadron 1, impulse
       fractions of quarks in hadron 2] and returns the differential
       cross section for such an event. I would have used an object as
       argument, wasn't for the sampling function that needs a vector
-      valued function. Cosθ can actually be any angular-like parameter
+      valued function. Angle_Arg can actually be any angular-like parameter
       as long as the xs has the corresponding parameter.
 
-      :param xs: cross section function with signature (energy hadron, cosθ, x_1, x_2)
+      :param xs: cross section function with signature (energy hadron, angle_arg, x_1, x_2)
       :param q2: the momentum transfer Q^2 as a function with the signature
       (e_hadron, x_1, x_2)
       :param quarks: the constituent quarks np.ndarray of the form [[id, charge], ...],
       the default is a proton
       :param pdf: the PDF to use, the default is "NNPDF31_lo_as_0118"
-      :param cut: cut function with signature (energy hadron, cosθ, x_1,
+      :param cut: cut function with signature (energy hadron, angle_arg, x_1,
       x_2) to return 0, when the event does not fit the cut
 
       :returns: differential cross section summed over flavors and weighted with the pdfs
@@ -173,7 +185,9 @@ We begin by implementing the same sermon for the lab frame.
       """
 
       pdf = pdf or lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
-      quarks = quarks or np.array([[2, 2 / 3], [1, -1 / 3]])  # proton
+      quarks = quarks or np.array(
+          [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
+      )  # proton
       supported_quarks = pdf.flavors()
       for flavor in quarks[:, 0]:
           assert flavor in supported_quarks, (
@@ -184,22 +198,21 @@ We begin by implementing the same sermon for the lab frame.
 
       # @jit(float64(float64[4])) Unfortunately that does not work as yet!
       def distribution(event: np.ndarray) -> float:
-
           if cut and not cut(e_hadron, *event):
               return 0
 
-          cosθ, x_1, x_2 = event
+          angle_arg, x_1, x_2 = event
 
           q2_value = q(e_hadron, x_1, x_2)
           result = 0
 
           for quark, charge in quarks:
-              xs_value = xs(e_hadron, charge, cosθ, x_1, x_2)
+              xs_value = xs(e_hadron, charge, angle_arg, x_1, x_2)
               result += (
                   (xfxQ2(quark, x_1, q2_value) + xfxQ2(-quark, x_1, q2_value))
-                  / (2 * x_1)
-                  ,* (xfxQ2(quark, x_2, q2_value) + xfxQ2(-quark, x_2, q2_value))
-                  / (2 * x_2)
+                  / x_1
+                  ,* (xfxQ2(-quark, x_2, q2_value) + xfxQ2(quark, x_2, q2_value))
+                  / x_2
                   ,* xs_value
               )
 
@@ -246,14 +259,14 @@ Plotting it, we can see that the variance is reduced.
   ax2 = ax.twinx()
   pts = np.linspace(*interval_η, 1000)
 
-  ax.plot(pts, [dist_η([η, 0.8, 0.3]) for η in pts])
-  ax2.plot(pts, [dist_η([η, 0.3, 0.3]) for η in pts])
+  ax.plot(pts, [dist_η([η, 0.01, 0.01]) for η in pts])
+  ax2.plot(pts, [dist_η([η, 1, .1]) for η in pts])
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f3562675a90> |
-[[file:./.ob-jupyter/5597ca6056db11908cfca64c2090d67e3b94cc9e.png]]
+| <matplotlib.lines.Line2D | at | 0x7fdcdc539a60> |
+[[file:./.ob-jupyter/4fa473a033252c9f6d95d2b6ae3b950d643140b9.png]]
 :END:
 
 Lets plot how the pdf looks.
@@ -262,13 +275,13 @@ Lets plot how the pdf looks.
   pts = np.linspace(0.1, 1, 1000)
 
   fig, ax = set_up_plot()
-  ax.plot(pts, [pdf(2, pt, 2*100**2)/pt for pt in pts])
+  ax.plot(pts, [pdf(1, pt, 2*100**2)/pt for pt in pts])
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f35627bde50> |
-[[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
+| <matplotlib.lines.Line2D | at | 0x7fdcda317e50> |
+[[file:./.ob-jupyter/4c408dadcdda545d2729103f469d0bcf451c11f9.png]]
 :END:
 
 
@@ -276,10 +289,10 @@ Now we sample some events. Doing this in parallel helps. We let the os
 figure out the cpu mapping.
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  intervals_η = [interval_η, [.05, 1], [.05, 1]]
+  intervals_η = [[-2.5, 2.5], [.05, 1], [.05, 1]]
 
   result, eff = monte_carlo.sample_unweighted_array(
-      10000,
+      10,
       dist_η,
       interval=intervals_η,
       proc="auto",
@@ -291,7 +304,7 @@ figure out the cpu mapping.
 #+end_src
 
 #+RESULTS:
-: 0.0009801272637920972
+: 0.0017267969835371626
 
 
 
@@ -303,9 +316,65 @@ file.
 
 Let's look at a histogramm of eta samples.
 #+begin_src jupyter-python :exports both :results raw drawer
-  fig, ax = draw_histo_auto(result[:, 0], r"$\eta$", bins=100)
-  ax.set_yscale("log")
+  fig, ax = draw_histo_auto(result[:, 0], r"$\eta$", bins=20)
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/721ccfd2a691a94a1e437f282bf2d95f5de25f0c.png]]
+[[file:./.ob-jupyter/e33bdaa925ed97920a7731ce2d44954e80b56871.png]]
+
+
+*** Troubleshooting
+Sherpas Values are:
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  xa = 0.0262042
+  xb = 0.000720952
+  Q = 56.5043
+
+  sherpa_mom = np.array(
+      [
+          [170.326978144651, 0, 0, 170.326978144651],
+          [4.68618738569074, -0, -0, -4.68618738569074],
+          [46.4760937146315, -16.4681321835439, 18.1956423612576, 39.4682975110119],
+          [128.537071815711, 16.4681321835439, -18.1956423612576, 126.172493247949],
+      ]
+  )
+
+  sherpa_cosθ = sherpa_mom[2][3] / sherpa_mom[2][0]
+  sherpa_cosθ
+#+end_src
+
+#+RESULTS:
+: 0.8492171857934475
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  pdf = lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
+
+
+  def evalpdf(x1, x2, q):
+      return pdf.xfxQ2(2, x1, q ** 2) * pdf.xfxQ2(2, x2, q ** 2) / (x1 * x2)
+
+
+  evalpdf(xa, xb, Q)
+#+end_src
+
+#+RESULTS:
+: 58648.32524283687
+
+Sherpa gave ~55693.8~.
+Let's look at the kinematics.
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  momenta(e_proton, xa, xb, sherpa_cosθ, 0)
+#+end_src
+
+#+RESULTS:
+: array([[[170.3273    ,   0.        ,   0.        , 170.3273    ]],
+:
+:        [[  4.686188  ,   0.        ,   0.        ,  -4.686188  ]],
+:
+:        [[ 46.47612043,   0.        ,  24.54142357,  39.4683202 ]],
+:
+:        [[128.53736757,   0.        , -24.54142357, 126.1727918 ]]])
+
+Looks OK.
