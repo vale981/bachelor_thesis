@@ -32,7 +32,7 @@ EW_SCHEME: alpha0
 
 # disable all advanced processes
 FRAGMENTATION: None
-SHOWER: None
+#SHOWER_GENERATOR: None
 MPI: None
 
 # cut to $\abs{\eta} \leq 2.5$

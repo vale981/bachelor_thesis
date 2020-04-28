@@ -158,7 +158,7 @@ def sample_unweighted_vector(
             total_points += 1
 
         arg = points[:, 0:-1][0]
-        if f(arg) > points[:, -1] * upper_bound:
+        if f(arg) >= points[:, -1] * upper_bound:
             if report_efficiency:
                 total_accepted += 1
 
