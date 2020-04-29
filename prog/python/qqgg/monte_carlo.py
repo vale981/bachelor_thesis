@@ -137,7 +137,7 @@ def find_upper_bound(f, interval, **kwargs):
 
 
 def find_upper_bound_vector(f, interval):
-    result = shgo(_negate(f), bounds=interval, options=dict(maxfev=100))
+    result = shgo(_negate(f), bounds=interval, options=dict(maxfev=10000))
 
     if not result.success:
         raise RuntimeError("Could not find an upper bound.", result)
@@ -150,12 +150,12 @@ def sample_unweighted_vector(
     f, interval, seed=None, upper_bound=None, report_efficiency=False
 ):
     dimension = len(interval)
-    interval = np.array([_process_interval(i) for i in interval])
+    interval = _process_interval(interval)
 
     if seed:
         np.random.seed(seed)
 
-    if not upper_bound:
+    if upper_bound is None:
         upper_bound = find_upper_bound_vector(f, interval)
 
     def allocate_random_chunk():
@@ -178,6 +178,20 @@ def sample_unweighted_vector(
 
             yield (arg, total_accepted / total_points,) if report_efficiency else arg
     return
+
+
+def sample_weighted_vector(f, interval, num_samples=1, seed=None):
+    dimension = len(interval)
+    interval = _process_interval(interval)
+
+    if seed:
+        np.random.seed(seed)
+
+    sample_points = np.random.uniform(
+        interval[:, 0], interval[:, 1], [num_samples, dimension],
+    )
+
+    return sample_points, np.array([f(sample) for sample in sample_points])
 
 
 def sample_unweighted(
