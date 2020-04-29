@@ -8,7 +8,7 @@ Author: Valentin Boettcher <hiro@protagon.space>
 import numpy as np
 import monte_carlo
 import lhapdf
-from numba import jit, vectorize, float64
+from numba import jit, vectorize, float64, boolean
 
 
 @vectorize([float64(float64, float64, float64, float64)], nopython=True)
@@ -102,22 +102,48 @@ def diff_xs_η(e_proton, charge, η, x_1, x_2):
 def averaged_tchanel_q2(e_proton, x_1, x_2):
     return 2 * x_1 * x_2 * e_proton ** 2
 
-
-def cut_pT_from_eta(greater_than=0):
-    def cut(e_proton, η, x1, x2):
-        cosθ = np.cos(η_to_θ(η))
-        _, _, p1, p2 = momenta(e_proton, x1, x2, cosθ)
-        return (
-            np.sqrt((p1[0][1:3] ** 2).sum()) > greater_than
-            and np.sqrt((p2[0][1:3] ** 2).sum()) > greater_than
+def cut_pT_from_η(greater_than=0):
+    @jit(boolean(float64, float64, float64, float64), nopython=True)
+    def cut(e_proton, η, x_1, x_2):
+        tanh_η = np.tanh(η)
+        pT = (
+            2
+            * e_proton
+            * x_1
+            * x_2
+            / (x_1 + x_2 - (x_1 - x_2) * tanh_η)
+            * (1 - tanh_η ** 2)
         )
+        return pT > greater_than
 
     return cut
 
-from numba.extending import get_cython_function_address
+def cached_pdf(pdf, q, points, e_hadron):
+    x_min = pdf.xMin
+    x_max = pdf.xMax
+    Q2_max = 2 * e_hadron ** 2
+
+    cache = np.array(
+        [
+            [
+                pdf.xfxQ2(q, xx := x_min + (x_max - x_min) * x / points, Q2_max / 100 * Q2) / xx
+                for Q2 in range(100)
+            ]
+            for x in range(points)
+        ]
+    )
+
+    def cached(x, q2):
+        return cache[int((x - x_min) / (x_max - x_min) * points - 1)][
+            int(q2 * 100 / Q2_max - 1)
+        ]
+
+    return cached
 
 
-def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None, cut=None):
+def get_xs_distribution_with_pdf(
+    xs, q, e_hadron, quarks=None, pdf=None, cut=None, num_points_pdf=1000
+):
     """Creates a function that takes an event (type np.ndarray) of the
     form [angle_arg, impulse fractions of quarks in hadron 1, impulse
     fractions of quarks in hadron 2] and returns the differential
@@ -141,8 +167,10 @@ def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None, cut=Non
 
     pdf = pdf or lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
     quarks = quarks or np.array(
-        [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
-    )  # proton
+        # [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
+        [[2, 2 / 3]]
+    ) # all the light quarks
+
     supported_quarks = pdf.flavors()
     for flavor in quarks[:, 0]:
         assert flavor in supported_quarks, (
@@ -163,13 +191,14 @@ def get_xs_distribution_with_pdf(xs, q, e_hadron, quarks=None, pdf=None, cut=Non
 
         for quark, charge in quarks:
             xs_value = xs(e_hadron, charge, angle_arg, x_1, x_2)
+
             result += (
-                (xfxQ2(quark, x_1, q2_value) + xfxQ2(-quark, x_1, q2_value))
-                / x_1
-                * (xfxQ2(-quark, x_2, q2_value) + xfxQ2(quark, x_2, q2_value))
-                / x_2
-                * xs_value
-            )
+              (xfxQ2(quark, x_1, q2_value) + xfxQ2(-quark, x_1, q2_value))
+              / x_1
+              * (xfxQ2(-quark, x_2, q2_value) + xfxQ2(quark, x_2, q2_value))
+              / x_2
+              * xs_value
+          )
 
         return result
 

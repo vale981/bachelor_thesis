@@ -12,6 +12,7 @@
 #+end_src
 
 #+RESULTS:
+: The history saving thread hit an unexpected error (OperationalError('unable to open database file')).History will not be written to the database.Exception in thread Exception in threading.excepthook:Exception ignored in thread started byException ignored in sys.unraisablehook
 
 ** Utilities
 #+BEGIN_SRC jupyter-python :exports both
@@ -23,10 +24,12 @@
 #+END_SRC
 
 #+RESULTS:
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
-η = 2.5
+η = 1
 e_proton = 6500  # GeV
 interval_η = [-η, η]
 interval = η_to_θ([-η, η])
@@ -49,7 +52,7 @@ We begin by implementing the same sermon for the lab frame.
   import numpy as np
   import monte_carlo
   import lhapdf
-  from numba import jit, vectorize, float64
+  from numba import jit, vectorize, float64, boolean
 
 
   @vectorize([float64(float64, float64, float64, float64)], nopython=True)
@@ -143,15 +146,19 @@ We begin by implementing the same sermon for the lab frame.
   def averaged_tchanel_q2(e_proton, x_1, x_2):
       return 2 * x_1 * x_2 * e_proton ** 2
 
-
-  def cut_pT_from_eta(greater_than=0):
-      def cut(e_proton, η, x1, x2):
-          cosθ = np.cos(η_to_θ(η))
-          _, _, p1, p2 = momenta(e_proton, x1, x2, cosθ)
-          return (
-              np.sqrt((p1[0][1:3] ** 2).sum()) > greater_than
-              and np.sqrt((p2[0][1:3] ** 2).sum()) > greater_than
+  def cut_pT_from_η(greater_than=0):
+      @jit(boolean(float64, float64, float64, float64), nopython=True)
+      def cut(e_proton, η, x_1, x_2):
+          tanh_η = np.tanh(η)
+          pT = (
+              2
+              ,* e_proton
+              ,* x_1
+              ,* x_2
+              / (x_1 + x_2 - (x_1 - x_2) * tanh_η)
+              ,* (1 - tanh_η ** 2)
           )
+          return pT > greater_than
 
       return cut
 #+end_src
@@ -211,22 +218,14 @@ We begin by implementing the same sermon for the lab frame.
       quarks = quarks or np.array(
           # [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
           [[2, 2 / 3]]
-      )  # proton
+      ) # all the light quarks
+
       supported_quarks = pdf.flavors()
       for flavor in quarks[:, 0]:
           assert flavor in supported_quarks, (
               "The PDF doesn't support the quark flavor " + flavor
           )
 
-      quarks = [
-          (
-              cached_pdf(pdf, quark, num_points_pdf, e_hadron),
-              cached_pdf(pdf, -quark, num_points_pdf, e_hadron),
-              quark,
-              charge,
-          )
-          for quark, charge in quarks
-      ]
       xfxQ2 = pdf.xfxQ2
 
       # @jit(float64(float64[4])) Unfortunately that does not work as yet!
@@ -239,13 +238,16 @@ We begin by implementing the same sermon for the lab frame.
           q2_value = q(e_hadron, x_1, x_2)
           result = 0
 
-          for fx, fx_bar, quark, charge in quarks:
+          for quark, charge in quarks:
               xs_value = xs(e_hadron, charge, angle_arg, x_1, x_2)
+
               result += (
-                  (fx(x_1, q2_value) + fx_bar(x_1, q2_value))
-                  ,* (fx(x_2, q2_value) + fx_bar(x_2, q2_value))
-                  ,* xs_value
-              )
+                (xfxQ2(quark, x_1, q2_value) + xfxQ2(-quark, x_1, q2_value))
+                / x_1
+                ,* (xfxQ2(-quark, x_2, q2_value) + xfxQ2(quark, x_2, q2_value))
+                / x_2
+                ,* xs_value
+            )
 
           return result
 
@@ -281,12 +283,20 @@ We set up a new distribution.
       diff_xs_η,
       averaged_tchanel_q2,
       e_proton,
-      cut=cut_pT_from_eta(greater_than=20),
-      num_points_pdf=100000,
+      cut=cut_pT_from_η(greater_than=20),
+  )
+
+ dist_η_nocut, _ = get_xs_distribution_with_pdf(
+      diff_xs_η,
+      averaged_tchanel_q2,
+      e_proton,
+      #cut=cut_pT_from_η(greater_than=200),
   )
 #+end_src
 
 #+RESULTS:
+: LHAPDF 6.2.3 loading /usr/share/lhapdf/LHAPDF/NNPDF31_lo_as_0118/NNPDF31_lo_as_0118_0000.dat
+: NNPDF31_lo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 315000
 : LHAPDF 6.2.3 loading /usr/share/lhapdf/LHAPDF/NNPDF31_lo_as_0118/NNPDF31_lo_as_0118_0000.dat
 : NNPDF31_lo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 315000
 
@@ -296,14 +306,14 @@ Plotting it, we can see that the variance is reduced.
   ax2 = ax.twinx()
   pts = np.linspace(*interval_η, 1000)
 
-  ax.plot(pts, [dist_η([η, 0.01, 0.01]) for η in pts])
+  ax.plot(pts, [dist_η([η, 0.04, 0.04]) for η in pts])
   ax2.plot(pts, [dist_η([η, 1, .1]) for η in pts])
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fb864cab100> |
-[[file:./.ob-jupyter/24835817fa62af4261c1048f357ed0dd260d85ac.png]]
+| <matplotlib.lines.Line2D | at | 0x7fe78dd1daf0> |
+[[file:./.ob-jupyter/2d6388be4e9de4f348819fa5b9d6e5788fd4f181.png]]
 :END:
 
 Lets plot how the pdf looks.
@@ -312,13 +322,13 @@ Lets plot how the pdf looks.
   pts = np.linspace(0.1, 1, 1000)
 
   fig, ax = set_up_plot()
-  ax.plot(pts, [pdf.xfxQ2(1, pt, 2*100**2)/pt for pt in pts])
+  ax.plot(pts, [pdf.xfxQ2(2, pt, 2*100**2)/pt for pt in pts])
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fb864fe6af0> |
-[[file:./.ob-jupyter/4c408dadcdda545d2729103f469d0bcf451c11f9.png]]
+| <matplotlib.lines.Line2D | at | 0x7fe78e55ef40> |
+[[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
 : LHAPDF 6.2.3 loading /usr/share/lhapdf/LHAPDF/NNPDF31_lo_as_0118/NNPDF31_lo_as_0118_0000.dat
 : NNPDF31_lo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 315000
 :END:
@@ -327,24 +337,39 @@ Lets plot how the pdf looks.
 Now we sample some events. Doing this in parallel helps. We let the os
 figure out the cpu mapping.
 
+
 #+begin_src jupyter-python :exports both :results raw drawer
-  intervals_η = [interval_η, [.0001, 1], [.0001, 1]]
+  min_x = 200/((1-np.tanh(η)**2)*e_proton)
+  min_x += .0001
+#+end_src
+
+#+RESULTS:
+
+#+begin_src jupyter-python :exports both :results raw drawer
+dist_η([η, min_x, min_x])
+#+end_src
+
+
+#+RESULTS:
+: 2.8706251975350943e-10
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  intervals_η = [interval_η, [pdf.xMin, 1], [pdf.xMin, 1]]
 
   result, eff = monte_carlo.sample_unweighted_array(
-      1000,
+      1000000,
       dist_η,
       interval=intervals_η,
       proc="auto",
       report_efficiency=True,
+      upper_bound=1e-8,
       #cache="cache/pdf/huge",
   )
   eff
 #+end_src
 
 #+RESULTS:
-: 0.09020531342524235
-
-
+: 0.009051783344244778
 
 The efficiency is still quite horrible, but at least an order of
 mag. better than with cosθ.
@@ -361,8 +386,8 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: 1000
-[[file:./.ob-jupyter/56b3f43c3f682f752a3933f9691996991b23dcaa.png]]
+: 1000000
+[[file:./.ob-jupyter/3f3fbedb60fceb3607e386655023cd2c3ac096fc.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -370,7 +395,7 @@ Let's look at a histogramm of eta samples.
   yoda_hist = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/eta"])
   draw_ratio_plot(
       [
-          dict(hist=yoda_hist, errorbars=True),
+          dict(hist=yoda_hist),
           dict(hist=np.histogram(result[:, 0], bins=50, range=interval_η)),
       ]
   )
@@ -378,40 +403,10 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 2 | Axes> | (<matplotlib.axes._subplots.AxesSubplot at 0x7fb86471ae20> <matplotlib.axes._subplots.AxesSubplot at 0x7fb864622220>) |
-[[file:./.ob-jupyter/511b1599917080f0ce611c46929b4c09de0e81a3.png]]
+: 8000000
+| <Figure | size | 432x288 | with | 2 | Axes> | (<matplotlib.axes._subplots.AxesSubplot at 0x7fe785a4c550> <matplotlib.axes._subplots.AxesSubplot at 0x7fe785a03d60>) |
+[[file:./.ob-jupyter/9d1606e9ede0bce5a17d39d9df41b00ec58d4833.png]]
 :END:
 
 
-#+begin_src jupyter-python :exports both :results raw drawer
-  def cached_pdf(pdf, q, points, e_hadron):
-      x_min = pdf.xMin
-      x_max = pdf.xMax
-      Q2_max = 2 * e_hadron ** 2
-
-      cache = np.array(
-          [
-              [
-                  pdf.xfxQ2(q, x_min + (x_max - x_min) * x / points, Q2_max / points * Q2)
-                  for Q2 in range(points)
-              ]
-              for x in range(points)
-          ]
-      )
-
-      def cached(x, q2):
-          return cache[int((x - x_min) / (x_max - x_min) * points - 1)][
-              int(q2 * points / Q2_max - 1)
-          ]
-
-      return cached
-
-
-  test = cached_pdf(pdf, 2, 1000, e_proton)
-  # %timeit test(0)
-  # %timeit pdf.xfxQ2(2, 0, e_proton/2)
-  %timeit test(.001, e_proton**2)
-#+end_src
-
-#+RESULTS:
-: 858 ns ± 10.8 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+That looks OK.
