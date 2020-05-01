@@ -9,7 +9,7 @@ import numpy as np
 import monte_carlo
 import lhapdf
 from numba import jit, vectorize, float64, boolean
-
+import lab_xs.lab_xs as c_xs
 
 @vectorize([float64(float64, float64, float64, float64)], nopython=True)
 def energy_factor(e_proton, charge, x_1, x_2):
@@ -103,18 +103,8 @@ def averaged_tchanel_q2(e_proton, x_1, x_2):
     return 2 * x_1 * x_2 * e_proton ** 2
 
 def cut_pT_from_η(greater_than=0):
-    @jit(boolean(float64, float64, float64, float64), nopython=True)
     def cut(e_proton, η, x_1, x_2):
-        tanh_η = np.tanh(η)
-        pT = (
-            2
-            * e_proton
-            * x_1
-            * x_2
-            / (x_1 + x_2 - (x_1 - x_2) * tanh_η)
-            * (1 - tanh_η ** 2)
-        )
-        return pT > greater_than
+        return c_xs.pT(e_proton, η, x_1, x_2) > greater_than
 
     return cut
 
@@ -126,7 +116,10 @@ def cached_pdf(pdf, q, points, e_hadron):
     cache = np.array(
         [
             [
-                pdf.xfxQ2(q, xx := x_min + (x_max - x_min) * x / points, Q2_max / 100 * Q2) / xx
+                pdf.xfxQ2(
+                    q, xx := x_min + (x_max - x_min) * x / points, Q2_max / 100 * Q2
+                )
+                / xx
                 for Q2 in range(100)
             ]
             for x in range(points)
@@ -142,7 +135,14 @@ def cached_pdf(pdf, q, points, e_hadron):
 
 
 def get_xs_distribution_with_pdf(
-    xs, q, e_hadron, quarks=None, pdf=None, cut=None, num_points_pdf=1000
+    xs,
+    q,
+    e_hadron,
+    quarks=None,
+    pdf=None,
+    cut=None,
+    num_points_pdf=1000,
+    vectorize=False,
 ):
     """Creates a function that takes an event (type np.ndarray) of the
     form [angle_arg, impulse fractions of quarks in hadron 1, impulse
@@ -166,10 +166,14 @@ def get_xs_distribution_with_pdf(
     """
 
     pdf = pdf or lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
-    quarks = quarks or np.array(
-        # [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
-        [[2, 2 / 3]]
-    ) # all the light quarks
+    quarks = (
+        quarks
+        if quarks is not None
+        else np.array(
+            # [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
+            [[1, -1 / 3]]
+        )
+    )  # all the light quarks
 
     supported_quarks = pdf.flavors()
     for flavor in quarks[:, 0]:
@@ -179,7 +183,6 @@ def get_xs_distribution_with_pdf(
 
     xfxQ2 = pdf.xfxQ2
 
-    # @jit(float64(float64[4])) Unfortunately that does not work as yet!
     def distribution(event: np.ndarray) -> float:
         if cut and not cut(e_hadron, *event):
             return 0
@@ -193,16 +196,22 @@ def get_xs_distribution_with_pdf(
             xs_value = xs(e_hadron, charge, angle_arg, x_1, x_2)
 
             result += (
-              (xfxQ2(quark, x_1, q2_value) + xfxQ2(-quark, x_1, q2_value))
-              / x_1
-              * (xfxQ2(-quark, x_2, q2_value) + xfxQ2(quark, x_2, q2_value))
-              / x_2
-              * xs_value
-          )
+                (xfxQ2(quark, x_1, q2_value) + xfxQ2(-quark, x_1, q2_value))
+                / x_1
+                * (xfxQ2(-quark, x_2, q2_value) + xfxQ2(quark, x_2, q2_value))
+                / x_2
+                * xs_value
+            )
 
         return result
 
-    return distribution, (pdf.xMin, pdf.xMax)
+    def vectorized(events):
+        result = np.empty(events.shape[0])
+        for i in range(events.shape[0]):
+            result[i] = distribution(events[i])
+        return result
+
+    return vectorized if vectorize else distribution, (pdf.xMin, pdf.xMax)
 
 def sample_momenta(num_samples, dist, interval, e_hadron, upper_bound=None, **kwargs):
     res, eff = monte_carlo.sample_unweighted_array(

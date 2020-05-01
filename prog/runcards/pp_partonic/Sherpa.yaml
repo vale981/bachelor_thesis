@@ -2,24 +2,21 @@
 OUTPUT: 3
 
 # event count
-EVENTS: 1000000/8
+EVENTS: 1000000/8  # / num_cpus
 
 # save results
 GENERATE_RESULT_DIRECTORY: true
 
-# set up $d$ $\bar{d}$ beams, each at 100 GeV
+# set up $p$ $\bar{p}$ beams, each at 100 GeV
 BEAMS: [1, -1]
-BEAM_ENERGIES: 100
+BEAM_ENERGIES: [6500, -
 
 # matrix-element calculation
 ME_GENERATORS:
 - Comix
 - Amegic
 
-# massless d
-PARTICLE_DATA:
-  1:
-    Massive: false
+SCALES: 'VAR{1/2*Abs2(p[0]+p[1])}'
 
 # the main scattering process
 PROCESSES:
@@ -32,18 +29,19 @@ EW_SCHEME: alpha0
 
 # disable all advanced processes
 FRAGMENTATION: None
-SCALES: 'VAR{2*Abs2(p[0]+p[1])}'
 SHOWER_GENERATOR: None
-MPI: None
+MI_HANDLER: None
 
-# cut to $\abs{\eta} \leq 2.5$
+# cut to $\abs{\eta} \leq 2.5$, and $p_T \geq 20$ GeV
 SELECTORS:
-- [Eta, 22, -2.5, 2.5]
+- [Eta, 22, -1, 1]
+- [PT, 22, 200, 200000000]
 
 # no transverse impulses
 BEAM_REMNANTS: false
 
 ANALYSIS: Rivet
 RIVET:
+  IGNOREBEAMS: 1
   ANALYSES:
-    - MC_DIPHOTON_SIMPLE
+    - MC_DIPHOTON_PROTON

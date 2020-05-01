@@ -23,6 +23,8 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 * Implementation
 ** Center of Mass Frame
@@ -266,7 +268,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.05367141072254793, sigma=0.0008818258502119903, N=2619)
+: IntegrationResult(result=0.05341078157056901, sigma=0.0009403117477366878, N=2209)
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -276,7 +278,7 @@ We gonna export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 2619\)
+: \(N = 2209\)
 
 *** Integration over η
 Plot the intgrand of the pseudo rap.
@@ -302,7 +304,7 @@ Plot the intgrand of the pseudo rap.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.05466242587015522, sigma=0.0009204997545594801, N=131)
+: IntegrationResult(result=0.05233083353013518, sigma=0.0009844250201876254, N=143)
 
 As we see, the result is a little better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.  But
@@ -317,7 +319,7 @@ And yet again export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 131\)
+: \(N = 143\)
 
 *** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
@@ -335,9 +337,9 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.05385797766651353, sigma=0.0001360240204539124, N=2805, increment_borders=array([0.16380276, 0.23685938, 0.34475405, 0.50751937, 0.76585651,
-:        1.22679616, 1.91214229, 2.37097784, 2.63184281, 2.79583274,
-:        2.90414672, 2.9777899 ]), vegas_iterations=14771)
+: VegasIntegrationResult(result=0.05391881612132655, sigma=0.00013475254855627007, N=2805, increment_borders=array([0.16380276, 0.237527  , 0.34500054, 0.50924866, 0.7700416 ,
+:        1.23164456, 1.91661518, 2.37353646, 2.6331313 , 2.79643305,
+:        2.90461962, 2.9777899 ]), vegas_iterations=467)
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. Here this gives
@@ -368,9 +370,9 @@ This depends, of course, on the iteration count.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.05379611162853615, sigma=1.3252007949712336e-05, N=2805, increment_borders=array([0.16380276, 0.23730892, 0.34499401, 0.50776563, 0.76694651,
-:        1.22540671, 1.91092059, 2.37254052, 2.6333964 , 2.7964518 ,
-:        2.90410599, 2.9777899 ]), vegas_iterations=10547)
+: VegasIntegrationResult(result=0.053783484288076215, sigma=2.2815161064775525e-05, N=2805, increment_borders=array([0.16380276, 0.23741945, 0.34524286, 0.50821323, 0.77035483,
+:        1.22942806, 1.91564534, 2.37530622, 2.63425979, 2.79678665,
+:        2.90425559, 2.9777899 ]), vegas_iterations=1204)
 
 Let's define some little helpers.
 #+begin_src jupyter-python :exports both :tangle tangled/plot_utils.py
@@ -475,7 +477,7 @@ And now we plot the integrand with the incremens.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/67e649552961282fcfb576e6324475df56bfd427.png]]
+[[file:./.ob-jupyter/9cb9f40087d5d473cfa956e67f4055544037565d.png]]
 *** Testing the Statistics
 Let's battle test the statistics.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -492,7 +494,7 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.696
+: 0.687
 
 So we see: the standard deviation is sound.
 
@@ -513,7 +515,7 @@ Doing the same thing with =VEGAS= works as well.
 #+end_src
 
 #+RESULTS:
-: 0.719
+: 0.677
 
 ** Sampling and Analysis
 Define the sample number.
@@ -552,7 +554,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-: 0.027399137427054687
+: 0.027352007278111257
 
 Let's save that.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -987,9 +989,9 @@ distribution. We throw away the integral, but keep the increments.
 #+end_src
 
 #+RESULTS:
-: array([-9.86614298e-01, -9.69970058e-01, -9.31600407e-01, -8.40398637e-01,
-:        -6.06239052e-01, -2.57444206e-04,  6.02273022e-01,  8.39174725e-01,
-:         9.31251158e-01,  9.69890441e-01,  9.86614298e-01])
+: array([-0.9866143 , -0.96961793, -0.93102927, -0.83928851, -0.60522124,
+:         0.00165114,  0.60381197,  0.83945077,  0.93141193,  0.9698008 ,
+:         0.9866143 ])
 
 Visualizing the increment borders gives us the information we want.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -1006,8 +1008,8 @@ Visualizing the increment borders gives us the information we want.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f240e2de8b0>
-[[file:./.ob-jupyter/a668328dd707d4d8a9c6496027a223f6204198ab.png]]
+: <matplotlib.legend.Legend at 0x7f7205eb4340>
+[[file:./.ob-jupyter/b4b1e7c332c55259afcda37c371f1edc4a56c0ea.png]]
 :END:
 
 We can now plot the reweighted distribution to observe the variance
@@ -1031,7 +1033,7 @@ reduction visually.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/b96dff443cd1de587442329bdaf0345002fecaad.png]]
+[[file:./.ob-jupyter/b2f71eaa54629fa9e6f00976eccb567a71ff0f54.png]]
 
 
 I am batman! Let's plot the weighting distribution.
@@ -1046,7 +1048,7 @@ I am batman! Let's plot the weighting distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/3f58d6abcd0d559a62dfe01f8a6a8757316ef6c1.png]]
+[[file:./.ob-jupyter/4a8e255a72be03dc50b269e14143043b5d9472f5.png]]
 
 Now, draw a sample and look at the efficiency.
 
@@ -1095,6 +1097,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
+: Welcome to JupyROOT 6.20/04
 
 **** Plot the Histos
 #+RESULTS:
@@ -1154,7 +1157,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 
 #+RESULTS:
 :RESULTS:
-[[file:./.ob-jupyter/7586d058603a93487c7475aceabd49b038c783ba.png]]
-[[file:./.ob-jupyter/45f8f39d213372a91abec3c8e7ff7efce1610ee6.png]]
-[[file:./.ob-jupyter/08a5b6fbef7125567cafb450c8ea66669436703f.png]]
+[[file:./.ob-jupyter/29fb6b4200f4f70eb8cbb96b498114caa819d146.png]]
+[[file:./.ob-jupyter/b86e1bcd4461345fb9bfe7114c2626bb966c9d8b.png]]
+[[file:./.ob-jupyter/f8c1f07465d43e58bace241d748c45e21acd2852.png]]
 :END:
