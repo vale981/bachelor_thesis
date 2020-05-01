@@ -6,6 +6,8 @@ Author: Valentin Boettcher <hiro@protagon.space>
 import os
 import os.path
 import numpy as np
+import pathlib
+import time
 from multiprocessing import Pool, cpu_count
 import functools
 from scipy.optimize import minimize_scalar, root, shgo
@@ -47,7 +49,9 @@ class IntegrationResult:
         return self.result, self.sigma
 
 
-def integrate(f, interval, epsilon=0.01, seed=None, **kwargs) -> IntegrationResult:
+def integrate(
+    f, interval, epsilon=0.01, seed=None, num_points=None, adapt=True, **kwargs
+) -> IntegrationResult:
     """Monte-Carlo integrates the function `f` over an interval.
 
     If the integrand is multi-dimensional it must accept an array of
@@ -75,23 +79,28 @@ def integrate(f, interval, epsilon=0.01, seed=None, **kwargs) -> IntegrationResu
         np.random.seed(seed)
 
     integration_volume = (interval[:, 1] - interval[:, 0]).prod()
+    dimension = len(interval)
 
     # guess the correct N
     probe_points = np.random.uniform(
-        interval[:, 0], interval[:, 1], (int(integration_volume * 10), len(interval))
+        interval[:, 0],
+        interval[:, 1],
+        (int(integration_volume * 10 ** dimension), dimension),
     )
 
-    num_points = int(
-        (integration_volume * f(probe_points, **kwargs).std() / epsilon) ** 2 * 1.1 + 1
-    )
+    if num_points is None:
+        prelim_std = integration_volume * f(probe_points, **kwargs).std()
+        # epsilon = epsilon if prelim_std > epsilon else prelim_std / 10
+
+        num_points = int((prelim_std / epsilon) ** 2 * 1.1 + 1)
 
     # now we iterate until we hit the desired epsilon
     while True:
         points = np.random.uniform(
             interval[:, 0], interval[:, 1], (num_points, len(interval))
         )
-        sample = f(points, **kwargs)
 
+        sample = f(points, **kwargs)
         integral = np.sum(sample) / num_points * integration_volume
 
         # the deviation gets multiplied by the square root of the interval
@@ -99,7 +108,8 @@ def integrate(f, interval, epsilon=0.01, seed=None, **kwargs) -> IntegrationResu
         sample_std = np.std(sample) * integration_volume
         deviation = sample_std * np.sqrt(1 / (num_points - 1))
 
-        if deviation < epsilon:
+        if not adapt or deviation < epsilon:
+            print(sample.max(), points[np.where(sample == sample.max())])
             return IntegrationResult(integral, deviation, num_points)
 
         # then we refine our guess, the factor 1.1
@@ -147,7 +157,13 @@ def find_upper_bound_vector(f, interval):
 
 
 def sample_unweighted_vector(
-    f, interval, seed=None, upper_bound=None, report_efficiency=False
+    f,
+    interval,
+    seed=None,
+    upper_bound=None,
+    report_efficiency=False,
+    status_path=None,
+    total=1,
 ):
     dimension = len(interval)
     interval = _process_interval(interval)
@@ -163,8 +179,17 @@ def sample_unweighted_vector(
             [*interval[:, 0], 0], [*interval[:, 1], 1], [1, 1 + dimension],
         )
 
+    fifo = None
+    if status_path:
+        if not pathlib.Path(status_path).exists():
+            os.mkfifo(status_path)
+        fifo = open(status_path, "w")
+
     total_points = 0
     total_accepted = 0
+
+    start_time = time.monotonic()
+    last_time = start_time
     while True:
         points = allocate_random_chunk()
 
@@ -175,8 +200,26 @@ def sample_unweighted_vector(
         if f(arg) >= points[:, -1] * upper_bound:
             if report_efficiency:
                 total_accepted += 1
+            if fifo:
+                this_time = time.monotonic()
+                if this_time - last_time > 10:
+                    δ = this_time - start_time
+                    speed = total_accepted / δ
+                    try:
+                        fifo.write(
+                            f"{os.getpid()}: {total_accepted:<10} "
+                            f"{total-total_accepted:<10} {speed:4.1f} 1/sec "
+                            f"{(total_accepted / total) * 100:2.1f}%"
+                            f"{(total-total_accepted)/speed/60:4.0f} min\n"
+                        )
+                        fifo.flush()
+                    except BrokenPipeError:
+                        pass
+                    last_time = this_time
 
             yield (arg, total_accepted / total_points,) if report_efficiency else arg
+
+    fifo and fifo.close()
     return
 
 
@@ -201,7 +244,7 @@ def sample_unweighted(
     seed=None,
     chunk_size=100,
     report_efficiency=False,
-    **kwargs
+    **kwargs,
 ):
     """Samples a distribution proportional to f by hit and miss.
     Implemented as a generator.
@@ -366,7 +409,7 @@ def integrate_vegas(
     alpha=1.5,
     acumulate=True,
     vegas_point_density=1000,
-    **kwargs
+    **kwargs,
 ) -> VegasIntegrationResult:
     """Integrate the given function (in one dimension) with the vegas
     algorithm to reduce variance.  This implementation follows the
@@ -585,7 +628,7 @@ def sample_unweighted_array(
     increment_borders=None,
     report_efficiency=False,
     proc=None,
-    **kwargs
+    **kwargs,
 ):
     """Sample `num` elements from a distribution.  The rest of the
     arguments is analogous to `sample_unweighted`.
@@ -611,7 +654,7 @@ def sample_unweighted_array(
                 report_efficiency=report_efficiency,
                 proc=None,
                 cache=None,
-                **kwargs
+                **kwargs,
             )
             for _ in range(proc)
         ]
@@ -635,7 +678,11 @@ def sample_unweighted_array(
             sample_arr = np.empty((num, interval.shape[0]) if vectorized else num)
             if len(interval.shape) > 1:
                 samples = sample_unweighted_vector(
-                    f, interval, report_efficiency=report_efficiency, **kwargs
+                    f,
+                    interval,
+                    report_efficiency=report_efficiency,
+                    total=num,
+                    **kwargs,
                 )
             else:
                 if "chunk_size" not in kwargs:
@@ -651,7 +698,7 @@ def sample_unweighted_array(
                 f,
                 increment_borders=increment_borders,
                 report_efficiency=report_efficiency,
-                **kwargs
+                **kwargs,
             )
         else:
             raise TypeError("Neiter interval nor increment_borders specified!")
