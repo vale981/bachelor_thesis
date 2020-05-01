@@ -9,7 +9,7 @@ GENERATE_RESULT_DIRECTORY: true
 
 # set up $p$ $\bar{p}$ beams, each at 100 GeV
 BEAMS: [1, -1]
-BEAM_ENERGIES: [6500, -
+BEAM_ENERGIES: [6500/2, 6500]
 
 # matrix-element calculation
 ME_GENERATORS:
@@ -34,8 +34,8 @@ MI_HANDLER: None
 
 # cut to $\abs{\eta} \leq 2.5$, and $p_T \geq 20$ GeV
 SELECTORS:
-- [Eta, 22, -1, 1]
-- [PT, 22, 200, 200000000]
+- [Eta, 22, -2.5, 2.5]
+# - [PT, 22, 200, 200000000]
 
 # no transverse impulses
 BEAM_REMNANTS: false
@@ -44,4 +44,4 @@ ANALYSIS: Rivet
 RIVET:
   IGNOREBEAMS: 1
   ANALYSES:
-    - MC_DIPHOTON_PROTON
+    - MC_DIPHOTON_PARTONIC
