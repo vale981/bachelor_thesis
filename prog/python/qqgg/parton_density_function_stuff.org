@@ -333,398 +333,8 @@ We begin by implementing the same sermon for the lab frame.
 #+end_src
 
 #+RESULTS:
-* Event generation
-Now we go about the bussines of generating events. Currently we
-calculate the 4-momentum kinematics twice. Maybe that can be done
-nicer.
 
-#+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/pdf.py
-  def sample_momenta(num_samples, dist, interval, e_hadron, upper_bound=None, **kwargs):
-      res, eff = monte_carlo.sample_unweighted_array(
-          num_samples,
-          dist,
-          interval,
-          upper_bound=upper_bound,
-          report_efficiency=True,
-          ,**kwargs
-      )
-      cosθ, x_1, x_2 = res.T
-      return momenta(e_hadron, x_1[None, :], x_2[None, :], cosθ[None, :]), eff
-#+end_src
-
-#+RESULTS:
-
-We set up a new distribution.
-#+begin_src jupyter-python :exports both :results raw drawer
-  dist_η, x_limits = get_xs_distribution_with_pdf(
-      c_xs.diff_xs_eta,
-      c_xs.averaged_tchanel_q2,
-      e_proton,
-      cut=(CutpT() > min_pT) & (interval_η[0] < CutOtherEta() < interval_η[1]),
-  )
-#+end_src
-
-#+RESULTS:
-: LHAPDF 6.2.3 loading /usr/share/lhapdf/LHAPDF/NNPDF31_lo_as_0118/NNPDF31_lo_as_0118_0000.dat
-: NNPDF31_lo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 315000
-
-Plotting it, we can see that the variance is reduced.
-#+begin_src jupyter-python :exports both :results raw drawer
-  fig, ax = set_up_plot()
-  ax2 = ax.twinx()
-  pts = np.linspace(*interval_η, 1000)
-
-  ax.plot(pts, [dist_η(np.array([η, 0.04, 0.04])) for η in pts])
-  ax2.plot(pts, [dist_η(np.array([η, 1, .5])) for η in pts])
-#+end_src
-
-#+RESULTS:
-:RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f5b8a2f5730> |
-[[file:./.ob-jupyter/a789e914a8b6fcb110b211ea596d41c763ea15e7.png]]
-:END:
-
-Lets plot how the pdf looks.
-#+begin_src jupyter-python :exports both :results raw drawer
-  pdf = lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
-  pts = np.linspace(0.1, 1, 1000)
-
-  fig, ax = set_up_plot()
-  ax.plot(pts, [pdf.xfxQ2(2, pt, 2*100**2)/pt for pt in pts])
-#+end_src
-
-#+RESULTS:
-:RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f5b98e0e700> |
-[[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
-: LHAPDF 6.2.3 loading /usr/share/lhapdf/LHAPDF/NNPDF31_lo_as_0118/NNPDF31_lo_as_0118_0000.dat
-: NNPDF31_lo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 315000
-:END:
-
-
-Now we sample some events. Doing this in parallel helps. We let the os
-figure out the cpu mapping.
-
-#+begin_src jupyter-python :exports both :results raw drawer
-  intervals_η = np.array([interval_η, [pdf.xMin, 1], [pdf.xMin, 1]])
-
-  result, eff = monte_carlo.sample_unweighted_array(
-      1000000,
-      dist_η,
-      interval=intervals_η,
-      proc="auto",
-      report_efficiency=True,
-      upper_bound=5.5e-10,
-      cache="cache/pdf/huge11",
-      status_path="/tmp/status1"
-  )
-  eff
-#+end_src
-
-#+RESULTS:
-: 0.0010013294558830314
-
-The efficiency is still quite horrible, but at least an order of
-mag. better than with cosθ.
-#+begin_src jupyter-python :exports both :results raw drawer
-xmin = 20/((1-np.tanh(η)**2)*e_proton) +.08
-dist_η([-η, xmin, xmin])
-#+end_src
-
-#+RESULTS:
-: 4.6926779419045556e-12
-
-Let's look at a histogramm of eta samples.
-#+begin_src jupyter-python :exports both :results raw drawer
-  fig, ax = draw_histo_auto(result[:, 0], r"$\eta$", bins=50)
-  #ax.set_yscale('log')
-  len(result[:, 0])
-#+end_src
-
-#+RESULTS:
-:RESULTS:
-: 1000000
-[[file:./.ob-jupyter/0069de20eb1b8baa50a5343fd30c79c683a1fab1.png]]
-:END:
-#+begin_src jupyter-python :exports both :results raw drawer
-gev_to_pb(eff * (intervals_η[:, 1] - intervals_η[:, 0]).prod() * 5.5e-10) * 2*np.pi
-#+end_src
-
-#+RESULTS:
-: 0.002694774847491895
-
-#+begin_src jupyter-python :exports both :results raw drawer
-  yoda_file = yoda.read("../../runcards/pp/analysis/Analysis.yoda")
-  yoda_hist = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/eta"])
-  draw_ratio_plot(
-      [
-          dict(hist=yoda_hist),
-          dict(hist=np.histogram(result[:, 0], bins=50, range=interval_η)),
-      ]
-  )
-#+end_src
-
-#+RESULTS:
-:RESULTS:
-| <Figure | size | 432x288 | with | 2 | Axes> | (<matplotlib.axes._subplots.AxesSubplot at 0x7f5b975d3610> <matplotlib.axes._subplots.AxesSubplot at 0x7f5b975791c0>) |
-[[file:./.ob-jupyter/f29962e850ee73c0d1352def5de55d738f7748f1.png]]
-:END:
-
-That looks OK.
-
-** Total XS
-Now, it would be interesting to know the total cross section.
-#+begin_src jupyter-python :exports both :results raw drawer
-import scipy.integrate
-scipy.integrate.quad(lambda x: gev_to_pb(dist_η(x)), intervals_η[:, 0], intervals_η[:, 1], workers=8)
-#+end_src
-
-#+RESULTS:
-:RESULTS:
-# [goto error]
-: ---------------------------------------------------------------------------
-: TypeError                                 Traceback (most recent call last)
-: <ipython-input-15-ffdad84e393c> in <module>
-:       1 import scipy.integrate
-: ----> 2 scipy.integrate.quad(lambda x: gev_to_pb(dist_η(x)), intervals_η[:, 0], intervals_η[:, 1], workers=8)
-:
-: TypeError: quad() got an unexpected keyword argument 'workers'
-:END:
-
-
-#+begin_src jupyter-python :exports both :results raw drawer
-  dist_η_vec, _ = get_xs_distribution_with_pdf(
-      c_xs.diff_xs_eta,
-      c_xs.averaged_tchanel_q2,
-      e_proton,
-      cut=(CutpT() > min_pT) & (-1 < CutOtherEta() < 1),
-      vectorize=True,
-      quarks=np.array([[1, -1/3]])
-  )
-
-  xs_int_res = monte_carlo.integrate(
-      lambda x: gev_to_pb(dist_η_vec(x)),
-      np.array([[-1, 1], [pdf.xMin, 1], [pdf.xMin, 1]]),
-      num_points=8000000,
-      adapt=False,
-      epsilon=0.01,
-  )
-  xs_int_res.result*np.pi, xs_int_res.sigma*np.pi
-#+end_src
-
-#+RESULTS:
-:RESULTS:
-: 0.2113311302255604 [[0.20834856 0.03665743 0.02590634]]
-| 0.0007706235831937771 | 6.407338225905968e-06 |
-: LHAPDF 6.2.3 loading /usr/share/lhapdf/LHAPDF/NNPDF31_lo_as_0118/NNPDF31_lo_as_0118_0000.dat
-: NNPDF31_lo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 315000
-:END:
-
-: 692.839178467359
-
-: IntegrationResult(result=3.948923167147158, sigma=0.15482356147217707, N=8000000)
-: IntegrationResult(result=3.8164729865795977, sigma=0.2263485810566686, N=3000000)
-
-#+begin_src jupyter-python :exports both :results raw drawer
- xs_int_res
-#+end_src
-
-#+RESULTS:
-: IntegrationResult(result=0.0004284811348615043, sigma=7.608520813519879e-06, N=800000)
-
-
-#+begin_src jupyter-python :exports both :results raw drawer
-%timeit diff_xs_η(1,2,3,4,5)
-#+end_src
-
-#+RESULTS:
-: 3.95 µs ± 9.81 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-
-#+begin_src jupyter-python :exports both :results raw drawer
-dist_η([-0.54149063, 0.01765461, 0.05391543])
-#+end_src
-
-#+RESULTS:
-: 5.377390723815607e-10
-
-#+begin_src jupyter-python :exports both :results raw drawer
- test_eta = -5
- test_θ = η_to_θ(test_eta)
- momenta(e_proton, .5, .5, np.cos(test_θ))[2][0][2]
-#+end_src
-
-#+RESULTS:
-: 43.79466721924628
-
-#+begin_src jupyter-python :exports both :results raw drawer
-c_xs.pT(e_proton, test_eta, .5, .5)
-#+end_src
-
-#+RESULTS:
-: 43.79466721924628
-
-
-
-*** Troubleshooting
-Sherpas Values are:
-
-#+begin_src jupyter-python :exports both :results raw drawer
-  xa = 0.0402345
-  xb = 0.0357691
-  Q = 348.724
-  ME = 1.58989334360387e-08
-  sherpa_mom = np.array(
-      [
-          (261.524150231736, 0, 0, -261.524150231736),
-          (232.498927281197, 0, 0, 232.498927281197),
-          (249.235444881315, 151.716992649161, -190.678302527712, -52.3645497625224),
-          (244.787632631618, -151.716992649161, 190.678302527712, 23.339326811983),
-      ]
-  )
-
-  sherpa_cosθ = sherpa_mom[2][3] / sherpa_mom[2][0]
-  sherpa_cosθ
-#+end_src
-
-#+RESULTS:
-: -0.21010073341477656
-
-#+begin_src jupyter-python :exports both :results raw drawer
- xa*e_proton
-#+end_src
-
-#+RESULTS:
-: 261.52425
-
-#+begin_src jupyter-python :exports both :results raw drawer
- 2*xa*xb*e_proton**2
-#+end_src
-
-#+RESULTS:
-: 121608.331658775
-
-#+begin_src jupyter-python :exports both :results raw drawer
-((sherpa_mom[0][0]+sherpa_mom[1][0])**2-(sherpa_mom[0][3]+sherpa_mom[1][3])**2)/2
-#+end_src
-
-#+RESULTS:
-: 121608.16877401047
-
-#+begin_src jupyter-python :exports both :results raw drawer
-Q**2
-#+end_src
-
-#+RESULTS:
-: 121608.42817599999
-
-
-#+begin_src jupyter-python :exports both :results raw drawer
-  pdf = lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
-
-
-  def evalpdf(x1, x2, q):
-      return pdf.xfxQ2(1, x1, q ** 2) * pdf.xfxQ2(-1, x2, q ** 2) / (x1 * x2)
-
-
-  evalpdf(xa, xb, Q)
-#+end_src
-
-#+RESULTS:
-:RESULTS:
-: 106.61430276022917
-: LHAPDF 6.2.3 loading /usr/share/lhapdf/LHAPDF/NNPDF31_lo_as_0118/NNPDF31_lo_as_0118_0000.dat
-: NNPDF31_lo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 315000
-:END:
-
-Sherpa gave the same.
-Let's look at the kinematics.
-
-#+begin_src jupyter-python :exports both :results raw drawer
-  my_mom = momenta(e_proton, xa, xb, sherpa_cosθ)
-  my_mom
-#+end_src
-
-#+RESULTS:
-: array([[[ 261.52425   ,    0.        ,    0.        ,  261.52425   ]],
-:
-:        [[ 232.49915   ,    0.        ,    0.        , -232.49915   ]],
-:
-:        [[ 243.15752994,    0.        ,  237.73019162,  -51.08757537]],
-:
-:        [[ 250.86587006,    0.        , -237.73019162,   80.11267537]]])
-
-Looks OK. Let's look at the matrix element.
-
-#+begin_src jupyter-python :exports both :results raw drawer
-((my_mom[2][0][0]+my_mom[3][0][0])**2-(my_mom[2][0][3]+my_mom[3][0][3])**2)/2
-#+end_src
-
-#+RESULTS:
-: 121608.33165877499
-
-#+begin_src jupyter-python :exports both :results raw drawer
-((sherpa_mom[2][0]+sherpa_mom[3][0])**2-(sherpa_mom[2][3]+sherpa_mom[3][3])**2)/2
-#+end_src
-
-#+RESULTS:
-: 121608.16877401045
-
-
-#+begin_src jupyter-python :exports both :results raw drawer
-ME
-#+end_src
-
-#+RESULTS:
-: 1.58989334360387e-08
-
-#+begin_src jupyter-python :exports both :results raw drawer
-MY_ME = 4/3*(np.sqrt(4*np.pi*1/137.036)*(1/3))**4*(1+sherpa_cosθ**2)/(1-sherpa_cosθ**2)
-MY_ME/ME
-#+end_src
-
-#+RESULTS:
-: 9510.482941946759
-
-Why!
-
-I checked back with the d, dbar process. The ME there has a weird factor ~1/20**4~
-#+begin_src jupyter-python :exports both :results raw drawer
-  c=-93.8879722861009/100
-  4/3*(np.sqrt(4*np.pi*1/137.036)*(1/3)/20)**4*(1+c**2)/(1-c**2)
-#+end_src
-
-#+RESULTS:
-: 1.373570744771939e-08
-
-
-#+begin_src jupyter-python :exports both :results raw drawer
-  def test(x):
-      return x[:,0]*x[:, 1]
-
-  monte_carlo.integrate(test, [[0,1], [0,1]], epsilon=.0001)
-  #test(np.array([[1,2],[1,1]]))
-#+end_src
-
-#+RESULTS:
-:RESULTS:
-: 0.9996193836913989 [[0.9999086  0.99971076]]
-: IntegrationResult(result=0.24991322928674975, sigma=8.781624783123888e-05, N=6300453)
-:END:
-
-
-Let's see how the pts are distributed:
-#+begin_src jupyter-python :exports both :results raw drawer
-  sample_mom = momenta(e_proton, result[:,1], result[:,2], np.cos(η_to_θ(result[:,0])))[2]
-  sample_pts = np.sqrt(sample_mom[:,1]**2 + sample_mom[:,2]**2)
-  sample_pts.min()
-#+end_src
-
-#+RESULTS:
-: 200.00006712310318
-
-Looks ok.
-
-**** Check out the partonic xs.
+* Checking out the partonic xs.
 Let's set up a cut for the η of the other photon.
 #+begin_src jupyter-python :exports both :results raw drawer
   other_eta_cut = -2.5 < CutOtherEta() < 2.5
@@ -789,3 +399,170 @@ draw_histogram(ax, part_hist)
 | <Figure | size | 432x288 | with | 2 | Axes> | (<matplotlib.axes._subplots.AxesSubplot at 0x7f5b9542bb20> <matplotlib.axes._subplots.AxesSubplot at 0x7f5b953cd160>) |
 [[file:./.ob-jupyter/a28edcc7a43fa591d70bc343d429de6a73e8107b.png]]
 :END:
+
+* Total XS
+Now, it would be interesting to know the total cross section.
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  dist_η_vec, _ = get_xs_distribution_with_pdf(
+      c_xs.diff_xs_eta,
+      c_xs.averaged_tchanel_q2,
+      e_proton,
+      cut=(CutpT() > min_pT) & (-1 < CutOtherEta() < 1),
+      vectorize=True,
+      quarks=np.array([[1, -1/3]])
+  )
+
+  xs_int_res = monte_carlo.integrate(
+      lambda x: gev_to_pb(dist_η_vec(x)),
+      np.array([[-1, 1], [pdf.xMin, 1], [pdf.xMin, 1]]),
+      num_points=8000000,
+      adapt=False,
+      epsilon=0.01,
+  )
+  xs_int_res.result*np.pi, xs_int_res.sigma*np.pi
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: 0.2113311302255604 [[0.20834856 0.03665743 0.02590634]]
+| 0.0007706235831937771 | 6.407338225905968e-06 |
+: LHAPDF 6.2.3 loading /usr/share/lhapdf/LHAPDF/NNPDF31_lo_as_0118/NNPDF31_lo_as_0118_0000.dat
+: NNPDF31_lo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 315000
+:END:
+
+#+begin_src jupyter-python :exports both :results raw drawer
+ xs_int_res
+#+end_src
+
+#+RESULTS:
+: IntegrationResult(result=0.0004284811348615043, sigma=7.608520813519879e-06, N=800000)
+
+#+RESULTS:
+: 3.95 µs ± 9.81 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+
+#+begin_src jupyter-python :exports both :results raw drawer
+dist_η([-0.54149063, 0.01765461, 0.05391543])
+#+end_src
+
+#+RESULTS:
+: 5.377390723815607e-10
+
+* Event generation
+We set up a new distribution. Look at that cut sugar!
+#+begin_src jupyter-python :exports both :results raw drawer
+  dist_η, x_limits = get_xs_distribution_with_pdf(
+      c_xs.diff_xs_eta,
+      c_xs.averaged_tchanel_q2,
+      e_proton,
+      cut=(CutpT() > min_pT) & (interval_η[0] < CutOtherEta() < interval_η[1]),
+  )
+#+end_src
+
+#+RESULTS:
+: LHAPDF 6.2.3 loading /usr/share/lhapdf/LHAPDF/NNPDF31_lo_as_0118/NNPDF31_lo_as_0118_0000.dat
+: NNPDF31_lo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 315000
+
+Plotting it, we can see that the variance is reduced.
+#+begin_src jupyter-python :exports both :results raw drawer
+  fig, ax = set_up_plot()
+  ax2 = ax.twinx()
+  pts = np.linspace(*interval_η, 1000)
+
+  ax.plot(pts, [dist_η(np.array([η, 0.04, 0.04])) for η in pts])
+  ax2.plot(pts, [dist_η(np.array([η, 1, .5])) for η in pts])
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+| <matplotlib.lines.Line2D | at | 0x7f5b8a2f5730> |
+[[file:./.ob-jupyter/a789e914a8b6fcb110b211ea596d41c763ea15e7.png]]
+:END:
+
+Lets plot how the pdf looks.
+#+begin_src jupyter-python :exports both :results raw drawer
+  pdf = lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
+  pts = np.linspace(0.1, 1, 1000)
+
+  fig, ax = set_up_plot()
+  ax.plot(pts, [pdf.xfxQ2(2, pt, 2*100**2)/pt for pt in pts])
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+| <matplotlib.lines.Line2D | at | 0x7f5b8a2380d0> |
+[[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
+: LHAPDF 6.2.3 loading /usr/share/lhapdf/LHAPDF/NNPDF31_lo_as_0118/NNPDF31_lo_as_0118_0000.dat
+: NNPDF31_lo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 315000
+:END:
+
+
+Now we sample some events. Doing this in parallel helps. We let the os
+figure out the cpu mapping.
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  intervals_η = np.array([interval_η, [pdf.xMin, 1], [pdf.xMin, 1]])
+
+  result, eff = monte_carlo.sample_unweighted_array(
+      10000,
+      dist_η,
+      interval=intervals_η,
+      proc="auto",
+      report_efficiency=True,
+      upper_bound=5.5e-10,
+      #cache="cache/pdf/huge11",
+      status_path="/tmp/status1"
+  )
+  eff
+#+end_src
+
+#+RESULTS:
+: 0.0006769547691677542
+
+The efficiency is still quite horrible, but at least an order of
+mag. better than with cosθ.
+#+begin_src jupyter-python :exports both :results raw drawer
+xmin = 20/((1-np.tanh(η)**2)*e_proton) +.08
+dist_η([-η, xmin, xmin])
+#+end_src
+
+#+RESULTS:
+: 4.6926779419045556e-12
+
+Let's look at a histogramm of eta samples.
+#+begin_src jupyter-python :exports both :results raw drawer
+  fig, ax = draw_histo_auto(result[:, 0], r"$\eta$", bins=50)
+  #ax.set_yscale('log')
+  len(result[:, 0])
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: 1000000
+[[file:./.ob-jupyter/0069de20eb1b8baa50a5343fd30c79c683a1fab1.png]]
+:END:
+#+begin_src jupyter-python :exports both :results raw drawer
+gev_to_pb(eff * (intervals_η[:, 1] - intervals_η[:, 0]).prod() * 5.5e-10) * 2*np.pi
+#+end_src
+
+#+RESULTS:
+: 0.002694774847491895
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  yoda_file = yoda.read("../../runcards/pp/analysis/Analysis.yoda")
+  yoda_hist = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/eta"])
+  draw_ratio_plot(
+      [
+          dict(hist=yoda_hist),
+          dict(hist=np.histogram(result[:, 0], bins=50, range=interval_η)),
+      ]
+  )
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+| <Figure | size | 432x288 | with | 2 | Axes> | (<matplotlib.axes._subplots.AxesSubplot at 0x7f5b975d3610> <matplotlib.axes._subplots.AxesSubplot at 0x7f5b975791c0>) |
+[[file:./.ob-jupyter/f29962e850ee73c0d1352def5de55d738f7748f1.png]]
+:END:
+
+That looks OK.

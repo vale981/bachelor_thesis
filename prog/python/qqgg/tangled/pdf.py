@@ -282,15 +282,3 @@ def get_xs_distribution_with_pdf(
         return result
 
     return vectorized if vectorize else distribution, (pdf.xMin, pdf.xMax)
-
-def sample_momenta(num_samples, dist, interval, e_hadron, upper_bound=None, **kwargs):
-    res, eff = monte_carlo.sample_unweighted_array(
-        num_samples,
-        dist,
-        interval,
-        upper_bound=upper_bound,
-        report_efficiency=True,
-        **kwargs
-    )
-    cosθ, x_1, x_2 = res.T
-    return momenta(e_hadron, x_1[None, :], x_2[None, :], cosθ[None, :]), eff
