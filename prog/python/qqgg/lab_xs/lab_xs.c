@@ -1044,6 +1044,7 @@ static const char __pyx_k_lab_xs[] = "lab_xs";
 static const char __pyx_k_e_proton[] = "e_proton";
 static const char __pyx_k_tanh_eta[] = "tanh_eta";
 static const char __pyx_k_lab_xs_pyx[] = "lab_xs.pyx";
+static const char __pyx_k_second_eta[] = "second_eta";
 static const char __pyx_k_diff_xs_eta[] = "diff_xs_eta";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_averaged_tchanel_q2[] = "averaged_tchanel_q2";
@@ -1059,6 +1060,7 @@ static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_pT;
 static PyObject *__pyx_n_s_rap;
+static PyObject *__pyx_n_s_second_eta;
 static PyObject *__pyx_n_s_tanh_eta;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_x_1;
@@ -1066,12 +1068,15 @@ static PyObject *__pyx_n_s_x_2;
 static PyObject *__pyx_pf_6lab_xs_diff_xs_eta(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_e_proton, double __pyx_v_charge, double __pyx_v_eta, double __pyx_v_x_1, double __pyx_v_x_2); /* proto */
 static PyObject *__pyx_pf_6lab_xs_2pT(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_e_proton, double __pyx_v_eta, double __pyx_v_x_1, double __pyx_v_x_2); /* proto */
 static PyObject *__pyx_pf_6lab_xs_4averaged_tchanel_q2(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_e_proton, double __pyx_v_x_1, double __pyx_v_x_2); /* proto */
+static PyObject *__pyx_pf_6lab_xs_6second_eta(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_eta, double __pyx_v_x_1, double __pyx_v_x_2); /* proto */
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__3;
 static PyObject *__pyx_tuple__5;
+static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_codeobj__2;
 static PyObject *__pyx_codeobj__4;
 static PyObject *__pyx_codeobj__6;
+static PyObject *__pyx_codeobj__8;
 /* Late includes */
 
 /* "lab_xs.pyx":3
@@ -1355,7 +1360,7 @@ static PyObject *__pyx_pf_6lab_xs_2pT(CYTHON_UNUSED PyObject *__pyx_self, double
   /* "lab_xs.pyx":30
  *         * x_2
  *         / (x_1 + x_2 - (x_1 - x_2) * tanh_eta)
- *         * sqrt((1 - tanh_eta ** 2))             # <<<<<<<<<<<<<<
+ *         * sqrt(1 - tanh_eta ** 2)             # <<<<<<<<<<<<<<
  *     )
  * 
  */
@@ -1389,6 +1394,7 @@ static PyObject *__pyx_pf_6lab_xs_2pT(CYTHON_UNUSED PyObject *__pyx_self, double
  * 
  * def averaged_tchanel_q2(double e_proton, double x_1, double x_2):             # <<<<<<<<<<<<<<
  *     return 2 * x_1 * x_2 * e_proton ** 2
+ * 
  */
 
 /* Python wrapper */
@@ -1474,6 +1480,8 @@ static PyObject *__pyx_pf_6lab_xs_4averaged_tchanel_q2(CYTHON_UNUSED PyObject *_
  * 
  * def averaged_tchanel_q2(double e_proton, double x_1, double x_2):
  *     return 2 * x_1 * x_2 * e_proton ** 2             # <<<<<<<<<<<<<<
+ * 
+ * def second_eta(double eta, double x_1, double x_2):
  */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_1 = PyFloat_FromDouble((((2.0 * __pyx_v_x_1) * __pyx_v_x_2) * pow(__pyx_v_e_proton, 2.0))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
@@ -1487,12 +1495,140 @@ static PyObject *__pyx_pf_6lab_xs_4averaged_tchanel_q2(CYTHON_UNUSED PyObject *_
  * 
  * def averaged_tchanel_q2(double e_proton, double x_1, double x_2):             # <<<<<<<<<<<<<<
  *     return 2 * x_1 * x_2 * e_proton ** 2
+ * 
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_AddTraceback("lab_xs.averaged_tchanel_q2", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "lab_xs.pyx":37
+ *     return 2 * x_1 * x_2 * e_proton ** 2
+ * 
+ * def second_eta(double eta, double x_1, double x_2):             # <<<<<<<<<<<<<<
+ *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))
+ *     return -(-eta + 2 * rap)
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_6lab_xs_7second_eta(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_6lab_xs_7second_eta = {"second_eta", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_6lab_xs_7second_eta, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_6lab_xs_7second_eta(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  double __pyx_v_eta;
+  double __pyx_v_x_1;
+  double __pyx_v_x_2;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("second_eta (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_eta,&__pyx_n_s_x_1,&__pyx_n_s_x_2,0};
+    PyObject* values[3] = {0,0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+        CYTHON_FALLTHROUGH;
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_eta)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_x_1)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("second_eta", 1, 3, 3, 1); __PYX_ERR(0, 37, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  2:
+        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_x_2)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("second_eta", 1, 3, 3, 2); __PYX_ERR(0, 37, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "second_eta") < 0)) __PYX_ERR(0, 37, __pyx_L3_error)
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+    }
+    __pyx_v_eta = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_eta == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 37, __pyx_L3_error)
+    __pyx_v_x_1 = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_x_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 37, __pyx_L3_error)
+    __pyx_v_x_2 = __pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_x_2 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 37, __pyx_L3_error)
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("second_eta", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 37, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("lab_xs.second_eta", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_6lab_xs_6second_eta(__pyx_self, __pyx_v_eta, __pyx_v_x_1, __pyx_v_x_2);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_6lab_xs_6second_eta(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_eta, double __pyx_v_x_1, double __pyx_v_x_2) {
+  double __pyx_v_rap;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("second_eta", 0);
+
+  /* "lab_xs.pyx":38
+ * 
+ * def second_eta(double eta, double x_1, double x_2):
+ *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))             # <<<<<<<<<<<<<<
+ *     return -(-eta + 2 * rap)
+ */
+  __pyx_v_rap = atanh(((__pyx_v_x_1 - __pyx_v_x_2) / (__pyx_v_x_1 + __pyx_v_x_2)));
+
+  /* "lab_xs.pyx":39
+ * def second_eta(double eta, double x_1, double x_2):
+ *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))
+ *     return -(-eta + 2 * rap)             # <<<<<<<<<<<<<<
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyFloat_FromDouble((-((-__pyx_v_eta) + (2.0 * __pyx_v_rap)))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "lab_xs.pyx":37
+ *     return 2 * x_1 * x_2 * e_proton ** 2
+ * 
+ * def second_eta(double eta, double x_1, double x_2):             # <<<<<<<<<<<<<<
+ *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))
+ *     return -(-eta + 2 * rap)
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("lab_xs.second_eta", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -1558,6 +1694,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_pT, __pyx_k_pT, sizeof(__pyx_k_pT), 0, 0, 1, 1},
   {&__pyx_n_s_rap, __pyx_k_rap, sizeof(__pyx_k_rap), 0, 0, 1, 1},
+  {&__pyx_n_s_second_eta, __pyx_k_second_eta, sizeof(__pyx_k_second_eta), 0, 0, 1, 1},
   {&__pyx_n_s_tanh_eta, __pyx_k_tanh_eta, sizeof(__pyx_k_tanh_eta), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_x_1, __pyx_k_x_1, sizeof(__pyx_k_x_1), 0, 0, 1, 1},
@@ -1601,11 +1738,24 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * def averaged_tchanel_q2(double e_proton, double x_1, double x_2):             # <<<<<<<<<<<<<<
  *     return 2 * x_1 * x_2 * e_proton ** 2
+ * 
  */
   __pyx_tuple__5 = PyTuple_Pack(3, __pyx_n_s_e_proton, __pyx_n_s_x_1, __pyx_n_s_x_2); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
   __pyx_codeobj__6 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__5, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_lab_xs_pyx, __pyx_n_s_averaged_tchanel_q2, 34, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__6)) __PYX_ERR(0, 34, __pyx_L1_error)
+
+  /* "lab_xs.pyx":37
+ *     return 2 * x_1 * x_2 * e_proton ** 2
+ * 
+ * def second_eta(double eta, double x_1, double x_2):             # <<<<<<<<<<<<<<
+ *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))
+ *     return -(-eta + 2 * rap)
+ */
+  __pyx_tuple__7 = PyTuple_Pack(4, __pyx_n_s_eta, __pyx_n_s_x_1, __pyx_n_s_x_2, __pyx_n_s_rap); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
+  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(3, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_lab_xs_pyx, __pyx_n_s_second_eta, 37, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -1910,10 +2060,23 @@ if (!__Pyx_RefNanny) {
  * 
  * def averaged_tchanel_q2(double e_proton, double x_1, double x_2):             # <<<<<<<<<<<<<<
  *     return 2 * x_1 * x_2 * e_proton ** 2
+ * 
  */
   __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_6lab_xs_5averaged_tchanel_q2, NULL, __pyx_n_s_lab_xs); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_averaged_tchanel_q2, __pyx_t_1) < 0) __PYX_ERR(0, 34, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "lab_xs.pyx":37
+ *     return 2 * x_1 * x_2 * e_proton ** 2
+ * 
+ * def second_eta(double eta, double x_1, double x_2):             # <<<<<<<<<<<<<<
+ *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))
+ *     return -(-eta + 2 * rap)
+ */
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_6lab_xs_7second_eta, NULL, __pyx_n_s_lab_xs); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_second_eta, __pyx_t_1) < 0) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "lab_xs.pyx":1

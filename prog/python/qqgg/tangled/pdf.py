@@ -11,6 +11,7 @@ import lhapdf
 from numba import jit, vectorize, float64, boolean
 import lab_xs.lab_xs as c_xs
 
+
 @vectorize([float64(float64, float64, float64, float64)], nopython=True)
 def energy_factor(e_proton, charge, x_1, x_2):
     """Calculates the factor common to all other values in this module.
@@ -98,15 +99,84 @@ def diff_xs_η(e_proton, charge, η, x_1, x_2):
     return f * ((np.tanh(η - rap)) ** 2 + 1)
 
 
+class Cut:
+    def __init__(self):
+        self._other = None
+        self._current_comb = self._call
+
+        self._greater_than = 0
+        self._lower_than = np.inf
+
+    def __gt__(self, greater_than):
+        self._greater_than = greater_than
+
+        return self
+
+    def __lt__(self, lower_than):
+        self._lower_than = lower_than
+
+        return self
+
+    def _or_comb(self, event):
+        return self._call(event) or self._other(event)
+
+    def _and_comb(self, event):
+        return self._call(event) and self._other(event)
+
+    def _call(self, event):
+        return self._greater_than < self._calculate(event) < self._lower_than
+
+    def _calculate(self, event):
+        raise NotImplementedError('"_calulate" must be implemented.')
+
+    def __call__(self, event):
+        return self._current_comb(event)
+
+    def __and__(self, other):
+        self._other = other
+        self._current_comb = self._and_comb
+
+        return self
+
+    def __or__(self, other):
+        self._other = other
+        self._current_comb = self._or_comb
+
+        return self
+
+    def apply(self, function):
+        @wraps(function)
+        def wrapper(event):
+            if self(event):
+                return function(event)
+
+            return 0
+
+        return wrapper
+
+
 @vectorize([float64(float64, float64, float64)], nopython=True)
 def averaged_tchanel_q2(e_proton, x_1, x_2):
     return 2 * x_1 * x_2 * e_proton ** 2
 
-def cut_pT_from_η(greater_than=0):
-    def cut(e_proton, η, x_1, x_2):
-        return c_xs.pT(e_proton, η, x_1, x_2) > greater_than
 
-    return cut
+class CutpT(Cut):
+    def __init__(self):
+        super().__init__()
+
+    def _calculate(self, event):
+        e_hadron, eta, x_1, x_2 = event
+        return c_xs.pT(e_hadron, eta, x_1, x_2)
+
+
+class CutOtherEta(Cut):
+    def __init__(self):
+        super().__init__()
+
+    def _calculate(self, event):
+        _, η, x_1, x_2 = event
+        rap = np.arctanh((x_1 - x_2) / (x_1 + x_2))
+        return c_xs.second_eta(η, x_1, x_2)
 
 def cached_pdf(pdf, q, points, e_hadron):
     x_min = pdf.xMin
@@ -184,7 +254,7 @@ def get_xs_distribution_with_pdf(
     xfxQ2 = pdf.xfxQ2
 
     def distribution(event: np.ndarray) -> float:
-        if cut and not cut(e_hadron, *event):
+        if cut and not cut([e_hadron, *event]):
             return 0
 
         angle_arg, x_1, x_2 = event

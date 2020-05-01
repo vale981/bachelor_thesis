@@ -34,3 +34,6 @@ def pT(double e_proton, double eta, double x_1, double x_2):
 def averaged_tchanel_q2(double e_proton, double x_1, double x_2):
     return 2 * x_1 * x_2 * e_proton ** 2
 
+def second_eta(double eta, double x_1, double x_2):
+    cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))
+    return -(-eta + 2 * rap)
