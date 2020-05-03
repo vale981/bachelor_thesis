@@ -340,22 +340,46 @@ We begin by implementing the same sermon for the lab frame.
 #+RESULTS:
 
 * Checking out the partonic xs.
-Let's set up a cut for the η of the other photon.
+Let's set up a cut for the η of the other photon and codify our
+distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
   other_eta_cut = -2.5 < CutOtherEta() < 2.5
-#+end_src
 
-#+RESULTS:
 
-#+begin_src jupyter-python :exports both :results raw drawer
   def part_dist(eta):
       if isinstance(eta, np.ndarray):
           return np.array([part_dist(s_η) for s_η in eta])
 
-      if not other_eta_cut([0, eta, .5, 1]):
+      if not other_eta_cut([0, eta, 0.5, 1]):
           return 0
-      return diff_xs_η(e_proton, -1 / 3, eta, 0.5, 1)
 
+      return 2 * np.pi * c_xs.diff_xs_eta(e_proton, -1 / 3, eta, 0.5, 1)
+#+end_src
+
+#+RESULTS:
+
+The total cross section is as follows:
+#+begin_src jupyter-python :exports both :results raw drawer
+  part_xs = monte_carlo.integrate(part_dist, [-2.5, 2.5], epsilon=1e-16)
+  part_xs
+#+end_src
+
+#+RESULTS:
+: IntegrationResult(result=5.428390011332465e-14, sigma=8.15611369390743e-17, N=94130)
+
+
+We have to convert that to picobarn.
+#+begin_src jupyter-python :exports both :results raw drawer
+  gev_to_pb(part_xs.result), gev_to_pb(part_xs.sigma)
+#+end_src
+
+#+RESULTS:
+| 2.1137030945166285e-05 | 3.175822429495981e-08 |
+
+That is compatible with sherpa!
+
+We can take some samples as well.
+#+begin_src jupyter-python :exports both :results raw drawer
   part_samples = monte_carlo.sample_unweighted_array(
       100000,
       part_dist,
@@ -366,7 +390,7 @@ Let's set up a cut for the η of the other photon.
 #+end_src
 
 #+RESULTS:
-: -2.499992898428325
+: -2.4999997942877834
 
 #+begin_src jupyter-python :exports both :results raw drawer
 part_hist = np.histogram(part_samples, bins=50, range=[-2.5, 2.5])
@@ -376,25 +400,29 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.axes._subplots.AxesSubplot at 0x7f2da24a1e80>
-[[file:./.ob-jupyter/60624f423d26291605a6802e987362d0b69be208.png]]
+: <matplotlib.axes._subplots.AxesSubplot at 0x7f2d90af7730>
+[[file:./.ob-jupyter/b46717a18710c0dff42762457db179f8c8b4e135.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
   yoda_sherpa_part = yoda.read("../../runcards/pp_partonic/analysis/Analysis.yoda")
   sherpa_part_hist = yoda_to_numpy(yoda_sherpa_part["/MC_DIPHOTON_PARTONIC/eta"])
-  draw_ratio_plot(
+  fig, (ax, ax_ratio) = draw_ratio_plot(
       [
-          dict(hist=sherpa_part_hist),
-          dict(hist=part_hist),
+          dict(hist=sherpa_part_hist, hist_kwargs=dict(label="Sherpa")),
+          dict(hist=part_hist, hist_kwargs=dict(label="Own Implementation")),
       ]
   )
+  ax_ratio.set_xlabel(r"$\eta$")
+  xs = np.linspace(-2.5, 2.5, 1000)
+  ax.plot(xs, part_dist(xs)/part_xs.result, label="Distribution")
+  ax.legend()
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <Figure | size | 432x288 | with | 2 | Axes> | (<matplotlib.axes._subplots.AxesSubplot at 0x7f2da1b62a30> <matplotlib.axes._subplots.AxesSubplot at 0x7f2da1f5a250>) |
-[[file:./.ob-jupyter/328a8fdd25bbfda79fa5fbbb448cff6e9e522401.png]]
+: <matplotlib.legend.Legend at 0x7f2d8edd8fa0>
+[[file:./.ob-jupyter/ac22a3795b5760e63e68bfffb5b2cf47d7b1df84.png]]
 :END:
 
 * Total XS
