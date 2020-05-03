@@ -105,8 +105,15 @@ def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
         ax_ratio.set_ylabel("ratio")
         draw_histogram(
             ax_ratio,
-            [heights / reference, edges],
-            errorbars=errors / reference,
+            [
+                np.divide(
+                    heights, reference, out=np.ones_like(heights), where=reference != 0
+                ),
+                edges,
+            ],
+            errorbars=np.divide(
+                errors, reference, out=np.zeros_like(heights), where=reference != 0
+            ),
             hist_kwargs=(
                 histogram["hist_kwargs"] if "hist_kwargs" in histogram else dict()
             ),

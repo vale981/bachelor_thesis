@@ -13,7 +13,6 @@
 #+end_src
 
 #+RESULTS:
-: Welcome to JupyROOT 6.20/04
 
 ** Utilities
 #+BEGIN_SRC jupyter-python :exports both
@@ -25,6 +24,8 @@
 #+END_SRC
 
 #+RESULTS:
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -365,7 +366,7 @@ Let's set up a cut for the η of the other photon.
 #+end_src
 
 #+RESULTS:
-: -2.499964851191033
+: -2.499992898428325
 
 #+begin_src jupyter-python :exports both :results raw drawer
 part_hist = np.histogram(part_samples, bins=50, range=[-2.5, 2.5])
@@ -375,8 +376,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.axes._subplots.AxesSubplot at 0x7f65010b55b0>
-[[file:./.ob-jupyter/755de6f8b498e65521e27043c1ca1d5e1df443b7.png]]
+: <matplotlib.axes._subplots.AxesSubplot at 0x7f2da24a1e80>
+[[file:./.ob-jupyter/60624f423d26291605a6802e987362d0b69be208.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -392,16 +393,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: /home/hiro/Documents/Projects/UNI/Bachelor/prog/python/qqgg/tangled/plot_utils.py:108: RuntimeWarning: invalid value encountered in true_divide
-:   [heights / reference, edges],
-: /home/hiro/Documents/Projects/UNI/Bachelor/prog/python/qqgg/tangled/plot_utils.py:109: RuntimeWarning: invalid value encountered in true_divide
-:   errorbars=errors / reference,
-: /home/hiro/Documents/Projects/UNI/Bachelor/prog/python/qqgg/tangled/plot_utils.py:108: RuntimeWarning: invalid value encountered in true_divide
-:   [heights / reference, edges],
-: /home/hiro/Documents/Projects/UNI/Bachelor/prog/python/qqgg/tangled/plot_utils.py:109: RuntimeWarning: invalid value encountered in true_divide
-:   errorbars=errors / reference,
-| <Figure | size | 432x288 | with | 2 | Axes> | (<matplotlib.axes._subplots.AxesSubplot at 0x7f65001b9250> <matplotlib.axes._subplots.AxesSubplot at 0x7f650015e580>) |
-[[file:./.ob-jupyter/a923176d253cc3f7a2213ae081583076cbd1b587.png]]
+| <Figure | size | 432x288 | with | 2 | Axes> | (<matplotlib.axes._subplots.AxesSubplot at 0x7f2da1b62a30> <matplotlib.axes._subplots.AxesSubplot at 0x7f2da1f5a250>) |
+[[file:./.ob-jupyter/328a8fdd25bbfda79fa5fbbb448cff6e9e522401.png]]
 :END:
 
 * Total XS
