@@ -49,7 +49,6 @@ public:
     _h_pT->fill(photon.pT(), weight);
     _h_eta->fill(photon.eta(), weight);
     _h_cos_theta->fill(cos(photon.theta()), weight);
-    MSG_INFO("EEEETA: " << photons.at(0).eta() << " " << photons.at(1).eta());
   }
 
   //@}
