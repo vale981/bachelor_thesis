@@ -99,7 +99,7 @@ def integrate(
 
     if num_points is None:
         prelim_std = integration_volume * f(probe_points, **kwargs).std()
-        # epsilon = epsilon if prelim_std > epsilon else prelim_std / 10
+        epsilon = epsilon if prelim_std > epsilon else prelim_std / 10
 
         num_points = int((prelim_std / epsilon) ** 2 * 1.1 + 1)
 
