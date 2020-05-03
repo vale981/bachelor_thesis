@@ -377,6 +377,14 @@ We have to convert that to picobarn.
 | 2.1137030945166285e-05 | 3.175822429495981e-08 |
 
 That is compatible with sherpa!
+#+begin_src jupyter-python :exports both :results raw drawer
+  sherpa_part, sherpa_part_σ = np.loadtxt('../../runcards/pp_partonic/sherpa_xs')
+  sherpa_part, sherpa_part_σ  # GeV
+#+end_src
+
+#+RESULTS:
+| 2.11499e-05 | 6.8969e-09 |
+
 
 We can take some samples as well.
 #+begin_src jupyter-python :exports both :results raw drawer
