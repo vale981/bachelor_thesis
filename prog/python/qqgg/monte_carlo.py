@@ -50,7 +50,14 @@ class IntegrationResult:
 
 
 def integrate(
-    f, interval, epsilon=0.01, seed=None, num_points=None, adapt=True, **kwargs
+    f,
+    interval,
+    epsilon=0.01,
+    seed=None,
+    num_points=None,
+    adapt=True,
+    return_sample=False,
+    **kwargs,
 ) -> IntegrationResult:
     """Monte-Carlo integrates the function `f` over an interval.
 
@@ -63,6 +70,8 @@ def integrate(
     :param epsilon: desired accuracy
     :param seed: the seed for the rng, if not specified, the system
         time is used
+    :param bool return_sample: wether to return the utilized sample
+        of f as second return value
 
     :returns: the integration result
 
@@ -109,8 +118,9 @@ def integrate(
         deviation = sample_std * np.sqrt(1 / (num_points - 1))
 
         if not adapt or deviation < epsilon:
-            print(sample.max(), points[np.where(sample == sample.max())])
-            return IntegrationResult(integral, deviation, num_points)
+            result = IntegrationResult(integral, deviation, num_points)
+
+            return (result, sample) if return_sample else result
 
         # then we refine our guess, the factor 1.1
         num_points = int((sample_std / epsilon) ** 2 * 1.1)
@@ -179,17 +189,9 @@ def sample_unweighted_vector(
             [*interval[:, 0], 0], [*interval[:, 1], 1], [1, 1 + dimension],
         )
 
-    fifo = None
-    if status_path:
-        if not pathlib.Path(status_path).exists():
-            os.mkfifo(status_path)
-        fifo = open(status_path, "w")
-
     total_points = 0
     total_accepted = 0
 
-    start_time = time.monotonic()
-    last_time = start_time
     while True:
         points = allocate_random_chunk()
 
@@ -200,26 +202,9 @@ def sample_unweighted_vector(
         if f(arg) >= points[:, -1] * upper_bound:
             if report_efficiency:
                 total_accepted += 1
-            if fifo:
-                this_time = time.monotonic()
-                if this_time - last_time > 10:
-                    δ = this_time - start_time
-                    speed = total_accepted / δ
-                    try:
-                        fifo.write(
-                            f"{os.getpid()}: {total_accepted:<10} "
-                            f"{total-total_accepted:<10} {speed:4.1f} 1/sec "
-                            f"{(total_accepted / total) * 100:2.1f}%"
-                            f"{(total-total_accepted)/speed/60:4.0f} min\n"
-                        )
-                        fifo.flush()
-                    except BrokenPipeError:
-                        pass
-                    last_time = this_time
 
             yield (arg, total_accepted / total_points,) if report_efficiency else arg
 
-    fifo and fifo.close()
     return
 
 
@@ -628,6 +613,7 @@ def sample_unweighted_array(
     increment_borders=None,
     report_efficiency=False,
     proc=None,
+    status_path=None,
     **kwargs,
 ):
     """Sample `num` elements from a distribution.  The rest of the
@@ -638,6 +624,7 @@ def sample_unweighted_array(
     sample_arr = None
     eff = None
 
+    # some multiprocessing magic
     if proc is not None:
         if isinstance(proc, str) and proc == "auto":
             proc = cpu_count() * 2
@@ -652,6 +639,7 @@ def sample_unweighted_array(
                 interval=interval,
                 increment_borders=increment_borders,
                 report_efficiency=report_efficiency,
+                status_path=status_path,
                 proc=None,
                 cache=None,
                 **kwargs,
@@ -703,12 +691,43 @@ def sample_unweighted_array(
         else:
             raise TypeError("Neiter interval nor increment_borders specified!")
 
+        fifo = None
+        if status_path:
+            if not pathlib.Path(status_path).exists():
+                os.mkfifo(status_path)
+            fifo = open(status_path, "w")
+
+        start_time = time.monotonic()
+        last_time = start_time
+
         for i, sample in zip(range(num), samples):
+            if fifo:
+                this_time = time.monotonic()
+                if this_time - last_time > 1:
+                    δ = this_time - start_time
+                    total = i + 1
+                    speed = total / δ
+
+                    try:
+                        fifo.write(
+                            f"{os.getpid()}: {i:<10} "
+                            f"{num-total:<10} {speed:4.1f} 1/sec "
+                            f"{(total / num) * 100:2.1f}%"
+                            f"{(num-total)/speed/60:4.0f} min\n"
+                        )
+                        fifo.flush()
+                    except BrokenPipeError:
+                        pass
+
+                    last_time = this_time  # after the work is before the work is ...
+
             if report_efficiency:
                 sample_arr[i], _ = sample
             else:
                 sample_arr[i] = sample
 
         eff = next(samples)[1] if report_efficiency else None
+
+        fifo and fifo.close()
 
     return (sample_arr, eff) if report_efficiency else sample_arr

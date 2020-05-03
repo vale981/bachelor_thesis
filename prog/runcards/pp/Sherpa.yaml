@@ -2,7 +2,7 @@
 OUTPUT: 3
 
 # event count
-EVENTS: 10000/8  # / num_cpus
+EVENTS: 100000/8  # / num_cpus
 
 # save results
 GENERATE_RESULT_DIRECTORY: true

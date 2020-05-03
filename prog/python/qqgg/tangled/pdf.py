@@ -175,7 +175,6 @@ class CutOtherEta(Cut):
 
     def _calculate(self, event):
         _, η, x_1, x_2 = event
-        rap = np.arctanh((x_1 - x_2) / (x_1 + x_2))
         return c_xs.second_eta(η, x_1, x_2)
 
 def cached_pdf(pdf, q, points, e_hadron):

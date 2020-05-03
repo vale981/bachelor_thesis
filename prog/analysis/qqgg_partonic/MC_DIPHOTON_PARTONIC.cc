@@ -45,12 +45,11 @@ public:
 
     Particles photons = apply<IdentifiedFinalState>(event, "IFS").particles();
 
-    // they are both the same, so we take the first
-    for (const auto &photon : photons) {
-      _h_pT->fill(photon.pT(), weight);
-      _h_eta->fill(photon.eta(), weight);
-      _h_cos_theta->fill(cos(photon.theta()), weight);
-    }
+    const auto &photon = photons.at(1);
+    _h_pT->fill(photon.pT(), weight);
+    _h_eta->fill(photon.eta(), weight);
+    _h_cos_theta->fill(cos(photon.theta()), weight);
+    MSG_INFO("EEEETA: " << photons.at(0).eta() << " " << photons.at(1).eta());
   }
 
   //@}
