@@ -1514,7 +1514,7 @@ static PyObject *__pyx_pf_6lab_xs_4averaged_tchanel_q2(CYTHON_UNUSED PyObject *_
  * 
  * def second_eta(double eta, double x_1, double x_2):             # <<<<<<<<<<<<<<
  *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))
- *     return -(-eta + 2 * rap)
+ *     return (-eta + 2 * rap)
  */
 
 /* Python wrapper */
@@ -1601,17 +1601,17 @@ static PyObject *__pyx_pf_6lab_xs_6second_eta(CYTHON_UNUSED PyObject *__pyx_self
  * 
  * def second_eta(double eta, double x_1, double x_2):
  *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))             # <<<<<<<<<<<<<<
- *     return -(-eta + 2 * rap)
+ *     return (-eta + 2 * rap)
  */
   __pyx_v_rap = atanh(((__pyx_v_x_1 - __pyx_v_x_2) / (__pyx_v_x_1 + __pyx_v_x_2)));
 
   /* "lab_xs.pyx":39
  * def second_eta(double eta, double x_1, double x_2):
  *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))
- *     return -(-eta + 2 * rap)             # <<<<<<<<<<<<<<
+ *     return (-eta + 2 * rap)             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble((-((-__pyx_v_eta) + (2.0 * __pyx_v_rap)))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(((-__pyx_v_eta) + (2.0 * __pyx_v_rap))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -1622,7 +1622,7 @@ static PyObject *__pyx_pf_6lab_xs_6second_eta(CYTHON_UNUSED PyObject *__pyx_self
  * 
  * def second_eta(double eta, double x_1, double x_2):             # <<<<<<<<<<<<<<
  *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))
- *     return -(-eta + 2 * rap)
+ *     return (-eta + 2 * rap)
  */
 
   /* function exit code */
@@ -1750,7 +1750,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * def second_eta(double eta, double x_1, double x_2):             # <<<<<<<<<<<<<<
  *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))
- *     return -(-eta + 2 * rap)
+ *     return (-eta + 2 * rap)
  */
   __pyx_tuple__7 = PyTuple_Pack(4, __pyx_n_s_eta, __pyx_n_s_x_1, __pyx_n_s_x_2, __pyx_n_s_rap); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__7);
@@ -2072,7 +2072,7 @@ if (!__Pyx_RefNanny) {
  * 
  * def second_eta(double eta, double x_1, double x_2):             # <<<<<<<<<<<<<<
  *     cdef double rap = atanh((x_1 - x_2) / (x_1 + x_2))
- *     return -(-eta + 2 * rap)
+ *     return (-eta + 2 * rap)
  */
   __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_6lab_xs_7second_eta, NULL, __pyx_n_s_lab_xs); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);

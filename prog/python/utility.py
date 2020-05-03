@@ -91,6 +91,11 @@ def gev_to_pb(xs):
     return xs / (electron_volt ** 2) * (hbar * c) ** 2 * 1e22
 
 
+def pb_to_gev(xs):
+    """Converts a cross section from pb to 1/GeV^2."""
+    return xs * (electron_volt ** 2) / ((hbar * c) ** 2 * 1e22)
+
+
 def θ_to_η(θ):
     θ = np.asarray(θ)
     return -np.log(np.tan(θ / 2))

@@ -851,9 +851,9 @@ static PyObject *__pyx_pf_6lab_xs_6second_eta(CYTHON_UNUSED PyObject *__pyx_self
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
 </pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">38</span>:     <span class="k">cdef</span> <span class="kt">double</span> <span class="nf">rap</span> <span class="o">=</span> <span class="n">atanh</span><span class="p">((</span><span class="n">x_1</span> <span class="o">-</span> <span class="n">x_2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">x_1</span> <span class="o">+</span> <span class="n">x_2</span><span class="p">))</span></pre>
 <pre class='cython code score-0 '>  __pyx_v_rap = atanh(((__pyx_v_x_1 - __pyx_v_x_2) / (__pyx_v_x_1 + __pyx_v_x_2)));
-</pre><pre class="cython line score-6" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">39</span>:     <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="n">eta</span> <span class="o">+</span> <span class="mf">2</span> <span class="o">*</span> <span class="n">rap</span><span class="p">)</span></pre>
+</pre><pre class="cython line score-6" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">39</span>:     <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="n">eta</span> <span class="o">+</span> <span class="mf">2</span> <span class="o">*</span> <span class="n">rap</span><span class="p">)</span></pre>
 <pre class='cython code score-6 '>  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_r);
-  __pyx_t_1 = <span class='py_c_api'>PyFloat_FromDouble</span>((-((-__pyx_v_eta) + (2.0 * __pyx_v_rap))));<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)</span>
+  __pyx_t_1 = <span class='py_c_api'>PyFloat_FromDouble</span>(((-__pyx_v_eta) + (2.0 * __pyx_v_rap)));<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
