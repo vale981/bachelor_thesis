@@ -39,6 +39,8 @@
  - [[file:literature/mc/vegas_algo.pdf][VEGAS Algorithm]]
 ** PDFs
  - [[file:literature/pdf/lhapdf6.pdf][LHAPDF6]]
+** Pseudo Rapidity
+ - https://physics.stackexchange.com/questions/12258/why-is-pseudorapidity-defined-as-log-tan-theta-2
 * Aufgaben
 ** Erste Aufgabenp
    :LOGBOOK:
@@ -131,6 +133,7 @@ Viele Gruesse, Frank
 ** Flavours im Proton
 ** Sind quark verhaeltnisse in PDF enthalten (2:1 fuer proton)
 ** beide finalstate photonen behalten?
+** TODO PDF members
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!

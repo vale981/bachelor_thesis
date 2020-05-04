@@ -1,0 +1,77 @@
+%%% Local Variables: ***
+%%% mode: latex ***
+%%% TeX-master: "../../document.tex"  ***
+%%% End: ***
+
+\section{Kinematics and Cross-Section of the Diphoton Process}%
+\label{sec:lab_xs}
+
+To utilize~\eqref{eq:pdf-xs} for modeling the~\(\ppgg\) process and to
+generate event samples the results of~\ref{chap:qqgg} have to be
+transformed into the center of momentum frame of the colliding
+protons. Quantities in the center of momentum frame of the partons
+will be starred (like \(x^\ast\)).
+
+Let \(E_p\) be the beam energy of the proton beams and \(x_1, x_2\)
+the momentum fractions of the partons in their respective protons.
+Choosing the frame where the proton momenta are parallel to the
+\(z\)-Axis and neglecting the mass of the protons their momenta are
+\(\bar{p}_{1,2} = E_P \mqty(1 & 0 & 0 & \pm1)\). The quark momenta are
+simply \(p_{1,2}=x_{1,2}\cdot\bar{p}_{1,2}\) and their invariant mass
+is thus given by~\eqref{eq:ecm_partons}.
+
+\begin{equation}
+  \label{eq:ecm_partons}
+  \ecm = \sqrt{4x_1x_2}\cdot E_P
+\end{equation}
+
+The center of momentum frame moves with a velocity
+\(\beta = (x_1-x_2)/(x_1+x_2)\). Because (pseudo-)rapidities are
+additive, it is simplest to work with cross section in terms of the
+pseudo-rapidity.  The pseudo-rapidity of a final state photon in the
+c.m.-frame of the partons is therefore given
+by~\eqref{eq:rap_phot_lf}.
+
+\begin{equation}
+  \label{eq:rap_phot_lf}
+  \eta^\ast = \eta - w = \eta - \artanh(\beta)
+\end{equation}
+
+Because \(\dd{\eta^\ast}/{\dd{\eta}} = 1\) the cross section
+from~\eqref{eq:xs-eta} becomes~\eqref{eq:xs-eta-lab}, where \(\eta\) is
+the pseudo-rapidity one photon.
+
+\begin{equation}
+  \label{eq:xs-eta-lab}
+  \dv{\sigma}{\eta} = 2\pi\cdot\frac{\alpha^2Q^4}{24 E_p^2
+    x_1x_2}\cdot\qty(\tanh(\eta - w)^2 + 1)
+\end{equation}
+
+\begin{wrapfigure}{R}{0.4\textwidth}
+\centering
+\begin{tikzpicture}
+  \coordinate (origin) at (0,0);
+
+  \draw[Latex-] (origin) --  node [midway, above] {\(x_1\)} (-2,0) node[left] {\(p_1\)};
+  \draw[Latex-] (origin) -- node [midway, below] {\(x_2\)} (2,0) coordinate (p4) node[right] {\(p_2\)};
+  \draw[-Latex,rotate=40] (origin) -- (2,0) coordinate (p2) node[right] {\(p_3\)};
+  \draw[-Latex,rotate=70] (origin) -- (-2,0) node[left] {\(p_4\)};
+  \draw[fill=black] (origin) circle (.03);
+
+  \draw pic["$\theta$", draw=black, <->, angle eccentricity=1.2, angle radius=1.5cm] {angle=p4--origin--p2};
+\end{tikzpicture}
+\end{wrapfigure}
+The 4-momenta of the final state photons can be obtained by explicit
+Lorentz transformation and are listed in~\eqref{eq:lab-momenta-fs}
+where \(\theta\) is the azimuth angle of the ``first'' final state
+photon.  These relation are easily transcribed to \(\eta\) dependence
+by using the identity \(\cos(\theta) = \tanh(\eta)\).
+
+
+\begin{align}
+  \label{eq:lab-momenta-fs}
+  p_3 &= \frac{2x_1x_2E_p}{x_1+x_2 - (x_1 - x_2)\cdot\cos(\theta)}\cdot
+  \mqty(1 \\ 0 \\ \sin(\theta) \\ \cos(\theta)) \\
+  p_4 &= \frac{E_p}{x_1+x_2 - (x_1 - x_2)\cdot\cos(\theta)}\cdot
+  \mqty((x_1^2+x_2^2) - (x_1^2-x_2^2)\cos(\theta) \\ 0 \\ -2x_1x_2\sin(\theta) \\ (x_1^2-x_2^2) - (x_1^2+x_2^2)\cos(\theta))
+\end{align}
