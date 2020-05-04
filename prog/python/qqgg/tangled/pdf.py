@@ -239,7 +239,7 @@ def get_xs_distribution_with_pdf(
         quarks
         if quarks is not None
         else np.array(
-            # [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
+            #[[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
             [[1, -1 / 3]]
         )
     )  # all the light quarks
@@ -261,18 +261,19 @@ def get_xs_distribution_with_pdf(
         q2_value = q(e_hadron, x_1, x_2)
         result = 0
 
-        for quark, charge in quarks:
+        pdf_values = (
+            xfxQ2(quarks[:, 0], x_1, q2_value),
+            xfxQ2(-quarks[:, 0], x_1, q2_value),
+            xfxQ2(quarks[:, 0], x_2, q2_value),
+            xfxQ2(-quarks[:, 0], x_2, q2_value),
+        )
+
+        for (quark, charge), q_1, qb_1, q_2, qb_2 in zip(quarks, *pdf_values):
             xs_value = xs(e_hadron, charge, angle_arg, x_1, x_2)
 
-            result += (
-                (xfxQ2(quark, x_1, q2_value) + xfxQ2(-quark, x_1, q2_value))
-                / x_1
-                * (xfxQ2(-quark, x_2, q2_value) + xfxQ2(quark, x_2, q2_value))
-                / x_2
-                * xs_value
-            )
+            result += (q_1 + qb_1) * (q_2 + qb_2) * xs_value
 
-        return result / 2  # identical protons
+        return result / (2 * x_1 * x_2)  # identical protons
 
     def vectorized(events):
         result = np.empty(events.shape[0])
