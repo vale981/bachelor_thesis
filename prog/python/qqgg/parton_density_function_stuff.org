@@ -1,4 +1,4 @@
-#+PROPERTY: header-args :exports both :output-dir results :session pdf :kernel python3
+#+PROPERTY: header-args :exports both :output-dir results :kernel python3 :session :session pdf
 #+TITLE: Investigaton of Parton Density Functions
 #+AUTHOR: Valentin Boettcher
 
@@ -13,7 +13,6 @@
 #+end_src
 
 #+RESULTS:
-: Welcome to JupyROOT 6.20/04
 
 ** Utilities
 #+BEGIN_SRC jupyter-python :exports both
@@ -25,16 +24,17 @@
 #+END_SRC
 
 #+RESULTS:
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
   η = 1
-  min_pT = 200
+  min_pT = 500
   e_proton = 6500  # GeV
   interval_η = [-η, η]
   interval = η_to_θ([-η, η])
   interval_cosθ = np.cos(interval)
-  num_samples = 10_000
   pdf = lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
 #+end_src
 
@@ -292,8 +292,8 @@ We begin by implementing the same sermon for the lab frame.
           quarks
           if quarks is not None
           else np.array(
-              [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
-              # [[1, -1 / 3]]
+              #[[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
+              [[1, -1 / 3]]
           )
       )  # all the light quarks
 
@@ -324,9 +324,9 @@ We begin by implementing the same sermon for the lab frame.
           for (quark, charge), q_1, qb_1, q_2, qb_2 in zip(quarks, *pdf_values):
               xs_value = xs(e_hadron, charge, angle_arg, x_1, x_2)
 
-              result += (q_1 + qb_1) / x_1 * (qb_1 + qb_2) / x_2 * xs_value
+              result += (q_1 + qb_1) * (q_2 + qb_2) * xs_value
 
-          return result / 2  # identical protons
+          return result / (2 * x_1 * x_2)  # identical protons
 
       def vectorized(events):
           result = np.empty(events.shape[0])
@@ -343,14 +343,14 @@ We begin by implementing the same sermon for the lab frame.
 Let's set up a cut for the η of the other photon and codify our
 distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
-  other_eta_cut = -2.5 < CutOtherEta() < 2.5
+  cut_part = (CutpT() > 2000) & (-2.5 < CutOtherEta() < 2.5)
 
 
   def part_dist(eta):
       if isinstance(eta, np.ndarray):
           return np.array([part_dist(s_η) for s_η in eta])
 
-      if not other_eta_cut([0, eta, 0.5, 1]):
+      if not cut_part([e_proton, eta, 0.5, 1]) :
           return 0
 
       return 2 * np.pi * c_xs.diff_xs_eta(e_proton, -1 / 3, eta, 0.5, 1)
@@ -365,7 +365,7 @@ The total cross section is as follows:
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=5.4416934204711784e-14, sigma=9.756444488333038e-17, N=65626)
+: IntegrationResult(result=3.325064936980328e-14, sigma=9.462497477597356e-17, N=94315)
 
 
 We have to convert that to picobarn.
@@ -374,7 +374,7 @@ We have to convert that to picobarn.
 #+end_src
 
 #+RESULTS:
-| 2.1188831676148063e-05 | 3.798958229496718e-08 |
+| 1.2947116975920639e-05 | 3.6845013270046635e-08 |
 
 That is compatible with sherpa!
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -398,7 +398,7 @@ We can take some samples as well.
 #+end_src
 
 #+RESULTS:
-: -2.4999601983216055
+: -1.8206638753300048
 
 #+begin_src jupyter-python :exports both :results raw drawer
 part_hist = np.histogram(part_samples, bins=50, range=[-2.5, 2.5])
@@ -408,8 +408,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.axes._subplots.AxesSubplot at 0x7f99b08ee7f0>
-[[file:./.ob-jupyter/1ae657f694d6f8540e63890857bd3d43533b200d.png]]
+: <matplotlib.axes._subplots.AxesSubplot at 0x7f17d44a51f0>
+[[file:./.ob-jupyter/cea7ffb4b6b977c4057863db2b17278e7b6e7968.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -429,11 +429,11 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f99b07fbe80>
-[[file:./.ob-jupyter/d1644810b1a6551c4e027172f361d9bac8e30f20.png]]
+: <matplotlib.legend.Legend at 0x7f17e664a400>
+[[file:./.ob-jupyter/2fe24632d1d8b3ced9ad3c1a329cf7df22c183c1.png]]
 :END:
 
-* Total XS
+* Total xS
 Now, it would be interesting to know the total cross section.
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -449,16 +449,43 @@ Now, it would be interesting to know the total cross section.
   xs_int_res, xs_sample = monte_carlo.integrate(
       lambda x: gev_to_pb(2 * np.pi * dist_η_vec(x)),
       np.array([interval_η, [pdf.xMin, 1], [pdf.xMin, 1]]),
-      num_points=1000000,  # 8000000,
+      num_points=4000000,
       adapt=False,
       return_sample=True,
+      #cache="cache/pdf/total_xs_500",
   )
   xs_int_res.result, xs_int_res.sigma
 #+end_src
 
 #+RESULTS:
-| 0.01134143962110799 | 0.0002881603770957593 |
+:RESULTS:
+# [goto error]
+:
+: NameErrorTraceback (most recent call last)
+: <ipython-input-4-f3208878798b> in <module>
+: ----> 1 dist_η_vec, _ = get_xs_distribution_with_pdf(
+:       2     c_xs.diff_xs_eta,
+:       3     c_xs.averaged_tchanel_q2,
+:       4     e_proton,
+:       5     cut=(CutpT() > min_pT) & (interval_η[0] < CutOtherEta() < interval_η[1]),
+:
+: NameError: name 'get_xs_distribution_with_pdf' is not defined
+:END:
 
+#+begin_src jupyter-python :exports both :results raw drawer
+  xs_int_res.result, xs_int_res.sigma
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+# [goto error]
+:
+: NameErrorTraceback (most recent call last)
+: <ipython-input-5-e8ad6977c4b3> in <module>
+: ----> 1 xs_int_res.result, xs_int_res.sigma
+:
+: NameError: name 'xs_int_res' is not defined
+:END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
   sherpa, sherpa_σ = np.loadtxt('../../runcards/pp/sherpa_xs')
@@ -466,20 +493,28 @@ Now, it would be interesting to know the total cross section.
 #+end_src
 
 #+RESULTS:
-| 0.0151293 | 1.56851e-05 |
+| 2.95235e-05 | 4.6442e-08 |
 
 A factor of two used to be in here. It stemmed from the fact, that
 there are two identical protons.
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  (xs_int_res.result - sherpa)
+  (xs_int_res.result/sherpa)
 #+end_src
 
 #+RESULTS:
-: 0.003823696866720681
+:RESULTS:
+# [goto error]
+:
+: NameErrorTraceback (most recent call last)
+: <ipython-input-7-124002796006> in <module>
+: ----> 1 (xs_int_res.result/sherpa)
+:
+: NameError: name 'xs_int_res' is not defined
+:END:
 
-**Weird enough, the values are compatible if we choose memeber ~1~ in
-sherpa.**
+They are not compatible, but that changes a lot if one changes the
+multiplication order!
 
 We use this as upper bound, as the maximizer is bogus because of the
 cuts!
@@ -489,7 +524,16 @@ cuts!
 #+end_src
 
 #+RESULTS:
-: 1.705293367885849e-09
+:RESULTS:
+# [goto error]
+:
+: NameErrorTraceback (most recent call last)
+: <ipython-input-8-14c8ec7e4df3> in <module>
+: ----> 1 upper_bound = pb_to_gev(xs_sample.max()) * 1.01
+:       2 upper_bound
+:
+: NameError: name 'xs_sample' is not defined
+:END:
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
@@ -517,8 +561,8 @@ Plotting it, we can see that the variance is reduced.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f99b0516100> |
-[[file:./.ob-jupyter/0db31d249c2b60b27bad5eb14c2fac461dac3229.png]]
+| <matplotlib.lines.Line2D | at | 0x7f17e857a550> |
+[[file:./.ob-jupyter/2cf6c68b8ccd6bf66dd4a5364e9623b9063d7824.png]]
 :END:
 
 Lets plot how the pdf looks.
@@ -531,7 +575,7 @@ Lets plot how the pdf looks.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f99b041fe20> |
+| <matplotlib.lines.Line2D | at | 0x7f17e70a3e80> |
 [[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
 :END:
 
@@ -556,7 +600,7 @@ figure out the cpu mapping.
 #+end_src
 
 #+RESULTS:
-: 0.0005637354643781789
+: 0.0004062633291962335
 
 The efficiency is still quite horrible, but at least an order of
 mag. better than with cosθ.
@@ -571,41 +615,48 @@ Let's look at a histogramm of eta samples.
 #+RESULTS:
 :RESULTS:
 : 1000000
-[[file:./.ob-jupyter/945936d1fc238435ba26b62be01c02ad3e0d9159.png]]
+[[file:./.ob-jupyter/432cfa65a4c786ff290057e9d535c2a1ad2e77b4.png]]
 :END:
+
 #+begin_src jupyter-python :exports both :results raw drawer
-gev_to_pb(eff * (intervals_η[:, 1] - intervals_η[:, 0]).prod() * 5.5e-10) * 2*np.pi
+  sherpa_manual = np.loadtxt("../../runcards/pp/eta.list", skiprows=57)
+  sherpa_manual_pT = np.loadtxt("../../runcards/pp/pt.list", skiprows=57)
 #+end_src
 
 #+RESULTS:
-: 0.0015171232016797228
 
 #+begin_src jupyter-python :exports both :results raw drawer
   yoda_file = yoda.read("../../runcards/pp/analysis/Analysis.yoda")
   yoda_hist = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/eta"])
-  draw_ratio_plot(
+  fig, (ax, _) = draw_ratio_plot(
       [
-          dict(hist=yoda_hist),
           dict(hist=np.histogram(result[:, 0], bins=50, range=interval_η)),
+          dict(hist=yoda_hist, hist_kwargs=dict(label="sherpa")),
+          #dict(hist=np.histogram(sherpa_manual, bins=50, range=interval_η), hist_kwargs=dict(label="sherpa")),
       ]
   )
+  ax.legend()
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-# [goto error]
-: ---------------------------------------------------------------------------
-: KeyError                                  Traceback (most recent call last)
-: <ipython-input-23-a098cca19edd> in <module>
-:       1 yoda_file = yoda.read("../../runcards/pp/analysis/Analysis.yoda")
-: ----> 2 yoda_hist = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/eta"])
-:       3 draw_ratio_plot(
-:       4     [
-:       5         dict(hist=yoda_hist),
-:
-: KeyError: '/MC_DIPHOTON_PROTON/eta'
+: <matplotlib.legend.Legend at 0x7f17c4cb2e50>
+[[file:./.ob-jupyter/88dfa98b4b815e988d76fe4604e91d883d1b5ab8.png]]
 :END:
 
-That looks OK.
+Hah! there we have it!
 
-[[mailto:ment@stho.sht][sh]
+#+begin_src jupyter-python :exports both :results raw drawer
+  mom = momenta(e_proton, result[:,1], result[:,2], np.cos(η_to_θ(result[:,0])))[2]
+#+end_src
+
+#+RESULTS:
+
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  from tangled import observables
+  observables.p_t(mom).max()
+#+end_src
+
+#+RESULTS:
+: 3569.3425401782774

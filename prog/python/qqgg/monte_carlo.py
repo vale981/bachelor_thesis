@@ -49,6 +49,7 @@ class IntegrationResult:
         return self.result, self.sigma
 
 
+@utility.numpy_cache("cache")
 def integrate(
     f,
     interval,

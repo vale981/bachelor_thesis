@@ -35,7 +35,7 @@ MI_HANDLER: None
 # cut to $\abs{\eta} \leq 2.5$, and $p_T \geq 20$ GeV
 SELECTORS:
 - [Eta, 22, -2.5, 2.5]
-# - [PT, 22, 200, 200000000]
+- [PT, 22, 2000, 200000000]
 
 # no transverse impulses
 BEAM_REMNANTS: false
