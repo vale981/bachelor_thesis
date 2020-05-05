@@ -628,7 +628,7 @@ def sample_unweighted_array(
     # some multiprocessing magic
     if proc is not None:
         if isinstance(proc, str) and proc == "auto":
-            proc = cpu_count() * 2
+            proc = cpu_count()
 
         result = None
         num_per_worker = int(num / proc + 1)

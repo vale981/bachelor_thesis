@@ -291,7 +291,7 @@ We begin by implementing the same sermon for the lab frame.
           quarks
           if quarks is not None
           else np.array(
-              #[[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
+              # [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
               [[1, -1 / 3]]
           )
       )  # all the light quarks
@@ -311,8 +311,8 @@ We begin by implementing the same sermon for the lab frame.
           angle_arg, x_1, x_2 = event
 
           q2_value = q(e_hadron, x_1, x_2)
-          result = 0
 
+          xs_value = xs(e_hadron, 1 / 3, angle_arg, x_1, x_2)
           pdf_values = (
               xfxQ2(quarks[:, 0], x_1, q2_value),
               xfxQ2(-quarks[:, 0], x_1, q2_value),
@@ -320,10 +320,11 @@ We begin by implementing the same sermon for the lab frame.
               xfxQ2(-quarks[:, 0], x_2, q2_value),
           )
 
+          result = 0
           for (quark, charge), q_1, qb_1, q_2, qb_2 in zip(quarks, *pdf_values):
               xs_value = xs(e_hadron, charge, angle_arg, x_1, x_2)
 
-              result += (q_1 + qb_1) * (q_2 + qb_2) * xs_value
+              result += ((q_1 * qb_2) + (qb_1 * q_2)) * xs_value
 
           return result / (2 * x_1 * x_2)  # identical protons
 
@@ -479,7 +480,7 @@ Now, it would be interesting to know the total cross section.
   xs_int_res, xs_sample = monte_carlo.integrate(
       lambda x: gev_to_pb(2 * np.pi * dist_η_vec(x)),
       np.array([interval_η, [pdf.xMin, 1], [pdf.xMin, 1]]),
-      num_points=4000000,
+      num_points=1000000, #4000000,
       adapt=False,
       return_sample=True,
       #cache="cache/pdf/total_xs_500",
@@ -488,14 +489,14 @@ Now, it would be interesting to know the total cross section.
 #+end_src
 
 #+RESULTS:
-| 3.631068981163024e-05 | 2.028114992218105e-07 |
+| 1.4405177978471726e-05 | 1.6929660749569563e-07 |
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  xs_int_res.result, xs_int_res.sigma
+  xs_int_res.result*2, xs_int_res.sigma*2
 #+end_src
 
 #+RESULTS:
-| 3.631068981163024e-05 | 2.028114992218105e-07 |
+| 2.8810355956943453e-05 | 3.3859321499139127e-07 |
 
 #+begin_src jupyter-python :exports both :results raw drawer
   sherpa, sherpa_σ = np.loadtxt('../../runcards/pp/sherpa_xs')
@@ -509,11 +510,11 @@ A factor of two used to be in here. It stemmed from the fact, that
 there are two identical protons.
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  (xs_int_res.result/sherpa)
+  (xs_int_res.result*2 - sherpa)
 #+end_src
 
 #+RESULTS:
-: 1.2241330687331946
+: -7.131440430565469e-07
 
 They are not compatible, but that changes a lot if one changes the
 multiplication order!
@@ -526,7 +527,7 @@ cuts!
 #+end_src
 
 #+RESULTS:
-: 1.8015562114048635e-11
+: 7.690028227079449e-12
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
@@ -547,15 +548,15 @@ Plotting it, we can see that the variance is reduced.
   fig, ax = set_up_plot()
   ax2 = ax.twinx()
   pts = np.linspace(*interval_η, 1000)
-
-  ax.plot(pts, [dist_η(np.array([η, 0.04, 0.04])) for η in pts])
+  xs = np.linspace(0, 1, 1000)
   ax2.plot(pts, [dist_η(np.array([η, 1, .5])) for η in pts])
+  ax.plot(pts, [dist_η(np.array([0, 1, x])) for x in xs])
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f5e690c7d00> |
-[[file:./.ob-jupyter/2cf6c68b8ccd6bf66dd4a5364e9623b9063d7824.png]]
+| <matplotlib.lines.Line2D | at | 0x7f5e6916c280> |
+[[file:./.ob-jupyter/9ea0fb101473014e9d75ece647e7ae6ba329f1f7.png]]
 :END:
 
 Lets plot how the pdf looks.
@@ -580,20 +581,20 @@ figure out the cpu mapping.
   intervals_η = np.array([interval_η, [pdf.xMin, 1], [pdf.xMin, 1]])
 
   result, eff = monte_carlo.sample_unweighted_array(
-      1000_000,
+      10_000,
       dist_η,
       interval=intervals_η,
       proc="auto",
       report_efficiency=True,
       upper_bound=upper_bound,
-      cache="cache/pdf/total_xs_1000_000",
+      #cache="cache/pdf/total_xs_1000_000",
       status_path="/tmp/status1"
   )
   eff
 #+end_src
 
 #+RESULTS:
-: 0.0004062633291962335
+: 0.00040408702027886027
 
 The efficiency is still quite horrible, but at least an order of
 mag. better than with cosθ.
@@ -607,8 +608,8 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: 1000000
-[[file:./.ob-jupyter/432cfa65a4c786ff290057e9d535c2a1ad2e77b4.png]]
+: 10000
+[[file:./.ob-jupyter/5fd2e95cdd85fceb6132ddf37f55d55f45c74285.png]]
 :END:
 
 #+RESULTS:
@@ -628,8 +629,8 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f5e6e296ee0>
-[[file:./.ob-jupyter/76f56e82936a03191343664885d238511972ef6b.png]]
+: <matplotlib.legend.Legend at 0x7f5e57f2d1f0>
+[[file:./.ob-jupyter/019c6ff54bf88df46f58d03305a08ef7586974c5.png]]
 :END:
 
 Hah! there we have it!
@@ -659,6 +660,6 @@ Hah! there we have it!
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f5e6c27eaf0>
-[[file:./.ob-jupyter/aa7ffdb9c2c43b589e417747191bc8a300ddc3ba.png]]
+: <matplotlib.legend.Legend at 0x7f5e5d288130>
+[[file:./.ob-jupyter/b610c9c055fd4c1bef67e26e728f4309ad4e3ae7.png]]
 :END:
