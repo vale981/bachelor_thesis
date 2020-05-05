@@ -60,14 +60,15 @@ accessed through the \lhapdf\
 library\cite{NNPDF:2017pd}\cite{Buckley:2015lh}.
 % TODO clean separation of pdf, pdf set %
 
-The resulting distribution (without cuts) is depicted for fixed
-\(x_2\) in~\ref{fig:dist-pdf}.
+The resulting distribution (without cuts) is depicted
+in~\ref{fig:dist-pdf} for fixed \(x_2\) and
+in~\ref{fig:dist-pdf-fixed-eta} for fixed \(\eta\).
 
 \begin{figure}[hb]
   \centering
   \plot{pdf/dist3d_x2_const}
-  \caption{\label{fig:dist-pdf}Differential cross section convolved with PDFs for fixed
-    \result{xs/python/pdf/second_x} in picobarn.}
+  \caption{\label{fig:dist-pdf}Differential cross section convolved
+    with PDFs for fixed \result{xs/python/pdf/second_x} in picobarn.}
 \end{figure}
 
 For \(x_1 = x_2\) the distribution retains some likeness with the
@@ -77,3 +78,11 @@ is clearly highly sub-optimal for hit-or-miss sampling, only having
 significant values when \(x_1\) or \(x_2\) are small and being very
 steep. To remedy that, one has to use a more efficient sampling
 algorithm (\vegas) or impose very restrictive cuts.
+
+\begin{figure}[hb]
+  \centering
+  \plot{pdf/dist3d_eta_const}
+  \caption{\label{fig:dist-pdf-fixed-eta}Differential cross section
+    convolved with PDFs for fixed \result{xs/python/pdf/plot_eta} in
+    picobarn.}
+\end{figure}
