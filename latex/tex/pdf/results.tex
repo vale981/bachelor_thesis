@@ -1,0 +1,79 @@
+%%% Local Variables: ***
+%%% mode: latex ***
+%%% TeX-master: "../../document.tex"  ***
+%%% End: ***
+
+\section{Implementation and Results}%
+\label{sec:pdf_results}
+
+The considerations of~\ref{sec:pdf_basics} and~\ref{sec:lab_xs} can
+now be applied to obtain a cross section and histograms of observables
+for the scattering of two protons into two photons. Because the PDF is
+not available in closed form, event generation is the only viable way
+to verify theory against experiment, even in this simple leading-order
+process.
+
+The integrand in~\eqref{eq:pdf-xs} can be concretised
+into~\eqref{eq:weighteddist}, where \(q\) runs over all quarks (except
+the top quark). The averaged sum accounts for the fact, that the two
+protons are indistinguishable. The choice of \(Q^2\) was explained
+in~\ref{sec:pdf_basics} and is being given in~\eqref{eq:q2-explicit}.
+
+\begin{gather}
+  \label{eq:weighteddist}
+  \frac{\dd[3]{\sigma}}{\dd{\eta}\dd{x_1}\dd{x_2}} =
+  \sum_q \frac{1}{2}\qty[f_q\qty(x_1;Q^2) f_{\bar{q}}\qty(x_2;Q^2) + f_q\qty(x_2;Q^2) f_{\bar{q}}\qty(x_1;Q^2)] \dv{\sigma(x_1,
+    x_2, Z_q)}{\eta} \\
+  \label{eq:q2-explicit}
+  Q^2 = 2x_1x_2E_p^2
+\end{gather}
+
+This distribution can now be integrated to obtain a total
+cross-section as described in~\ref{sec:mcint}. Sampling a
+multi-dimensional distribution can be reduced to the sampling of one
+dimensional distributions by reducing the distribution itself to one
+variable through integration over the remaining ones and then, keeping
+the first variable fixed, sampling the other variables in a likewise
+manner. The hit-or-miss method described in~\ref{sec:hitmiss} has to
+be modified only in so far as to choose the sampling points in an
+\(n\)-dimensional volume. As before, the range of the \(\eta\)
+parameter has to be constrained to obtain physical results. Because
+the absolute values of the pseudo rapidities of the two final state
+photons are not equal in the lab frame, the shape of the
+integration/sampling volume differs from a simple
+hypercube \(\Omega\). Furthermore, for the massless limit to be applicable the
+center of mass energy of the partonic system must be much greater than
+the quark masses. This can be implemented by demanding the
+transverse momentum \(p_T\) of a final state photon to be greater than
+approximately~\SI{20}{\giga\electronvolt}. A restriction (cut) on
+\(p_T\) is suitable because detectors are usually only sensitive above
+a certain \(p_T\) threshold. %TODO CITE%
+Such cuts can be implemented simply by multiplying the distribution
+in~\eqref{eq:weighteddist} by the characteristic function
+\(\chi_\Omega\) of \(\Omega\) which is equal to one if \(x\in\Omega\)
+and zero otherwise.
+
+The PDF being used in the following has been determined at leading
+order and is the central member of the PDF set
+\verb|NNPDF31_lo_as_0118| provided by \emph{NNPDF} collaboration and
+accessed through the \lhapdf\
+library\cite{NNPDF:2017pd}\cite{Buckley:2015lh}.
+% TODO clean separation of pdf, pdf set %
+
+The resulting distribution (without cuts) is depicted for fixed
+\(x_2\) in~\ref{fig:dist-pdf}.
+
+\begin{figure}[hb]
+  \centering
+  \plot{pdf/dist3d_x2_const}
+  \caption{\label{fig:dist-pdf}Differential cross section convolved with PDFs for fixed
+    \result{xs/python/pdf/second_x} in picobarn.}
+\end{figure}
+
+For \(x_1 = x_2\) the distribution retains some likeness with the
+partonic distribution (see~\ref{fig:xs-int-eta}) but gets suppressed
+for greater values of \(x_1\). The overall shape of the distribution
+is clearly highly sub-optimal for hit-or-miss sampling, only having
+significant values when \(x_1\) or \(x_2\) are small and being very
+steep. To remedy that, one has to use a more efficient sampling
+algorithm (\vegas) or impose very restrictive cuts.
