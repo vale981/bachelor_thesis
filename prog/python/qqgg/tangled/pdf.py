@@ -276,6 +276,7 @@ def get_xs_distribution_with_pdf(
         return result / (2 * x_1 * x_2)  # identical protons
 
     def vectorized(events):
+        events = np.asarray(events)
         result = np.empty(events.shape[0])
         for i in range(events.shape[0]):
             result[i] = distribution(events[i])
