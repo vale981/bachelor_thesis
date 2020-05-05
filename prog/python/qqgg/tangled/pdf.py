@@ -239,8 +239,7 @@ def get_xs_distribution_with_pdf(
         quarks
         if quarks is not None
         else np.array(
-            # [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
-            [[1, -1 / 3]]
+            [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
         )
     )  # all the light quarks
 
