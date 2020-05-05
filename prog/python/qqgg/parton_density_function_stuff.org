@@ -29,7 +29,7 @@
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
   η = 1
-  min_pT = 500
+  min_pT = 1000
   e_proton = 6500  # GeV
   interval_η = [-η, η]
   interval = η_to_θ([-η, η])
@@ -366,7 +366,7 @@ The total cross section is as follows:
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=3.331885193098271e-14, sigma=9.879005145129635e-17, N=86744)
+: IntegrationResult(result=3.34748125240399e-14, sigma=9.727811921472845e-17, N=89252)
 
 
 We have to convert that to picobarn.
@@ -375,7 +375,7 @@ We have to convert that to picobarn.
 #+end_src
 
 #+RESULTS:
-| 1.2973673646373199e-05 | 3.8466808210931474e-08 |
+| 1.3034401484181357e-05 | 3.787809298589027e-08 |
 
 That is compatible with sherpa!
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -399,7 +399,7 @@ We can take some samples as well.
 #+end_src
 
 #+RESULTS:
-: -1.8206975696602001
+: -1.8206985723513869
 
 #+begin_src jupyter-python :exports both :results raw drawer
 part_hist = np.histogram(part_samples, bins=50, range=[-2.5, 2.5])
@@ -409,8 +409,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.axes._subplots.AxesSubplot at 0x7f5e69980760>
-[[file:./.ob-jupyter/bd8d7ed60d9ed8fe019d801767430fc6fc7195f8.png]]
+: <matplotlib.axes._subplots.AxesSubplot at 0x7fd43c11b970>
+[[file:./.ob-jupyter/51e5d3cdb2066db11bb1c767a54fb1b509ad1120.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -430,8 +430,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f5e6998fa00>
-[[file:./.ob-jupyter/be5ab8e8b36a949117a2add8e5b85052571c973a.png]]
+: <matplotlib.legend.Legend at 0x7fd4340c87f0>
+[[file:./.ob-jupyter/d299df3536703e3d8790bba82a0bd2265f18b514.png]]
 :END:
 #+begin_src jupyter-python :exports both :results raw drawer
   part_momenta = momenta(
@@ -460,8 +460,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f5e694a3f10>
-[[file:./.ob-jupyter/51a9422498dbcd26781bde1238bbc632628cb9a1.png]]
+: <matplotlib.legend.Legend at 0x7fd43c22e520>
+[[file:./.ob-jupyter/dcfd84b9f4b3a715ef3a075fdffa98f812b61bad.png]]
 :END:
 
 * Total XS
@@ -489,35 +489,34 @@ Now, it would be interesting to know the total cross section.
 #+end_src
 
 #+RESULTS:
-| 1.4405177978471726e-05 | 1.6929660749569563e-07 |
+| 4.3957158733814704e-07 | 3.427515279629678e-09 |
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  xs_int_res.result*2, xs_int_res.sigma*2
+  xs_int_res.result*(3/2)**2, xs_int_res.sigma*(3/2)**2
 #+end_src
 
 #+RESULTS:
-| 2.8810355956943453e-05 | 3.3859321499139127e-07 |
+| 9.890360715108308e-07 | 7.711909379166775e-09 |
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  sherpa, sherpa_σ = np.loadtxt('../../runcards/pp/sherpa_xs')
+  sherpa, sherpa_σ = np.loadtxt("../../runcards/pp_sherpa_299_port/sherpa_xs")[0:2] * 2
   sherpa, sherpa_σ  # GeV
 #+end_src
 
 #+RESULTS:
-| 2.95235e-05 | 4.6442e-08 |
+| 9.97774e-07 | 9.73802e-10 |
 
 A factor of two used to be in here. It stemmed from the fact, that
 there are two identical protons.
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  (xs_int_res.result*2 - sherpa)
+  np.sqrt(sherpa/xs_int_res.result)
 #+end_src
 
 #+RESULTS:
-: -7.131440430565469e-07
+: 1.506611523643656
 
-They are not compatible, but that changes a lot if one changes the
-multiplication order!
+A factor of (3/2)^2. Hmm.
 
 We use this as upper bound, as the maximizer is bogus because of the
 cuts!
@@ -527,7 +526,7 @@ cuts!
 #+end_src
 
 #+RESULTS:
-: 7.690028227079449e-12
+: 1.203245936734568e-13
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
@@ -555,7 +554,7 @@ Plotting it, we can see that the variance is reduced.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f5e6916c280> |
+| <matplotlib.lines.Line2D | at | 0x7fd42e8e0190> |
 [[file:./.ob-jupyter/9ea0fb101473014e9d75ece647e7ae6ba329f1f7.png]]
 :END:
 
@@ -569,7 +568,7 @@ Lets plot how the pdf looks.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f5e68fc1580> |
+| <matplotlib.lines.Line2D | at | 0x7fd42e8e0340> |
 [[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
 :END:
 
@@ -594,7 +593,7 @@ figure out the cpu mapping.
 #+end_src
 
 #+RESULTS:
-: 0.00040408702027886027
+: 0.0007604900042182503
 
 The efficiency is still quite horrible, but at least an order of
 mag. better than with cosθ.
@@ -609,7 +608,7 @@ Let's look at a histogramm of eta samples.
 #+RESULTS:
 :RESULTS:
 : 10000
-[[file:./.ob-jupyter/5fd2e95cdd85fceb6132ddf37f55d55f45c74285.png]]
+[[file:./.ob-jupyter/979e0ef0cb0e85f93d7e4c2af998a689dceab673.png]]
 :END:
 
 #+RESULTS:
@@ -629,8 +628,8 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f5e57f2d1f0>
-[[file:./.ob-jupyter/019c6ff54bf88df46f58d03305a08ef7586974c5.png]]
+: <matplotlib.legend.Legend at 0x7fd42c95fdf0>
+[[file:./.ob-jupyter/483ca956d9e9d94b1745a2d9324901b116268b68.png]]
 :END:
 
 Hah! there we have it!
@@ -660,6 +659,6 @@ Hah! there we have it!
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f5e5d288130>
-[[file:./.ob-jupyter/b610c9c055fd4c1bef67e26e728f4309ad4e3ae7.png]]
+: <matplotlib.legend.Legend at 0x7fd42c95ffa0>
+[[file:./.ob-jupyter/5a680fa03a8f5588f3d74cb3d0c6d7f47bb9f32b.png]]
 :END:
