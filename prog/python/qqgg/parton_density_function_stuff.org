@@ -291,8 +291,7 @@ We begin by implementing the same sermon for the lab frame.
           quarks
           if quarks is not None
           else np.array(
-              # [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
-              [[1, -1 / 3]]
+              [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
           )
       )  # all the light quarks
 
@@ -489,22 +488,22 @@ Now, it would be interesting to know the total cross section.
 #+end_src
 
 #+RESULTS:
-| 4.3957158733814704e-07 | 3.427515279629678e-09 |
+| 1.4452892968057304e-05 | 1.0195910883303069e-07 |
 
 #+begin_src jupyter-python :exports both :results raw drawer
   xs_int_res.result*(3/2)**2, xs_int_res.sigma*(3/2)**2
 #+end_src
 
 #+RESULTS:
-| 9.890360715108308e-07 | 7.711909379166775e-09 |
+| 3.251900917812894e-05 | 2.2940799487431904e-07 |
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  sherpa, sherpa_σ = np.loadtxt("../../runcards/pp_sherpa_299_port/sherpa_xs")[0:2] * 2
+  sherpa, sherpa_σ = np.loadtxt("../../runcards/pp_sherpa_299_port/sherpa_xs")[0:2]
   sherpa, sherpa_σ  # GeV
 #+end_src
 
 #+RESULTS:
-| 9.97774e-07 | 9.73802e-10 |
+| 3.26334e-05 | 3.20392e-08 |
 
 A factor of two used to be in here. It stemmed from the fact, that
 there are two identical protons.
@@ -514,9 +513,15 @@ there are two identical protons.
 #+end_src
 
 #+RESULTS:
-: 1.506611523643656
+: 1.5026359290526468
 
 A factor of (3/2)^2. Hmm.
+#+begin_src jupyter-python :exports both :results raw drawer
+np.abs(sherpa - xs_int_res.result*(3/2)**2)
+#+end_src
+
+#+RESULTS:
+: 1.1439082187106049e-07
 
 We use this as upper bound, as the maximizer is bogus because of the
 cuts!
@@ -526,7 +531,7 @@ cuts!
 #+end_src
 
 #+RESULTS:
-: 1.203245936734568e-13
+: 2.78025515606778e-12
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
@@ -554,8 +559,8 @@ Plotting it, we can see that the variance is reduced.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fd42e8e0190> |
-[[file:./.ob-jupyter/9ea0fb101473014e9d75ece647e7ae6ba329f1f7.png]]
+| <matplotlib.lines.Line2D | at | 0x7fd425a085e0> |
+[[file:./.ob-jupyter/123766b4657de93c681761ace82623ab4716247f.png]]
 :END:
 
 Lets plot how the pdf looks.
@@ -568,7 +573,7 @@ Lets plot how the pdf looks.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fd42e8e0340> |
+| <matplotlib.lines.Line2D | at | 0x7fd425807760> |
 [[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
 :END:
 
@@ -593,7 +598,7 @@ figure out the cpu mapping.
 #+end_src
 
 #+RESULTS:
-: 0.0007604900042182503
+: 0.001043054794298712
 
 The efficiency is still quite horrible, but at least an order of
 mag. better than with cosθ.
@@ -608,7 +613,7 @@ Let's look at a histogramm of eta samples.
 #+RESULTS:
 :RESULTS:
 : 10000
-[[file:./.ob-jupyter/979e0ef0cb0e85f93d7e4c2af998a689dceab673.png]]
+[[file:./.ob-jupyter/33f77b58b49992e2758cd9d48eff61489c897fe8.png]]
 :END:
 
 #+RESULTS:
@@ -628,8 +633,8 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fd42c95fdf0>
-[[file:./.ob-jupyter/483ca956d9e9d94b1745a2d9324901b116268b68.png]]
+: <matplotlib.legend.Legend at 0x7fd42575f1f0>
+[[file:./.ob-jupyter/2242e340857b4cd5f3f339845eeadaddac9bf3b3.png]]
 :END:
 
 Hah! there we have it!
@@ -659,6 +664,6 @@ Hah! there we have it!
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fd42c95ffa0>
-[[file:./.ob-jupyter/5a680fa03a8f5588f3d74cb3d0c6d7f47bb9f32b.png]]
+: <matplotlib.legend.Legend at 0x7fd425842700>
+[[file:./.ob-jupyter/d2487dbcb40c899d43a24c30e082fb67c2a1f783.png]]
 :END:
