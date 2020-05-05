@@ -13,6 +13,7 @@
 #+end_src
 
 #+RESULTS:
+: Welcome to JupyROOT 6.20/04
 
 ** Utilities
 #+BEGIN_SRC jupyter-python :exports both
@@ -24,8 +25,6 @@
 #+END_SRC
 
 #+RESULTS:
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -329,6 +328,7 @@ We begin by implementing the same sermon for the lab frame.
           return result / (2 * x_1 * x_2)  # identical protons
 
       def vectorized(events):
+          events = np.asarray(events)
           result = np.empty(events.shape[0])
           for i in range(events.shape[0]):
               result[i] = distribution(events[i])
@@ -365,7 +365,7 @@ The total cross section is as follows:
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=3.325064936980328e-14, sigma=9.462497477597356e-17, N=94315)
+: IntegrationResult(result=3.331885193098271e-14, sigma=9.879005145129635e-17, N=86744)
 
 
 We have to convert that to picobarn.
@@ -374,7 +374,7 @@ We have to convert that to picobarn.
 #+end_src
 
 #+RESULTS:
-| 1.2947116975920639e-05 | 3.6845013270046635e-08 |
+| 1.2973673646373199e-05 | 3.8466808210931474e-08 |
 
 That is compatible with sherpa!
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -383,13 +383,13 @@ That is compatible with sherpa!
 #+end_src
 
 #+RESULTS:
-| 2.11499e-05 | 6.8969e-09 |
+| 1.29935e-05 | 4.71171e-10 |
 
 
 We can take some samples as well.
 #+begin_src jupyter-python :exports both :results raw drawer
   part_samples = monte_carlo.sample_unweighted_array(
-      100000,
+      1000000,
       part_dist,
       interval=[-2.5, 2.5],
       proc="auto",
@@ -398,7 +398,7 @@ We can take some samples as well.
 #+end_src
 
 #+RESULTS:
-: -1.8206638753300048
+: -1.8206975696602001
 
 #+begin_src jupyter-python :exports both :results raw drawer
 part_hist = np.histogram(part_samples, bins=50, range=[-2.5, 2.5])
@@ -408,8 +408,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.axes._subplots.AxesSubplot at 0x7f17d44a51f0>
-[[file:./.ob-jupyter/cea7ffb4b6b977c4057863db2b17278e7b6e7968.png]]
+: <matplotlib.axes._subplots.AxesSubplot at 0x7f5e69980760>
+[[file:./.ob-jupyter/bd8d7ed60d9ed8fe019d801767430fc6fc7195f8.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -429,11 +429,41 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f17e664a400>
-[[file:./.ob-jupyter/2fe24632d1d8b3ced9ad3c1a329cf7df22c183c1.png]]
+: <matplotlib.legend.Legend at 0x7f5e6998fa00>
+[[file:./.ob-jupyter/be5ab8e8b36a949117a2add8e5b85052571c973a.png]]
+:END:
+#+begin_src jupyter-python :exports both :results raw drawer
+  part_momenta = momenta(
+      e_proton,
+      0.5 * np.ones_like(part_samples),
+      1 * np.ones_like(part_samples),
+      np.tanh(part_samples),
+  )
+  part_pt = np.sqrt(part_momenta[2][:,2]**2)
+  part_pt_hist = np.histogram(part_pt, bins=50, range=(2000, e_proton))
+#+end_src
+
+#+RESULTS:
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  sherpa_part_hist_pT = yoda_to_numpy(yoda_sherpa_part["/MC_DIPHOTON_PARTONIC/pT"])
+  fig, (ax, ax_ratio) = draw_ratio_plot(
+      [
+          dict(hist=sherpa_part_hist_pT, hist_kwargs=dict(label="Sherpa")),
+          dict(hist=part_pt_hist, hist_kwargs=dict(label="Own Implementation")),
+      ]
+  )
+  ax_ratio.set_xlabel(r"$p_T$")
+  ax.legend()
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: <matplotlib.legend.Legend at 0x7f5e694a3f10>
+[[file:./.ob-jupyter/51a9422498dbcd26781bde1238bbc632628cb9a1.png]]
 :END:
 
-* Total xS
+* Total XS
 Now, it would be interesting to know the total cross section.
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -458,34 +488,14 @@ Now, it would be interesting to know the total cross section.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-:
-: NameErrorTraceback (most recent call last)
-: <ipython-input-4-f3208878798b> in <module>
-: ----> 1 dist_η_vec, _ = get_xs_distribution_with_pdf(
-:       2     c_xs.diff_xs_eta,
-:       3     c_xs.averaged_tchanel_q2,
-:       4     e_proton,
-:       5     cut=(CutpT() > min_pT) & (interval_η[0] < CutOtherEta() < interval_η[1]),
-:
-: NameError: name 'get_xs_distribution_with_pdf' is not defined
-:END:
+| 3.631068981163024e-05 | 2.028114992218105e-07 |
 
 #+begin_src jupyter-python :exports both :results raw drawer
   xs_int_res.result, xs_int_res.sigma
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-:
-: NameErrorTraceback (most recent call last)
-: <ipython-input-5-e8ad6977c4b3> in <module>
-: ----> 1 xs_int_res.result, xs_int_res.sigma
-:
-: NameError: name 'xs_int_res' is not defined
-:END:
+| 3.631068981163024e-05 | 2.028114992218105e-07 |
 
 #+begin_src jupyter-python :exports both :results raw drawer
   sherpa, sherpa_σ = np.loadtxt('../../runcards/pp/sherpa_xs')
@@ -503,15 +513,7 @@ there are two identical protons.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-:
-: NameErrorTraceback (most recent call last)
-: <ipython-input-7-124002796006> in <module>
-: ----> 1 (xs_int_res.result/sherpa)
-:
-: NameError: name 'xs_int_res' is not defined
-:END:
+: 1.2241330687331946
 
 They are not compatible, but that changes a lot if one changes the
 multiplication order!
@@ -524,16 +526,7 @@ cuts!
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-:
-: NameErrorTraceback (most recent call last)
-: <ipython-input-8-14c8ec7e4df3> in <module>
-: ----> 1 upper_bound = pb_to_gev(xs_sample.max()) * 1.01
-:       2 upper_bound
-:
-: NameError: name 'xs_sample' is not defined
-:END:
+: 1.8015562114048635e-11
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
@@ -561,7 +554,7 @@ Plotting it, we can see that the variance is reduced.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f17e857a550> |
+| <matplotlib.lines.Line2D | at | 0x7f5e690c7d00> |
 [[file:./.ob-jupyter/2cf6c68b8ccd6bf66dd4a5364e9623b9063d7824.png]]
 :END:
 
@@ -575,7 +568,7 @@ Lets plot how the pdf looks.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7f17e70a3e80> |
+| <matplotlib.lines.Line2D | at | 0x7f5e68fc1580> |
 [[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
 :END:
 
@@ -618,20 +611,15 @@ Let's look at a histogramm of eta samples.
 [[file:./.ob-jupyter/432cfa65a4c786ff290057e9d535c2a1ad2e77b4.png]]
 :END:
 
-#+begin_src jupyter-python :exports both :results raw drawer
-  sherpa_manual = np.loadtxt("../../runcards/pp/eta.list", skiprows=57)
-  sherpa_manual_pT = np.loadtxt("../../runcards/pp/pt.list", skiprows=57)
-#+end_src
-
 #+RESULTS:
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  yoda_file = yoda.read("../../runcards/pp/analysis/Analysis.yoda")
+  yoda_file = yoda.read("../../runcards/pp_sherpa_299_port/analysis/Analysis.yoda")
   yoda_hist = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/eta"])
   fig, (ax, _) = draw_ratio_plot(
       [
-          dict(hist=np.histogram(result[:, 0], bins=50, range=interval_η)),
           dict(hist=yoda_hist, hist_kwargs=dict(label="sherpa")),
+          dict(hist=np.histogram(result[:, 0], bins=50, range=interval_η)),
           #dict(hist=np.histogram(sherpa_manual, bins=50, range=interval_η), hist_kwargs=dict(label="sherpa")),
       ]
   )
@@ -640,14 +628,14 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f17c4cb2e50>
-[[file:./.ob-jupyter/88dfa98b4b815e988d76fe4604e91d883d1b5ab8.png]]
+: <matplotlib.legend.Legend at 0x7f5e6e296ee0>
+[[file:./.ob-jupyter/76f56e82936a03191343664885d238511972ef6b.png]]
 :END:
 
 Hah! there we have it!
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  mom = momenta(e_proton, result[:,1], result[:,2], np.cos(η_to_θ(result[:,0])))[2]
+  mom = momenta(e_proton, result[:,1], result[:,2], np.tanh(result[:,0]))[2]
 #+end_src
 
 #+RESULTS:
@@ -655,8 +643,22 @@ Hah! there we have it!
 
 #+begin_src jupyter-python :exports both :results raw drawer
   from tangled import observables
-  observables.p_t(mom).max()
+  pT_hist = np.histogram(observables.p_t(mom), bins=50, range=(min_pT, e_proton))
+  yoda_hist_pt = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/pT"])
+  fig, (ax, _) = draw_ratio_plot(
+      [
+          dict(hist=yoda_hist_pt, hist_kwargs=dict(label="sherpa")),
+          dict(hist=pT_hist),
+          #dict(hist=np.histogram(sherpa_manual, bins=50, range=interval_η), hist_kwargs=dict(label="sherpa")),
+      ]
+  )
+  #ax.set_yscale('log')
+  ax.set_xscale('log')
+  ax.legend()
 #+end_src
 
 #+RESULTS:
-: 3569.3425401782774
+:RESULTS:
+: <matplotlib.legend.Legend at 0x7f5e6c27eaf0>
+[[file:./.ob-jupyter/aa7ffdb9c2c43b589e417747191bc8a300ddc3ba.png]]
+:END:
