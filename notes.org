@@ -134,6 +134,8 @@ Viele Gruesse, Frank
 ** Sind quark verhaeltnisse in PDF enthalten (2:1 fuer proton)
 ** beide finalstate photonen behalten?
 ** TODO PDF members
+** TODO Sensitivity detectors cite!
+** TODO was fuer eine pdf ist das NNPDF31lo
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!
