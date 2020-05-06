@@ -29,7 +29,7 @@
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
   η = 1
-  min_pT = 1000
+  min_pT = 20
   e_proton = 6500  # GeV
   interval_η = [-η, η]
   interval = η_to_θ([-η, η])
@@ -37,9 +37,16 @@
   pdf = lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
 #+end_src
 
+We gonna export that for reference in the tex document.
+#+begin_src jupyter-python :exports both :results raw drawer
+  tex_value(min_pT, prefix=r"\pt \geq ", prec=0, unit=r"\giga\electronvolt", save=("results/pdf/", "min_pT.tex"))
+  tex_value(e_proton, prefix=r"E_p = ", prec=0, unit=r"\giga\electronvolt", save=("results/pdf/", "e_proton.tex"))
+  tex_value(η, prefix=r"\abs{\eta} \leq ", prec=0, save=("results/pdf/", "eta.tex"))
+#+end_src
+
+
 #+RESULTS:
-: LHAPDF 6.2.3 loading /usr/share/lhapdf/LHAPDF/NNPDF31_lo_as_0118/NNPDF31_lo_as_0118_0000.dat
-: NNPDF31_lo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 315000
+: \(\abs{\eta} \leq 1\)
 
 * Implementation
 ** Lab Frame XS
@@ -479,23 +486,23 @@ Now, it would be interesting to know the total cross section.
   xs_int_res, xs_sample = monte_carlo.integrate(
       lambda x: gev_to_pb(2 * np.pi * dist_η_vec(x)),
       np.array([interval_η, [pdf.xMin, 1], [pdf.xMin, 1]]),
-      num_points=1000000, #4000000,
+      num_points=20000000,
       adapt=False,
       return_sample=True,
-      #cache="cache/pdf/total_xs_500",
+      cache="cache/pdf/total_xs_20",
   )
   xs_int_res.result, xs_int_res.sigma
 #+end_src
 
 #+RESULTS:
-| 1.4452892968057304e-05 | 1.0195910883303069e-07 |
+| 4.749435703415442 | 0.22221593406904638 |
 
 #+begin_src jupyter-python :exports both :results raw drawer
   xs_int_res.result*(3/2)**2, xs_int_res.sigma*(3/2)**2
 #+end_src
 
 #+RESULTS:
-| 3.251900917812894e-05 | 2.2940799487431904e-07 |
+| 10.686230332684746 | 0.49998585165535436 |
 
 #+begin_src jupyter-python :exports both :results raw drawer
   sherpa, sherpa_σ = np.loadtxt("../../runcards/pp_sherpa_299_port/sherpa_xs")[0:2]
@@ -503,7 +510,7 @@ Now, it would be interesting to know the total cross section.
 #+end_src
 
 #+RESULTS:
-| 3.26334e-05 | 3.20392e-08 |
+| 10.3244 | 0.0101315 |
 
 A factor of two used to be in here. It stemmed from the fact, that
 there are two identical protons.
@@ -513,7 +520,7 @@ there are two identical protons.
 #+end_src
 
 #+RESULTS:
-: 1.5026359290526468
+: 1.4743867004729503
 
 A factor of (3/2)^2. Hmm.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -521,7 +528,7 @@ np.abs(sherpa - xs_int_res.result*(3/2)**2)
 #+end_src
 
 #+RESULTS:
-: 1.1439082187106049e-07
+: 0.36183033268474496
 
 We use this as upper bound, as the maximizer is bogus because of the
 cuts!
@@ -531,7 +538,9 @@ cuts!
 #+end_src
 
 #+RESULTS:
-: 2.78025515606778e-12
+: 0.0008326145438739271
+
+That is massive!
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
@@ -543,24 +552,98 @@ We set up a new distribution. Look at that cut sugar!
       cut=(CutpT() > min_pT) & (interval_η[0] < CutOtherEta() < interval_η[1]),
       pdf=pdf,
   )
+
+  dist_η_no_cut, _ = get_xs_distribution_with_pdf(
+      c_xs.diff_xs_eta,
+      c_xs.averaged_tchanel_q2,
+      e_proton,
+      pdf=pdf,
+  )
 #+end_src
 
 #+RESULTS:
 
-Plotting it, we can see that the variance is reduced.
+Now we create an eye-candy surface plot.
 #+begin_src jupyter-python :exports both :results raw drawer
-  fig, ax = set_up_plot()
-  ax2 = ax.twinx()
-  pts = np.linspace(*interval_η, 1000)
-  xs = np.linspace(0, 1, 1000)
-  ax2.plot(pts, [dist_η(np.array([η, 1, .5])) for η in pts])
-  ax.plot(pts, [dist_η(np.array([0, 1, x])) for x in xs])
+  from mpl_toolkits.mplot3d import Axes3D
+  from matplotlib import cm
+
+  q2 = 100  # GeV
+
+  xs = np.linspace(0.01, 0.1, 100)
+  ηs = np.linspace(-2.5, 2.5, 100)
+  x_2_const = 0.01
+
+  grid_xs, grid_ηs = np.meshgrid(xs, ηs)
+  pdf_surface = np.array(
+      [
+          [
+              gev_to_pb(dist_η_no_cut([grid_ηs[i, j], grid_xs[i, j], x_2_const]))
+              for i in range(len(ηs))
+          ]
+          for j in range(len(xs))
+      ]
+  ).T
+
+  fig = plt.figure()
+  ax = fig.add_subplot(111, projection="3d")
+  ax.set_xlabel("$x_1$")
+  ax.set_ylabel(r"$\eta$")
+  # ax.set_zlabel(r"$d^3\sigma$ [GeV]")
+
+  surface = ax.plot_surface(grid_xs, grid_ηs, pdf_surface, cmap=cm.coolwarm, linewidth=0)
+  #fig.colorbar(surface, shrink=0.5, aspect=5)
+  save_fig(fig, "dist3d_x2_const", "pdf", size=(6, 3.5))
+  tex_value(x_2_const, prefix=r"x_2 = ", prec=2, save=("results/pdf/", "second_x.tex"))
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fd425a085e0> |
-[[file:./.ob-jupyter/123766b4657de93c681761ace82623ab4716247f.png]]
+: \(x_2 = 0.01\)
+[[file:./.ob-jupyter/707cca84798ee2959fc7e0458531b0d5321a012d.png]]
+:END:
+#+begin_src jupyter-python :exports both :results raw drawer
+  from mpl_toolkits.mplot3d import Axes3D
+  from matplotlib import cm
+
+  q2 = 100  # GeV
+
+  xs = np.linspace(0.01, 0.1/4, 100)
+  x_2s = np.linspace(0.01, 0.1/4, 100)
+  eta_const = 2.5
+
+  grid_xs, grid_x_2s = np.meshgrid(xs, x_2s)
+  pdf_surface = np.array(
+      [
+          [
+              gev_to_pb(dist_η_no_cut([eta_const, grid_xs[i, j], grid_x_2s[i, j]]))
+              for i in range(len(x_2s))
+          ]
+          for j in range(len(xs))
+      ]
+  ).T
+
+  fig = plt.figure()
+  ax = fig.add_subplot(111, projection="3d")
+  ax.set_xlabel("$x_1$")
+  ax.set_ylabel(r"$x_2$")
+  # ax.set_zlabel(r"$d^3\sigma$ [GeV]")
+
+  surface = ax.plot_surface(
+      grid_xs, grid_x_2s, pdf_surface, cmap=cm.coolwarm, linewidth=0
+  )
+  ax.view_init(30, 20)
+  ax.xaxis.set_major_locator(plt.MaxNLocator(5))
+  ax.yaxis.set_major_locator(plt.MaxNLocator(5))
+  # fig.colorbar(surface, shrink=0.5, aspect=5)
+  save_fig(fig, "dist3d_eta_const", "pdf", size=(6, 3.5))
+  tex_value(eta_const, prefix=r"\eta = ", prec=2, save=("results/pdf/", "plot_eta.tex"))
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: \(\eta = 2.50\)
+[[file:./.ob-jupyter/585a2bba902512d5328c3f8c474f6436a3992a5c.png]]
 :END:
 
 Lets plot how the pdf looks.
@@ -573,7 +656,7 @@ Lets plot how the pdf looks.
 
 #+RESULTS:
 :RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fd425807760> |
+| <matplotlib.lines.Line2D | at | 0x7fd424f1aca0> |
 [[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
 :END:
 
@@ -585,7 +668,7 @@ figure out the cpu mapping.
   intervals_η = np.array([interval_η, [pdf.xMin, 1], [pdf.xMin, 1]])
 
   result, eff = monte_carlo.sample_unweighted_array(
-      10_000,
+      1_000,
       dist_η,
       interval=intervals_η,
       proc="auto",
@@ -612,8 +695,8 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: 10000
-[[file:./.ob-jupyter/33f77b58b49992e2758cd9d48eff61489c897fe8.png]]
+: 1000
+[[file:./.ob-jupyter/227bd8b1016afb1a90199937e140b7e8dd97d0f8.png]]
 :END:
 
 #+RESULTS:
