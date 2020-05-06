@@ -28,7 +28,7 @@ SCALES: 'VAR{1/2*Abs2(p[0]+p[1])}'
 
 # the main scattering process
 PROCESSES:
-- 1 -1 -> 22 22:
+- 94 -94 -> 22 22:
     Order: {QCD: 0, EW: 2}
     Integration_Error: 0.001
 
@@ -43,7 +43,7 @@ MI_HANDLER: None
 # cuts
 SELECTORS:
 - [Eta, 22, -1, 1]
-- [PT, 22, 1000, 200000000]
+- [PT, 22, 20, 200000000]
 
 # no transverse impulses
 BEAM_REMNANTS: false
