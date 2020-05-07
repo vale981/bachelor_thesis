@@ -13,6 +13,7 @@ import functools
 from scipy.optimize import minimize_scalar, root, shgo
 from dataclasses import dataclass
 import utility
+import joblib
 
 
 def _process_interval(interval):
@@ -743,6 +744,7 @@ def integrate_vegas_nd(
     increment_epsilon=1e-2,
     alpha=1.5,
     vegas_point_density=1000,
+    proc="auto",
     **kwargs,
 ) -> VegasIntegrationResult:
     """Integrate the given function (in n-dimensions) with the vegas
@@ -780,6 +782,9 @@ def integrate_vegas_nd(
 
     if seed:
         np.random.seed(seed)
+
+    if proc == "auto":
+        proc = cpu_count()
 
     # no clever logic is being used to define the vegas iteration
     # sample density for the sake of simplicity
@@ -860,32 +865,39 @@ def integrate_vegas_nd(
     cube_samples = [np.empty(0) for _ in cubes]
     total_points_per_cube = points_per_cube
 
-    while True:
-        integral = variance = 0
-        total_points_per_cube += points_per_cube
+    def evaluate_integrand(cube):
+        points = np.random.uniform(cube[:, 0], cube[:, 1], (points_per_cube, ndim)).T
 
-        for cube, vol, i in zip(cubes, volumes, range(num_cubes)):
-            points = np.random.uniform(
-                cube[:, 0], cube[:, 1], (points_per_cube, ndim)
-            ).T
+        return f(*points, **kwargs)
 
-            sample = f(*points, **kwargs)
+    with joblib.Parallel(n_jobs=proc) as parallel:
+        while True:
+            integral = variance = 0
+            total_points_per_cube += points_per_cube
 
-            # let's re-use the samples from earlier runs
-            cube_samples[i] = np.concatenate([cube_samples[i], sample]).T
+            samples = parallel(
+                joblib.delayed(evaluate_integrand)(cube) for cube in cubes
+            )
 
-            integral += cube_samples[i].mean() * vol
-            variance += cube_samples[i].var() * (vol ** 2) / (total_points_per_cube - 1)
+            for sample, vol, i in zip(samples, volumes, range(num_cubes)):
 
-        if np.sqrt(variance) <= epsilon:
-            break
+                # let's re-use the samples from earlier runs
+                cube_samples[i] = np.concatenate([cube_samples[i], sample]).T
 
-        # adaptive scaling of sample size incrementation
-        points_per_cube += int(
-            1000 ** np.log(tick) * integration_volume / num_increments
-        )
+                integral += cube_samples[i].mean() * vol
+                variance += (
+                    cube_samples[i].var() * (vol ** 2) / (total_points_per_cube - 1)
+                )
 
-        tick += 2
+            if np.sqrt(variance) <= epsilon:
+                break
+
+            # adaptive scaling of sample size incrementation
+            points_per_cube += int(
+                1000 ** np.log(tick) * integration_volume / num_increments
+            )
+
+            tick += 2
 
     return VegasIntegrationResult(
         integral,
