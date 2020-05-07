@@ -43,7 +43,7 @@ MI_HANDLER: None
 # cuts
 SELECTORS:
 - [Eta, 22, -1, 1]
-- [PT, 22, 1000, 200000000]
+- [PT, 22, 20, 200000000]
 
 # no transverse impulses
 BEAM_REMNANTS: false
