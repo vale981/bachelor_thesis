@@ -251,11 +251,9 @@ def get_xs_distribution_with_pdf(
 
     xfxQ2 = pdf.xfxQ2
 
-    def distribution(event: np.ndarray) -> float:
-        if cut and not cut([e_hadron, *event]):
+    def distribution(angle_arg, x_1, x_2) -> float:
+        if cut and not cut([e_hadron, angle_arg, x_1, x_2]):
             return 0
-
-        angle_arg, x_1, x_2 = event
 
         q2_value = q(e_hadron, x_1, x_2)
 
@@ -273,13 +271,11 @@ def get_xs_distribution_with_pdf(
 
             result += ((q_1 * qb_2) + (qb_1 * q_2)) * xs_value
 
-        return result / (2 * x_1 * x_2)  # identical protons
+        return result / (x_1 * x_2)  # identical protons
 
-    def vectorized(events):
-        events = np.asarray(events)
-        result = np.empty(events.shape[0])
-        for i in range(events.shape[0]):
-            result[i] = distribution(events[i])
-        return result
-
+    def vectorized(angle_arg, x_1, x_2):
+        results = np.empty_like(angle_arg)
+        for a, x__1, x__2, i in zip(angle_arg, x_1, x_2, range(len(results))):
+            results[i] = distribution(a, x__1, x__2)
+        return results
     return vectorized if vectorize else distribution, (pdf.xMin, pdf.xMax)

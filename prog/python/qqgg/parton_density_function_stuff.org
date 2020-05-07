@@ -29,7 +29,7 @@
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
   η = 1
-  min_pT = 1000
+  min_pT = 20
   e_proton = 6500  # GeV
   interval_η = [-η, η]
   interval = η_to_θ([-η, η])
@@ -314,11 +314,9 @@ We begin by implementing the same sermon for the lab frame.
 
       xfxQ2 = pdf.xfxQ2
 
-      def distribution(event: np.ndarray) -> float:
-          if cut and not cut([e_hadron, *event]):
+      def distribution(angle_arg, x_1, x_2) -> float:
+          if cut and not cut([e_hadron, angle_arg, x_1, x_2]):
               return 0
-
-          angle_arg, x_1, x_2 = event
 
           q2_value = q(e_hadron, x_1, x_2)
 
@@ -336,15 +334,13 @@ We begin by implementing the same sermon for the lab frame.
 
               result += ((q_1 * qb_2) + (qb_1 * q_2)) * xs_value
 
-          return result / (2 * x_1 * x_2)  # identical protons
+          return result / (x_1 * x_2)  # identical protons
 
-      def vectorized(events):
-          events = np.asarray(events)
-          result = np.empty(events.shape[0])
-          for i in range(events.shape[0]):
-              result[i] = distribution(events[i])
-          return result
-
+      def vectorized(angle_arg, x_1, x_2):
+          results = np.empty_like(angle_arg)
+          for a, x__1, x__2, i in zip(angle_arg, x_1, x_2, range(len(results))):
+              results[i] = distribution(a, x__1, x__2)
+          return results
       return vectorized if vectorize else distribution, (pdf.xMin, pdf.xMax)
 #+end_src
 
@@ -376,7 +372,7 @@ The total cross section is as follows:
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=3.34748125240399e-14, sigma=9.727811921472845e-17, N=89252)
+: IntegrationResult(result=3.323517257035529e-14, sigma=9.569545911748089e-17, N=92356)
 
 
 We have to convert that to picobarn.
@@ -385,7 +381,7 @@ We have to convert that to picobarn.
 #+end_src
 
 #+RESULTS:
-| 1.3034401484181357e-05 | 3.787809298589027e-08 |
+| 1.2941090629468352e-05 | 3.726183779086256e-08 |
 
 That is compatible with sherpa!
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -409,7 +405,7 @@ We can take some samples as well.
 #+end_src
 
 #+RESULTS:
-: -1.8206985723513869
+: -1.8206977316702722
 
 #+begin_src jupyter-python :exports both :results raw drawer
 part_hist = np.histogram(part_samples, bins=50, range=[-2.5, 2.5])
@@ -419,8 +415,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.axes._subplots.AxesSubplot at 0x7fd43c11b970>
-[[file:./.ob-jupyter/51e5d3cdb2066db11bb1c767a54fb1b509ad1120.png]]
+: <matplotlib.axes._subplots.AxesSubplot at 0x7f58058c04c0>
+[[file:./.ob-jupyter/e309c21aa7ca2778672100a13c49f1e18cbf487c.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -440,8 +436,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fd4340c87f0>
-[[file:./.ob-jupyter/d299df3536703e3d8790bba82a0bd2265f18b514.png]]
+: <matplotlib.legend.Legend at 0x7f57fb30a2b0>
+[[file:./.ob-jupyter/c213cc58429451a5406dd75073e55f1f1d5e5098.png]]
 :END:
 #+begin_src jupyter-python :exports both :results raw drawer
   part_momenta = momenta(
@@ -470,81 +466,81 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fd43c22e520>
-[[file:./.ob-jupyter/dcfd84b9f4b3a715ef3a075fdffa98f812b61bad.png]]
+: <matplotlib.legend.Legend at 0x7f57f944afd0>
+[[file:./.ob-jupyter/f8cdffca2a9365041ccd863c3cabcae15f2e7dba.png]]
 :END:
 
 * Total XS
 Now, it would be interesting to know the total cross section.
-
 #+begin_src jupyter-python :exports both :results raw drawer
   dist_η_vec, _ = get_xs_distribution_with_pdf(
-      c_xs.diff_xs_eta,
-      c_xs.averaged_tchanel_q2,
-      e_proton,
-      cut=(CutpT() > min_pT) & (interval_η[0] < CutOtherEta() < interval_η[1]),
-      vectorize=True,
-      pdf=pdf,
-  )
+        c_xs.diff_xs_eta,
+        c_xs.averaged_tchanel_q2,
+        e_proton,
+        cut=(CutpT() > min_pT) & (interval_η[0] < CutOtherEta() < interval_η[1]),
+        vectorize=True,
+        pdf=pdf,
+    )
 
-  xs_int_res, xs_sample = monte_carlo.integrate(
-      lambda x: gev_to_pb(2 * np.pi * dist_η_vec(x)),
-      np.array([interval_η, [pdf.xMin, 1], [pdf.xMin, 1]]),
-      num_points=100000,  #40000000,
-      adapt=False,
-      return_sample=True,
-      #cache="cache/pdf/total_xs_20",
+  xs_int_res = monte_carlo.integrate_vegas_nd(
+      lambda η, x_1, x_2: gev_to_pb(2 * np.pi * dist_η_vec(η, x_1, x_2)),
+      [interval_η, [pdf.xMin, 1], [pdf.xMin, 1]],
+      epsilon=.1,
+      proc=1,
+      increment_epsilon=1e-4,
+      num_increments=8,
+      num_points_per_cube=100,
+      cache="cache/pdf/total_xs_20",
   )
-  xs_int_res.result*2, xs_int_res.sigma*2
+  xs_int_res
 #+end_src
 
 #+RESULTS:
-| 2.9756849800991106e-05 | 6.610709581501955e-07 |
+: VegasIntegrationResult(result=9.090188175551319, sigma=0.08688810229559833, N=51200, increment_borders=[array([-1.        , -0.78257005, -0.55648476, -0.27807514,  0.01975403,
+:         0.30670953,  0.57178838,  0.79134497,  1.        ]), array([1.00000000e-09, 1.70252890e-03, 2.50770457e-03, 3.38921683e-03,
+:        4.45586924e-03, 5.85289775e-03, 8.04482707e-03, 1.77836115e-02,
+:        1.00000000e+00]), array([1.00000000e-09, 1.69683906e-03, 2.55969081e-03, 3.54347303e-03,
+:        4.70998339e-03, 6.30378969e-03, 9.14433346e-03, 3.16937712e-02,
+:        1.00000000e+00])], vegas_iterations=22, maximum=3.61827500866524)
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  xs_int_res.result*(3/2)**2, xs_int_res.sigma*(3/2)**2
-#+end_src
-
-#+RESULTS:
-| 10.160028081500599 | 0.33149821547417074 |
-
-#+begin_src jupyter-python :exports both :results raw drawer
-  sherpa, sherpa_σ = np.loadtxt("../../runcards/pp_sherpa_299_port/sherpa_xs")[0:2]
+  sherpa, sherpa_σ = np.loadtxt("../../runcards/pp/sherpa_xs")
   sherpa, sherpa_σ  # GeV
 #+end_src
 
 #+RESULTS:
-| 10.3244 | 0.0101315 |
+| 9.11471 | 0.00712366 |
 
 A factor of two used to be in here. It stemmed from the fact, that
 there are two identical protons.
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  np.sqrt(sherpa/xs_int_res.result)
+  sherpa-xs_int_res.result
 #+end_src
 
 #+RESULTS:
-: 1.512085037578425
-
-A factor of (3/2)^2. Hmm.
-#+begin_src jupyter-python :exports both :results raw drawer
-np.abs(sherpa - xs_int_res.result*(3/2)**2)
-#+end_src
-
-#+RESULTS:
-: 0.16437191849940191
+: -0.038950833963138365
 
 We use this as upper bound, as the maximizer is bogus because of the
 cuts!
 #+begin_src jupyter-python :exports both :results raw drawer
-  upper_bound = pb_to_gev(xs_sample.max()) * 1.01
+  upper_bound = xs_int_res.maximum
   upper_bound
 #+end_src
 
 #+RESULTS:
-: 0.0008326145438739271
+: 3.61827500866524
 
 That is massive!
+
+So the efficiency will be around:
+#+begin_src jupyter-python :exports both :results raw drawer
+  upper_bound/xs_int_res.result
+#+end_src
+
+#+RESULTS:
+: 0.39804181594357285
+
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
