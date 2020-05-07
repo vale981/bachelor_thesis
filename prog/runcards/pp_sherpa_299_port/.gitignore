@@ -3,6 +3,6 @@
 
 # But not these files...
 !.gitignore
-!Sherpa.yaml
+!Run.dat
 !makefile
 !sherpa_xs
