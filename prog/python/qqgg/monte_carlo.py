@@ -95,11 +95,11 @@ def integrate(
     probe_points = np.random.uniform(
         interval[:, 0],
         interval[:, 1],
-        (int(integration_volume * 10 ** dimension), dimension),
-    )
+        (int(integration_volume * dimension * 100), dimension),
+    ).T
 
     if num_points is None:
-        prelim_std = integration_volume * f(probe_points, **kwargs).std()
+        prelim_std = integration_volume * f(*probe_points, **kwargs).std()
         epsilon = epsilon if prelim_std > epsilon else prelim_std / 10
 
         num_points = int((prelim_std / epsilon) ** 2 * 1.1 + 1)
@@ -108,9 +108,9 @@ def integrate(
     while True:
         points = np.random.uniform(
             interval[:, 0], interval[:, 1], (num_points, len(interval))
-        )
+        ).T
 
-        sample = f(points, **kwargs)
+        sample = f(*points, **kwargs)
         integral = np.sum(sample) / num_points * integration_volume
 
         # the deviation gets multiplied by the square root of the interval
@@ -400,9 +400,7 @@ def integrate_vegas(
     """Integrate the given function (in one dimension) with the vegas
     algorithm to reduce variance.  This implementation follows the
     description given in JOURNAL OF COMPUTATIONAL 27, 192-203 (1978).
-
     All iterations contribute to the final result.
-
     :param f: function of one variable, kwargs are passed to it
     :param tuple interval: a 2-tuple of numbers, specifiying the
         integration range
@@ -418,11 +416,9 @@ def integrate_vegas(
         computation is considered to have converged
     :param alpha: controls the the convergence speed, should be
         between 1 and 2 (the lower the faster)
-
     :returns: the intregal, the standard deviation, an array of
               increment borders which can be used in subsequent
               sampling
-
     :rtype: tuple
     """
 
@@ -732,3 +728,239 @@ def sample_unweighted_array(
         fifo and fifo.close()
 
     return (sample_arr, eff) if report_efficiency else sample_arr
+
+
+# Geezus! Such code dublication..., but I don't want to break
+# backwards compatibility.
+
+
+def integrate_vegas_nd(
+    f,
+    interval,
+    seed=None,
+    num_increments=5,
+    epsilon=1e-3,
+    increment_epsilon=1e-2,
+    alpha=1.5,
+    vegas_point_density=1000,
+    **kwargs,
+) -> VegasIntegrationResult:
+    """Integrate the given function (in n-dimensions) with the vegas
+    algorithm to reduce variance.  This implementation follows the
+    description given in JOURNAL OF COMPUTATIONAL 27, 192-203 (1978).
+
+    :param f: function of one variable, kwargs are passed to it
+    :param tuple interval: a 2-tuple of numbers, specifiying the
+        integration range
+    :param seed: the seed for the rng, if not specified, the system
+        time is used
+    :param num_increments: the number increments in which to divide
+        the interval
+    :param point_density: the number of random points per unit
+        interval
+    :param increment_epsilon: the breaking condition, if the magnitude
+        of the difference between the increment positions in
+        subsequent iterations does not change more then epsilon the
+        computation is considered to have converged
+    :param alpha: controls the the convergence speed, should be
+        between 1 and 2 (the lower the faster)
+
+    :returns: the intregal, the standard deviation, an array of
+              increment borders which can be used in subsequent
+              sampling
+
+    :rtype: tuple
+
+    """
+
+    intervals = np.asarray(_process_interval(interval))
+    ndim = len(interval)
+    integration_volume = (intervals[:, 1] - intervals[:, 0]).prod()
+    num_cubes = num_increments ** ndim
+
+    if seed:
+        np.random.seed(seed)
+
+    # no clever logic is being used to define the vegas iteration
+    # sample density for the sake of simplicity
+    points_per_cube = int(vegas_point_density * integration_volume / num_cubes)
+
+    # start with equally sized intervals
+    increment_borders = [
+        np.linspace(*interval, num_increments + 1, endpoint=True)
+        for interval in intervals
+    ]
+
+    def evaluate_stripe(interval_borders):
+        cubes = generate_cubes(interval_borders)
+
+        result = 0
+        for cube in cubes:
+            vol = get_integration_volume(cube)
+            points = np.random.uniform(
+                cube[:, 0], cube[:, 1], (points_per_cube, ndim)
+            ).T
+            result += ((f(*points, **kwargs) * vol) ** 2).sum()
+
+        return np.sqrt(result)
+
+    def generate_integral_steps(interval_borders, dimension):
+        borders = interval_borders[dimension]
+        stripes = np.array([borders[:-1], borders[1:]]).T
+
+        ms = np.empty(len(stripes))
+        for i, stripe in enumerate(stripes):
+            interval_borders[dimension] = stripe
+
+            ms[i] = evaluate_stripe(interval_borders)
+
+        # * num_increments gets normalized away
+        return ms / ms.sum()
+
+    K = num_increments * 1000
+
+    integrals = []
+    variances = []
+
+    vegas_iterations, integral, variance = 0, 0, 0
+    while True:
+        vegas_iterations += 1
+        new_increment_borders = []
+        for dim in range(ndim):
+            increment_weights = generate_integral_steps(increment_borders.copy(), dim)
+            # it is debatable to pass so much that could be recomputed...
+            new_borders = reshuffle_increments_nd(
+                increment_weights, num_increments, increment_borders[dim], alpha, K,
+            )
+
+            new_increment_borders.append(new_borders)
+
+        remainder = (
+            np.sum(
+                [
+                    np.linalg.norm(border - new_border)
+                    for border, new_border in zip(
+                        increment_borders, new_increment_borders
+                    )
+                ]
+            )
+            / num_cubes
+        )
+
+        if remainder < increment_epsilon:
+            increment_borders = new_increment_borders
+            break
+
+        increment_borders = new_increment_borders
+
+    # brute force increase of the sample size
+    tick = 1
+    cubes = generate_cubes(increment_borders)
+    volumes = [get_integration_volume(cube) for cube in cubes]
+    cube_samples = [np.empty(0) for _ in cubes]
+    total_points_per_cube = points_per_cube
+
+    while True:
+        integral = variance = 0
+        total_points_per_cube += points_per_cube
+
+        for cube, vol, i in zip(cubes, volumes, range(num_cubes)):
+            points = np.random.uniform(
+                cube[:, 0], cube[:, 1], (points_per_cube, ndim)
+            ).T
+
+            sample = f(*points, **kwargs)
+
+            # let's re-use the samples from earlier runs
+            cube_samples[i] = np.concatenate([cube_samples[i], sample]).T
+
+            integral += cube_samples[i].mean() * vol
+            variance += cube_samples[i].var() * (vol ** 2) / (total_points_per_cube - 1)
+
+        if np.sqrt(variance) <= epsilon:
+            break
+
+        # adaptive scaling of sample size incrementation
+        points_per_cube += int(
+            1000 ** np.log(tick) * integration_volume / num_increments
+        )
+
+        tick += 2
+
+    return VegasIntegrationResult(
+        integral,
+        np.sqrt(variance),
+        total_points_per_cube * num_increments,
+        increment_borders,
+        vegas_iterations,
+    )
+
+
+def generate_cubes(interval_borders):
+    """Given an array of interval borders, return a list of hypercube
+    edges to fill the whole volume."""
+    intervals = [np.array([border[:-1], border[1:]]).T for border in interval_borders]
+    ndim = len(intervals)
+    axis = np.arange(ndim)
+
+    mesh_axes = [np.arange(len(ax_intervals)) for ax_intervals in intervals]
+    grid = np.array(np.meshgrid(*mesh_axes)).T
+    grid = grid.reshape(int(grid.size / ndim), ndim).astype(int)
+
+    return np.array(
+        [[intervals[n][i] for (n, i) in zip(axis, indices)] for indices in grid]
+    )
+
+
+def get_integration_volume(interval):
+    return (interval[:, 1] - interval[:, 0]).prod()
+
+
+def reshuffle_increments_nd(
+    μ, num_increments, increment_borders, alpha, K,
+):
+    # alpha controls the convergence speed
+    new_increments = (K * ((μ - 1) / (np.log(μ))) ** alpha).astype(int) + 1
+    group_size = new_increments.sum() / num_increments
+    new_increment_borders = np.empty_like(increment_borders[1:-1])
+    interval_lengths = increment_borders[1:] - increment_borders[:-1]
+
+    # this whole code does a very simple thing: it eats up
+    # sub-increments until it has `group_size` of them
+    i = 0  # position in increment count list
+    j = 0  # position in new_incerement_borders
+
+    # the number of sub-increments still available
+    rest = new_increments[0]
+
+    # the number of sub-increments needed to fill one increment
+    head = group_size
+
+    # the current position in the interval relative to its
+    # beginning
+    current = 0
+
+    while i < num_increments and (j < (num_increments - 1)):
+        if new_increments[i] == 0:
+            i += 1
+            rest = new_increments[i]
+
+        current_increment_size = interval_lengths[i] / new_increments[i]
+
+        if head <= rest:
+            current += head * current_increment_size
+            new_increment_borders[j] = current
+            rest -= head
+            head = group_size
+            j += 1
+
+        else:
+            current += rest * current_increment_size
+            head -= rest
+            i += 1
+            rest = new_increments[i]
+
+    return (
+        np.array([0, *new_increment_borders, increment_borders[-1]])
+        + increment_borders[0]
+    )
