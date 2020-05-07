@@ -487,21 +487,25 @@ Now, it would be interesting to know the total cross section.
       [interval_η, [pdf.xMin, 1], [pdf.xMin, 1]],
       epsilon=.1,
       proc=1,
-      increment_epsilon=1e-4,
-      num_increments=8,
-      num_points_per_cube=100,
+      increment_epsilon=1e-6,
+      num_increments=15,
+      num_points_per_cube=40,
       cache="cache/pdf/total_xs_20",
   )
   xs_int_res
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=9.090188175551319, sigma=0.08688810229559833, N=51200, increment_borders=[array([-1.        , -0.78257005, -0.55648476, -0.27807514,  0.01975403,
-:         0.30670953,  0.57178838,  0.79134497,  1.        ]), array([1.00000000e-09, 1.70252890e-03, 2.50770457e-03, 3.38921683e-03,
-:        4.45586924e-03, 5.85289775e-03, 8.04482707e-03, 1.77836115e-02,
-:        1.00000000e+00]), array([1.00000000e-09, 1.69683906e-03, 2.55969081e-03, 3.54347303e-03,
-:        4.70998339e-03, 6.30378969e-03, 9.14433346e-03, 3.16937712e-02,
-:        1.00000000e+00])], vegas_iterations=22, maximum=3.61827500866524)
+: VegasIntegrationResult(result=9.086132980722443, sigma=0.03271098497597619, N=135000, increment_borders=[array([-1.        , -0.90750164, -0.7974703 , -0.67136241, -0.53225036,
+:        -0.38831814, -0.23658788, -0.08335491,  0.06713033,  0.19956399,
+:         0.35167983,  0.50079624,  0.64192694,  0.77403607,  0.88922037,
+:         1.        ]), array([1.00000000e-09, 1.55361855e-03, 1.99787059e-03, 2.40520361e-03,
+:        2.82180404e-03, 3.27381758e-03, 3.77259997e-03, 4.31503544e-03,
+:        4.91632516e-03, 5.58668556e-03, 6.36793136e-03, 7.30988931e-03,
+:        8.57076936e-03, 1.12567769e-02, 2.42229297e-02, 1.00000000e+00]), array([1.00000000e-09, 1.48203682e-03, 1.94728489e-03, 2.37011805e-03,
+:        2.80851121e-03, 3.27764034e-03, 3.78734921e-03, 4.34618989e-03,
+:        4.95715401e-03, 5.64642055e-03, 6.45217005e-03, 7.36540764e-03,
+:        8.54416333e-03, 1.14314589e-02, 2.93192076e-02, 1.00000000e+00])], vegas_iterations=10, maximum=606.3193479242973)
 
 #+begin_src jupyter-python :exports both :results raw drawer
   sherpa, sherpa_σ = np.loadtxt("../../runcards/pp/sherpa_xs")
@@ -519,7 +523,7 @@ there are two identical protons.
 #+end_src
 
 #+RESULTS:
-: -0.038950833963138365
+: 0.028577019277557625
 
 We use this as upper bound, as the maximizer is bogus because of the
 cuts!
@@ -529,17 +533,17 @@ cuts!
 #+end_src
 
 #+RESULTS:
-: 3.61827500866524
+: 606.3193479242973
 
 That is massive!
 
 So the efficiency will be around:
 #+begin_src jupyter-python :exports both :results raw drawer
-  upper_bound/xs_int_res.result
+  xs_int_res.result/upper_bound
 #+end_src
 
 #+RESULTS:
-: 0.39804181594357285
+: 0.01498572165283583
 
 
 * Event generation
@@ -665,23 +669,21 @@ Now we sample some events. Doing this in parallel helps. We let the os
 figure out the cpu mapping.
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  intervals_η = np.array([interval_η, [pdf.xMin, 1], [pdf.xMin, 1]])
-
   result, eff = monte_carlo.sample_unweighted_array(
-      1_000,
+      1000_000,
       dist_η,
-      interval=intervals_η,
+      increment_borders=np.array(xs_int_res.increment_borders),
       proc="auto",
       report_efficiency=True,
-      upper_bound=upper_bound,
-      #cache="cache/pdf/total_xs_1000_000",
+      upper_bound=pb_to_gev(xs_int_res.maximum),
+      cache="cache/pdf/total_xs_1000_000",
       status_path="/tmp/status1"
   )
   eff
 #+end_src
 
 #+RESULTS:
-: 0.001043054794298712
+: 0.0023869765050168546
 
 The efficiency is still quite horrible, but at least an order of
 mag. better than with cosθ.
@@ -695,14 +697,14 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: 1000
-[[file:./.ob-jupyter/227bd8b1016afb1a90199937e140b7e8dd97d0f8.png]]
+: 1000000
+[[file:./.ob-jupyter/77494a4df478f6ad80a17e68473d648e0384c145.png]]
 :END:
 
 #+RESULTS:
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  yoda_file = yoda.read("../../runcards/pp_sherpa_299_port/analysis/Analysis.yoda")
+  yoda_file = yoda.read("../../runcards/pp/analysis/Analysis.yoda")
   yoda_hist = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/eta"])
   fig, (ax, _) = draw_ratio_plot(
       [
@@ -716,8 +718,8 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fd42575f1f0>
-[[file:./.ob-jupyter/2242e340857b4cd5f3f339845eeadaddac9bf3b3.png]]
+: <matplotlib.legend.Legend at 0x7fe0b0570550>
+[[file:./.ob-jupyter/26dc7431fbfd0c82d5d216653b3be99e09d6f0ca.png]]
 :END:
 
 Hah! there we have it!
@@ -740,13 +742,13 @@ Hah! there we have it!
           #dict(hist=np.histogram(sherpa_manual, bins=50, range=interval_η), hist_kwargs=dict(label="sherpa")),
       ]
   )
-  #ax.set_yscale('log')
+  ax.set_yscale('log')
   ax.set_xscale('log')
   ax.legend()
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fd425842700>
-[[file:./.ob-jupyter/d2487dbcb40c899d43a24c30e082fb67c2a1f783.png]]
+: <matplotlib.legend.Legend at 0x7fdfb97e7280>
+[[file:./.ob-jupyter/2ce4f5954d33f386449896bfce6b61d581ec07a5.png]]
 :END:
