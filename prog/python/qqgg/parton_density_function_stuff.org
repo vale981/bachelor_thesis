@@ -676,14 +676,14 @@ figure out the cpu mapping.
       proc="auto",
       report_efficiency=True,
       upper_bound=pb_to_gev(xs_int_res.maximum),
-      cache="cache/pdf/total_xs_1000_000",
+      cache="cache/pdf/total_xs_1000_000_2",
       status_path="/tmp/status1"
   )
   eff
 #+end_src
 
 #+RESULTS:
-: 0.0023869765050168546
+: 0.002390855461178507
 
 The efficiency is still quite horrible, but at least an order of
 mag. better than with cosθ.
@@ -698,10 +698,16 @@ Let's look at a histogramm of eta samples.
 #+RESULTS:
 :RESULTS:
 : 1000000
-[[file:./.ob-jupyter/77494a4df478f6ad80a17e68473d648e0384c145.png]]
+[[file:./.ob-jupyter/cfe23f7e455b85ed6c8818447761b5934382fb29.png]]
 :END:
 
 #+RESULTS:
+#+begin_src jupyter-python :exports both :results raw drawer
+ result[:, 0].min()
+#+end_src
+
+#+RESULTS:
+: -0.9999856686520736
 
 #+begin_src jupyter-python :exports both :results raw drawer
   yoda_file = yoda.read("../../runcards/pp/analysis/Analysis.yoda")
@@ -718,8 +724,8 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fe0b0570550>
-[[file:./.ob-jupyter/26dc7431fbfd0c82d5d216653b3be99e09d6f0ca.png]]
+: <matplotlib.legend.Legend at 0x7fdfb8a7edf0>
+[[file:./.ob-jupyter/bd59d61da1b968f792b44024f13cd82400341f50.png]]
 :END:
 
 Hah! there we have it!
