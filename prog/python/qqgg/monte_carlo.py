@@ -170,13 +170,7 @@ def find_upper_bound_vector(f, interval):
 
 
 def sample_unweighted_vector(
-    f,
-    interval,
-    seed=None,
-    upper_bound=None,
-    report_efficiency=False,
-    status_path=None,
-    total=1,
+    f, interval, seed=None, upper_bound=None, report_efficiency=False, total=1,
 ):
     dimension = len(interval)
     interval = _process_interval(interval)
@@ -681,13 +675,19 @@ def sample_unweighted_array(
                 )
 
         elif increment_borders is not None:
-            sample_arr = np.empty(num)
-            samples = sample_stratified(
-                f,
-                increment_borders=increment_borders,
-                report_efficiency=report_efficiency,
-                **kwargs,
-            )
+            if len(increment_borders.shape) > 1:
+                sample_arr = np.empty((num, increment_borders.shape[0]))
+                samples = sample_stratified_vector(
+                    f, increment_borders, report_efficiency=report_efficiency, **kwargs,
+                )
+            else:
+                sample_arr = np.empty(num)
+                samples = sample_stratified(
+                    f,
+                    increment_borders=increment_borders,
+                    report_efficiency=report_efficiency,
+                    **kwargs,
+                )
         else:
             raise TypeError("Neiter interval nor increment_borders specified!")
 
@@ -989,3 +989,41 @@ def reshuffle_increments_nd(
         )
         + increment_borders[0]
     )
+
+
+# NOTE: Finding the upper bound happens in the Integration step!
+def sample_stratified_vector(
+    f, increment_borders, upper_bound, seed=None, report_efficiency=False
+):
+    ndim = len(increment_borders)
+
+    if seed:
+        np.random.seed(seed)
+
+    def allocate_random_chunk(cube):
+        return np.random.uniform([*cube[:, 0], 0], [*cube[:, 1], 1], [1, 1 + ndim],)
+
+    total_points = 0
+    total_accepted = 0
+    cubes = generate_cubes(increment_borders)
+    num_cubes = len(cubes)
+
+    while True:
+        np.random.shuffle(cubes)
+        for cube in cubes:
+            volume = get_integration_volume(cube)
+            points = allocate_random_chunk(cube)
+
+            if report_efficiency:
+                total_points += 1
+
+            args = points[0][:-1]
+            if f(*args) * num_cubes * volume >= points[0][-1] * upper_bound:
+                if report_efficiency:
+                    total_accepted += 1
+
+                yield (
+                    args.T,
+                    total_accepted / total_points,
+                ) if report_efficiency else args.T
+    return
