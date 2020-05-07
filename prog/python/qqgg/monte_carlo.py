@@ -891,7 +891,7 @@ def integrate_vegas_nd(
                     cube_samples[i].var() * (vol ** 2) / (total_points_per_cube - 1)
                 )
 
-                local_maximum = points.max()
+                local_maximum = points.max() * num_cubes
                 if not maximum or local_maximum > maximum:
                     maximum = local_maximum
 
