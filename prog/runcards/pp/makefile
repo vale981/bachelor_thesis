@@ -1,5 +1,5 @@
 sherpa_xs: Sherpa.yaml
-	Sherpa -e 0 -a "" 'GENERATE_RESULT_DIRECTORY: false' | sed 's/\x1b\[[0-9;]*m//g' | perl -ne 'while(/.*\s:\s([0-9]\.[0-9]+(?:e-?[0-9]+)?)\spb\s\+-\s\(\s([0-9]\.[0-9]+(?:e-?[0-9]+)?).*$$/g){print "$$1\n$$2";}'  > sherpa_xs
+	Sherpa -e 0 -a "" 'GENERATE_RESULT_DIRECTORY: false' | sed 's/\x1b\[[0-9;]*m//g' | perl -ne 'while(/.*\s:\s([0-9]\.[0-9]+(?:e-?[0-9]+)?)\spb\s\+-\s\(\s([0-9]\.[0-9]+(?:e-?[0-9]+)?).*$$/g){print "$$1\n$$2";}' | tee sherpa_xs
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 analysis: Sherpa.yaml
