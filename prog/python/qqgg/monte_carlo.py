@@ -834,46 +834,35 @@ def integrate_vegas_nd(
         # * num_increments gets normalized away
         return ms / ms.sum()
 
-    K = num_increments * 1000
+    K = 1000
 
-    integrals = []
-    variances = []
+    remainders = np.ones(ndim)
 
     vegas_iterations, integral, variance = 0, 0, 0
+    old_remainder = 0
     while True:
         vegas_iterations += 1
-        new_increment_borders = []
+
         for dim in range(ndim):
             increment_weights = generate_integral_steps(increment_borders.copy(), dim)
-            # it is debatable to pass so much that could be recomputed...
+            curr_remainder = increment_weights.max() - increment_weights.min()
+            remainders[dim] = curr_remainder
 
             new_borders = reshuffle_increments_nd(
                 increment_weights,
                 num_increments[dim],
                 increment_borders[dim],
                 alpha,
-                K[dim],
+                K,
             )
 
-            new_increment_borders.append(new_borders)
+            increment_borders[dim] = new_borders
 
-        remainder = (
-            np.sum(
-                [
-                    np.linalg.norm(border - new_border)
-                    for border, new_border in zip(
-                        increment_borders, new_increment_borders
-                    )
-                ]
-            )
-            / num_cubes
-        )
-
-        if remainder < increment_epsilon:
-            increment_borders = new_increment_borders
+        remainder = remainders.max()
+        if abs(remainder - old_remainder) < increment_epsilon:
             break
 
-        increment_borders = new_increment_borders
+        remainder = old_remainder
 
     # brute force increase of the sample size
     cubes = generate_cubes(increment_borders)
@@ -957,8 +946,8 @@ def reshuffle_increments_nd(
 
     mask = μ > 0
     μ = μ[mask]
-    new_increments[mask] = (K * ((μ - 1) / (np.log(μ))) ** alpha).astype(int) + 1
-    new_increments[np.logical_not(mask)] = 1
+    new_increments[mask] = (K * ((μ - 1) / (np.log(μ))) ** alpha).astype(int)
+    new_increments[np.logical_not(mask)] = 0
 
     group_size = new_increments.sum() / num_increments
     new_increment_borders = np.empty_like(increment_borders[1:-1])

@@ -238,9 +238,7 @@ def get_xs_distribution_with_pdf(
     quarks = (
         quarks
         if quarks is not None
-        else np.array(
-            [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
-        )
+        else np.array([[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]])
     )  # all the light quarks
 
     supported_quarks = pdf.flavors()
@@ -266,16 +264,18 @@ def get_xs_distribution_with_pdf(
         )
 
         result = 0
+        xs_value = xs(e_hadron, 1, angle_arg, x_1, x_2)
+
         for (quark, charge), q_1, qb_1, q_2, qb_2 in zip(quarks, *pdf_values):
-            xs_value = xs(e_hadron, charge, angle_arg, x_1, x_2)
 
-            result += ((q_1 * qb_2) + (qb_1 * q_2)) * xs_value
+            result += ((q_1 * qb_2) + (qb_1 * q_2)) * (charge ** 4)
 
-        return result / (x_1 * x_2)  # identical protons
+        return result * xs_value / (x_1 * x_2)  # identical protons
 
     def vectorized(angle_arg, x_1, x_2):
         results = np.empty_like(angle_arg)
         for a, x__1, x__2, i in zip(angle_arg, x_1, x_2, range(len(results))):
             results[i] = distribution(a, x__1, x__2)
         return results
+
     return vectorized if vectorize else distribution, (pdf.xMin, pdf.xMax)

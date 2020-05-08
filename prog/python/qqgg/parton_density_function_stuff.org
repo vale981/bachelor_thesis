@@ -21,6 +21,8 @@
 %run tangled/plot_utils.py
 %load_ext autoreload
 %aimport monte_carlo
+%aimport tangled
+from tangled import observables
 %autoreload 1
 #+END_SRC
 
@@ -50,7 +52,7 @@ We gonna export that for reference in the tex document.
 
 
 #+RESULTS:
-: \(\abs{\eta} \leq 1\)
+: \(\abs{\eta} \leq 2\)
 
 * Implementation
 ** Lab Frame XS
@@ -301,9 +303,7 @@ We begin by implementing the same sermon for the lab frame.
       quarks = (
           quarks
           if quarks is not None
-          else np.array(
-              [[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]]
-          )
+          else np.array([[5, -1 / 3], [4, 2 / 3], [3, -1 / 3], [2, 2 / 3], [1, -1 / 3]])
       )  # all the light quarks
 
       supported_quarks = pdf.flavors()
@@ -329,18 +329,20 @@ We begin by implementing the same sermon for the lab frame.
           )
 
           result = 0
+          xs_value = xs(e_hadron, 1, angle_arg, x_1, x_2)
+
           for (quark, charge), q_1, qb_1, q_2, qb_2 in zip(quarks, *pdf_values):
-              xs_value = xs(e_hadron, charge, angle_arg, x_1, x_2)
 
-              result += ((q_1 * qb_2) + (qb_1 * q_2)) * xs_value
+              result += ((q_1 * qb_2) + (qb_1 * q_2)) * (charge ** 4)
 
-          return result / (x_1 * x_2)  # identical protons
+          return result * xs_value / (x_1 * x_2)  # identical protons
 
       def vectorized(angle_arg, x_1, x_2):
           results = np.empty_like(angle_arg)
           for a, x__1, x__2, i in zip(angle_arg, x_1, x_2, range(len(results))):
               results[i] = distribution(a, x__1, x__2)
           return results
+
       return vectorized if vectorize else distribution, (pdf.xMin, pdf.xMax)
 #+end_src
 
@@ -372,7 +374,7 @@ The total cross section is as follows:
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=3.323517257035529e-14, sigma=9.569545911748089e-17, N=92356)
+: IntegrationResult(result=3.349992506409999e-14, sigma=9.308196826415082e-17, N=97560)
 
 
 We have to convert that to picobarn.
@@ -381,7 +383,7 @@ We have to convert that to picobarn.
 #+end_src
 
 #+RESULTS:
-| 1.2941090629468352e-05 | 3.726183779086256e-08 |
+| 1.3044179789263593e-05 | 3.6244198363216e-08 |
 
 That is compatible with sherpa!
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -405,7 +407,7 @@ We can take some samples as well.
 #+end_src
 
 #+RESULTS:
-: -1.8206977316702722
+: -1.820699128032964
 
 #+begin_src jupyter-python :exports both :results raw drawer
 part_hist = np.histogram(part_samples, bins=50, range=[-2.5, 2.5])
@@ -415,8 +417,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.axes._subplots.AxesSubplot at 0x7f58058c04c0>
-[[file:./.ob-jupyter/e309c21aa7ca2778672100a13c49f1e18cbf487c.png]]
+: <matplotlib.axes._subplots.AxesSubplot at 0x7f583c7d6670>
+[[file:./.ob-jupyter/21bd218beeba647c1f6be0db06093cc029f580d7.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -436,8 +438,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f57fb30a2b0>
-[[file:./.ob-jupyter/c213cc58429451a5406dd75073e55f1f1d5e5098.png]]
+: <matplotlib.legend.Legend at 0x7f583c6c5100>
+[[file:./.ob-jupyter/b7bf4ea7833f57fd4b43b54c0eb5291638467736.png]]
 :END:
 #+begin_src jupyter-python :exports both :results raw drawer
   part_momenta = momenta(
@@ -466,8 +468,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f57f944afd0>
-[[file:./.ob-jupyter/f8cdffca2a9365041ccd863c3cabcae15f2e7dba.png]]
+: <matplotlib.legend.Legend at 0x7f5879ca1880>
+[[file:./.ob-jupyter/62cef05a4f3bb495a4dbe28ca7f8a8fa7f9ce0c6.png]]
 :END:
 
 * Total XS
@@ -487,37 +489,43 @@ Now, it would be interesting to know the total cross section.
       [interval_η, [pdf.xMin, 1], [pdf.xMin, 1]],
       epsilon=.1,
       proc=1,
-      increment_epsilon=1e-5,
-      num_increments=30,
-      num_points_per_cube=20,
-      cache="cache/pdf/total_xs_2_5_20_take2",
+      increment_epsilon=5e-2,
+      alpha=1.1,
+      num_increments=[4, 50, 50],
+      num_points_per_cube=10,
+      cache="cache/pdf/total_xs_2_5_20_take12",
   )
+
   xs_int_res
 #+end_src
 
 #+RESULTS:
 #+begin_example
-  VegasIntegrationResult(result=38.731339372005365, sigma=0.07265816694924242, N=1080000, increment_borders=[array([-2.5       , -2.32835947, -2.15438997, -1.97489048, -1.78929794,
-         -1.61034254, -1.43199198, -1.25505194, -1.07931266, -0.91546528,
-         -0.75866821, -0.60567942, -0.44572697, -0.29075692, -0.13460784,
-          0.02155069,  0.16622231,  0.33509299,  0.49441697,  0.64496492,
-          0.78579783,  0.94019088,  1.10470178,  1.27009507,  1.44294942,
-          1.62909519,  1.81535603,  1.99742017,  2.17243462,  2.32804025,
-          2.5       ]), array([1.00000000e-09, 4.22950703e-04, 8.08993940e-04, 1.20493582e-03,
-         1.65378769e-03, 2.21346752e-03, 2.85478159e-03, 3.58222885e-03,
-         4.39911323e-03, 5.31170929e-03, 6.32496405e-03, 7.43118321e-03,
-         8.63797374e-03, 9.91867738e-03, 1.12571904e-02, 1.26767681e-02,
-         1.41839462e-02, 1.57234054e-02, 1.73307226e-02, 1.90514264e-02,
-         2.08459576e-02, 2.27132746e-02, 2.46653875e-02, 2.67412751e-02,
-         2.89779495e-02, 3.14824384e-02, 3.50976699e-02, 4.11048622e-02,
-         5.14113272e-02, 8.45714546e-02, 1.00000000e+00]), array([1.00000000e-09, 4.20685225e-04, 8.04603624e-04, 1.20189834e-03,
-         1.65722885e-03, 2.21945465e-03, 2.87194550e-03, 3.61041041e-03,
-         4.44006001e-03, 5.36118932e-03, 6.37433582e-03, 7.48345777e-03,
-         8.67060899e-03, 9.91888910e-03, 1.12486095e-02, 1.26581836e-02,
-         1.41360102e-02, 1.56947367e-02, 1.73016868e-02, 1.89593678e-02,
-         2.06989578e-02, 2.25644818e-02, 2.45027512e-02, 2.65978279e-02,
-         2.89262288e-02, 3.15916269e-02, 3.53855309e-02, 4.12342134e-02,
-         5.19773294e-02, 8.80223671e-02, 1.00000000e+00])], vegas_iterations=4, maximum=11166.525662626225)
+  VegasIntegrationResult(result=38.70729937273713, sigma=0.09370816590976482, N=900000, increment_borders=[array([-2.5       , -1.36701006, -0.18716574,  1.03488529,  2.5       ]), array([1.00000000e-09, 3.31337311e-04, 5.51481263e-04, 7.70367001e-04,
+         9.96999859e-04, 1.24187124e-03, 1.52549807e-03, 1.83607087e-03,
+         2.17444646e-03, 2.53708964e-03, 2.92618087e-03, 3.34470064e-03,
+         3.79772697e-03, 4.29910038e-03, 4.85169214e-03, 5.46492002e-03,
+         6.12008608e-03, 6.80099820e-03, 7.50796426e-03, 8.25920562e-03,
+         9.06628266e-03, 9.90706273e-03, 1.07664191e-02, 1.16660565e-02,
+         1.26215202e-02, 1.36188967e-02, 1.46632930e-02, 1.57466840e-02,
+         1.68261423e-02, 1.78754833e-02, 1.89286501e-02, 2.00089019e-02,
+         2.11175964e-02, 2.22378331e-02, 2.33881263e-02, 2.45410470e-02,
+         2.56907867e-02, 2.69922318e-02, 2.83977345e-02, 2.96314745e-02,
+         3.10547034e-02, 3.26574516e-02, 3.44321324e-02, 3.64706098e-02,
+         3.88477359e-02, 4.22483852e-02, 4.74397273e-02, 5.56042558e-02,
+         7.00170767e-02, 1.12576440e-01, 1.00000000e+00]), array([1.00000000e-09, 3.36087192e-04, 5.24780165e-04, 6.95644749e-04,
+         8.71510550e-04, 1.05706200e-03, 1.25563493e-03, 1.46316651e-03,
+         1.70703473e-03, 1.97421024e-03, 2.26901293e-03, 2.59474876e-03,
+         2.94503455e-03, 3.31893333e-03, 3.71980975e-03, 4.15218669e-03,
+         4.62726739e-03, 5.13681288e-03, 5.67153778e-03, 6.23598467e-03,
+         6.83899716e-03, 7.46764093e-03, 8.14260332e-03, 8.85566587e-03,
+         9.60462566e-03, 1.03973663e-02, 1.12069873e-02, 1.20580379e-02,
+         1.29622077e-02, 1.39325998e-02, 1.49366943e-02, 1.59707929e-02,
+         1.69854264e-02, 1.80304060e-02, 1.91381594e-02, 2.03856083e-02,
+         2.17560252e-02, 2.32054345e-02, 2.47705093e-02, 2.64503123e-02,
+         2.82229399e-02, 3.00624506e-02, 3.20676480e-02, 3.44366943e-02,
+         3.72018934e-02, 4.06532604e-02, 4.62388414e-02, 5.45128926e-02,
+         7.01334153e-02, 1.20264783e-01, 1.00000000e+00])], vegas_iterations=6, maximum=6285.205032909089)
 #+end_example
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -536,7 +544,7 @@ there are two identical protons.
 #+end_src
 
 #+RESULTS:
-: -0.003839372005366215
+: 0.020200627262866533
 
 We use this as upper bound, as the maximizer is bogus because of the
 cuts!
@@ -546,7 +554,7 @@ cuts!
 #+end_src
 
 #+RESULTS:
-: 11166.525662626225
+: 6285.205032909089
 
 That is massive!
 
@@ -556,7 +564,7 @@ So the efficiency will be around:
 #+end_src
 
 #+RESULTS:
-: 0.0034685219505326643
+: 0.006158478390134804
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
@@ -687,14 +695,14 @@ figure out the cpu mapping.
       proc="auto",
       report_efficiency=True,
       upper_bound=pb_to_gev(xs_int_res.maximum),
-      cache="cache/pdf/total_xs_1000_000_2_5",
+      cache="cache/pdf/total_xs_10_000_2_5_take2",
       status_path="/tmp/status1"
   )
   eff
 #+end_src
 
 #+RESULTS:
-: 0.002390855461178507
+: 0.0009732800440304117
 
 The efficiency is still quite horrible, but at least an order of
 mag. better than with cosθ.
@@ -708,64 +716,112 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: 1000000
-[[file:./.ob-jupyter/cfe23f7e455b85ed6c8818447761b5934382fb29.png]]
+: 10000
+[[file:./.ob-jupyter/f1b9243f9acacf5508a308eff437ed98d210e85d.png]]
 :END:
-
-#+RESULTS:
-#+begin_src jupyter-python :exports both :results raw drawer
- result[:, 0].min()
-#+end_src
-
-#+RESULTS:
-: -0.9999856686520736
 
 #+begin_src jupyter-python :exports both :results raw drawer
   yoda_file = yoda.read("../../runcards/pp/analysis/Analysis.yoda")
   yoda_hist = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/eta"])
-  fig, (ax, _) = draw_ratio_plot(
+  fig, (ax, ax_ratio) = draw_ratio_plot(
       [
-          dict(hist=yoda_hist, hist_kwargs=dict(label="sherpa")),
-          dict(hist=np.histogram(result[:, 0], bins=50, range=interval_η)),
-          #dict(hist=np.histogram(sherpa_manual, bins=50, range=interval_η), hist_kwargs=dict(label="sherpa")),
+          dict(hist=yoda_hist, hist_kwargs=dict(label="Sherpa")),
+          dict(
+              hist=np.histogram(result[:, 0], bins=50, range=interval_η),
+              hist_kwargs=dict(label="own implementation"),
+          ),
+          # dict(hist=np.histogram(sherpa_manual, bins=50, range=interval_η), hist_kwargs=dict(label="sherpa")),
       ]
   )
+  ax_ratio.set_xlabel(r"$\eta$")
   ax.legend()
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fdfb8a7edf0>
-[[file:./.ob-jupyter/bd59d61da1b968f792b44024f13cd82400341f50.png]]
+: <matplotlib.legend.Legend at 0x7f581710cac0>
+[[file:./.ob-jupyter/f7f37a4907780bbb66e16f859d68ad943ddda2c1.png]]
 :END:
 
 Hah! there we have it!
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  mom = momenta(e_proton, result[:,1], result[:,2], np.tanh(result[:,0]))[2]
+  mom = momenta(e_proton, result[:,1], result[:,2], np.tanh(result[:,0]))
 #+end_src
 
 #+RESULTS:
 
-
+pT drops pretty quickly.
 #+begin_src jupyter-python :exports both :results raw drawer
-  from tangled import observables
-  pT_hist = np.histogram(observables.p_t(mom), bins=50, range=(min_pT, e_proton))
+  pT_hist = np.histogram(observables.p_t(mom[3]), bins=50, range=(min_pT, e_proton))
   yoda_hist_pt = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/pT"])
-  fig, (ax, _) = draw_ratio_plot(
+  fig, (ax, ax_ratio) = draw_ratio_plot(
       [
           dict(hist=yoda_hist_pt, hist_kwargs=dict(label="sherpa")),
-          dict(hist=pT_hist),
-          #dict(hist=np.histogram(sherpa_manual, bins=50, range=interval_η), hist_kwargs=dict(label="sherpa")),
+          dict(hist=pT_hist, hist_kwargs=dict(label="own implementation")),
       ]
   )
-  ax.set_yscale('log')
-  ax.set_xscale('log')
+
+  ax.set_yscale("log")
+  ax.set_xscale("log")
+  ax_ratio.set_xlabel(r"$p_T$ [GeV]")
   ax.legend()
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fdfb97e7280>
-[[file:./.ob-jupyter/2ce4f5954d33f386449896bfce6b61d581ec07a5.png]]
+: <matplotlib.legend.Legend at 0x7f58170dd4c0>
+[[file:./.ob-jupyter/a981d0bf2f1c542e08d59ffec519bd7c3605e911.png]]
+:END:
+
+The invariant mass is not constant anymore.
+#+begin_src jupyter-python :exports both :results raw drawer
+  inv_m_hist = np.histogram(
+  observables.inv_m(mom[2], mom[3]), bins=50, range=(2 * min_pT, 2 * e_proton)
+  )
+  yoda_hist_inv_m = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/inv_m"])
+
+  # yoda_hist_pt = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/pT"])
+  fig, (ax, ax_ratio) = draw_ratio_plot(
+      [
+          dict(hist=yoda_hist_inv_m, hist_kwargs=dict(label="sherpa")),
+          dict(hist=inv_m_hist, hist_kwargs=dict(label="own implementation")),
+      ]
+  )
+
+  ax.set_yscale("log")
+  ax.set_xscale("log")
+  ax_ratio.set_xlabel(r"Invariant Mass [GeV]")
+  ax.legend()
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: <matplotlib.legend.Legend at 0x7f581658a1c0>
+[[file:./.ob-jupyter/d37b0ef165d2e4aef200681ca679fe09b6cab8f2.png]]
+:END:
+
+The cosθ distribution looks more like the paronic one.
+#+begin_src jupyter-python :exports both :results raw drawer
+  cosθ_hist = np.histogram(
+      observables.cosθ(mom[2]), bins=50, range=interval_cosθ
+  )
+  yoda_hist_cosθ = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/cos_theta"])
+
+  # yoda_hist_pt = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/pT"])
+  fig, (ax, ax_ratio) = draw_ratio_plot(
+      [
+          dict(hist=yoda_hist_cosθ, hist_kwargs=dict(label="sherpa")),
+          dict(hist=cosθ_hist, hist_kwargs=dict(label="own implementation")),
+      ]
+  )
+
+  ax_ratio.set_xlabel(r"$\cos\theta$")
+  ax.legend()
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: <matplotlib.legend.Legend at 0x7f58162e0040>
+[[file:./.ob-jupyter/d7afa1b3858189c0a48faa35d1b1fcaaa429d236.png]]
 :END:
