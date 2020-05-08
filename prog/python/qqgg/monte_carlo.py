@@ -8,6 +8,7 @@ import os.path
 import numpy as np
 import pathlib
 import time
+import collections
 from typing import Union
 from multiprocessing import Pool, cpu_count
 import functools
@@ -675,8 +676,8 @@ def sample_unweighted_array(
                 )
 
         elif increment_borders is not None:
-            if len(increment_borders.shape) > 1:
-                sample_arr = np.empty((num, increment_borders.shape[0]))
+            if isinstance(increment_borders[0], collections.Iterable):
+                sample_arr = np.empty((num, len(increment_borders)))
                 samples = sample_stratified_vector(
                     f, increment_borders, report_efficiency=report_efficiency, **kwargs,
                 )
@@ -781,7 +782,13 @@ def integrate_vegas_nd(
     intervals = np.asarray(_process_interval(interval))
     ndim = len(interval)
     integration_volume = (intervals[:, 1] - intervals[:, 0]).prod()
-    num_cubes = num_increments ** ndim
+
+    if not isinstance(num_increments, collections.Iterable):
+        num_increments = np.ones(ndim) * num_increments
+    else:
+        num_increments = np.asarray(num_increments)
+
+    num_cubes = num_increments.prod()
 
     if seed:
         np.random.seed(seed)
@@ -797,8 +804,8 @@ def integrate_vegas_nd(
 
     # start with equally sized intervals
     increment_borders = [
-        np.linspace(*interval, num_increments + 1, endpoint=True)
-        for interval in intervals
+        np.linspace(*interval, num_increments[i] + 1, endpoint=True)
+        for i, interval in enumerate(intervals)
     ]
 
     def evaluate_stripe(interval_borders):
@@ -839,8 +846,13 @@ def integrate_vegas_nd(
         for dim in range(ndim):
             increment_weights = generate_integral_steps(increment_borders.copy(), dim)
             # it is debatable to pass so much that could be recomputed...
+
             new_borders = reshuffle_increments_nd(
-                increment_weights, num_increments, increment_borders[dim], alpha, K,
+                increment_weights,
+                num_increments[dim],
+                increment_borders[dim],
+                alpha,
+                K[dim],
             )
 
             new_increment_borders.append(new_borders)
@@ -934,6 +946,9 @@ def get_integration_volume(interval):
 def reshuffle_increments_nd(
     μ, num_increments, increment_borders, alpha, K,
 ):
+    if num_increments == 1:
+        return increment_borders
+
     # alpha controls the convergence speed
     new_increments = np.empty_like(μ)
 
