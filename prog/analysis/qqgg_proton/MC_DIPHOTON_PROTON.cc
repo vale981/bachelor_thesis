@@ -35,7 +35,7 @@ public:
 
     auto energy = info().energies()[0].first;
     book(_h_pT, "pT", 50, 20, energy);
-    book(_h_eta, "eta", 50, -1, 1);
+    book(_h_eta, "eta", 50, -2.5, 2.5);
     book(_h_cos_theta, "cos_theta", 50, -.986, .986);
   }
 
