@@ -37,6 +37,7 @@ public:
     book(_h_pT, "pT", 50, 20, energy);
     book(_h_eta, "eta", 50, -2.5, 2.5);
     book(_h_cos_theta, "cos_theta", 50, -.986, .986);
+    book(_h_inv_m, "inv_m", 50, 40, 2 * energy);
   }
 
   /// Perform the per-event analysis
@@ -51,6 +52,10 @@ public:
     _h_pT->fill(photon.pT(), weight);
     _h_eta->fill(photon.eta(), weight);
     _h_cos_theta->fill(cos(photon.theta()), weight);
+    const auto &moms = photons.moms();
+    const auto total_momentum = std::accumulate(moms.begin(), moms.end(), FourMomentum(0, 0, 0, 0));
+
+    _h_inv_m->fill(total_momentum.mass());
   }
 
   //@}
@@ -66,6 +71,7 @@ public:
   Histo1DPtr _h_pT;
   Histo1DPtr _h_eta;
   Histo1DPtr _h_cos_theta;
+  Histo1DPtr _h_inv_m;
   //@}
 };
 
