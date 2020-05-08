@@ -28,7 +28,7 @@
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
-  η = 1
+  η = 2.5
   min_pT = 20
   e_proton = 6500  # GeV
   interval_η = [-η, η]
@@ -487,25 +487,38 @@ Now, it would be interesting to know the total cross section.
       [interval_η, [pdf.xMin, 1], [pdf.xMin, 1]],
       epsilon=.1,
       proc=1,
-      increment_epsilon=1e-6,
-      num_increments=15,
-      num_points_per_cube=40,
-      cache="cache/pdf/total_xs_20",
+      increment_epsilon=1e-5,
+      num_increments=30,
+      num_points_per_cube=20,
+      cache="cache/pdf/total_xs_2_5_20_take2",
   )
   xs_int_res
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=9.086132980722443, sigma=0.03271098497597619, N=135000, increment_borders=[array([-1.        , -0.90750164, -0.7974703 , -0.67136241, -0.53225036,
-:        -0.38831814, -0.23658788, -0.08335491,  0.06713033,  0.19956399,
-:         0.35167983,  0.50079624,  0.64192694,  0.77403607,  0.88922037,
-:         1.        ]), array([1.00000000e-09, 1.55361855e-03, 1.99787059e-03, 2.40520361e-03,
-:        2.82180404e-03, 3.27381758e-03, 3.77259997e-03, 4.31503544e-03,
-:        4.91632516e-03, 5.58668556e-03, 6.36793136e-03, 7.30988931e-03,
-:        8.57076936e-03, 1.12567769e-02, 2.42229297e-02, 1.00000000e+00]), array([1.00000000e-09, 1.48203682e-03, 1.94728489e-03, 2.37011805e-03,
-:        2.80851121e-03, 3.27764034e-03, 3.78734921e-03, 4.34618989e-03,
-:        4.95715401e-03, 5.64642055e-03, 6.45217005e-03, 7.36540764e-03,
-:        8.54416333e-03, 1.14314589e-02, 2.93192076e-02, 1.00000000e+00])], vegas_iterations=10, maximum=606.3193479242973)
+#+begin_example
+  VegasIntegrationResult(result=38.731339372005365, sigma=0.07265816694924242, N=1080000, increment_borders=[array([-2.5       , -2.32835947, -2.15438997, -1.97489048, -1.78929794,
+         -1.61034254, -1.43199198, -1.25505194, -1.07931266, -0.91546528,
+         -0.75866821, -0.60567942, -0.44572697, -0.29075692, -0.13460784,
+          0.02155069,  0.16622231,  0.33509299,  0.49441697,  0.64496492,
+          0.78579783,  0.94019088,  1.10470178,  1.27009507,  1.44294942,
+          1.62909519,  1.81535603,  1.99742017,  2.17243462,  2.32804025,
+          2.5       ]), array([1.00000000e-09, 4.22950703e-04, 8.08993940e-04, 1.20493582e-03,
+         1.65378769e-03, 2.21346752e-03, 2.85478159e-03, 3.58222885e-03,
+         4.39911323e-03, 5.31170929e-03, 6.32496405e-03, 7.43118321e-03,
+         8.63797374e-03, 9.91867738e-03, 1.12571904e-02, 1.26767681e-02,
+         1.41839462e-02, 1.57234054e-02, 1.73307226e-02, 1.90514264e-02,
+         2.08459576e-02, 2.27132746e-02, 2.46653875e-02, 2.67412751e-02,
+         2.89779495e-02, 3.14824384e-02, 3.50976699e-02, 4.11048622e-02,
+         5.14113272e-02, 8.45714546e-02, 1.00000000e+00]), array([1.00000000e-09, 4.20685225e-04, 8.04603624e-04, 1.20189834e-03,
+         1.65722885e-03, 2.21945465e-03, 2.87194550e-03, 3.61041041e-03,
+         4.44006001e-03, 5.36118932e-03, 6.37433582e-03, 7.48345777e-03,
+         8.67060899e-03, 9.91888910e-03, 1.12486095e-02, 1.26581836e-02,
+         1.41360102e-02, 1.56947367e-02, 1.73016868e-02, 1.89593678e-02,
+         2.06989578e-02, 2.25644818e-02, 2.45027512e-02, 2.65978279e-02,
+         2.89262288e-02, 3.15916269e-02, 3.53855309e-02, 4.12342134e-02,
+         5.19773294e-02, 8.80223671e-02, 1.00000000e+00])], vegas_iterations=4, maximum=11166.525662626225)
+#+end_example
 
 #+begin_src jupyter-python :exports both :results raw drawer
   sherpa, sherpa_σ = np.loadtxt("../../runcards/pp/sherpa_xs")
@@ -513,7 +526,7 @@ Now, it would be interesting to know the total cross section.
 #+end_src
 
 #+RESULTS:
-| 9.11471 | 0.00712366 |
+| 38.7275 | 0.0280886 |
 
 A factor of two used to be in here. It stemmed from the fact, that
 there are two identical protons.
@@ -523,7 +536,7 @@ there are two identical protons.
 #+end_src
 
 #+RESULTS:
-: 0.028577019277557625
+: -0.003839372005366215
 
 We use this as upper bound, as the maximizer is bogus because of the
 cuts!
@@ -533,7 +546,7 @@ cuts!
 #+end_src
 
 #+RESULTS:
-: 606.3193479242973
+: 11166.525662626225
 
 That is massive!
 
@@ -543,8 +556,7 @@ So the efficiency will be around:
 #+end_src
 
 #+RESULTS:
-: 0.01498572165283583
-
+: 0.0034685219505326643
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
@@ -582,7 +594,7 @@ Now we create an eye-candy surface plot.
   pdf_surface = np.array(
       [
           [
-              gev_to_pb(dist_η_no_cut([grid_ηs[i, j], grid_xs[i, j], x_2_const]))
+              gev_to_pb(dist_η_no_cut(grid_ηs[i, j], grid_xs[i, j], x_2_const))
               for i in range(len(ηs))
           ]
           for j in range(len(xs))
@@ -604,7 +616,7 @@ Now we create an eye-candy surface plot.
 #+RESULTS:
 :RESULTS:
 : \(x_2 = 0.01\)
-[[file:./.ob-jupyter/707cca84798ee2959fc7e0458531b0d5321a012d.png]]
+[[file:./.ob-jupyter/435569ac2b915994a9dda2c14beba363c821370a.png]]
 :END:
 #+begin_src jupyter-python :exports both :results raw drawer
   from mpl_toolkits.mplot3d import Axes3D
@@ -620,7 +632,7 @@ Now we create an eye-candy surface plot.
   pdf_surface = np.array(
       [
           [
-              gev_to_pb(dist_η_no_cut([eta_const, grid_xs[i, j], grid_x_2s[i, j]]))
+              gev_to_pb(dist_η_no_cut(eta_const, grid_xs[i, j], grid_x_2s[i, j]))
               for i in range(len(x_2s))
           ]
           for j in range(len(xs))
@@ -647,22 +659,21 @@ Now we create an eye-candy surface plot.
 #+RESULTS:
 :RESULTS:
 : \(\eta = 2.50\)
-[[file:./.ob-jupyter/585a2bba902512d5328c3f8c474f6436a3992a5c.png]]
+[[file:./.ob-jupyter/8bf84cb0460b2d5eb083e20c9fa656723585a030.png]]
 :END:
 
 Lets plot how the pdf looks.
 #+begin_src jupyter-python :exports both :results raw drawer
-  pts = np.linspace(0.1, 1, 1000)
+  pts = np.logspace(-4, 0, 10000)
 
   fig, ax = set_up_plot()
   ax.plot(pts, [pdf.xfxQ2(2, pt, 2*100**2)/pt for pt in pts])
+  ax.set_yscale('log')
+  ax.set_xscale('log')
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-| <matplotlib.lines.Line2D | at | 0x7fd424f1aca0> |
-[[file:./.ob-jupyter/b92f0c4b2c9f2195ae14444748fcdb7708d81c19.png]]
-:END:
+[[file:./.ob-jupyter/7fe9d3bd60427cf20af835649efbcbaafefbb3e0.png]]
 
 
 Now we sample some events. Doing this in parallel helps. We let the os
@@ -676,7 +687,7 @@ figure out the cpu mapping.
       proc="auto",
       report_efficiency=True,
       upper_bound=pb_to_gev(xs_int_res.maximum),
-      cache="cache/pdf/total_xs_1000_000_2",
+      cache="cache/pdf/total_xs_1000_000_2_5",
       status_path="/tmp/status1"
   )
   eff

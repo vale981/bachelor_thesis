@@ -42,7 +42,7 @@ MI_HANDLER: None
 
 # cuts
 SELECTORS:
-- [Eta, 22, -1, 1]
+- [Eta, 22, -2.5, 2.5]
 - [PT, 22, 20, 200000000]
 
 # no transverse impulses
