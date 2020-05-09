@@ -15,14 +15,15 @@ process.
 
 The integrand in~\eqref{eq:pdf-xs} can be concretised
 into~\eqref{eq:weighteddist}, where \(q\) runs over all quarks (except
-the top quark). The averaged sum accounts for the fact, that the two
-protons are indistinguishable. The choice of \(Q^2\) was explained
-in~\ref{sec:pdf_basics} and is being given in~\eqref{eq:q2-explicit}.
+the top quark). The sum has been symmetized, otherwise a double sum
+with \(q\) and \(\bar{q}\) would have been necessary. The choice of
+\(Q^2\) was explained in~\ref{sec:pdf_basics} and is being given
+in~\eqref{eq:q2-explicit}.
 
 \begin{gather}
   \label{eq:weighteddist}
   \frac{\dd[3]{\sigma}}{\dd{\eta}\dd{x_1}\dd{x_2}} =
-  \sum_q \frac{1}{2}\qty[f_q\qty(x_1;Q^2) f_{\bar{q}}\qty(x_2;Q^2) + f_q\qty(x_2;Q^2) f_{\bar{q}}\qty(x_1;Q^2)] \dv{\sigma(x_1,
+  \sum_q \qty[f_q\qty(x_1;Q^2) f_{\bar{q}}\qty(x_2;Q^2) + f_q\qty(x_2;Q^2) f_{\bar{q}}\qty(x_1;Q^2)] \dv{\sigma(x_1,
     x_2, Z_q)}{\eta} \\
   \label{eq:q2-explicit}
   Q^2 = 2x_1x_2E_p^2
@@ -78,7 +79,12 @@ for greater values of \(x_1\). The overall shape of the distribution
 is clearly highly sub-optimal for hit-or-miss sampling, only having
 significant values when \(x_1\) or \(x_2\) are small and being very
 steep. To remedy that, one has to use a more efficient sampling
-algorithm (\vegas) or impose very restrictive cuts.
+algorithm (\vegas) or impose very restrictive cuts. The \vegas\
+algorithm can be adapted to \(n\) dimensions by using a grid of
+hypercubes instead of intervals and using the algorithm along each
+axis with a slightly altered weighting
+mechanism~\cite[197]{Lepage:19781an}. The self-coded implementation
+used here can be found in~\ref{sec:pycode}.
 
 \begin{figure}[hb]
   \centering
@@ -92,5 +98,43 @@ For the numeric analysis a proton beam energy of
 \result{xs/python/pdf/e_proton} has been chosen, in accordance to
 \lhc{} beam energies. As for the cuts, \result{xs/python/pdf/eta} and
 \result{xs/python/pdf/min_pT} have been set.
+Integrating~\eqref{eq:weighteddist} with respect to those cuts yields
+\result{xs/python/pdf/my_sigma} which is compatible with
+\result{xs/python/pdf/sherpa_sigma}, the value \sherpa\ gives.  A
+sample of \result{xs/python/pdf/sample_size} events has been generated
+both in \sherpa\ and through self written code. The resulting
+histograms of some observables are depicted
+in~\ref{fig:pdf-histos}. The distributions are largely compatible with
+each other although there discrepancies arise in regions with low
+event count (statistics), which the the ratio plot exaggerators.
 
-The result
+\begin{figure}[hp]
+  \centering
+  \begin{subfigure}{.49\textwidth}
+    \centering \plot{pdf/eta_hist}
+    \caption{\label{fig:pdf-pt} Histogram of the \(\eta\)
+      distribution.}
+  \end{subfigure}
+  \begin{subfigure}{.49\textwidth}
+    \centering \plot{pdf/pt_hist}
+    \caption{\label{fig:pdf-pt} Histogram of the \(\pt\)
+      distribution.}
+  \end{subfigure}
+  \begin{subfigure}{.49\textwidth}
+    \centering \plot{pdf/cos_theta_hist}
+    \caption{\label{fig:pdf-pt} Histogram of the \(\cos\theta\)
+      distribution.}
+  \end{subfigure}
+  \begin{subfigure}{.49\textwidth}
+    \centering \plot{pdf/inv_m_hist}
+    \caption[Histogram of the invariant mass of the final state photon
+    system.]{\label{fig:pdf-pt} Histogram of the invariant mass of the
+      final state photon system. % This is equal to the center of mass
+      % energy of the partonic system before the scattering.
+    }
+  \end{subfigure}
+  \caption{\label{fig:pdf-histos}Comparison of histograms of
+    observables for \(\ppgg\) generated manually and by
+    \sherpa/\rivet. The sample size was \protect
+    \result{xs/python/pdf/sample_size}.}
+\end{figure}
