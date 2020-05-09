@@ -13,7 +13,6 @@
 #+end_src
 
 #+RESULTS:
-: Welcome to JupyROOT 6.20/04
 
 ** Utilities
 #+BEGIN_SRC jupyter-python :exports both
@@ -27,6 +26,8 @@ from tangled import observables
 #+END_SRC
 
 #+RESULTS:
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -374,7 +375,7 @@ The total cross section is as follows:
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=3.349992506409999e-14, sigma=9.308196826415082e-17, N=97560)
+: IntegrationResult(result=3.3263355021107163e-14, sigma=9.606918774200757e-17, N=91621)
 
 
 We have to convert that to picobarn.
@@ -383,7 +384,7 @@ We have to convert that to picobarn.
 #+end_src
 
 #+RESULTS:
-| 1.3044179789263593e-05 | 3.6244198363216e-08 |
+| 1.2952064294448379e-05 | 3.740736000804341e-08 |
 
 That is compatible with sherpa!
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -407,7 +408,7 @@ We can take some samples as well.
 #+end_src
 
 #+RESULTS:
-: -1.820699128032964
+: -1.820697046086901
 
 #+begin_src jupyter-python :exports both :results raw drawer
 part_hist = np.histogram(part_samples, bins=50, range=[-2.5, 2.5])
@@ -417,8 +418,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.axes._subplots.AxesSubplot at 0x7f583c7d6670>
-[[file:./.ob-jupyter/21bd218beeba647c1f6be0db06093cc029f580d7.png]]
+: <matplotlib.axes._subplots.AxesSubplot at 0x7f8810eecd00>
+[[file:./.ob-jupyter/33cc0e76cdba1eac72e25f9d6c4791ce6f57d252.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -438,8 +439,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f583c6c5100>
-[[file:./.ob-jupyter/b7bf4ea7833f57fd4b43b54c0eb5291638467736.png]]
+: <matplotlib.legend.Legend at 0x7f8810f48760>
+[[file:./.ob-jupyter/48b37fc33b5b35345d6f1144394854e73c09dcc4.png]]
 :END:
 #+begin_src jupyter-python :exports both :results raw drawer
   part_momenta = momenta(
@@ -468,8 +469,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f5879ca1880>
-[[file:./.ob-jupyter/62cef05a4f3bb495a4dbe28ca7f8a8fa7f9ce0c6.png]]
+: <matplotlib.legend.Legend at 0x7f8810f698e0>
+[[file:./.ob-jupyter/24e2f130a964e8350de92e594129eda6f31b430f.png]]
 :END:
 
 * Total XS
@@ -489,44 +490,73 @@ Now, it would be interesting to know the total cross section.
       [interval_η, [pdf.xMin, 1], [pdf.xMin, 1]],
       epsilon=.1,
       proc=1,
-      increment_epsilon=5e-2,
-      alpha=1.1,
-      num_increments=[4, 50, 50],
+      increment_epsilon=1e-2,
+      alpha=1.8,
+      num_increments=[4, 100, 100],
       num_points_per_cube=10,
-      cache="cache/pdf/total_xs_2_5_20_take12",
+      cache="cache/pdf/total_xs_2_5_20_take14",
   )
 
   xs_int_res
 #+end_src
 
 #+RESULTS:
+:RESULTS:
+: Loading Cache:  integrate_vegas_nd
 #+begin_example
-  VegasIntegrationResult(result=38.70729937273713, sigma=0.09370816590976482, N=900000, increment_borders=[array([-2.5       , -1.36701006, -0.18716574,  1.03488529,  2.5       ]), array([1.00000000e-09, 3.31337311e-04, 5.51481263e-04, 7.70367001e-04,
-         9.96999859e-04, 1.24187124e-03, 1.52549807e-03, 1.83607087e-03,
-         2.17444646e-03, 2.53708964e-03, 2.92618087e-03, 3.34470064e-03,
-         3.79772697e-03, 4.29910038e-03, 4.85169214e-03, 5.46492002e-03,
-         6.12008608e-03, 6.80099820e-03, 7.50796426e-03, 8.25920562e-03,
-         9.06628266e-03, 9.90706273e-03, 1.07664191e-02, 1.16660565e-02,
-         1.26215202e-02, 1.36188967e-02, 1.46632930e-02, 1.57466840e-02,
-         1.68261423e-02, 1.78754833e-02, 1.89286501e-02, 2.00089019e-02,
-         2.11175964e-02, 2.22378331e-02, 2.33881263e-02, 2.45410470e-02,
-         2.56907867e-02, 2.69922318e-02, 2.83977345e-02, 2.96314745e-02,
-         3.10547034e-02, 3.26574516e-02, 3.44321324e-02, 3.64706098e-02,
-         3.88477359e-02, 4.22483852e-02, 4.74397273e-02, 5.56042558e-02,
-         7.00170767e-02, 1.12576440e-01, 1.00000000e+00]), array([1.00000000e-09, 3.36087192e-04, 5.24780165e-04, 6.95644749e-04,
-         8.71510550e-04, 1.05706200e-03, 1.25563493e-03, 1.46316651e-03,
-         1.70703473e-03, 1.97421024e-03, 2.26901293e-03, 2.59474876e-03,
-         2.94503455e-03, 3.31893333e-03, 3.71980975e-03, 4.15218669e-03,
-         4.62726739e-03, 5.13681288e-03, 5.67153778e-03, 6.23598467e-03,
-         6.83899716e-03, 7.46764093e-03, 8.14260332e-03, 8.85566587e-03,
-         9.60462566e-03, 1.03973663e-02, 1.12069873e-02, 1.20580379e-02,
-         1.29622077e-02, 1.39325998e-02, 1.49366943e-02, 1.59707929e-02,
-         1.69854264e-02, 1.80304060e-02, 1.91381594e-02, 2.03856083e-02,
-         2.17560252e-02, 2.32054345e-02, 2.47705093e-02, 2.64503123e-02,
-         2.82229399e-02, 3.00624506e-02, 3.20676480e-02, 3.44366943e-02,
-         3.72018934e-02, 4.06532604e-02, 4.62388414e-02, 5.45128926e-02,
-         7.01334153e-02, 1.20264783e-01, 1.00000000e+00])], vegas_iterations=6, maximum=6285.205032909089)
+  VegasIntegrationResult(result=38.76686716290583, sigma=0.08880441917426432, N=800000, increment_borders=[array([-2.5       , -1.24245433,  0.04299411,  1.32476542,  2.5       ]), array([1.00000000e-09, 3.31306006e-04, 4.18827132e-04, 4.80054877e-04,
+         5.35758862e-04, 5.93098306e-04, 6.50055278e-04, 7.08449136e-04,
+         7.69011466e-04, 8.32251788e-04, 8.97984345e-04, 9.66350952e-04,
+         1.03737969e-03, 1.11055691e-03, 1.18787510e-03, 1.26938455e-03,
+         1.35412741e-03, 1.44373759e-03, 1.53660855e-03, 1.63458968e-03,
+         1.73470551e-03, 1.83927848e-03, 1.94911399e-03, 2.06310480e-03,
+         2.18299327e-03, 2.30800703e-03, 2.43789945e-03, 2.57556000e-03,
+         2.71848543e-03, 2.86597838e-03, 3.01932364e-03, 3.17985960e-03,
+         3.34928380e-03, 3.51952700e-03, 3.69760645e-03, 3.88532807e-03,
+         4.07889953e-03, 4.27965901e-03, 4.49080369e-03, 4.71084243e-03,
+         4.93581267e-03, 5.16797385e-03, 5.41121381e-03, 5.66614690e-03,
+         5.92548255e-03, 6.18892026e-03, 6.46390008e-03, 6.75176205e-03,
+         7.04603677e-03, 7.34574392e-03, 7.65759454e-03, 7.98374224e-03,
+         8.32063021e-03, 8.67136924e-03, 9.03866517e-03, 9.41808123e-03,
+         9.81313613e-03, 1.02261337e-02, 1.06601953e-02, 1.11043080e-02,
+         1.15606536e-02, 1.20325758e-02, 1.25241740e-02, 1.30332809e-02,
+         1.35518397e-02, 1.40871794e-02, 1.46319838e-02, 1.51866178e-02,
+         1.57726338e-02, 1.63749152e-02, 1.69946614e-02, 1.76368613e-02,
+         1.82816303e-02, 1.89484929e-02, 1.96333514e-02, 2.03188025e-02,
+         2.10181999e-02, 2.17325887e-02, 2.24736879e-02, 2.32397531e-02,
+         2.40232205e-02, 2.47971066e-02, 2.56284006e-02, 2.65395564e-02,
+         2.74560803e-02, 2.82783460e-02, 2.92295927e-02, 3.02842068e-02,
+         3.12828819e-02, 3.23521544e-02, 3.36451309e-02, 3.51301059e-02,
+         3.66716786e-02, 3.87816557e-02, 4.11195139e-02, 4.44417657e-02,
+         4.91549183e-02, 5.60922213e-02, 6.96492451e-02, 1.15519360e-01,
+         1.00000000e+00]), array([1.00000000e-09, 3.48752363e-04, 4.29960083e-04, 4.89121565e-04,
+         5.46359169e-04, 6.04336123e-04, 6.63377930e-04, 7.25125302e-04,
+         7.88416797e-04, 8.53204938e-04, 9.20651006e-04, 9.91610473e-04,
+         1.06527982e-03, 1.14071019e-03, 1.22080816e-03, 1.30646103e-03,
+         1.39733636e-03, 1.49142827e-03, 1.59020915e-03, 1.69408421e-03,
+         1.80328015e-03, 1.91766435e-03, 2.03691898e-03, 2.16060080e-03,
+         2.28802193e-03, 2.42124534e-03, 2.56162649e-03, 2.70763202e-03,
+         2.85953248e-03, 3.01886310e-03, 3.18611382e-03, 3.36027721e-03,
+         3.54135713e-03, 3.72849710e-03, 3.92439821e-03, 4.12678743e-03,
+         4.33771242e-03, 4.55944106e-03, 4.78772630e-03, 5.02272507e-03,
+         5.26685754e-03, 5.52085953e-03, 5.78241709e-03, 6.05653630e-03,
+         6.34213969e-03, 6.64019229e-03, 6.94441919e-03, 7.25830899e-03,
+         7.58301534e-03, 7.91691935e-03, 8.26651811e-03, 8.62759176e-03,
+         8.99338683e-03, 9.37780833e-03, 9.77810801e-03, 1.01959217e-02,
+         1.06294652e-02, 1.10689653e-02, 1.15297343e-02, 1.20135796e-02,
+         1.25061880e-02, 1.30087281e-02, 1.35343548e-02, 1.40734320e-02,
+         1.46233278e-02, 1.51776500e-02, 1.57544645e-02, 1.63572297e-02,
+         1.69761438e-02, 1.76140487e-02, 1.82728025e-02, 1.89494108e-02,
+         1.96399038e-02, 2.03453247e-02, 2.10582143e-02, 2.17689774e-02,
+         2.25023482e-02, 2.32649091e-02, 2.40327041e-02, 2.47671831e-02,
+         2.55464331e-02, 2.63903585e-02, 2.73041074e-02, 2.81670599e-02,
+         2.90306653e-02, 2.99262321e-02, 3.08054185e-02, 3.19052398e-02,
+         3.29917339e-02, 3.41698091e-02, 3.52378841e-02, 3.64530568e-02,
+         3.76903007e-02, 3.93030119e-02, 4.14428352e-02, 4.40240008e-02,
+         4.81521010e-02, 5.45639259e-02, 6.59420830e-02, 9.74372870e-02,
+         1.00000000e+00])], vegas_iterations=7, maximum=13533.774059596946)
 #+end_example
+:END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
   sherpa, sherpa_σ = np.loadtxt("../../runcards/pp/sherpa_xs")
@@ -544,7 +574,7 @@ there are two identical protons.
 #+end_src
 
 #+RESULTS:
-: 0.020200627262866533
+: -0.0393671629058332
 
 We use this as upper bound, as the maximizer is bogus because of the
 cuts!
@@ -554,7 +584,7 @@ cuts!
 #+end_src
 
 #+RESULTS:
-: 6285.205032909089
+: 13533.774059596946
 
 That is massive!
 
@@ -564,7 +594,28 @@ So the efficiency will be around:
 #+end_src
 
 #+RESULTS:
-: 0.006158478390134804
+: 0.0028644535509602235
+
+
+Let's export those results for TeX:
+#+begin_src jupyter-python :exports both :results raw drawer
+  tex_value(
+      ,*xs_int_res.combined_result,
+      prefix=r"\sigma = ",
+      save=("results/pdf/", "my_sigma.tex"),
+      unit=r"\pico\barn"
+  )
+  tex_value(
+      sherpa,
+      sherpa_σ,
+      prefix=r"\sigma_s = ",
+      save=("results/pdf/", "sherpa_sigma.tex"),
+      unit=r"\pico\barn",
+  )
+#+end_src
+
+#+RESULTS:
+: \(\sigma_s = \SI{38.728\pm 0.028}{\pico\barn}\)
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
@@ -626,6 +677,7 @@ Now we create an eye-candy surface plot.
 : \(x_2 = 0.01\)
 [[file:./.ob-jupyter/435569ac2b915994a9dda2c14beba363c821370a.png]]
 :END:
+
 #+begin_src jupyter-python :exports both :results raw drawer
   from mpl_toolkits.mplot3d import Axes3D
   from matplotlib import cm
@@ -695,18 +747,30 @@ figure out the cpu mapping.
       proc="auto",
       report_efficiency=True,
       upper_bound=pb_to_gev(xs_int_res.maximum),
-      cache="cache/pdf/total_xs_10_000_2_5_take2",
+      cache="cache/pdf/total_xs_100_000_2_5_take4",
       status_path="/tmp/status1"
   )
   eff
 #+end_src
 
 #+RESULTS:
-: 0.0009732800440304117
+:RESULTS:
+: Loading Cache:  sample_unweighted_array
+: 0.00045477019242056083
+:END:
 
 The efficiency is still quite horrible, but at least an order of
 mag. better than with cosθ.
 
+Let's store the sample size for posterity.
+#+begin_src jupyter-python :exports both :results raw drawer
+  tex_value(len(result), prefix=r"N=", prec=0, save=("results/pdf/", "sample_size.tex"))
+#+end_src
+
+#+RESULTS:
+: \(N=1000000\)
+
+** Observables
 Let's look at a histogramm of eta samples.
 #+begin_src jupyter-python :exports both :results raw drawer
   fig, ax = draw_histo_auto(result[:, 0], r"$\eta$", bins=50)
@@ -716,10 +780,18 @@ Let's look at a histogramm of eta samples.
 
 #+RESULTS:
 :RESULTS:
-: 10000
-[[file:./.ob-jupyter/f1b9243f9acacf5508a308eff437ed98d210e85d.png]]
+: 1000000
+[[file:./.ob-jupyter/28400cd32cb7dc80b972e7e4a68fdefc029bdfb2.png]]
 :END:
 
+Let's use a uniform histogram image size.
+#+begin_src jupyter-python :exports both :results raw drawer
+  hist_size=(3, 3)
+#+end_src
+
+#+RESULTS:
+
+And now we compare all the observables with sherpa.
 #+begin_src jupyter-python :exports both :results raw drawer
   yoda_file = yoda.read("../../runcards/pp/analysis/Analysis.yoda")
   yoda_hist = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/eta"])
@@ -730,18 +802,15 @@ Let's look at a histogramm of eta samples.
               hist=np.histogram(result[:, 0], bins=50, range=interval_η),
               hist_kwargs=dict(label="own implementation"),
           ),
-          # dict(hist=np.histogram(sherpa_manual, bins=50, range=interval_η), hist_kwargs=dict(label="sherpa")),
       ]
   )
   ax_ratio.set_xlabel(r"$\eta$")
   ax.legend()
+  save_fig(fig, "eta_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-: <matplotlib.legend.Legend at 0x7f581710cac0>
-[[file:./.ob-jupyter/f7f37a4907780bbb66e16f859d68ad943ddda2c1.png]]
-:END:
+[[file:./.ob-jupyter/43e9d71092ed5ce5c84eab2407a18e988bd527b3.png]]
 
 Hah! there we have it!
 
@@ -766,13 +835,11 @@ pT drops pretty quickly.
   ax.set_xscale("log")
   ax_ratio.set_xlabel(r"$p_T$ [GeV]")
   ax.legend()
+  save_fig(fig, "pt_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-: <matplotlib.legend.Legend at 0x7f58170dd4c0>
-[[file:./.ob-jupyter/a981d0bf2f1c542e08d59ffec519bd7c3605e911.png]]
-:END:
+[[file:./.ob-jupyter/86fbe114dd186ebfb537a218bfb8f0e9f7608df7.png]]
 
 The invariant mass is not constant anymore.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -793,13 +860,11 @@ The invariant mass is not constant anymore.
   ax.set_xscale("log")
   ax_ratio.set_xlabel(r"Invariant Mass [GeV]")
   ax.legend()
+  save_fig(fig, "inv_m_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-: <matplotlib.legend.Legend at 0x7f581658a1c0>
-[[file:./.ob-jupyter/d37b0ef165d2e4aef200681ca679fe09b6cab8f2.png]]
-:END:
+[[file:./.ob-jupyter/ebd50dac92936892f0e1c1869e09010d223ef233.png]]
 
 The cosθ distribution looks more like the paronic one.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -818,10 +883,8 @@ The cosθ distribution looks more like the paronic one.
 
   ax_ratio.set_xlabel(r"$\cos\theta$")
   ax.legend()
+  save_fig(fig, "cos_theta_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-: <matplotlib.legend.Legend at 0x7f58162e0040>
-[[file:./.ob-jupyter/d7afa1b3858189c0a48faa35d1b1fcaaa429d236.png]]
-:END:
+[[file:./.ob-jupyter/9817f670f0f2ad4574ea62fd5d5ce78e61c5333d.png]]

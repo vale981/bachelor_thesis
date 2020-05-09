@@ -37,9 +37,9 @@ def numpy_cache(cache_arg_name):
                     return f(*args, **kwargs)
 
                 path = kwargs[cache_arg_name] + ".npy"
-
                 if os.path.isfile(path):
                     name, result = np.load(path, allow_pickle=True)
+                    print("Loading Cache: ", *name)
                     if f.__name__ == name[0]:
                         return result
 

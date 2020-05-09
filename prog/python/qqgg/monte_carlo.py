@@ -834,35 +834,40 @@ def integrate_vegas_nd(
         # * num_increments gets normalized away
         return ms / ms.sum()
 
-    K = 1000
-
-    remainders = np.ones(ndim)
+    K = 1000 * num_increments
 
     vegas_iterations, integral, variance = 0, 0, 0
-    old_remainder = 0
+
     while True:
         vegas_iterations += 1
+        new_increment_borders = []
 
         for dim in range(ndim):
             increment_weights = generate_integral_steps(increment_borders.copy(), dim)
-            curr_remainder = increment_weights.max() - increment_weights.min()
-            remainders[dim] = curr_remainder
-
             new_borders = reshuffle_increments_nd(
                 increment_weights,
                 num_increments[dim],
                 increment_borders[dim],
                 alpha,
-                K,
+                K[dim],
             )
+            new_increment_borders.append(new_borders)
 
-            increment_borders[dim] = new_borders
+        remainder = np.array(
+            [
+                np.abs(
+                    (borders[1:-1] - old_borders[1:-1]) / (borders[0] - borders[-1])
+                ).max()
+                for borders, old_borders in zip(
+                    new_increment_borders, increment_borders
+                )
+            ]
+        ).max()
 
-        remainder = remainders.max()
-        if abs(remainder - old_remainder) < increment_epsilon:
+        print(remainder)
+        increment_borders = new_increment_borders
+        if abs(remainder) < increment_epsilon:
             break
-
-        remainder = old_remainder
 
     # brute force increase of the sample size
     cubes = generate_cubes(increment_borders)
@@ -947,9 +952,10 @@ def reshuffle_increments_nd(
     mask = μ > 0
     μ = μ[mask]
     new_increments[mask] = (K * ((μ - 1) / (np.log(μ))) ** alpha).astype(int)
-    new_increments[np.logical_not(mask)] = 0
+    new_increments[np.logical_not(mask)] = 1
 
-    group_size = new_increments.sum() / num_increments
+    group_size = int(new_increments.sum() / num_increments)
+
     new_increment_borders = np.empty_like(increment_borders[1:-1])
     interval_lengths = increment_borders[1:] - increment_borders[:-1]
 
