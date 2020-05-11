@@ -34,10 +34,13 @@ public:
     declare(ifs, "IFS");
 
     auto energy = info().energies()[0].first;
-    book(_h_pT, "pT", 50, 20, energy);
-    book(_h_eta, "eta", 50, -2.5, 2.5);
-    book(_h_cos_theta, "cos_theta", 50, -.986, .986);
-    book(_h_inv_m, "inv_m", 50, 40, 2 * energy);
+    double min_pT = 20;
+    double eta = 2.5;
+
+    book(_h_pT, "pT", 50, min_pT, energy);
+    book(_h_eta, "eta", 50, -eta, eta);
+    book(_h_cos_theta, "cos_theta", 50, -1, 1);
+    book(_h_inv_m, "inv_m", 50, 2 * min_pT, 2 * energy);
   }
 
   /// Perform the per-event analysis
