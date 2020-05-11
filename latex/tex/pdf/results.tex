@@ -102,20 +102,22 @@ Integrating~\eqref{eq:weighteddist} with respect to those cuts yields
 \result{xs/python/pdf/my_sigma} which is compatible with
 \result{xs/python/pdf/sherpa_sigma}, the value \sherpa\ gives.  A
 sample of \result{xs/python/pdf/sample_size} events has been generated
-both in \sherpa\ and through self written code. The resulting
-histograms of some observables are depicted
-in~\ref{fig:pdf-histos}. The distributions are largely compatible with
-each other although there discrepancies arise in regions with low
-event count (statistics), which the the ratio plot exaggerators. The
-sherpa runcard utilized here and the analysis used to produce the
-histograms can be found in~\ref{sec:ppruncard}
-and~\ref{sec:ppanalysis}.
+both in \sherpa\ and through own code. The resulting histograms of
+some observables are depicted in~\ref{fig:pdf-histos}. The
+distributions are largely compatible with each other although there
+discrepancies arise in regions with low event count (statistics),
+which the the ratio plot exaggerators. The sherpa runcard utilized
+here and the analysis used to produce the histograms can be found
+in~\ref{sec:ppruncard} and~\ref{sec:ppanalysis}. When
+comparing~\ref{fig:pdf-eta} with \ref{fig:histeta} it becomes
+apparent, that the PDF has substantial influence on the resulting
+distribution.
 
 \begin{figure}[hp]
   \centering
   \begin{subfigure}{.49\textwidth}
     \centering \plot{pdf/eta_hist}
-    \caption{\label{fig:pdf-pt} Histogram of the \(\eta\)
+    \caption{\label{fig:pdf-eta} Histogram of the \(\eta\)
       distribution.}
   \end{subfigure}
   \begin{subfigure}{.49\textwidth}
@@ -125,13 +127,13 @@ and~\ref{sec:ppanalysis}.
   \end{subfigure}
   \begin{subfigure}{.49\textwidth}
     \centering \plot{pdf/cos_theta_hist}
-    \caption{\label{fig:pdf-pt} Histogram of the \(\cos\theta\)
+    \caption{\label{fig:pdf-cos-theta} Histogram of the \(\cos\theta\)
       distribution.}
   \end{subfigure}
   \begin{subfigure}{.49\textwidth}
     \centering \plot{pdf/inv_m_hist}
     \caption[Histogram of the invariant mass of the final state photon
-    system.]{\label{fig:pdf-pt} Histogram of the invariant mass of the
+    system.]{\label{fig:pdf-inv-m} Histogram of the invariant mass of the
       final state photon system. % This is equal to the center of mass
       % energy of the partonic system before the scattering.
     }

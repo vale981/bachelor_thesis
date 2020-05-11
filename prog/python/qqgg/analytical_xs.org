@@ -185,7 +185,6 @@ but that doen't reduce variance and would complicate things now.
 
  #+RESULTS:
  : \(\sigma = \SI{0.053793}{\pico\barn}\)
- # [goto error]
 
  Lets plot the total xs as a function of η.
  #+begin_src jupyter-python :exports both :results raw drawer
