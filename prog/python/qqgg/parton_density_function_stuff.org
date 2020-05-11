@@ -13,6 +13,7 @@
 #+end_src
 
 #+RESULTS:
+: Welcome to JupyROOT 6.20/04
 
 ** Utilities
 #+BEGIN_SRC jupyter-python :exports both
@@ -26,8 +27,6 @@ from tangled import observables
 #+END_SRC
 
 #+RESULTS:
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -36,7 +35,7 @@ from tangled import observables
   e_proton = 6500  # GeV
   interval_η = [-η, η]
   interval = η_to_θ([-η, η])
-  interval_cosθ = np.cos(interval)
+  interval_cosθ = [-1, 1]
   pdf = lhapdf.mkPDF("NNPDF31_lo_as_0118", 0)
 #+end_src
 
@@ -375,7 +374,7 @@ The total cross section is as follows:
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=3.3263355021107163e-14, sigma=9.606918774200757e-17, N=91621)
+: IntegrationResult(result=3.351712052078603e-14, sigma=9.539025740992854e-17, N=93016)
 
 
 We have to convert that to picobarn.
@@ -384,7 +383,7 @@ We have to convert that to picobarn.
 #+end_src
 
 #+RESULTS:
-| 1.2952064294448379e-05 | 3.740736000804341e-08 |
+| 1.3050875345392215e-05 | 3.7142998541590044e-08 |
 
 That is compatible with sherpa!
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -408,7 +407,7 @@ We can take some samples as well.
 #+end_src
 
 #+RESULTS:
-: -1.820697046086901
+: -1.8206980586376742
 
 #+begin_src jupyter-python :exports both :results raw drawer
 part_hist = np.histogram(part_samples, bins=50, range=[-2.5, 2.5])
@@ -418,8 +417,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.axes._subplots.AxesSubplot at 0x7f8810eecd00>
-[[file:./.ob-jupyter/33cc0e76cdba1eac72e25f9d6c4791ce6f57d252.png]]
+: <matplotlib.axes._subplots.AxesSubplot at 0x7f60b85a22e0>
+[[file:./.ob-jupyter/d00ab35a9ca760628ddf1fc8cc278c5213ab2927.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -439,8 +438,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f8810f48760>
-[[file:./.ob-jupyter/48b37fc33b5b35345d6f1144394854e73c09dcc4.png]]
+: <matplotlib.legend.Legend at 0x7f60b8494580>
+[[file:./.ob-jupyter/4db739842665dd475b651888b59544bf3dce9740.png]]
 :END:
 #+begin_src jupyter-python :exports both :results raw drawer
   part_momenta = momenta(
@@ -469,8 +468,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f8810f698e0>
-[[file:./.ob-jupyter/24e2f130a964e8350de92e594129eda6f31b430f.png]]
+: <matplotlib.legend.Legend at 0x7f60b65e1130>
+[[file:./.ob-jupyter/13c463ee9503696479c510851b640a6104e01e36.png]]
 :END:
 
 * Total XS
@@ -781,7 +780,7 @@ Let's look at a histogramm of eta samples.
 #+RESULTS:
 :RESULTS:
 : 1000000
-[[file:./.ob-jupyter/28400cd32cb7dc80b972e7e4a68fdefc029bdfb2.png]]
+[[file:./.ob-jupyter/18d670c2b6bccc5de549a20c947391e4b908d6d8.png]]
 :END:
 
 Let's use a uniform histogram image size.
@@ -810,7 +809,7 @@ And now we compare all the observables with sherpa.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/43e9d71092ed5ce5c84eab2407a18e988bd527b3.png]]
+[[file:./.ob-jupyter/5a4d3f9fc899924314635b3617ff9be6fc2d506d.png]]
 
 Hah! there we have it!
 
@@ -887,4 +886,4 @@ The cosθ distribution looks more like the paronic one.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/9817f670f0f2ad4574ea62fd5d5ce78e61c5333d.png]]
+[[file:./.ob-jupyter/2b3d961c62e26471c6a474f055f6dd8ca6cd4703.png]]
