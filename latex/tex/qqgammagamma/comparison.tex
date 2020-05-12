@@ -6,25 +6,29 @@
 \section{Discussion and Comparison with \sherpa}%
 \label{sec:compsher}
 
-The result obtained in~\ref{sec:qqggcalc} shall now be verified by
-monte-carlo in \sherpa{}~\cite{Gleisberg:2008ta}. To facilitate this, an
-expression for the total cross section for a range of \(\theta\) or
-\(\eta\) has to be obtained. Using the golden rule for
-\(2\rightarrow 2\) processes and observing that the initial and final
-momenta are equal (\(p_i=p_f\)) and \(g=\sqrt{4\pi\alpha}\), the
-result~\eqref{eq:crossec} arises. The differential cross section is
-also given in terms of the pseudo-rapidity in~\ref{eq:xs-eta}.
+The result obtained in~\ref{sec:qqggcalc} shall now be verified by the
+monte-carlo event generator \sherpa{}~\cite{Gleisberg:2008ta}. To
+facilitate this, an expression for the total cross section for a range
+of \(\theta\) or \(\eta\) has to be obtained. Using the golden rule
+for \(2\rightarrow 2\) processes and observing that the initial and
+final momenta are equal (\(p_i=p_f\)) and \(g=\sqrt{4\pi\alpha}\), the
+result~\eqref{eq:crossec} arises. The differential cross section has
+also been calculated in terms of the pseudo-rapidity
+in~\ref{eq:xs-eta}.
 
 An additional factor of \(\frac{1}{2}\) comes in due to there being
 two identical photons in the final state.
-\begin{align}
-  \dv{\sigma}{\Omega} &=
-                        \frac{1}{2}\frac{1}{(8\pi)^2}\cdot\frac{\abs{\mathcal{M}}^2}{\ecm^2}\cdot\frac{\abs{p_f}}{\abs{p_i}}
-                        =
-                        \underbrace{\frac{\alpha^2Z^4}{6\ecm^2}}_{\mathfrak{C}}\frac{1+\cos^2(\theta)}{\sin^2(\theta)}\label{eq:crossec}
-  \\
-  \dv{\sigma}{\eta} &= 2\pi\cdot\frac{\alpha^2Z^4}{6\ecm^2}\cdot\qty(\tanh(\eta)^2 + 1)\label{eq:xs-eta}
-\end{align}
+\begin{equation}
+  \label{eq:crossec}
+  \dv{\sigma}{\Omega} =
+  \frac{1}{2}\frac{1}{(8\pi)^2}\cdot\frac{\abs{\mathcal{M}}^2}{\ecm^2}\cdot\frac{\abs{p_f}}{\abs{p_i}}
+  = \underbrace{\frac{\alpha^2Z^4}{6\ecm^2}}_{\mathfrak{C}}\frac{1+\cos^2(\theta)}{\sin^2(\theta)}
+\end{equation}
+
+\begin{equation}
+  \label{eq:xs-eta}
+  \dv{\sigma}{\eta} = 2\pi\cdot\frac{\alpha^2Z^4}{6\ecm^2}\cdot\qty(\tanh(\eta)^2 + 1)
+\end{equation}
 
 \begin{figure}[ht]
   \centering
@@ -39,7 +43,7 @@ two identical photons in the final state.
   \plot{xs/total_xs}
   \caption[Plot of the total cross section of the \(\qqgg\)
   process.]{\label{fig:totxs} The total cross section
-    (~\ref{eq:total-crossec}) of the process for a pseudo-rapidity
+    (\ref{eq:total-crossec}) of the process for a pseudo-rapidity
     range of \([-\eta, \eta]\).}
   \end{subfigure}
 \end{figure}
@@ -51,15 +55,16 @@ divergence. Because \(m=0\) is the limit for
 \(\ecm\rightarrow\infty\), the cross section would still have strong
 peaks for angles near \(0,\pi\) at high energies so that the result is
 not altogether nonphysical. The divergence of the cross section itself
-is also not, the problem here, because it can be transformed into a
+is also not the problem here, because it can be transformed into a
 form where the divergence does not occur (see~\eqref{eq:xs-eta}).
 
 The differential cross section is clearly symmetric around
-\(\theta=\frac{pi}{2}\) as was to be expected, because the photons are
-indistinguishable. To compare the cross section to experiment and to
-simulation an interval around \(\theta=\frac{\pi}{2}\) has to be
-chosen, where the first order, mass-less approximation may yield a
-useful result.
+\(\theta=\frac{\pi}{2}\) as was to be expected\footnote{Such
+  properties are very handy and intuitive checks for calculations
+  along the way.}, because the photons are indistinguishable. To
+compare the cross section to experiment and to simulation an interval
+around \(\theta=\frac{\pi}{2}\) has to be chosen, where the first
+order, mass-less approximation may yield a physical result.
 
 The total cross section in such an interval, given by
 integrating~\eqref{eq:crossec} for \(\theta\in [\theta_1, \theta_2]\)
@@ -88,8 +93,7 @@ process was monte carlo integrated in \sherpa\ using the runcard
 in~\ref{sec:qqggruncard}. This runcard describes the exact same (first
 order) process as the calculated cross section.
 
-The monte carlo integration in \sherpa\ yields
-\result{xs/sherpa_xs}. Plugging the same parameters
-into~\eqref{eq:total-crossec} gives \result{xs/python/xs} which is within the
-uncertainty range of the \sherpa\ value. This verifies the result for
-the total cross section.
+\sherpa\ arrives at the cross section \result{xs/sherpa_xs}. Plugging
+the same parameters into~\eqref{eq:total-crossec} gives
+\result{xs/python/xs} which is within the uncertainty range of the
+\sherpa\ value. This verifies the result for the total cross section.
