@@ -1,18 +1,13 @@
-%%% Local Variables: ***
-%%% mode:latex ***
-%%% TeX-master: "../../document.tex"  ***
-%%% End: ***
-
 \section{Calculation of the Cross Section to first Order}%
 \label{sec:qqggcalc}
 
 After labeling the incoming quarks and outcoming photons, as well as
-the momenta according to~\ref{fig:qqggfeyn}, the feynman rules yield
-the matrix elements in~\eqref{eq:matel}, where \(Z\) is the electric
+the momenta according to \cref{fig:qqggfeyn}, the feynman rules yield
+the matrix elements in \cref{eq:matel}, where \(Z\) is the electric
 charge of the quark and \(g\) is the QED coupling constant. The
 respective spinors and polarisation vectors are \(\us,\vs\) and
 \(\pe\). Parenthesis are being used, whenever indices would clutter
-the notation. The matrix element for~\ref{fig:qqggfeyn2} is obtained
+the notation. The matrix element for \cref{fig:qqggfeyn2} is obtained
 by simply renaming \(3\leftrightarrow 4\).
 
 \begin{align}
@@ -41,7 +36,7 @@ by simply renaming \(3\leftrightarrow 4\).
 
 
 To simplify notation, some shorthands are intruduced
-in~\eqref{eq:scshort}.
+in \cref{eq:scshort}.
 \begin{equation}
   \label{eq:scshort}
   \begin{split}
@@ -51,8 +46,8 @@ in~\eqref{eq:scshort}.
 
 All calculations are made with respect to the center of momentum frame
 unless stated otherwise. The momenta used in the center of momentum
-frame are concretized to in~\eqref{eq:pchoice} as well
-as~\ref{fig:qqimpulses}.  Note that the photons are aligned to the
+frame are concretized to in \cref{eq:pchoice} as well
+as \cref{fig:qqimpulses}.  Note that the photons are aligned to the
 z-axis as this led to simpler polarization vectors, when calculating
 the matrix element directly. Here casimir's trick will be used but the
 labeling was kept.
@@ -67,7 +62,7 @@ labeling was kept.
 
 Now observe that \((p_1-p_4)^2=-4p^2s'^2\) and
 \((p_1-p_3)^2=-4p^2c'^2\) (Minkowski metric) and define \(\Gamma_1\)
-and \(\Gamma_1\) as in~\eqref{eq:gammadef}.
+and \(\Gamma_1\) as in \cref{eq:gammadef}.
 
 \begin{align}
   \label{eq:gammadef}
@@ -75,7 +70,7 @@ and \(\Gamma_1\) as in~\eqref{eq:gammadef}.
   \Gamma_2 &= \pses(3)(\ps_1 - \ps_3)\pses(4)
 \end{align}
 
-The total matrix element (the minus sign has been dropped) is given in~\eqref{eq:totalm}.
+The total matrix element (the minus sign has been dropped) is given in \cref{eq:totalm}.
 \begin{equation}
   \label{eq:totalm}
   \mathcal{M} = \mathcal{M}_1 + \mathcal{M}_2 = \frac{(gZ)^2}{\qty(2p)^2}\vsb(1)\qty(\frac{\Gamma_1}{s'^2}+\frac{\Gamma_2}{c'^2})\us(2)
@@ -85,7 +80,7 @@ To obtain an experimentally verifiable cross section the absolute
 square of the matrix element has to be averaged over incoming
 helicities and summed over all photon polarizations. Using casimir's
 trick, the averaging can be simplified to the calculation of a trace
-as in~\ref{eq:averagedm} where \(s_i\) are helicities, \(\lambda_i\)
+as in \cref{eq:averagedm} where \(s_i\) are helicities, \(\lambda_i\)
 are the polarisations and
 \(\bar{\Gamma}_i=\gamma^0\Gamma^\dagger_i\gamma^0\). An additional
 factor of \(\frac{1}{3}\) arises from the color averaging. There are
@@ -102,15 +97,15 @@ contribute\footnote{Different color states are orthogonal and there
 \end{equation}
 
 With the definition \(a_1=4,b_1=3,a_2=3,b_2=4\) the \(\Gamma\)
-matrices and their bared variants can be written as in~\eqref{eq:shortgamma}.
+matrices and their bared variants can be written as in \cref{eq:shortgamma}.
 
 \begin{align}
   \label{eq:shortgamma}
   \Gamma_i &= \pses(a_i)(\ps_1 - \ps(a_i))\pses(b_i) & \bar{\Gamma}_i &= \pes(b_i)(\ps_1 - \ps(a_i))\pes(a_i)
 \end{align}
 
-To work out~\eqref{eq:averagedm} one must evaluate terms of the
-form~\eqref{eq:gbricks}.
+To work out \cref{eq:averagedm} one must evaluate terms of the
+form \cref{eq:gbricks}.
 
 \begin{equation}
   \label{eq:gbricks}
@@ -125,7 +120,7 @@ form~\eqref{eq:gbricks}.
 
 The sum over plarisation can be simplified by utilizing the
 completeness relation for polarisation vectors for \emph{external}
-photons~\eqref{eq:polcomp}.
+photons \cref{eq:polcomp}.
 
 \begin{equation}
   \label{eq:polcomp}
@@ -135,7 +130,7 @@ photons~\eqref{eq:polcomp}.
 For \(i=j\) and by utilizing \(\gamma_\mu\sl{a}\gamma^\mu=-2\sl{a}\),
  \(\gamma_\mu\sl{a}\sl{b}\sl{c}\gamma^\mu=-2\sl{c}\sl{b}\sl{a}\) as
 well as \(\ps_i\ps_i=p_i\cdot p_i = 0\) and the well known trace
-theorems for the gamma matrices~\eqref{eq:gii} follows.
+theorems for the gamma matrices \cref{eq:gii} follows.
 \begin{equation}
   \label{eq:gii}
   \begin{split}
@@ -148,7 +143,7 @@ theorems for the gamma matrices~\eqref{eq:gii} follows.
 \end{equation}
 
 The same tricks as well as the commutation relation for gamma matrices
-can be utilized for the case \(i\neq j\) and lead to \ref{eq:gij},
+can be utilized for the case \(i\neq j\) and lead to \cref{eq:gij},
 albeit with more technical effort.\footnote{If I learned one thing, it
   is the importance of doing calculations with the utmost verbosity.}
 
@@ -169,10 +164,10 @@ The crucial step here was to sum over \(\mu\) and utilizing
 _{\mu }=-2\gamma ^{\sigma }\gamma ^{\rho }\gamma ^{\nu }\).
 
 
-After multiplying out the terms in~\eqref{eq:averagedm} and applying
-the~\eqref{eq:gii} and~\eqref{eq:gij} there results (after rather
+After multiplying out the terms in \cref{eq:averagedm} and applying
+the \cref{eq:gii} and \cref{eq:gij} there results (after rather
 technical simplifications) the averaged matrix element
-of~\eqref{eq:averagedm_final}. It is noteworthy that the mixing terms
+of \cref{eq:averagedm_final}. It is noteworthy that the mixing terms
 cancel out, in other terms: \(\Gamma_{12} + \Gamma_{21} = 0\). The
 result can also be expressed in terms of the pseudo-rapidity
 \(\eta \equiv -\ln[\tan(\frac{\theta}{2})]\).
@@ -186,3 +181,8 @@ result can also be expressed in terms of the pseudo-rapidity
   \frac{4}{3}(gZ)^4\cdot(2\cosh(\eta) - 1)
   \end{split}
 \end{equation}
+
+%%% Local Variables: ***
+%%% mode:latex ***
+%%% TeX-master: "../../document.tex"  ***
+%%% End: ***

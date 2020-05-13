@@ -1,8 +1,3 @@
-%%% Local Variables: ***
-%%% mode: latex ***
-%%% TeX-master: "../../document.tex"  ***
-%%% End: ***
-
 \section{Monte-Carlo Sampling}%
 \label{sec:mcsamp}
 
@@ -21,7 +16,7 @@ a uniformly distributed random variable on~\([0, 1]\) (which can be
 easily generated) then a sample \({x_i}\) of this variable can be
 transformed into a sample of \(Y\sim\tilde{f}\). Let \(x\) be a single
 sample of \(X\), then a sample \(y\) of \(Y\) can be obtained by
-solving~\eqref{eq:takesample} for \(y\).
+solving \cref{eq:takesample} for \(y\).
 
 \begin{equation}
   \label{eq:takesample}
@@ -29,7 +24,7 @@ solving~\eqref{eq:takesample} for \(y\).
 \end{equation}
 
 This can be shown by observing that, according
-to~\eqref{eq:takesample}, the probability that
+to \cref{eq:takesample}, the probability that
 \(y\in[y', y'+\dd{y}']\) is the same as the probability that
 \(x\in A^{-1}\qty[\int_{0}^{y'}f(x')\dd{x'},
 \int_{0}^{y'+\dd{y}'}f(x')\dd{x'}]\) which is
@@ -38,7 +33,7 @@ to~\eqref{eq:takesample}, the probability that
 distributed according to \(f/A\).
 
 If the antiderivative \(F\) of is known, then the solution
-of~\eqref{eq:takesample} is given by~\eqref{eq:solutionsamp}.
+of \cref{eq:takesample} is given by \cref{eq:solutionsamp}.
 
 \begin{equation}
   \label{eq:solutionsamp}
@@ -57,7 +52,7 @@ reformulated by introducing a positive function
 \(g\colon x\in\Omega\mapsto\mathbb{R}_{\geq 0}\) with
 \(\forall x\in\Omega\colon g(x)\geq f(x)\).
 
-Observing~\eqref{eq:takesample2d} suggests, that one generates samples
+Observing \cref{eq:takesample2d} suggests, that one generates samples
 which are distributed according to \(g/B\), where
 \(B=\int_0^1g(x)\dd{x}\) and then accepts them with the
 probability~\(f/g\), so that \(g\) cancels out. This method is called
@@ -72,7 +67,7 @@ probability~\(f/g\), so that \(g\) cancels out. This method is called
 
 The thus obtained samples are then distributed according to \(f/B\)
 and the total probability of accepting a sample (efficiency
-\(\mathfrak{e}\)) is given by hat~\eqref{eq:impsampeff} holds.
+\(\mathfrak{e}\)) is given by hat \cref{eq:impsampeff} holds.
 
 \begin{equation}
   \label{eq:impsampeff}
@@ -82,8 +77,8 @@ and the total probability of accepting a sample (efficiency
 The closer the volumes enclosed by \(g\) and \(f\) are to each other,
 higher is \(\mathfrak{e}\).
 
-Choosing \(g\) like~\eqref{eq:primitiveg} and looking back
-at~\eqref{eq:solutionsamp} yields \(y = x\cdot A\), so that the
+Choosing \(g\) like \cref{eq:primitiveg} and looking back
+at \cref{eq:solutionsamp} yields \(y = x\cdot A\), so that the
 sampling procedure simplifies to choosing random numbers
 \(x\in [0,1]\) and accepting them with the probability
 \(f(x)/g(x)\). The efficiency of this approach is related to how much
@@ -96,9 +91,9 @@ performance.
   g=\max_{x\in\Omega}f(x)=f_{\text{max}}
 \end{equation}
 
-Using the upper bound defined in~\eqref{eq:primitiveg} with the
+Using the upper bound defined in \cref{eq:primitiveg} with the
 distribution for \(\cos\theta\) derived from the differential cross
-section~\eqref{eq:crossec} given in~\eqref{eq:distcos}
+section \cref{eq:crossec} given in \cref{eq:distcos}
 (\(\mathfrak{C}\) being a constant) results in a sampling efficiency
 of~\result{xs/python/naive_th_samp}.
 
@@ -113,14 +108,14 @@ interval.
 
 \begin{wrapfigure}[15]{l}{.5\textwidth}
   \plot{xs_sampling/upper_bound}
-  \caption{\label{fig:distcos} The distribution~\eqref{eq:distcos} and an upper bound of
+  \caption{\label{fig:distcos} The distribution \cref{eq:distcos} and an upper bound of
     the form \(a + b\cdot x^2\).}
 \end{wrapfigure}
 
 Utilizing an upper bound of the form \(a + b\cdot x^2\) with \(a, b\)
 constant improves the efficiency
 to~\result{xs/python/tuned_th_samp}. The distribution, as well as the
-upper bound are depicted in~\ref{fig:distcos}
+upper bound are depicted in \cref{fig:distcos}
 
 When transforming the differential cross-section to the pseudo
 rapidity \(\eta\) the efficiency of the hit or miss method rises
@@ -132,16 +127,16 @@ Finding a suitable upper bound or variable transform requires effort
 and detail knowledge about the distribution and is hard to
 automate\footnote{Sherpa does in fact do this by looking at the
   propagators in the matrix elements.}.  Revisiting the idea
-behind~\eqref{eq:takesample2d} but looking at probability density
+behind \cref{eq:takesample2d} but looking at probability density
 \(\rho\) on \(\Omega\) leads to a slight reformulation of the method
-discussed in~\ref{sec:hitmiss}. Note that without loss of generality
+discussed in \cref{sec:hitmiss}. Note that without loss of generality
 one can again choose \(\Omega = [0, 1]\).
 
 Define \(h=\max_{x\in\Omega}f(x)/\rho(x)\), take a sample
 \(\{\tilde{x}_i\}\sim\rho\) distributed according to \(\rho\) and
 accept each sample point with the probability
 \(f(x_i)/(\rho(x_i)\cdot h)\).  This is very similar to the procedure
-described in~\ref{sec:hitmiss} with \(g=\rho\cdot h\), but here the
+described in \cref{sec:hitmiss} with \(g=\rho\cdot h\), but here the
 step of generating samples distributed according to \(\rho\) is left
 out.
 
@@ -149,7 +144,7 @@ The important benefit of this method is, that step of generating
 samples according to some other function \(g\) is no longer
 necessary. This is useful when samples of \(\rho\) can be obtained
 with little effort (see below). The efficiency of this method is given
-by~\eqref{eq:strateff}.
+by \cref{eq:strateff}.
 
 \begin{equation}
   \label{eq:strateff}
@@ -158,7 +153,7 @@ by~\eqref{eq:strateff}.
 
 It may seem startling that \(h\) determines the efficiency, because
 \(h\) is a (global) maximum and \(A\) is an integral
-but~\eqref{eq:hlessa} states that \(\mathfrak{e}\) is well-formed
+but \cref{eq:hlessa} states that \(\mathfrak{e}\) is well-formed
 (\(\mathfrak{e}\leq 1\)). Albeit \(h\) is determined through a single
 point, being the maximum is a global property and there is also the
 constraint \(\int_0^1\rho(x)\dd{x}=1\) to be considered.
@@ -172,14 +167,14 @@ constraint \(\int_0^1\rho(x)\dd{x}=1\) to be considered.
 The closer \(h\) approaches \(A\) the better the efficiency gets. In
 the optimal case \(\rho=f/A\) and thus \(h=A\) or
 \(\mathfrak{e} = 1\). Now this distribution can be approximated in the
-way discussed in~\ref{sec:mcintvegas} by using the hypercubes found
+way discussed in \cref{sec:mcintvegas} by using the hypercubes found
 by~\vegas and simply generating the same number of uniformly
 distributed samples in each hypercube (stratified sampling). The
-distribution \(\rho\) takes on the form~\eqref{eq:vegasrho}. The
-effect of this approach is visualized in~\ref{fig:vegasdist} and the
+distribution \(\rho\) takes on the form \cref{eq:vegasrho}. The
+effect of this approach is visualized in \cref{fig:vegasdist} and the
 resulting sampling efficiency \result{xs/python/strat_th_samp} (using
 \result{xs/python/vegas_samp_num_increments} increments) is a great
-improvement over the hit or miss method in~\ref{sec:hitmiss}. By using
+improvement over the hit or miss method in \cref{sec:hitmiss}. By using
 more increments better efficiencies can be achieved, although the
 run-time of \vegas\ increases. The advantage of \vegas\ in this
 situation is, that the computation of the increments has to be done
@@ -193,7 +188,7 @@ the distribution \(f\) is required.
     \caption[The distribution for \(\cos\theta\), derived from the
     differential cross-section and the \vegas-weighted
     distribution]{\label{fig:vegasdist} The distribution for
-      \(\cos\theta\) (see~\eqref{eq:distcos}) and the \vegas-weighted
+      \(\cos\theta\) (see \cref{eq:distcos}) and the \vegas-weighted
       distribution. The inc It is intuitively clear, how variance is
       being reduced.}
   \end{subfigure}
@@ -202,7 +197,7 @@ the distribution \(f\) is required.
     \caption[The weighting distribution generated by
     \vegas.]{\label{fig:vegasrho} The weighting distribution generated
       by \vegas. It is clear, that it closely follows the original
-      distribution~\eqref{eq:distcos}.}
+      distribution \cref{eq:distcos}.}
   \end{subfigure}
   \caption{\label{fig:vegas-weighting} \vegas-weighted distribution
     and weighting distribution.}
@@ -217,9 +212,9 @@ transform the distribution into new variables. This is due to the
 discrete nature of the samples. Suppose there is an observable
 \(\gamma\colon\Omega\mapsto\mathbb{R}\). Now to take a sample
 \(\{x_i\}\) of \(\gamma\) we sample \(f\)\footnote{As defined
-  in~\ref{sec:mcsamp}.} and convert the sample values by simply
+  in \cref{sec:mcsamp}.} and convert the sample values by simply
 applying \(\gamma\). This is equivalent to
-substituting \(y=\gamma^{-1}(z)\) in~\eqref{eq:takesample} and solving
+substituting \(y=\gamma^{-1}(z)\) in \cref{eq:takesample} and solving
 for \(z\).
 
 The probability that \(z\in[z', z'+\dd{z'}]\) now is the same as the
@@ -232,14 +227,14 @@ which is
 is the same result, as if the distribution had been transformed by
 multiplying the appropriate Jacobian.
 
-Using the distribution~\eqref{eq:distcos} for the variable
+Using the distribution \cref{eq:distcos} for the variable
 \(\cos\theta\) and choosing the polar angle \(\varphi\) uniformly
 random, a sample of 4-momenta can be generated and histograms
 observables can be drawn.
 
 The observables considered here are the transverse momentum \(\pt\)
 and the pseudo rapidity \(\eta\) which can be computed from 4-momentum
-as described in~\eqref{eq:observables}.
+as described in \cref{eq:observables}.
 
 \begin{align}
   \label{eq:observables}
@@ -247,12 +242,12 @@ as described in~\eqref{eq:observables}.
                                          \frac{\abs{\vb{p}}}{\pt}\cdot\sign(p^3)
 \end{align}
 
-The histograms in~\ref{fig:histos} have been created by generating
-\result{xs/python/4imp-sample-size} samples. \Ref{fig:histos} also
+The histograms in \cref{fig:histos} have been created by generating
+\result{xs/python/4imp-sample-size} samples. \Cref{fig:histos} also
 contains reference histograms created by generating events with
 \sherpa\ and analyzing them with the \rivet\
 toolkit~\cite{Bierlich:2019rhm}. The utilized analysis can be found
-in~\ref{sec:simpdiphotriv}.
+in \cref{sec:simpdiphotriv}.
 
 \begin{figure}[hb]
   \centering \plot{xs_sampling/diff_xs_p_t}
@@ -278,11 +273,17 @@ in~\ref{sec:simpdiphotriv}.
     include histograms generated by \sherpa\ and \rivet.}
 \end{figure}
 
-Where~\ref{fig:histeta} shows clear resemblance
-of~\ref{fig:xs-int-eta}, the sharp peak in~\ref{fig:histpt} around
+Where \cref{fig:histeta} shows clear resemblance
+of \cref{fig:xs-int-eta}, the sharp peak in \cref{fig:histpt} around
 \(\pt=\SI{100}{\giga\electronvolt}\) seems surprising. When
 transforming the differential cross section to \(\pt\) it can be seen
-in~\ref{fig:diff-xs-pt} that there really is a singularity at
-\(\pt =\abs{\vb{p}}\). Furthermore the histograms~\ref{fig:histeta}
-and~\ref{fig:histpt} are consistent with their \rivet-generated
+in \cref{fig:diff-xs-pt} that there really is a singularity at
+\(\pt =\abs{\vb{p}}\). Furthermore the histograms \cref{fig:histeta}
+and \cref{fig:histpt} are consistent with their \rivet-generated
 counterparts and are therefore considered valid.
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../document"
+%%% End:

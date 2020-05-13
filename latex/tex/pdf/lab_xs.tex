@@ -1,13 +1,8 @@
-%%% Local Variables: ***
-%%% mode: latex ***
-%%% TeX-master: "../../document.tex"  ***
-%%% End: ***
-
 \section{Kinematics and Cross-Section of the Diphoton Process}%
 \label{sec:lab_xs}
 
-To utilize~\eqref{eq:pdf-xs} for modeling the~\(\ppgg\) process and to
-generate event samples the results of~\ref{chap:qqgg} have to be
+To utilize \cref{eq:pdf-xs} for modeling the~\(\ppgg\) process and to
+generate event samples the results of \cref{chap:qqgg} have to be
 transformed into the center of momentum frame of the colliding
 protons. Quantities in the center of momentum frame of the partons
 will be starred (like \(x^\ast\)).
@@ -18,7 +13,7 @@ Choosing the frame where the proton momenta are parallel to the
 \(z\)-Axis and neglecting the mass of the protons their momenta are
 \(\bar{p}_{1,2} = E_P \mqty(1 & 0 & 0 & \pm1)\). The quark momenta are
 simply \(p_{1,2}=x_{1,2}\cdot\bar{p}_{1,2}\) and their invariant mass
-is thus given by~\eqref{eq:ecm_partons}.
+is thus given by \cref{eq:ecm_partons}.
 
 \begin{equation}
   \label{eq:ecm_partons}
@@ -30,7 +25,7 @@ The center of momentum frame moves with a velocity
 additive, it is simplest to work with cross section in terms of the
 pseudo-rapidity.  The pseudo-rapidity of a final state photon in the
 c.m.-frame of the partons is therefore given
-by~\eqref{eq:rap_phot_lf}.
+by \cref{eq:rap_phot_lf}.
 
 \begin{equation}
   \label{eq:rap_phot_lf}
@@ -38,7 +33,7 @@ by~\eqref{eq:rap_phot_lf}.
 \end{equation}
 
 Because \(\dd{\eta^\ast}/{\dd{\eta}} = 1\) the cross section
-from~\eqref{eq:xs-eta} becomes~\eqref{eq:xs-eta-lab}, where \(\eta\) is
+from \cref{eq:xs-eta} becomes \cref{eq:xs-eta-lab}, where \(\eta\) is
 the pseudo-rapidity one photon.
 
 \begin{equation}
@@ -62,7 +57,7 @@ the pseudo-rapidity one photon.
 \end{tikzpicture}
 \end{wrapfigure}
 The 4-momenta of the final state photons can be obtained by explicit
-Lorentz transformation and are listed in~\eqref{eq:lab-momenta-fs}
+Lorentz transformation and are listed in \cref{eq:lab-momenta-fs}
 where \(\theta\) is the azimuth angle of the ``first'' final state
 photon.  These relation are easily transcribed to \(\eta\) dependence
 by using the identity \(\cos(\theta) = \tanh(\eta)\).
@@ -75,3 +70,8 @@ by using the identity \(\cos(\theta) = \tanh(\eta)\).
   p_4 &= \frac{E_p}{x_1+x_2 - (x_1 - x_2)\cdot\cos(\theta)}\cdot
   \mqty((x_1^2+x_2^2) - (x_1^2-x_2^2)\cos(\theta) \\ 0 \\ -2x_1x_2\sin(\theta) \\ (x_1^2-x_2^2) - (x_1^2+x_2^2)\cos(\theta))
 \end{align}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../document"
+%%% End:
