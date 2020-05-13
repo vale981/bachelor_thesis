@@ -184,8 +184,7 @@ more increments better efficiencies can be achieved, although the
 run-time of \vegas\ increases. The advantage of \vegas\ in this
 situation is, that the computation of the increments has to be done
 only once and can be reused. Furthermore, no special knowledge about
-the input distribution \(f\) is required.
-
+the distribution \(f\) is required.
 
 \begin{figure}[ht]
   \centering
@@ -206,7 +205,7 @@ the input distribution \(f\) is required.
       distribution~\eqref{eq:distcos}.}
   \end{subfigure}
   \caption{\label{fig:vegas-weighting} \vegas-weighted distribution
-    and weights.}
+    and weighting distribution.}
 \end{figure}
 
 \subsection{Observables}
@@ -221,7 +220,7 @@ discrete nature of the samples. Suppose there is an observable
   in~\ref{sec:mcsamp}.} and convert the sample values by simply
 applying \(\gamma\). This is equivalent to
 substituting \(y=\gamma^{-1}(z)\) in~\eqref{eq:takesample} and solving
-for \(z\)
+for \(z\).
 
 The probability that \(z\in[z', z'+\dd{z'}]\) now is the same as the
 probability that
@@ -229,17 +228,18 @@ probability that
   A^{-1}\qty[\int_{0}^{\gamma^{-1}(z')}f(x')\dd{x'},
   \int_{0}^{\gamma^{-1}(z')+\partial_z(\gamma^{-1})(z')\dd{z'}}f(x')\dd{x'}]\]
 which is
-\(A^{-1}\cdot f(\gamma^{-1}(z'))\cdot \partial_z(\gamma^{-1})(z')\dd{z'}\). That
-is the same result, as if the distribution had been transformed with a
-Jacobian.
+\(A^{-1}\cdot f(\gamma^{-1}(z'))\cdot (\partial_z\gamma^{-1})(z')\dd{z'}\). That
+is the same result, as if the distribution had been transformed by
+multiplying the appropriate Jacobian.
 
-Using the distribution~\eqref{eq:distcos} for \(\cos\theta\) and
-choosing the polar angle \(\phi\) uniformly random, a sample of
-4-momenta can be generated and histograms observables can be drawn.
+Using the distribution~\eqref{eq:distcos} for the variable
+\(\cos\theta\) and choosing the polar angle \(\varphi\) uniformly
+random, a sample of 4-momenta can be generated and histograms
+observables can be drawn.
 
-The observable considered here are the transverse momentum \(\pt\) and
-the pseudo rapidity \(\eta\) which can be computed from 4-momentum as
-described in~\eqref{eq:observables}.
+The observables considered here are the transverse momentum \(\pt\)
+and the pseudo rapidity \(\eta\) which can be computed from 4-momentum
+as described in~\eqref{eq:observables}.
 
 \begin{align}
   \label{eq:observables}
@@ -247,11 +247,12 @@ described in~\eqref{eq:observables}.
                                          \frac{\abs{\vb{p}}}{\pt}\cdot\sign(p^3)
 \end{align}
 
-Generating \result{xs/python/4imp-sample-size} samples, the histograms
-in~\ref{fig:histos} are created. \Ref{fig:histos} also contains
-reference histograms created by generating events with \sherpa\ and
-analyzing them with the \rivet toolkit~\cite{Bierlich:2019rhm}. The
-utilized analysis can be found in~\ref{sec:simpdiphotriv}.
+The histograms in~\ref{fig:histos} have been created by generating
+\result{xs/python/4imp-sample-size} samples. \Ref{fig:histos} also
+contains reference histograms created by generating events with
+\sherpa\ and analyzing them with the \rivet\
+toolkit~\cite{Bierlich:2019rhm}. The utilized analysis can be found
+in~\ref{sec:simpdiphotriv}.
 
 \begin{figure}[hb]
   \centering \plot{xs_sampling/diff_xs_p_t}
