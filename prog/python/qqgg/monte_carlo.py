@@ -741,7 +741,7 @@ def sample_unweighted_array(
 @utility.numpy_cache("cache")
 def integrate_vegas_nd(
     f,
-    interval,
+    intervals,
     seed=None,
     num_increments=5,
     epsilon=1e-3,
@@ -779,12 +779,12 @@ def integrate_vegas_nd(
     :rtype: tuple
 
     """
-    intervals = np.asarray(_process_interval(interval))
-    ndim = len(interval)
+    intervals = np.asarray(_process_interval(intervals))
+    ndim = len(intervals)
     integration_volume = (intervals[:, 1] - intervals[:, 0]).prod()
 
     if not isinstance(num_increments, collections.Iterable):
-        num_increments = np.ones(ndim) * num_increments
+        num_increments = np.ones(ndim).astype(int) * num_increments
     else:
         num_increments = np.asarray(num_increments)
 
@@ -841,9 +841,16 @@ def integrate_vegas_nd(
     while True:
         vegas_iterations += 1
         new_increment_borders = []
+        remainder = 0
 
         for dim in range(ndim):
             increment_weights = generate_integral_steps(increment_borders.copy(), dim)
+            nonzero_increments = increment_weights[increment_weights > 0]
+
+            remainder += (nonzero_increments.max() - nonzero_increments.min()) * len(
+                nonzero_increments
+            )
+
             new_borders = reshuffle_increments_nd(
                 increment_weights,
                 num_increments[dim],
@@ -853,18 +860,7 @@ def integrate_vegas_nd(
             )
             new_increment_borders.append(new_borders)
 
-        remainder = np.array(
-            [
-                np.abs(
-                    (borders[1:-1] - old_borders[1:-1]) / (borders[0] - borders[-1])
-                ).max()
-                for borders, old_borders in zip(
-                    new_increment_borders, increment_borders
-                )
-            ]
-        ).max()
-
-        print(remainder)
+        remainder /= ndim
         increment_borders = new_increment_borders
         if abs(remainder) < increment_epsilon:
             break
