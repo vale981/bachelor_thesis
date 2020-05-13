@@ -1,8 +1,3 @@
-%%% Local Variables: ***
-%%% mode: latex ***
-%%% TeX-master: "../../document.tex"  ***
-%%% End: ***
-
 \section{Monte-Carlo Integration}%
 \label{sec:mcint}
 
@@ -11,7 +6,7 @@ Consider a function
 probability density on
 \(\rho\colon \vb{x}\in\Omega\mapsto\mathbb{R}_{\geq 0}\) with
 \(\int_{\Omega}\rho(\vb{x})\dd{\vb{x}} = 1\).  By multiplying \(f\)
-with a \(1\) in the fashion of~\eqref{eq:baseintegral}, the Integral
+with a \(1\) in the fashion of \cref{eq:baseintegral}, the Integral
 of \(f\) over \(\Omega\) can be interpreted as the expected value
 \(\EX{F/\Rho}\) of the random variable \(F/\Rho\) under the
 distribution \(\rho\). This is the key to most monte-carlo methods.
@@ -34,9 +29,9 @@ to \(\rho\)), where \(N\) is a very large integer.
   \xrightarrow{N\rightarrow\infty} I
 \end{equation}
 
-The convergence of~\eqref{eq:approxexp} is due to the nature of the
-expected value~\eqref{eq:evalue-mean} and
-variance~\eqref{eq:variance-mean} of the mean
+The convergence of \cref{eq:approxexp} is due to the nature of the
+expected value \cref{eq:evalue-mean} and
+variance \cref{eq:variance-mean} of the mean
 \(\overline{X} = \frac{1}{N}\sum_i X_i\) of \(N\) uncorrelated random
 variables \(\{X_i\}_{i\in\overline{1,N}}\) with the same distribution,
 expected value \(\EX{X_i}=\mathbb{E}\) and variance
@@ -50,10 +45,10 @@ expected value \(\EX{X_i}=\mathbb{E}\) and variance
 
 Because
 \(\frac{\sigma^2}{N}\xrightarrow{N\rightarrow\infty}
-0\)~\eqref{eq:approxexp} really converges to \(I\). For finite \(N\)
-value of~\eqref{eq:approxexp} varies around \(I\) with the variance
+0\) \cref{eq:approxexp} really converges to \(I\). For finite \(N\)
+value of \cref{eq:approxexp} varies around \(I\) with the variance
 
-\(\VAR{F/\Rho}\cdot N^{-1}\) as in~\eqref{eq:varI}.
+\(\VAR{F/\Rho}\cdot N^{-1}\) as in \cref{eq:varI}.
 
 \begin{align}
   \VAR{\frac{F}{\Rho}} &= \int_\Omega \qty[I -
@@ -66,7 +61,7 @@ value of~\eqref{eq:approxexp} varies around \(I\) with the variance
 \end{align}
 
 The name of the game now is to reduce \(\VAR{F/\Rho}\) to speed up the
-convergence of~\eqref{eq:approxexp} and achieve higher accuracy with
+convergence of \cref{eq:approxexp} and achieve higher accuracy with
 fewer function evaluations. Some ways variance reductions can be
 accomplished are choosing a suitable \(\rho\) (importance sampling),
 by transforming the integral onto another variable, a combination of
@@ -76,7 +71,7 @@ in all sub-volumes (stratified sampling, a special case of importance
 sampling). Combining ideas from importance sampling and stratified
 sampling leads to the \vegas\ algorithm~\cite{Lepage:19781an}.
 
-The convergence of~\eqref{eq:approxexp} is not dependent on the
+The convergence of \cref{eq:approxexp} is not dependent on the
 dimensionality of the integration volume as opposed to many other
 numerical integration algorithms (trapezoid rule, Simpsons rule) that
 usually converge like \(N^{-\frac{k}{n}}\) with \(k\in\mathbb{N}\) as
@@ -92,7 +87,7 @@ facilitates deniability and comparability.
 \label{sec:naivechange}
 
 The simplest choice for \(\rho\) is given
-by~\eqref{eq:simplep}, the uniform distribution.
+by \cref{eq:simplep}, the uniform distribution.
 
 \begin{equation}
   \label{eq:simplep}
@@ -100,8 +95,8 @@ by~\eqref{eq:simplep}, the uniform distribution.
   \frac{1}{\abs{\Omega}}
 \end{equation}
 
-With this distribution~\eqref{eq:approxexp}
-becomes~\eqref{eq:approxexp-uniform}. In other words, \(I\) is just
+With this distribution \cref{eq:approxexp}
+becomes \cref{eq:approxexp-uniform}. In other words, \(I\) is just
 the mean of \(f\) in \(\Omega\), henceforth
 called \(\bar{f}\), multiplied with the volume.
 
@@ -112,7 +107,7 @@ called \(\bar{f}\), multiplied with the volume.
 \end{equation}
 
 The variance \(\VAR{I}=\VAR{F/\Rho}\) is now given
-by~\ref{eq:approxvar-I}. Note that the factor \(\abs{\Omega}\) gets
+by \cref{eq:approxvar-I}. Note that the factor \(\abs{\Omega}\) gets
 squared when approximating the integral by the sum.
 
 \begin{equation}
@@ -123,20 +118,20 @@ squared when approximating the integral by the sum.
 \end{equation}
 
 Applying this method to integrate
-\(2\pi\sin(\theta)\cdot\dv{\sigma}{\Omega}\) (see~\eqref{eq:crossec})
+\(2\pi\sin(\theta)\cdot\dv{\sigma}{\Omega}\) (see \cref{eq:crossec})
 over a \(\theta\) interval, equivalent to \(\eta\in [-2.5, 2.5]\) with
 a target accuracy of \(\varepsilon=10^{-3}\) results in
 \result{xs/python/xs_mc} with a sample size of
 \result{xs/python/xs_mc_N}.
 
-Changing variables and integrating~\eqref{eq:xs-eta} over \(\eta\)
+Changing variables and integrating \cref{eq:xs-eta} over \(\eta\)
 with the same target accuracy yields~\result{xs/python/xs_mc_eta} with
 a sample size of just~\result{xs/python/xs_mc_eta_N}. The dramatic
 reduction in variance and sample size can be understood qualitatively
-by studying~\ref{fig:xs-int-comp}. The differential cross section in
-terms of \(\eta\)~(\ref{fig:xs-int-eta}) is less steep than the
+by studying \cref{fig:xs-int-comp}. The differential cross section in
+terms of \(\eta\)~(\cref{fig:xs-int-eta}) is less steep than the
 differential cross section in terms of
-\(\theta\)~(\ref{fig:xs-int-theta}) and takes on significant values
+\(\theta\)~(\cref{fig:xs-int-theta}) and takes on significant values
 over most of the integration interval.
 
 \begin{figure}[ht]
@@ -152,7 +147,7 @@ over most of the integration interval.
     \plot{xs/xs_integrand_eta}
     \caption[Differential cross section for \(\qqgg\) with integration
     boundaries]{\label{fig:xs-int-eta} The differential cross section
-      \(\dv{\sigma}{\eta}\) (see~\ref{eq:xs-eta}) scaled by \(2\pi\)
+      \(\dv{\sigma}{\eta}\) (see \cref{eq:xs-eta}) scaled by \(2\pi\)
       with the integration borders visualized as gray lines.}
   \end{subfigure}
   \caption{\label{fig:xs-int-comp} Comparison of two parametrisations
@@ -165,9 +160,9 @@ over most of the integration interval.
 Stratified sampling gives optimal results, when the variance in every
 sub-volume is the same\cite{Lepage:19781an}. In importance sampling
 the optimal probability distribution is given
-by~\eqref{eq:optimalrho}, where \(f(\Omega) \geq 0\) is presumed
+by \cref{eq:optimalrho}, where \(f(\Omega) \geq 0\) is presumed
 without loss of generality. When applying \vegas\ to multi dimensional
-integrals, \ref{eq:optimalrho} is usually modified to factorize into
+integrals, \cref{eq:optimalrho} is usually modified to factorize into
 distributions for each variable.
 
 \begin{equation}
@@ -177,14 +172,14 @@ distributions for each variable.
 
 The idea behind \vegas\ is to subdivide \(\Omega\) into hypercubes,
 define \(\rho\) as step-function on those hypercubes and iteratively
-approximating~\eqref{eq:optimalrho}, instead of trying to minimize the
+approximating \cref{eq:optimalrho}, instead of trying to minimize the
 variance directly~\cite{Lepage:19781an}. In the end, the samples are
 concentrated where \(f\) takes on the highest values and changes most
 rapidly. This is done by subdividing the hypercubes into smaller
 chunks, based on their contribution to the integral and then varying
 the hypercube borders until all hypercubes contain the same number of
 chunks. Note that no knowledge about the integrand is required. The
-probability density used by \vegas\ is given in~\eqref{eq:vegasrho}
+probability density used by \vegas\ is given in \cref{eq:vegasrho}
 with \(K\) being the number of hypercubes and \(\Omega_i\) being the
 hypercubes themselves.
 
@@ -201,21 +196,21 @@ hypercubes themselves.
   \centering \plot{xs/xs_integrand_vegas}
   \caption[\(2\pi\dv{\sigma}{\theta}\) scaled to increments found by
   \vegas\ ]{\label{fig:xs-int-vegas} The same integrand as
-    in~\ref{fig:xs-int-theta} with \vegas-generated increments and
+    in \cref{fig:xs-int-theta} with \vegas-generated increments and
     weighting applied (\(f/\rho\)).}
 \end{figure}
 
 In one dimension the hypercubes become simple interval
-increments. Applying \vegas\ to~\eqref{eq:crossec} with
+increments. Applying \vegas\ to \cref{eq:crossec} with
 \result{xs/python/xs_mc_θ_vegas_K} increments yields
 \result{xs/python/xs_mc_θ_vegas} with
 \result{xs/python/xs_mc_θ_vegas_N} samples. This result is comparable
 with tho one obtained by parameter transformation
-in~\ref{sec:naivechange}.  The sample count \(N\) is the number of
+in \cref{sec:naivechange}.  The sample count \(N\) is the number of
 samples of the final integration and not the total number of
 evaluations of \(f\) and is mentioned here, to illustrate the effect
 of using stratified sampling. The resulting increments and the
-weighted integrand \(f/\rho\) are depicted in~\ref{fig:xs-int-vegas},
+weighted integrand \(f/\rho\) are depicted in \cref{fig:xs-int-vegas},
 along with the original integrand and it is intuitively clear, that
 the variance is being reduced. Smaller increments correspond to higher
 sample density and lower weights, flattening out the integrand.
@@ -224,3 +219,8 @@ Generally the result gets better with more increments, but at the cost
 of more \vegas\ iterations. The intermediate values of those
 iterations can be accumulated to improve the accuracy of the end
 result~\cite[197]{Lepage:19781an}.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../document"
+%%% End:

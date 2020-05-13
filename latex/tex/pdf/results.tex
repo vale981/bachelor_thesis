@@ -1,24 +1,19 @@
-%%% Local Variables: ***
-%%% mode: latex ***
-%%% TeX-master: "../../document.tex"  ***
-%%% End: ***
-
 \section{Implementation and Results}%
 \label{sec:pdf_results}
 
-The considerations of~\ref{sec:pdf_basics} and~\ref{sec:lab_xs} can
+The considerations of \cref{sec:pdf_basics} and \cref{sec:lab_xs} can
 now be applied to obtain a cross section and histograms of observables
 for the scattering of two protons into two photons. Because the PDF is
 not available in closed form, event generation is the only viable way
 to verify theory against experiment, even in this simple leading-order
 process.
 
-The integrand in~\eqref{eq:pdf-xs} can be concretised
-into~\eqref{eq:weighteddist}, where \(q\) runs over all quarks (except
+The integrand in \cref{eq:pdf-xs} can be concretised
+into \cref{eq:weighteddist}, where \(q\) runs over all quarks (except
 the top quark). The sum has been symmetized, otherwise a double sum
 with \(q\) and \(\bar{q}\) would have been necessary. The choice of
-\(Q^2\) was explained in~\ref{sec:pdf_basics} and is being given
-in~\eqref{eq:q2-explicit}.
+\(Q^2\) was explained in \cref{sec:pdf_basics} and is being given
+in \cref{eq:q2-explicit}.
 
 \begin{gather}
   \label{eq:weighteddist}
@@ -30,12 +25,12 @@ in~\eqref{eq:q2-explicit}.
 \end{gather}
 
 This distribution can now be integrated to obtain a total
-cross-section as described in~\ref{sec:mcint}. Sampling a
+cross-section as described in \cref{sec:mcint}. Sampling a
 multi-dimensional distribution can be reduced to the sampling of one
 dimensional distributions by reducing the distribution itself to one
 variable through integration over the remaining ones and then, keeping
 the first variable fixed, sampling the other variables in a likewise
-manner. The hit-or-miss method described in~\ref{sec:hitmiss} has to
+manner. The hit-or-miss method described in \cref{sec:hitmiss} has to
 be modified only in so far as to choose the sampling points in an
 \(n\)-dimensional volume. As before, the range of the \(\eta\)
 parameter has to be constrained to obtain physical results. Because
@@ -50,7 +45,7 @@ approximately~\SI{20}{\giga\electronvolt}. A restriction (cut) on
 \(p_T\) is suitable because detectors are usually only sensitive above
 a certain \(p_T\) threshold. %TODO CITE%
 Such cuts can be implemented simply by multiplying the distribution
-in~\eqref{eq:weighteddist} by the characteristic function
+in \cref{eq:weighteddist} by the characteristic function
 \(\chi_\Omega\) of \(\Omega\) which is equal to one if \(x\in\Omega\)
 and zero otherwise.
 
@@ -62,8 +57,8 @@ library\cite{NNPDF:2017pd}\cite{Buckley:2015lh}.
 % TODO clean separation of pdf, pdf set %
 
 The resulting distribution (without cuts) is depicted
-in~\ref{fig:dist-pdf} for fixed \(x_2\) and
-in~\ref{fig:dist-pdf-fixed-eta} for fixed \(\eta\).
+in \cref{fig:dist-pdf} for fixed \(x_2\) and
+in \cref{fig:dist-pdf-fixed-eta} for fixed \(\eta\).
 
 \begin{figure}[hb]
   \centering
@@ -74,7 +69,7 @@ in~\ref{fig:dist-pdf-fixed-eta} for fixed \(\eta\).
 \end{figure}
 
 For \(x_1 = x_2\) the distribution retains some likeness with the
-partonic distribution (see~\ref{fig:xs-int-eta}) but gets suppressed
+partonic distribution (see \cref{fig:xs-int-eta}) but gets suppressed
 for greater values of \(x_1\). The overall shape of the distribution
 is clearly highly sub-optimal for hit-or-miss sampling, only having
 significant values when \(x_1\) or \(x_2\) are small and being very
@@ -84,7 +79,7 @@ algorithm can be adapted to \(n\) dimensions by using a grid of
 hypercubes instead of intervals and using the algorithm along each
 axis with a slightly altered weighting
 mechanism~\cite[197]{Lepage:19781an}. The self-coded implementation
-used here can be found in~\ref{sec:pycode}.
+used here can be found in \cref{sec:pycode}.
 
 \begin{figure}[hb]
   \centering
@@ -98,18 +93,18 @@ For the numeric analysis a proton beam energy of
 \result{xs/python/pdf/e_proton} has been chosen, in accordance to
 \lhc{} beam energies. As for the cuts, \result{xs/python/pdf/eta} and
 \result{xs/python/pdf/min_pT} have been set.
-Integrating~\eqref{eq:weighteddist} with respect to those cuts yields
+Integrating \cref{eq:weighteddist} with respect to those cuts yields
 \result{xs/python/pdf/my_sigma} which is compatible with
 \result{xs/python/pdf/sherpa_sigma}, the value \sherpa\ gives.  A
 sample of \result{xs/python/pdf/sample_size} events has been generated
 both in \sherpa\ and through own code. The resulting histograms of
-some observables are depicted in~\ref{fig:pdf-histos}. The
+some observables are depicted in \cref{fig:pdf-histos}. The
 distributions are largely compatible with each other although there
 discrepancies arise in regions with low event count (statistics),
 which the the ratio plot exaggerators. The sherpa runcard utilized
 here and the analysis used to produce the histograms can be found
-in~\ref{sec:ppruncard} and~\ref{sec:ppanalysis}. When
-comparing~\ref{fig:pdf-eta} with \ref{fig:histeta} it becomes
+in \cref{sec:ppruncard} and \cref{sec:ppanalysis}. When
+comparing \cref{fig:pdf-eta} with \cref{fig:histeta} it becomes
 apparent, that the PDF has substantial influence on the resulting
 distribution.
 
@@ -143,3 +138,8 @@ distribution.
     \sherpa/\rivet. The sample size was \protect
     \result{xs/python/pdf/sample_size}.}
 \end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../document"
+%%% End:

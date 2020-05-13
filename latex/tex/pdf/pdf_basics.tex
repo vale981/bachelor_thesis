@@ -1,8 +1,3 @@
-%%% Local Variables: ***
-%%% mode: latex ***
-%%% TeX-master: "../../document.tex"  ***
-%%% End: ***
-
 \section{Parton Density Functions}%
 \label{sec:pdf_basics}
 
@@ -10,7 +5,7 @@ Parton Density Functions encode, restricting the considerations to
 leading order, the probability to ``encounter'' a constituent parton
 (quark or gluon) of a hadron with a certain momentum fraction \(x\) at
 a certain factorization scale \(Q^2\). PDFs are normalized according
-to~\eqref{eq:pdf-norm}, where the sum runs over all partons.
+to \cref{eq:pdf-norm}, where the sum runs over all partons.
 
 \begin{equation}
   \label{eq:pdf-norm}
@@ -32,7 +27,7 @@ choice is lorentz-invariant and reflects the s/u-channel nature of the
 process.
 
 The (differential) hadronic cross section for scattering of two
-partons in equal hadrons is given in~\eqref{eq:pdf-xs}. Here \(i,j\) are
+partons in equal hadrons is given in \cref{eq:pdf-xs}. Here \(i,j\) are
 the partons participating in a scattering process with the cross
 section \(\sigma_{ij}\). Usually this cross section depends on the
 kinematics and thus the momentum fractions and the factorization
@@ -46,10 +41,15 @@ scale\footnote{More appropriately: The factorization scale depends on
   x_2, Q^2)\dd{x_1}\dd{x_2}
 \end{equation}
 
-Summing~\eqref{eq:pdf-xs} over all partons in the hadron gives
+Summing \cref{eq:pdf-xs} over all partons in the hadron gives
 the total scattering cross section for the hadron.
 
 PDFs can not be derived from first principles and have to be
 determined experimentally for low \(Q^2\) and can be evolved to higher
 \(Q^2\) through the \emph{DGLAP} equations~\cite{altarelli:1977af} at
 different orders of perturbation theory.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../document"
+%%% End:

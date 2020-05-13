@@ -13,6 +13,7 @@
 \usepackage[backend=biber, language=english, style=phys]{biblatex}
 \usepackage{siunitx}
 \usepackage[pdfencoding=auto]{hyperref} % load late
+\usepackage{cleveref}
 % \usepackage[activate={true,nocompatibility},final,tracking=true,spacing=true,factor=1100,stretch=10,shrink=10]{microtype}
 \usepackage{caption}
 \usepackage[list=true, font=small,
@@ -63,10 +64,14 @@ labelformat=brace, position=top]{subcaption}
 \captionsetup{justification=centering}
 
 %% Labels
-\labelformat{chapter}{chapter~#1}
-\labelformat{section}{section~#1}
-\labelformat{figure}{figure~#1}
-\labelformat{table}{table~#1}
+% \labelformat{chapter}{chapter~#1}
+% \labelformat{section}{section~#1}
+% \labelformat{figure}{figure~#1}
+% \labelformat{table}{table~#1}
+
+%% Cleverref
+\crefname{equation}{}{}
+\creflabelformat{equation}{~(#2#1#3)}
 
 % Macros
 
