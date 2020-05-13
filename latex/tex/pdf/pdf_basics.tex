@@ -1,25 +1,31 @@
 \section{Parton Density Functions}%
 \label{sec:pdf_basics}
 
-Parton Density Functions encode, restricting the considerations to
-leading order, the probability to ``encounter'' a constituent parton
-(quark or gluon) of a hadron with a certain momentum fraction \(x\) at
-a certain factorization scale \(Q^2\). PDFs are normalized according
-to \cref{eq:pdf-norm}, where the sum runs over all partons.
+Parton Density Functions encode, restricting considerations to leading
+order, the probability to \emph{encounter} a constituent parton (quark
+or gluon) of a hadron with a certain momentum fraction \(x\) at a
+certain factorization scale \(Q^2\). PDFs are normalized according to
+\cref{eq:pdf-norm}, where the sum runs over all partons.
 
 \begin{equation}
   \label{eq:pdf-norm}
   \sum_i\int_0^1x\cdot f_i\qty(x;Q^2) \dd{x} = 1
 \end{equation}
 
-In deep inelastic scattering \(Q^2\) is just the negative over the
-momentum transfer \(-q^2\). In more complicated processes \(Q^2\) has
-to be chosen in a way that reflects the ``energy resolution'' of the
-process. If the perturbation series behind the process would be
-expanded to the exact solution, the dependence on the factorization
-scale vanishes. In leading order, one has to choose the scale in a
-``physically meaningfull'' way, which reflects characteristics of the
-process.
+
+PDFs can not be derived from first principles (at the moment) and have
+to be determined experimentally for low \(Q^2\) and are evolved to
+higher \(Q^2\) through the \emph{DGLAP}
+equations~\cite{altarelli:1977af} at different orders of perturbation
+theory.  In deep inelastic scattering \(Q^2\) is just the negative
+over the momentum transfer \(-q^2\). For more complicated processes
+\(Q^2\) has to be chosen in a way that reflects the \emph{momentum
+  resolution} of the process. If the perturbation series behind the
+process would be expanded to the exact solution, the dependence on the
+factorization scale vanishes. In lower orders, one has to choose the
+scale in a \emph{physically meaningful}\footnote{That means: not in
+  an arbitrary way.} way, which reflects characteristics of the
+process~\cite{altarelli:1977af}.
 
 In the case of \(\qqgg\) the mean of the Mandelstam variables \(\hat{t}\)
 and \(\hat{u}\), which is equal to \(\hat{s}/2\), can be used. This
@@ -43,11 +49,6 @@ scale\footnote{More appropriately: The factorization scale depends on
 
 Summing \cref{eq:pdf-xs} over all partons in the hadron gives
 the total scattering cross section for the hadron.
-
-PDFs can not be derived from first principles and have to be
-determined experimentally for low \(Q^2\) and can be evolved to higher
-\(Q^2\) through the \emph{DGLAP} equations~\cite{altarelli:1977af} at
-different orders of perturbation theory.
 
 %%% Local Variables:
 %%% mode: latex
