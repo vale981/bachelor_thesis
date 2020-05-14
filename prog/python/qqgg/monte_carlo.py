@@ -750,6 +750,7 @@ def integrate_vegas_nd(
     vegas_point_density=1000,
     proc="auto",
     num_points_per_cube=None,
+    vegas_step_f=None,
     **kwargs,
 ) -> VegasIntegrationResult:
     """Integrate the given function (in n-dimensions) with the vegas
@@ -808,6 +809,8 @@ def integrate_vegas_nd(
         for i, interval in enumerate(intervals)
     ]
 
+    vegas_step_f = vegas_step_f or f
+
     def evaluate_stripe(interval_borders):
         cubes = generate_cubes(interval_borders)
 
@@ -817,7 +820,7 @@ def integrate_vegas_nd(
             points = np.random.uniform(
                 cube[:, 0], cube[:, 1], (points_per_cube, ndim)
             ).T
-            result += ((f(*points, **kwargs) * vol) ** 2).sum()
+            result += ((vegas_step_f(*points, **kwargs) * vol) ** 2).sum()
 
         return np.sqrt(result)
 
@@ -847,9 +850,7 @@ def integrate_vegas_nd(
             increment_weights = generate_integral_steps(increment_borders.copy(), dim)
             nonzero_increments = increment_weights[increment_weights > 0]
 
-            remainder += (nonzero_increments.max() - nonzero_increments.min()) * len(
-                nonzero_increments
-            )
+            remainder += nonzero_increments.max() - nonzero_increments.min()
 
             new_borders = reshuffle_increments_nd(
                 increment_weights,
@@ -861,6 +862,7 @@ def integrate_vegas_nd(
             new_increment_borders.append(new_borders)
 
         remainder /= ndim
+        print(remainder)
         increment_borders = new_increment_borders
         if abs(remainder) < increment_epsilon:
             break
@@ -899,7 +901,7 @@ def integrate_vegas_nd(
 
             if np.sqrt(variance) <= epsilon:
                 break
-
+            print(integral, variance, points_per_cube)
             # adaptive scaling of sample size incrementation
             points_per_cube *= int((variance / epsilon ** 2) * 1.1)
 
