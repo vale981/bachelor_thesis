@@ -69,7 +69,9 @@ both approaches or by subdividing integration volume into several
 sub-volumes of different size while keeping the sample size constant
 in all sub-volumes (stratified sampling, a special case of importance
 sampling). Combining ideas from importance sampling and stratified
-sampling leads to the \vegas\ algorithm~\cite{Lepage:19781an}.
+sampling leads to the \vegas\ algorithm~\cite{Lepage:19781an} that
+approximates the optimal distribution of importance sampling by
+adaptive subdivision of the integration volume into a grid.
 
 The convergence of \cref{eq:approxexp} is not dependent on the
 dimensionality of the integration volume as opposed to many other
