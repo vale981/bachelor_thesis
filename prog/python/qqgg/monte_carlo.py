@@ -9,7 +9,7 @@ import numpy as np
 import pathlib
 import time
 import collections
-from typing import Union
+from typing import Union, List, Tuple
 from multiprocessing import Pool, cpu_count
 import functools
 from scipy.optimize import minimize_scalar, root, shgo
@@ -326,7 +326,6 @@ class VegasIntegrationResult(IntegrationResult):
 
     increment_borders: np.ndarray
     vegas_iterations: int
-    maximum: Union[float, None] = None
 
 
 def reshuffle_increments(
@@ -738,6 +737,21 @@ def sample_unweighted_array(
 # backwards compatibility.
 
 
+@dataclass
+class VegasIntegrationResultNd(VegasIntegrationResult):
+    """A simple container class to hold the result, uncertainty and
+    sampling size of the multi-dimensional vegas integration.
+
+    The ascertained increment borders, the hypercubes with their
+    respective maxima as well as the total sample size are available
+    as well.
+    """
+
+    increment_borders: np.ndarray
+    cubes: List[Tuple[np.ndarray, float]]
+    vegas_iterations: int
+
+
 @utility.numpy_cache("cache")
 def integrate_vegas_nd(
     f,
@@ -872,7 +886,7 @@ def integrate_vegas_nd(
     volumes = [get_integration_volume(cube) for cube in cubes]
     cube_samples = [np.empty(0) for _ in cubes]
     total_points_per_cube = 0
-    maximum = None
+    maxima = np.empty(num_cubes)
 
     @joblib.delayed
     def evaluate_integrand(cube):
@@ -895,23 +909,22 @@ def integrate_vegas_nd(
                     cube_samples[i].var() * (vol ** 2) / (total_points_per_cube - 1)
                 )
 
-                local_maximum = points.max() * num_cubes
-                if not maximum or local_maximum > maximum:
-                    maximum = local_maximum
+                maxima[i] = cube_samples[i].max()
 
             if np.sqrt(variance) <= epsilon:
                 break
+
             print(integral, variance, points_per_cube)
             # adaptive scaling of sample size incrementation
             points_per_cube *= int((variance / epsilon ** 2) * 1.1)
 
-    return VegasIntegrationResult(
+    return VegasIntegrationResultNd(
         integral,
         np.sqrt(variance),
         total_points_per_cube * num_cubes,
         increment_borders,
         vegas_iterations,
-        maximum,
+        [(cube, maximum) for cube, maximum in zip(cubes, maxima)],
     )
 
 
@@ -1000,10 +1013,8 @@ def reshuffle_increments_nd(
 
 
 # NOTE: Finding the upper bound happens in the Integration step!
-def sample_stratified_vector(
-    f, increment_borders, upper_bound, seed=None, report_efficiency=False
-):
-    ndim = len(increment_borders)
+def sample_stratified_vector(f, cubes, seed=None, report_efficiency=False):
+    ndim = len(cubes[0][0])
 
     if seed:
         np.random.seed(seed)
@@ -1013,25 +1024,38 @@ def sample_stratified_vector(
 
     total_points = 0
     total_accepted = 0
-    cubes = generate_cubes(increment_borders)
     num_cubes = len(cubes)
 
+    volumes = np.array([get_integration_volume(cube) for cube, _ in cubes])
+    total_volume = volumes.sum()
+
+    total_points = num_cubes * 100
+    num_per_cube = (total_points * volumes / total_volume + 1).astype(int)
+    total_points = num_per_cube.sum()
+
     while True:
-        np.random.shuffle(cubes)
-        for cube in cubes:
-            volume = get_integration_volume(cube)
-            points = allocate_random_chunk(cube)
+        samples = np.empty((num_per_cube, ndim))
+        for (cube, maximum), num, i in zip(cubes, num_per_cube, range(num_cubes)):
+            counter = 0
+            while counter < num:
+                points = allocate_random_chunk(cube)
 
-            if report_efficiency:
-                total_points += 1
-
-            args = points[0][:-1]
-            if f(*args) * num_cubes * volume >= points[0][-1] * upper_bound:
                 if report_efficiency:
-                    total_accepted += 1
+                    total_points += 1
 
-                yield (
-                    args.T,
-                    total_accepted / total_points,
-                ) if report_efficiency else args.T
+                args = points[0][:-1]
+                if f(*args) >= points[0][-1] * maximum:
+                    if report_efficiency:
+                        counter -= 1
+                        total_accepted += 1
+
+                    samples[i][counter] = args.T
+                    yield (
+                        args.T,
+                        total_accepted / total_points,
+                    ) if report_efficiency else args.T
+
+        np.random.shuffle(samples)
+        for sample in samples:
+            yield sample
     return
