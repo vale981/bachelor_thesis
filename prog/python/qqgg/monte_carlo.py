@@ -1026,6 +1026,7 @@ def sample_stratified_vector(
     chunk_size: int = 1,
     seed: float = None,
     report_efficiency: bool = False,
+    overestimate_factor: float = 1,
 ) -> Iterator[Union[np.ndarray, Tuple[np.ndarray, float]]]:
     """Sample a distribution `f` using stratified sampling and hit-or-miss
     in the subvolumes `cubes` which contain information about the
@@ -1039,6 +1040,7 @@ def sample_stratified_vector(
       the sampling gets
     :param seed: the seed of the RNG, if none
     :param report_efficiency: Wether to yield the sampling efficiency
+    :param overestimate_factor: by how much to over_estimeate the maximum
     :yields: an ndarray containing a sample and optionally a the sampling efficiency
     """
 
@@ -1083,7 +1085,7 @@ def sample_stratified_vector(
                 total_points += 1
 
             args = points[0][:-1]
-            if f(*args) >= points[0][-1] * maximum:
+            if f(*args) >= points[0][-1] * maximum * overestimate_factor:
                 if report_efficiency:
                     total_accepted += 1
 

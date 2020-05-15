@@ -95,18 +95,23 @@ sampling algorithm (\vegas) or impose very restrictive cuts. The
 of hypercubes instead of intervals and using the algorithm along each
 axis with a slightly altered weighting
 mechanism~\cite[197]{Lepage:19781an}. The self-coded implementation
-used here can be found in \cref{sec:pycode}.
+used here can be found in \cref{sec:pycode}. Because the stratified
+sampling requires very accurate upper bounds, they have been
+overestimated by \result{xs/python/pdf/overesimate}, which lowers the
+efficiency slightly but reduces bias.
 
 A sample of \result{xs/python/pdf/sample_size} events has been
 generated both in \sherpa\ and through own code. The resulting
 histograms of some observables are depicted in
-\cref{fig:pdf-histos}. The distributions are largely compatible with
-each other although there discrepancies arise in regions with low
-event count (statistics), which the the ratio plot exaggerates. The
-sherpa runcard utilized here and the analysis used to produce the
-histograms can be found in \cref{sec:ppruncard,sec:ppanalysis}. When
-comparing \cref{fig:pdf-eta,fig:histeta} it becomes apparent, that the
-PDF has substantial influence on the resulting distribution.
+\cref{fig:pdf-histos}. The sampling efficiency achieved was
+\result{xs/python/pdf/samp_eff}.  The distributions are largely
+compatible with each other although there discrepancies arise in
+regions with low event count (statistics), which the the ratio plot
+exaggerates. The sherpa runcard utilized here and the analysis used to
+produce the histograms can be found in
+\cref{sec:ppruncard,sec:ppanalysis}. When comparing
+\cref{fig:pdf-eta,fig:histeta} it becomes apparent, that the PDF has
+substantial influence on the resulting distribution.
 
 \begin{figure}[hp]
   \centering
