@@ -374,7 +374,7 @@ The total cross section is as follows:
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=3.329425346813745e-14, sigma=9.607139391797041e-17, N=91765)
+: IntegrationResult(result=3.3227190591280343e-14, sigma=9.580739400896628e-17, N=92242)
 
 
 We have to convert that to picobarn.
@@ -383,7 +383,7 @@ We have to convert that to picobarn.
 #+end_src
 
 #+RESULTS:
-| 1.2964095512354117e-05 | 3.740821904745473e-08 |
+| 1.293798261146746e-05 | 3.730542292863327e-08 |
 
 That is compatible with sherpa!
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -407,7 +407,7 @@ We can take some samples as well.
 #+end_src
 
 #+RESULTS:
-: -1.8206975090375266
+: -1.8206970308592774
 
 #+begin_src jupyter-python :exports both :results raw drawer
 part_hist = np.histogram(part_samples, bins=50, range=[-2.5, 2.5])
@@ -417,8 +417,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.axes._subplots.AxesSubplot at 0x7f912a30cf70>
-[[file:./.ob-jupyter/7c8509f0cba9bded6b3413c025c0e3b51d0d678d.png]]
+: <matplotlib.axes._subplots.AxesSubplot at 0x7fe59fb758e0>
+[[file:./.ob-jupyter/8271f26121eaa49c22291d66b2323643bcc19536.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -438,8 +438,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f912a311b20>
-[[file:./.ob-jupyter/83a3de13c780aa2d6395edc0e851b8600d41e21c.png]]
+: <matplotlib.legend.Legend at 0x7fe59fa0f6a0>
+[[file:./.ob-jupyter/85ebdcc09e8cee976e3e96ca9763ea582577db25.png]]
 :END:
 #+begin_src jupyter-python :exports both :results raw drawer
   part_momenta = momenta(
@@ -468,12 +468,24 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f912a535760>
-[[file:./.ob-jupyter/b715f27c6f2c63ff809fe9e13a697a3d8a01148e.png]]
+: <matplotlib.legend.Legend at 0x7fe59fa05ac0>
+[[file:./.ob-jupyter/d7999e9cc4f0670a5aa179ba8b40e80b4db9bb88.png]]
 :END:
 
 * Total XS
 Now, it would be interesting to know the total cross section.
+So let's define the increments for VEGAS.
+#+begin_src jupyter-python :exports both :results raw drawer
+  increments = np.array([3, 100, 100])
+  tex_value(
+      np.prod(increments), prefix=r"K=", prec=0, save=("results/pdf/", "num_increments.tex")
+  )
+#+end_src
+
+#+RESULTS:
+: \(K=30000\)
+
+And calculate the XS.
 #+begin_src jupyter-python :exports both :results raw drawer
   dist_η_vec, _ = get_xs_distribution_with_pdf(
         c_xs.diff_xs_eta,
@@ -489,9 +501,9 @@ Now, it would be interesting to know the total cross section.
       [interval_η, [pdf.xMin, 1], [pdf.xMin, 1]],
       epsilon=1e-11,
       proc=1,
-      increment_epsilon=1e-2,
+      increment_epsilon=.02,
       alpha=1.8,
-      num_increments=[3, 100, 100],
+      num_increments=increments,
       num_points_per_cube=10,
       cache="cache/pdf/total_xs_2_5_20_take19",
   )
@@ -535,7 +547,7 @@ The efficiency will be around:
 Let's export those results for TeX:
 #+begin_src jupyter-python :exports both :results raw drawer
   tex_value(
-      ,*xs_int_res.combined_result,
+      ,*total_xs,
       prefix=r"\sigma = ",
       save=("results/pdf/", "my_sigma.tex"),
       unit=r"\pico\barn"
@@ -603,14 +615,14 @@ Now we create an eye-candy surface plot.
 
   surface = ax.plot_surface(grid_xs, grid_ηs, pdf_surface, cmap=cm.coolwarm, linewidth=0)
   #fig.colorbar(surface, shrink=0.5, aspect=5)
-  save_fig(fig, "dist3d_x2_const", "pdf", size=(6, 3.5))
+  save_fig(fig, "dist3d_x2_const", "pdf", size=(5, 2.5))
   tex_value(x_2_const, prefix=r"x_2 = ", prec=2, save=("results/pdf/", "second_x.tex"))
 #+end_src
 
 #+RESULTS:
 :RESULTS:
 : \(x_2 = 0.01\)
-[[file:./.ob-jupyter/435569ac2b915994a9dda2c14beba363c821370a.png]]
+[[file:./.ob-jupyter/542b03d025920448ba653b470ec6492cbdd1e4a7.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -644,17 +656,17 @@ Now we create an eye-candy surface plot.
       grid_xs, grid_x_2s, pdf_surface, cmap=cm.coolwarm, linewidth=0
   )
   ax.view_init(30, 20)
-  ax.xaxis.set_major_locator(plt.MaxNLocator(5))
-  ax.yaxis.set_major_locator(plt.MaxNLocator(5))
+  ax.xaxis.set_major_locator(plt.MaxNLocator(4))
+  ax.yaxis.set_major_locator(plt.MaxNLocator(4))
   # fig.colorbar(surface, shrink=0.5, aspect=5)
-  save_fig(fig, "dist3d_eta_const", "pdf", size=(6, 3.5))
+  save_fig(fig, "dist3d_eta_const", "pdf", size=(5, 2.5))
   tex_value(eta_const, prefix=r"\eta = ", prec=2, save=("results/pdf/", "plot_eta.tex"))
 #+end_src
 
 #+RESULTS:
 :RESULTS:
 : \(\eta = 2.50\)
-[[file:./.ob-jupyter/8bf84cb0460b2d5eb083e20c9fa656723585a030.png]]
+[[file:./.ob-jupyter/d47db0dde9ae59979f271a7cba8dfc46be3f1dd3.png]]
 :END:
 
 Lets plot how the pdf looks.
@@ -763,7 +775,7 @@ And now we compare all the observables with sherpa.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/ce5b3690f34e7b274e848668485946023b95658c.png]]
+[[file:./.ob-jupyter/70a6711134c57d1fb387054da215e61306847ff2.png]]
 
 Hah! there we have it!
 
@@ -775,11 +787,13 @@ Hah! there we have it!
 
 pT drops pretty quickly.
 #+begin_src jupyter-python :exports both :results raw drawer
-  pT_hist = np.histogram(observables.p_t(mom[3]), bins=50, range=(min_pT, e_proton))
-  yoda_hist_pt = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/pT"])
+  bins = np.logspace(*np.log10([min_pT, e_proton]), 51)
+  pT_hist = np.histogram(observables.p_t(mom[3]), bins=bins)
+  yoda_hist_pt, e = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/pT"])
+  #yoda_hist_pt = yoda_hist_pt / hist_integral((yoda_hist_pt, e))
   fig, (ax, ax_ratio) = draw_ratio_plot(
       [
-          dict(hist=yoda_hist_pt, hist_kwargs=dict(label="sherpa")),
+          dict(hist=(yoda_hist_pt, e), hist_kwargs=dict(label="sherpa")),
           dict(hist=pT_hist, hist_kwargs=dict(label="own implementation")),
       ]
   )
@@ -792,13 +806,12 @@ pT drops pretty quickly.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/ec1b57b6284e95a1464ebba2e2930c5ba71427a3.png]]
+[[file:./.ob-jupyter/2c310e5b6eb61c63f4995a3910eb29f84cd985a5.png]]
 
 The invariant mass is not constant anymore.
 #+begin_src jupyter-python :exports both :results raw drawer
-  inv_m_hist = np.histogram(
-  observables.inv_m(mom[2], mom[3]), bins=50, range=(2 * min_pT, 2 * e_proton)
-  )
+  bins = np.logspace(*np.log10([2 * min_pT, 2 * e_proton]), 51)
+  inv_m_hist = np.histogram(observables.inv_m(mom[2], mom[3]), bins=bins)
   yoda_hist_inv_m = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/inv_m"])
 
   # yoda_hist_pt = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/pT"])
@@ -817,7 +830,7 @@ The invariant mass is not constant anymore.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/86b1b2e23482e9faffa688c47d29463de817d2ae.png]]
+[[file:./.ob-jupyter/fb884d16eecfcf1227597756ebe301246bed5b23.png]]
 
 The cosθ distribution looks more like the paronic one.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -840,4 +853,4 @@ The cosθ distribution looks more like the paronic one.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/cff558aae0351a7c234c8acc716cd1702faca1d8.png]]
+[[file:./.ob-jupyter/399cea72d1864ed4c982bf043d345417000067df.png]]
