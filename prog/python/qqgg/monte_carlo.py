@@ -8,8 +8,9 @@ import os.path
 import numpy as np
 import pathlib
 import time
+import numba
 import collections
-from typing import Union, List, Tuple
+from typing import Union, List, Tuple, Callable, Iterator
 from multiprocessing import Pool, cpu_count
 import functools
 from scipy.optimize import minimize_scalar, root, shgo
@@ -1017,38 +1018,64 @@ def reshuffle_increments_nd(
     )
 
 
-# NOTE: Finding the upper bound happens in the Integration step!
 def sample_stratified_vector(
-    f, cubes, chunk_size=100, seed=None, report_efficiency=False
-):
+    f: Callable[..., Union[float, int]],
+    cubes: List[Tuple[np.ndarray, float, float]],
+    chunk_size: int = 1,
+    seed: float = None,
+    report_efficiency: bool = False,
+) -> Iterator[Union[np.ndarray, Tuple[np.ndarray, float]]]:
+    """Sample a distribution `f` using stratified sampling and hit-or-miss
+    in the subvolumes `cubes` which contain information about the
+    total probability per cube and the upper-bound per cube.
+
+    :param f: the distribution, function of multiple parameters returning a number
+    :param cubes: a list of subvolumes,
+      elements of the form [cube borders, maximum, integral]
+    :param chunk_size: the number of elements to take consecutively per subvolume,
+      should be 1 for most purposes, the higher this parameter the faster/unreliable
+      the sampling gets
+    :param seed: the seed of the RNG, if none
+    :param report_efficiency: Wether to yield the sampling efficiency
+    :yields: an ndarray containing a sample and optionally a the sampling efficiency
+    """
+
     ndim = len(cubes[0][0])
 
     if seed:
         np.random.seed(seed)
 
-    def allocate_random_chunk(cube):
-        return np.random.uniform([*cube[:, 0], 0], [*cube[:, 1], 1], [1, 1 + ndim],)
-
     total_points = 0
     total_accepted = 0
 
+    cubes = [cube for cube in cubes if cube[2] > 0]  # filter out cubes with zero weight
     weights = np.array([weight for _, _, weight in cubes])
     integral = weights.sum()
     weights = np.cumsum(weights / integral)
 
-    while True:
+    # compiling this function results in quite a speed-up
+    @numba.jit(numba.int32(), nopython=True)
+    def find_next_index():
         cube_index = 0
         rand = np.random.uniform(0, 1)
         for weight in weights:
             if weight > rand:
                 break
+
             cube_index += 1
+
+        return cube_index
+
+    while True:
+        cube_index = find_next_index()
 
         counter = 0
         cube, maximum, _ = cubes[cube_index]
 
         while counter < chunk_size:
-            points = allocate_random_chunk(cube)
+            points = np.random.uniform(
+                [*cube[:, 0], 0], [*cube[:, 1], 1], [1, 1 + ndim],
+            )
 
             if report_efficiency:
                 total_points += 1
