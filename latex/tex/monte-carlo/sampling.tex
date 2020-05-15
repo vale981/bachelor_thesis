@@ -326,10 +326,10 @@ optimize the sampling in each sub-volume independently.
 Let \(N\) be the total sample count (\(N\gg 1\)),
 \(A_i = \int_{\Omega_i}f(x)\dd{x}\) and \(A=\sum_iA_i\).
 Then we can calculate the total efficiency of taking \(N_i=A_i/A \cdot N\)
-samples in each is then given by \cref{eq:strateff}.
+samples in each is then given by \cref{eq:rstrateff}.
 
 \begin{equation}
-  \label{eq:strateff}
+  \label{eq:rstrateff}
   \mathfrak{e} = \frac{\sum_i N_i}{\sum_i N_i/\mathfrak{e}_i} =
   \frac{\sum_i A_i/A\cdot N}{\sum_i A_i/A\cdot N/ \mathfrak{e}_i} = \frac{\sum_i A_i}{\sum_i A_i/\mathfrak{e}_i}
 \end{equation}
