@@ -6,8 +6,13 @@ example a differential cross section) results in a set of
 \emph{events}, the same kind of data, that is gathered in experiments
 and from which one can the calculate samples from the distribution of
 other observables without explicit transformation of the
-distribution. Here the one-dimensional case is discussed. The general
-case follows by sampling the dimensions sequentially.
+distribution. Here the one-dimensional case is discussed.
+
+Sampling a multi-dimensional distribution is equivalent to sampling
+one dimensional distributions by reducing the distribution itself to
+one variable through integration over the remaining variables and
+then, keeping the first variable fixed, sampling the other variables
+in a likewise manner.
 
 Consider a function \(f\colon x\in\Omega\mapsto\mathbb{R}_{\geq 0}\)
 where \(\Omega = [0, 1]\) without loss of generality. Such a function
@@ -77,14 +82,15 @@ and the total probability of accepting a sample (efficiency
 The closer the volumes enclosed by \(g\) and \(f\) are to each other,
 higher is \(\mathfrak{e}\). This method is called importance sampling
 
-Choosing \(g\) like \cref{eq:primitiveg} and looking back
-at \cref{eq:solutionsamp} yields \(y = x\cdot A\), so that the
-sampling procedure simplifies to choosing random numbers
-\(x\in [0,1]\) and accepting them with the probability
-\(f(x)/g(x)\). The efficiency of this approach is related to how much
-\(f\) differs from \(f_{\text{max}}\) which in turn related to the
-variance of \(f\). Minimizing variance will therefore improve sampling
-performance.
+Choosing \(g\) like \cref{eq:primitiveg} and looking back at
+\cref{eq:solutionsamp} yields \(y = x\cdot A\), so that the sampling
+procedure simplifies to choosing random numbers \(x\in [0,1]\) and
+accepting them with the probability \(f(x)/g(x)\). The efficiency of
+this approach is related to how much \(f\) differs from
+\(f_{\text{max}}\) which in turn related to the variance of
+\(f\). Minimizing variance will therefore improve sampling
+performance. The method can also in higher dimensions be used without
+modification.
 
 \begin{equation}
   \label{eq:primitiveg}
@@ -116,6 +122,7 @@ Utilizing an upper bound of the form \(a + b\cdot x^2\) with \(a, b\)
 constant improves the efficiency
 to~\result{xs/python/tuned_th_samp}. The distribution, as well as the
 upper bound are depicted in \cref{fig:distcos}.
+
 
 \subsection{Importance Sampling through Change of Variables}%
 \label{sec:importsamp}

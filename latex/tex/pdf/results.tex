@@ -24,62 +24,43 @@ is justified in \cref{sec:pdf_basics} and formulated in
   Q^2 = 2x_1x_2E_p^2
 \end{gather}
 
-This distribution can now be integrated to obtain a total
-cross-section as described in \cref{sec:mcint}.  For the numeric
-analysis a proton beam energy of \result{xs/python/pdf/e_proton} has
-been chosen, in accordance to \lhc{} beam energies. As for the cuts,
-\result{xs/python/pdf/eta} and \result{xs/python/pdf/min_pT} have been
-set.  Integrating \cref{eq:weighteddist} with respect to those cuts
-yields \result{xs/python/pdf/my_sigma} which is compatible with
+The PDF set being used in the following has been fitted (and
+developed) at leading order and is the central member of the PDF set
+\verb|NNPDF31_lo_as_0118| provided by \emph{NNPDF} collaboration and
+accessed through the \lhapdf\
+library~\cite{NNPDF:2017pd}\cite{Buckley:2015lh}.
+% TODO clean separation of pdf, pdf set %
+
+\subsection{Cross Section}%
+\label{sec:ppxs}
+
+The distribution \cref{eq:weighteddist} can now be integrated to
+obtain a total cross-section as described in \cref{sec:mcint}.  For
+the numeric analysis a proton beam energy of
+\result{xs/python/pdf/e_proton} has been chosen, in accordance to
+\lhc{} beam energies. As for the cuts, \result{xs/python/pdf/eta} and
+\result{xs/python/pdf/min_pT} have been set.  Integrating
+\cref{eq:weighteddist} with respect to those cuts using \vegas\ yields
+\result{xs/python/pdf/my_sigma} which is compatible with
 \result{xs/python/pdf/sherpa_sigma}, the value \sherpa\ gives.
 
-Sampling a multi-dimensional distribution is equivalent to sampling
-one dimensional distributions by reducing the distribution itself to
-one variable through integration over the remaining variables and
-then, keeping the first variable fixed, sampling the other variables
-in a likewise manner. The hit-or-miss method described in
-\cref{sec:hitmiss} has to be modified only in so far as to choose the
-sampling points in an \(n\)-dimensional volume. As before, the range
-of the \(\eta\) parameter has to be constrained to obtain physical
-results. Because the absolute values of the pseudo rapidities of the
-two final state photons are not equal in the lab frame, the shape of
-the integration/sampling volume differs from a simple hypercube
+\subsection{Event Generation and Histograms}%
+\label{sec:ppevents}
+
+Generating events of \(\ppgg\) is very similar in principle to
+sampling partonic cross section. As before, the range of the \(\eta\)
+parameter has to be constrained to obtain physical results. Because
+the absolute values of the pseudo rapidities of the two final state
+photons are not equal in the lab frame, the shape of the
+integration/sampling volume differs from a simple hypercube
 \(\Omega\). Furthermore, for the massless limit to be applicable the
 center of mass energy of the partonic system must be much greater than
 the quark masses. This can be implemented by demanding the transverse
 momentum \(p_T\) of a final state photon to be greater than
 approximately~\SI{20}{\giga\electronvolt}. A restriction (cut) on
 \(p_T\) is suitable because detectors are usually only sensitive above
-a certain \(p_T\) threshold. %TODO CITE%
-Such cuts can be implemented by multiplying the distribution in
-\cref{eq:weighteddist} by the characteristic function \(\chi_\Omega\)
-of \(\Omega\) which is equal to one if \(x\in\Omega\) and zero
-otherwise.
-
-The PDF being used in the following has been determined at leading
-order and is the central member of the PDF set
-\verb|NNPDF31_lo_as_0118| provided by \emph{NNPDF} collaboration and
-accessed through the \lhapdf\
-library~\cite{NNPDF:2017pd}\cite{Buckley:2015lh}.
-% TODO clean separation of pdf, pdf set %
-
-\begin{figure}[hb]
-  \begin{subfigure}{1\linewidth}
-    \centering \plot{pdf/dist3d_x2_const}
-    \caption{\label{fig:dist-pdf}Differential cross section convolved
-      with PDFs for fixed \protect \result{xs/python/pdf/second_x} in
-      picobarn.}
-  \end{subfigure}
-
-  \begin{subfigure}{1\linewidth}
-    \centering \plot{pdf/dist3d_eta_const}
-    \caption{\label{fig:dist-pdf-fixed-eta}Differential cross section
-      convolved with PDFs for fixed \protect
-      \result{xs/python/pdf/plot_eta} in picobarn.}
-  \end{subfigure}
-  \caption{\label{fig:dist-pdf-3d}Differential cross section
-    convolved with PDFs with one parameter fixed.}
-\end{figure}
+a certain \(p_T\) threshold and the final state particles have to be
+isolated from the beams.
 
 The resulting distribution (without cuts) is depicted in
 \cref{fig:dist-pdf} for fixed \(x_2\) and in
@@ -89,29 +70,50 @@ the distribution retains some likeness with the partonic distribution
 \(x_1\). The overall shape of the distribution is clearly highly
 sub-optimal for hit-or-miss sampling, only having significant values
 when \(x_1\) or \(x_2\) are small (\cref{fig:dist-pdf-fixed-eta}) and
-being very steep. To remedy that, one has to use a more efficient
-sampling algorithm (\vegas) or impose very restrictive cuts. The
-\vegas\ algorithm can be adapted to \(n\) dimensions by using a grid
-of hypercubes instead of intervals and using the algorithm along each
-axis with a slightly altered weighting
-mechanism~\cite[197]{Lepage:19781an}. The self-coded implementation
-used here can be found in \cref{sec:pycode}. Because the stratified
-sampling requires very accurate upper bounds, they have been
-overestimated by \result{xs/python/pdf/overesimate}, which lowers the
-efficiency slightly but reduces bias.
+being very steep.
+
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}{1\textwidth}
+    \centering \plot{pdf/dist3d_x2_const}
+    \caption{\label{fig:dist-pdf}Differential cross section convolved
+      with PDFs for fixed \protect \result{xs/python/pdf/second_x} in
+      picobarn.}
+  \end{subfigure}
+
+  \begin{subfigure}{1\textwidth}
+    \centering \plot{pdf/dist3d_eta_const}
+    \caption{\label{fig:dist-pdf-fixed-eta}Differential cross section
+      convolved with PDFs for fixed \protect
+      \result{xs/python/pdf/plot_eta} in picobarn.}
+  \end{subfigure}
+  \caption{\label{fig:dist-pdf-3d}Differential cross section
+    convolved with PDFs with one parameter fixed.}
+\end{figure}
+
+To remedy that, one has to use a more efficient sampling algorithm
+(\vegas) or impose very restrictive cuts. The self-coded
+implementation used here can be found in \cref{sec:pycode} and employs
+stratified sampling (as discussed in \cref{sec:stratsamp-real}) and
+the hit-or-miss method. Because the stratified sampling requires very
+accurate upper bounds, they have been overestimated by
+\result{xs/python/pdf/overesimate}, which lowers the efficiency
+slightly but reduces bias. % TODO: accuracy of integral in hypercubes
 
 A sample of \result{xs/python/pdf/sample_size} events has been
 generated both in \sherpa\ and through own code. The resulting
 histograms of some observables are depicted in
 \cref{fig:pdf-histos}. The sampling efficiency achieved was
-\result{xs/python/pdf/samp_eff}.  The distributions are largely
-compatible with each other although there discrepancies arise in
-regions with low event count (statistics), which the the ratio plot
-exaggerates. The sherpa runcard utilized here and the analysis used to
-produce the histograms can be found in
-\cref{sec:ppruncard,sec:ppanalysis}. When comparing
+\result{xs/python/pdf/samp_eff} using a total of
+\result{xs/python/pdf/num_increments} hypercubes.  As can be seen, the
+distributions are compatible with each other. The sherpa runcard
+utilized here and the analysis used to produce the histograms can be
+found in \cref{sec:ppruncard,sec:ppanalysis}. When comparing
 \cref{fig:pdf-eta,fig:histeta} it becomes apparent, that the PDF has
-substantial influence on the resulting distribution.
+substantial influence on the resulting distribution. Also the center
+of momentum energy is not constant anymore and has a steep peak at low
+energies due to the steepness of the PDF. The convolution with the pdf
+has also smoothed out the jacobian peak seen in \cref{fig:histpt}.
 
 \begin{figure}[hp]
   \centering
