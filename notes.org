@@ -108,6 +108,12 @@ Viele Gruesse, Frank
  - manual
 ** Parton Density functions
  - [[https://lhapdf.hepforge.org/][pdf library]]
+** Phaeono
+*** pT sortieren
+*** Shower
+*** Fragmentation, MPI
+*** Hadronisation
+***
 * Clock Table
 #+BEGIN: clocktable :scope file :maxlevel 2
 #+CAPTION: Clock summary at [2020-03-18 Wed 21:01]
@@ -134,8 +140,12 @@ Viele Gruesse, Frank
 ** Sind quark verhaeltnisse in PDF enthalten (2:1 fuer proton)
 ** beide finalstate photonen behalten?
 ** TODO PDF members
-** TODO Sensitivity detectors cite!
+** TODO Sensitivity detectors cite! -> separation from beam
 ** TODO was fuer eine pdf ist das NNPDF31lo
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!
+** TODO
+  - tilde weg, sigma hut
+  - lab xs kuerzen
+  - pdf leading order ME

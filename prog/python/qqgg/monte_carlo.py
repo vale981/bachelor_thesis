@@ -605,6 +605,7 @@ def sample_unweighted_array(
     f,
     interval=None,
     increment_borders=None,
+    cubes=None,
     report_efficiency=False,
     proc=None,
     status_path=None,
@@ -636,6 +637,7 @@ def sample_unweighted_array(
                 status_path=status_path,
                 proc=None,
                 cache=None,
+                cubes=cubes,
                 **kwargs,
             )
             for _ in range(proc)
@@ -673,23 +675,21 @@ def sample_unweighted_array(
                 samples = sample_unweighted(
                     f, interval, report_efficiency=report_efficiency, **kwargs
                 )
-
+        elif cubes is not None:
+            sample_arr = np.empty((num, len(cubes[0][0])))
+            samples = sample_stratified_vector(
+                f, cubes, report_efficiency=report_efficiency, **kwargs,
+            )
         elif increment_borders is not None:
-            if isinstance(increment_borders[0], collections.Iterable):
-                sample_arr = np.empty((num, len(increment_borders)))
-                samples = sample_stratified_vector(
-                    f, increment_borders, report_efficiency=report_efficiency, **kwargs,
-                )
-            else:
-                sample_arr = np.empty(num)
-                samples = sample_stratified(
-                    f,
-                    increment_borders=increment_borders,
-                    report_efficiency=report_efficiency,
-                    **kwargs,
-                )
+            sample_arr = np.empty(num)
+            samples = sample_stratified(
+                f,
+                increment_borders=increment_borders,
+                report_efficiency=report_efficiency,
+                **kwargs,
+            )
         else:
-            raise TypeError("Neiter interval nor increment_borders specified!")
+            raise TypeError("Neiter interval nor increment_borders or cubes specified!")
 
         fifo = None
         if status_path:
@@ -748,7 +748,7 @@ class VegasIntegrationResultNd(VegasIntegrationResult):
     """
 
     increment_borders: np.ndarray
-    cubes: List[Tuple[np.ndarray, float]]
+    cubes: List[Tuple[np.ndarray, float, float]]
     vegas_iterations: int
 
 
@@ -863,8 +863,8 @@ def integrate_vegas_nd(
         for dim in range(ndim):
             increment_weights = generate_integral_steps(increment_borders.copy(), dim)
             nonzero_increments = increment_weights[increment_weights > 0]
-
-            remainder += nonzero_increments.max() - nonzero_increments.min()
+            if nonzero_increments.size > 0:
+                remainder += nonzero_increments.max() - nonzero_increments.min()
 
             new_borders = reshuffle_increments_nd(
                 increment_weights,
@@ -887,6 +887,7 @@ def integrate_vegas_nd(
     cube_samples = [np.empty(0) for _ in cubes]
     total_points_per_cube = 0
     maxima = np.empty(num_cubes)
+    integrals = np.empty(num_cubes)
 
     @joblib.delayed
     def evaluate_integrand(cube):
@@ -897,26 +898,27 @@ def integrate_vegas_nd(
         while True:
             integral = variance = 0
             total_points_per_cube += points_per_cube
-
             samples = parallel([evaluate_integrand(cube) for cube in cubes])
 
             for sample, vol, i in zip(samples, volumes, range(num_cubes)):
                 # let's re-use the samples from earlier runs
                 cube_samples[i] = np.concatenate([cube_samples[i], sample]).T
                 points = cube_samples[i] * vol
-                integral += points.mean()
+                curr_integral = points.mean()
+                integral += curr_integral
                 variance += (
                     cube_samples[i].var() * (vol ** 2) / (total_points_per_cube - 1)
                 )
 
                 maxima[i] = cube_samples[i].max()
+                integrals[i] = curr_integral
 
             if np.sqrt(variance) <= epsilon:
                 break
 
-            print(integral, variance, points_per_cube)
             # adaptive scaling of sample size incrementation
-            points_per_cube *= int((variance / epsilon ** 2) * 1.1)
+            points_per_cube *= int((variance / epsilon ** 2) * 1.5)
+            print(points_per_cube, integral, variance)
 
     return VegasIntegrationResultNd(
         integral,
@@ -924,7 +926,10 @@ def integrate_vegas_nd(
         total_points_per_cube * num_cubes,
         increment_borders,
         vegas_iterations,
-        [(cube, maximum) for cube, maximum in zip(cubes, maxima)],
+        [
+            (cube, maximum, integral)
+            for cube, maximum, integral in zip(cubes, maxima, integrals)
+        ],
     )
 
 
@@ -1013,7 +1018,9 @@ def reshuffle_increments_nd(
 
 
 # NOTE: Finding the upper bound happens in the Integration step!
-def sample_stratified_vector(f, cubes, seed=None, report_efficiency=False):
+def sample_stratified_vector(
+    f, cubes, chunk_size=100, seed=None, report_efficiency=False
+):
     ndim = len(cubes[0][0])
 
     if seed:
@@ -1024,38 +1031,38 @@ def sample_stratified_vector(f, cubes, seed=None, report_efficiency=False):
 
     total_points = 0
     total_accepted = 0
-    num_cubes = len(cubes)
 
-    volumes = np.array([get_integration_volume(cube) for cube, _ in cubes])
-    total_volume = volumes.sum()
-
-    total_points = num_cubes * 100
-    num_per_cube = (total_points * volumes / total_volume + 1).astype(int)
-    total_points = num_per_cube.sum()
+    weights = np.array([weight for _, _, weight in cubes])
+    integral = weights.sum()
+    weights = np.cumsum(weights / integral)
 
     while True:
-        samples = np.empty((num_per_cube, ndim))
-        for (cube, maximum), num, i in zip(cubes, num_per_cube, range(num_cubes)):
-            counter = 0
-            while counter < num:
-                points = allocate_random_chunk(cube)
+        cube_index = 0
+        rand = np.random.uniform(0, 1)
+        for weight in weights:
+            if weight > rand:
+                break
+            cube_index += 1
 
+        counter = 0
+        cube, maximum, _ = cubes[cube_index]
+
+        while counter < chunk_size:
+            points = allocate_random_chunk(cube)
+
+            if report_efficiency:
+                total_points += 1
+
+            args = points[0][:-1]
+            if f(*args) >= points[0][-1] * maximum:
                 if report_efficiency:
-                    total_points += 1
+                    total_accepted += 1
 
-                args = points[0][:-1]
-                if f(*args) >= points[0][-1] * maximum:
-                    if report_efficiency:
-                        counter -= 1
-                        total_accepted += 1
+                yield (
+                    args.T,
+                    total_accepted / total_points,
+                ) if report_efficiency else args.T
 
-                    samples[i][counter] = args.T
-                    yield (
-                        args.T,
-                        total_accepted / total_points,
-                    ) if report_efficiency else args.T
+                counter += 1
 
-        np.random.shuffle(samples)
-        for sample in samples:
-            yield sample
     return
