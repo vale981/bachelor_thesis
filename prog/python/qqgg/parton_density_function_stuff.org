@@ -496,22 +496,14 @@ Now, it would be interesting to know the total cross section.
       cache="cache/pdf/total_xs_2_5_20_take18",
   )
 
-  xs_int_res.combined_result
+  total_xs = gev_to_pb(np.array(xs_int_res.combined_result)) * 2 * np.pi
+  total_xs
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-# [goto error]
-: ---------------------------------------------------------------------------
-: NameError                                 Traceback (most recent call last)
-: <ipython-input-48-261b766863c3> in <module>
-:      11     dist_η_vec,
-:      12     [interval_η, [pdf.xMin, 1], [pdf.xMin, 1]],
-: ---> 13     epsilon=e-12,
-:      14     proc=1,
-:      15     increment_epsilon=1e-2,
-:
-: NameError: name 'e' is not defined
+: Loading Cache:  integrate_vegas_nd
+: array([3.87092634e+01, 1.88341990e-02])
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -526,32 +518,19 @@ A factor of two used to be in here. It stemmed from the fact, that
 there are two identical protons.
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  sherpa-xs_int_res.result
+  abs(sherpa-total_xs[0]) - total_xs[1]
 #+end_src
 
 #+RESULTS:
-: -0.0393671629058332
+: -0.0005975734399602285
 
-We use this as upper bound, as the maximizer is bogus because of the
-cuts!
+The efficiency will be around:
 #+begin_src jupyter-python :exports both :results raw drawer
-  upper_bound = xs_int_res.maximum
-  upper_bound
+  monte_carlo.estimate_stratified_efficiency(xs_int_res.cubes)
 #+end_src
 
 #+RESULTS:
-: 13533.774059596946
-
-That is massive!
-
-So the efficiency will be around:
-#+begin_src jupyter-python :exports both :results raw drawer
-  xs_int_res.result/upper_bound
-#+end_src
-
-#+RESULTS:
-: 0.0028644535509602235
-
+: 0.4268605376563697
 
 Let's export those results for TeX:
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -702,18 +681,15 @@ figure out the cpu mapping.
       cubes=xs_int_res.cubes,
       proc="auto",
       report_efficiency=True,
-      #cache="cache/pdf/total_xs_10000_000_2_5_take3",
+      cache="cache/pdf/total_xs_10000_000_2_5_take4",
       status_path="/tmp/status1",
-      chunk_size=10,
   )
   eff
 #+end_src
 
 #+RESULTS:
-: 0.40425597800444046
-
-The efficiency is still quite horrible, but at least an order of
-mag. better than with cosθ.
+: 0.4053895317705753
+That does look pretty good eh?
 
 Let's store the sample size for posterity.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -721,12 +697,12 @@ Let's store the sample size for posterity.
 #+end_src
 
 #+RESULTS:
-: \(N=10000000\)
+: \(N=1000000\)
 
 ** Observables
 Let's look at a histogramm of eta samples.
 #+begin_src jupyter-python :exports both :results raw drawer
-  fig, ax = draw_histo_auto(result[:, 0], r"$\eta$", bins=50)
+  fig, ax = draw_histo_auto(result[:, 0], r"$\eta$", bins="auto")
   #ax.set_yscale('log')
   len(result[:, 0])
 #+end_src
@@ -734,7 +710,7 @@ Let's look at a histogramm of eta samples.
 #+RESULTS:
 :RESULTS:
 : 10000000
-[[file:./.ob-jupyter/207558bbd1defbbd7b8132ac7259c6cd6ff23975.png]]
+[[file:./.ob-jupyter/3bbe85f48fd503bbbf3c37d9c681eb08861e18aa.png]]
 :END:
 
 Let's use a uniform histogram image size.
@@ -763,7 +739,7 @@ And now we compare all the observables with sherpa.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/86c84ce4a9ce15827a50165073f16e97832e35c3.png]]
+[[file:./.ob-jupyter/90b2e0dcb661626976e697143da651c37801b203.png]]
 
 Hah! there we have it!
 

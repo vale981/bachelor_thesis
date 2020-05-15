@@ -737,6 +737,8 @@ def sample_unweighted_array(
 # Geezus! Such code dublication..., but I don't want to break
 # backwards compatibility.
 
+CubeType = List[Tuple[np.ndarray, float, float]]
+
 
 @dataclass
 class VegasIntegrationResultNd(VegasIntegrationResult):
@@ -749,7 +751,7 @@ class VegasIntegrationResultNd(VegasIntegrationResult):
     """
 
     increment_borders: np.ndarray
-    cubes: List[Tuple[np.ndarray, float, float]]
+    cubes: CubeType
     vegas_iterations: int
 
 
@@ -1020,7 +1022,7 @@ def reshuffle_increments_nd(
 
 def sample_stratified_vector(
     f: Callable[..., Union[float, int]],
-    cubes: List[Tuple[np.ndarray, float, float]],
+    cubes: CubeType,
     chunk_size: int = 1,
     seed: float = None,
     report_efficiency: bool = False,
@@ -1093,3 +1095,20 @@ def sample_stratified_vector(
                 counter += 1
 
     return
+
+
+def estimate_stratified_efficiency(cubes: CubeType) -> float:
+    """Estimate the sampling efficiency of stratified sampling based on
+the data about subvolumes.
+
+    :param cubes: the hypercubes used in the stratified sampling
+    :returns: the estimated sampling efficiency in percent
+    """
+
+    weights = np.array([weight for _, _, weight in cubes if weight > 0])
+    maxima = np.array([maximum for _, maximum, weight in cubes if weight > 0])
+    volumes = np.array(
+        [get_integration_volume(cube) for cube, _, weight in cubes if weight > 0]
+    )
+
+    return np.sum(weights) / np.sum((volumes * maxima)) * 100
