@@ -199,11 +199,8 @@ def draw_histo_auto(points, xlabel, bins=50, range=None, rethist=False, **kwargs
     return (fig, ax, hist) if rethist else (fig, ax)
 
 def yoda_to_numpy(histo):
-    histo.normalize(
-        histo.numEntries() * ((histo.xMax() - histo.xMin()) / histo.numBins())
-    )
-    edges = np.append(histo.xMins(), histo.xMax())
-    heights = histo.yVals().astype(int)
+    edges = histo.xEdges()
+    heights = np.array([bi.numEntries() for bi in histo])
 
     return heights, edges
 

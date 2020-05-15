@@ -17,6 +17,21 @@ public:
   /// @name Analysis methods
   //@{
 
+  /// Create a logarithmicly spaced vector
+  template <typename T = double>
+  std::vector<T> logspace(T min, T max, size_t count, bool endpoint = false) {
+    std::vector<T> result(count);
+    min = std::log10(min);
+    max = std::log10(max);
+
+    T step = (max - min) / (count - (endpoint ? 1 : 0));
+    std::generate(result.begin(), result.end(), [&, n = 0] () mutable {
+      return std::pow(10, min + (n ++) * step);
+    });
+
+    return result;
+  }
+
   /// Book histograms and initialise projections before the run
   void init() {
     // Initialise and register projections
@@ -37,10 +52,10 @@ public:
     double min_pT = 20;
     double eta = 2.5;
 
-    book(_h_pT, "pT", 50, min_pT, energy);
+    book(_h_pT, "pT", logspace(min_pT, energy, 51, true));
     book(_h_eta, "eta", 50, -eta, eta);
     book(_h_cos_theta, "cos_theta", 50, -1, 1);
-    book(_h_inv_m, "inv_m", 50, 2 * min_pT, 2 * energy);
+    book(_h_inv_m, "inv_m", logspace(2 * min_pT, 2 * energy, 51, true));
   }
 
   /// Perform the per-event analysis

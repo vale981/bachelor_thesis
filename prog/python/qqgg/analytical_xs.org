@@ -1124,11 +1124,8 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/plot_utils.py
   def yoda_to_numpy(histo):
-      histo.normalize(
-          histo.numEntries() * ((histo.xMax() - histo.xMin()) / histo.numBins())
-      )
-      edges = np.append(histo.xMins(), histo.xMax())
-      heights = histo.yVals().astype(int)
+      edges = histo.xEdges()
+      heights = np.array([bi.numEntries() for bi in histo])
 
       return heights, edges
 
