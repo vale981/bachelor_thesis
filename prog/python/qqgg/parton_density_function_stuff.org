@@ -771,7 +771,7 @@ Let's use a uniform histogram image size.
 
 And now we compare all the observables with sherpa.
 #+begin_src jupyter-python :exports both :results raw drawer
-  yoda_file = yoda.read("../../runcards/pp/analysis/Analysis.yoda")
+  yoda_file = yoda.read("../../runcards/pp/out/analysis/Analysis.yoda")
   yoda_hist = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/eta"])
   fig, (ax, ax_ratio) = draw_ratio_plot(
       [
@@ -788,7 +788,7 @@ And now we compare all the observables with sherpa.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/70a6711134c57d1fb387054da215e61306847ff2.png]]
+[[file:./.ob-jupyter/e072f341c61916bbc430d0817d207b920a2fc9c2.png]]
 
 Hah! there we have it!
 
@@ -798,7 +798,8 @@ Hah! there we have it!
 
 #+RESULTS:
 
-pT drops pretty quickly.
+pT drops pretty quickly. We do not have to sort by pT because they're
+both equal.
 #+begin_src jupyter-python :exports both :results raw drawer
   bins = np.logspace(*np.log10([min_pT, e_proton]), 51)
   pT_hist = np.histogram(observables.p_t(mom[3]), bins=bins)
@@ -819,7 +820,7 @@ pT drops pretty quickly.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/2c310e5b6eb61c63f4995a3910eb29f84cd985a5.png]]
+[[file:./.ob-jupyter/79e756f2524fe167b531a82b217dc11c3bc7a496.png]]
 
 The invariant mass is not constant anymore.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -843,7 +844,7 @@ The invariant mass is not constant anymore.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/fb884d16eecfcf1227597756ebe301246bed5b23.png]]
+[[file:./.ob-jupyter/29e6b16eb0dda91744aefa36bf80359200a63b45.png]]
 
 The cosθ distribution looks more like the paronic one.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -866,4 +867,4 @@ The cosθ distribution looks more like the paronic one.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/399cea72d1864ed4c982bf043d345417000067df.png]]
+[[file:./.ob-jupyter/0b56070aaf7db99ca2814c1d96810e46bcdac802.png]]
