@@ -8,6 +8,8 @@ THIS_DIR:=$(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 SET_RIVET:=RIVET_ANALYSIS_PATH="$(THIS_DIR)$(ANALYSIS_DIR)"
 SHERPA_CMD:=$(SHERPA) "RESULT_DIRECTORY: Results" "ANALYSIS_OUTPUT: analysis"
 
+all: sherpa_xs analysis_cpp analysis
+
 ###############################################################################
 #                               Integrat the XS                               #
 ###############################################################################
