@@ -1,6 +1,6 @@
 ---
 title: Sherpa run-time settings
-date: Sun May 17 20:48:21 2020
+date: Sun May 17 20:48:25 2020
 ...
 
 Note that parameters that are never accessed by Sherpa during its run will not be listed below. On the other hand, "accessed" does not necessarily mean that the parameter had any effect on the run.
@@ -14,7 +14,7 @@ Note that parameters that can take on different values because they are set with
 | parameter | default value | override by SHERPA | Sherpa.yaml | command line | final value |
 |-|-|-|-|-|-|
 ANALYSIS|  |  | Rivet |  | Rivet |  |
-ANALYSIS\_OUTPUT| /home/hiro/Documents/Projects/UNI/Bachelor/prog/runcards/pp\_phaeno/runcards/basic/Analysis/ |  |  | analysis | analysis |  |
+ANALYSIS\_OUTPUT| /home/hiro/Documents/Projects/UNI/Bachelor/prog/runcards/pp\_phaeno/runcards/test/Analysis/ |  |  | analysis | analysis |  |
 BEAMS| 0, 0 |  | 2212, 2212 |  | 2212, 2212 |  |
 BEAM\_ENERGIES| 0, 0 |  | 6500 |  | 6500 |  |
 BEAM\_REMNANTS| 1 |  | false |  | 0 |  |
@@ -30,7 +30,7 @@ PDF\_SET\_VERSIONS|  |  | 0, 0 |  | 0, 0 |  |
 PROCESSES:94 \-94 \-\> 22 22:Integration\_Error|  |  |  |  | 0\.001 |  |
 PROCESSES:94 \-94 \-\> 22 22:Order:EW| \-1 |  |  |  | 2 |  |
 PROCESSES:94 \-94 \-\> 22 22:Order:QCD| \-1 |  |  |  | 0 |  |
-RESULT\_DIRECTORY| /home/hiro/Documents/Projects/UNI/Bachelor/prog/runcards/pp\_phaeno/runcards/basic/Results/ |  |  | Results | Results |  |
+RESULT\_DIRECTORY| /home/hiro/Documents/Projects/UNI/Bachelor/prog/runcards/pp\_phaeno/runcards/test/Results/ |  |  | Results | Results |  |
 RIVET:ANALYSES|  |  | MC\_DIPHOTON\_PROTON |  | MC\_DIPHOTON\_PROTON |  |
 RIVET:IGNOREBEAMS| 0 |  | 1 |  | 1 |  |
 RIVET:USE\_HEPMC\_NAMED\_WEIGHTS| 1 | 0 |  |  | 0 |  |
@@ -128,7 +128,7 @@ EVENT\_DISPLAY\_INTERVAL| 100 |  |
 EVENT\_GENERATION\_MODE| PartiallyUnweighted |  |
 EVENT\_INPUT|  |  |
 EVENT\_OUTPUT|  |  |
-EVENT\_SEED\_FILE| ran\.stat\.7404 |  |
+EVENT\_SEED\_FILE| ran\.stat\.9872 |  |
 EVENT\_SEED\_MODE| 0 |  |
 EVENT\_TYPE| StandardPerturbative |  |
 EVT\_FILE\_PATH| \. |  |
