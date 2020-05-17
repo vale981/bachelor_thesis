@@ -2,7 +2,7 @@
 OUTPUT: 3
 
 # event count
-EVENTS: 100000/8  # / num_cpus
+EVENTS: 10000000/8  # / num_cpus
 
 RESULT_DIRECTORY: out/Results
 ANALYSIS_OUTPU: out/Analysis
