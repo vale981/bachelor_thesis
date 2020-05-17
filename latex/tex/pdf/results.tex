@@ -115,35 +115,86 @@ of momentum energy is not constant anymore and has a steep peak at low
 energies due to the steepness of the PDF. The convolution with the pdf
 has also smoothed out the jacobian peak seen in \cref{fig:histpt}.
 
+Furthermore new observables have been introduced.  The invariant mass
+of the photon pair
+\(m_{\gamma\gamma} = (p_{\gamma,1} + p_{\gamma,1})^2\) is the center
+of mass energy of the partonic system that produces the photons (see
+\cref{eq:ecm_partons}) and proportional to the product of the momentum
+fractions of the partons. \Cref{fig:pdf-inv-m} shows, that the vast
+majority of the reactions take place at a rather low c.m. energy. Due
+to the \(\pt\) cuts the first bin is slightly lower then the second.
+
+The cosines of the scattering angles in the labe frame and the
+Collins-Soper (CS) frame are defined in
+\cref{eq:sangle,eq:sangle-cs}. The scattering angle is a measure for
+the angular separation the photons, that is most meaningful when the
+azimuthal separation of the photons is \(\pi/2\) (i.e. in their
+c.m. frame). Here, the partons are assumed to have no transverse
+momentum and therefore the system is symmetric around the beam
+axis. When allowing transverse parton momenta, as will be done
+in % TODO: REFERENCE
+this symmetry goes away. Defining the z-axis as one beam axis in a
+frame would be a quite arbitrary choice that disrespects the symmetry
+of the two beams considered here (same energy, identical protons).
+Also the random direction of the transverse momentum can add noise
+that does not contain much information. The CS frame is defined as the
+rest frame of the two outgoing photons in which the z-axis bisects the
+angle between the first beam momentum and the inverse momentum of the
+second beam. The azimuth angle is measure with respect to a vector
+perpendicular to the plane of the beams (which is parallel to the
+transverse momentum in the lab frame). In this frame, which was
+originally chosen to simplify the extension of the Drell-Yan parton
+model to transverse parton momenta~\cite{collins:1977an}, some
+symmetry is restored and the study of effects of transverse parton
+momenta is facilitated. Because of the above-mentioned symmetry, the
+histograms in \cref{fig:pdf-o-angle,fig:pdf-o-angle-cs} are the same.
+
+\begin{align}
+  \cos\theta^\ast &= \tanh\frac{\eta_1 - \eta_2}{2} \label{eq:sangle}\\
+  \cos\theta^*_\text{CS} &= \frac{\sinh(\eta_1 -
+                           \eta_2)}{\sqrt{1+(p_{\text{T},1} + p_{\text{T},2})^2/m_{\gamma\gamma}^2}}\cdot
+                          \frac{2p_{\text{T},1}p_{\text{T},2}}{m_{\gamma\gamma}^2}\label{eq:sangle-cs}
+\end{align}
+
 \begin{figure}[hp]
   \centering
   \begin{subfigure}{.49\textwidth}
     \centering \plot{pdf/eta_hist}
-    \caption{\label{fig:pdf-eta} Histogram of the \(\eta\)
+    \caption{\label{fig:pdf-eta} \(\eta\)
       distribution.}
   \end{subfigure}
   \begin{subfigure}{.49\textwidth}
     \centering \plot{pdf/pt_hist}
-    \caption{\label{fig:pdf-pt} Histogram of the \(\pt\)
+    \caption{\label{fig:pdf-pt} \(\pt\)
       distribution.}
   \end{subfigure}
   \begin{subfigure}{.49\textwidth}
     \centering \plot{pdf/cos_theta_hist}
-    \caption{\label{fig:pdf-cos-theta} Histogram of the \(\cos\theta\)
+    \caption{\label{fig:pdf-cos-theta} \(\cos\theta\)
       distribution.}
   \end{subfigure}
   \begin{subfigure}{.49\textwidth}
     \centering \plot{pdf/inv_m_hist}
     \caption[Histogram of the invariant mass of the final state photon
-    system.]{\label{fig:pdf-inv-m} Histogram of the invariant mass of the
+    system.]{\label{fig:pdf-inv-m} Invariant mass of the
       final state photon system. % This is equal to the center of mass
       % energy of the partonic system before the scattering.
     }
   \end{subfigure}
+  \begin{subfigure}{.49\textwidth}
+    \centering \plot{pdf/o_angle_cs_hist}
+    \caption{\label{fig:pdf-o-angle-cs} Scattering angle of the two
+      photons in the CS frame.}
+  \end{subfigure}
+  \begin{subfigure}{.49\textwidth}
+    \centering \plot{pdf/o_angle_hist}
+    \caption{\label{fig:pdf-o-angle} Scattering
+      angle of the two photons in the lab frame.}
+  \end{subfigure}
   \caption{\label{fig:pdf-histos}Comparison of histograms of
-    observables for \(\ppgg\) generated manually and by
-    \sherpa/\rivet. The sample size was \protect
-    \result{xs/python/pdf/sample_size}.}
+    observables for \(\ppgg\) generated manually and by \sherpa/\rivet
+    and normalized to unity. The sample size was \protect
+    \result{xs/python/pdf/sample_size}. }
 \end{figure}
 
 %%% Local Variables:

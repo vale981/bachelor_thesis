@@ -885,7 +885,7 @@ The cosθ distribution looks more like the paronic one.
 
   ax_ratio.set_xlabel(r"$|\cos\theta^\ast|$ CS Frame")
   ax.legend()
-  save_fig(fig, "o_angle_hist", "pdf", size=hist_size)
+  save_fig(fig, "o_angle_cs_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
