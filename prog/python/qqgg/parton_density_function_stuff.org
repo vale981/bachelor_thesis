@@ -854,7 +854,6 @@ The cosθ distribution looks more like the paronic one.
 #+begin_src jupyter-python :exports both :results raw drawer
   yoda_hist_cosθ = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/cos_theta"])
 
-  # yoda_hist_pt = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/pT"])
   fig, (ax, ax_ratio) = draw_ratio_plot(
       [
           dict(hist=yoda_hist_cosθ, hist_kwargs=dict(label="sherpa")),
@@ -872,16 +871,46 @@ The cosθ distribution looks more like the paronic one.
 
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  observables.o_angle_cs(mom[2], mom[3])
+  yoda_hist_cosθ = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/o_angle_cs"])
+
+  fig, (ax, ax_ratio) = draw_ratio_plot(
+      [
+          dict(hist=yoda_hist_cosθ, hist_kwargs=dict(label="sherpa")),
+          dict(
+              samples=observables.o_angle_cs(mom[2], mom[3]),
+              hist_kwargs=dict(label="own implementation"),
+          ),
+      ]
+  )
+
+  ax_ratio.set_xlabel(r"$|\cos\theta^\ast|$ CS Frame")
+  ax.legend()
+  save_fig(fig, "o_angle_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-: ---------------------------------------------------------------------------
-: AttributeError                            Traceback (most recent call last)
-: <ipython-input-44-d7257f074b8c> in <module>
-: ----> 1 observables.o_angle_cs(mom[2], mom[3])
-:
-: AttributeError: module 'tangled.observables' has no attribute 'o_angle_cs'
-:END:
+[[file:./.ob-jupyter/fa40f10260d89e3188aa8a526d1332aa49211a67.png]]
+
+In this case the opening angles are the same because the CS frame is
+the same as the ordinary rest frame. The z-axis is the beam axis
+because pT=0!
+#+begin_src jupyter-python :exports both :results raw drawer
+  yoda_hist_cosθ = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/o_angle"])
+
+  fig, (ax, ax_ratio) = draw_ratio_plot(
+      [
+          dict(hist=yoda_hist_cosθ, hist_kwargs=dict(label="sherpa")),
+          dict(
+              samples=observables.o_angle(mom[2], mom[3]),
+              hist_kwargs=dict(label="own implementation"),
+          ),
+      ]
+  )
+
+  ax_ratio.set_xlabel(r"$|\cos\theta|$")
+  ax.legend()
+  save_fig(fig, "o_angle_hist", "pdf", size=hist_size)
+#+end_src
+
+#+RESULTS:
+[[file:./.ob-jupyter/61220a314b39b71a585feadf17441891eb4b54a5.png]]
