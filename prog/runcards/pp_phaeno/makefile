@@ -50,6 +50,7 @@ $(OUT_YODA_FILES): $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/Sherpa.yaml $(ANALYSIS_DI
 	$(eval R_DIR:=$(dir $<))
 	$(eval R_NAME:=$(shell basename $(R_DIR)))
 	$(eval YODA_FILE:=$(R_NAME).yoda)
+	cd $(R_DIR) && $(SHERPA_CMD) -e 0
 	cd $(R_DIR) && \
 		$(SET_RIVET) mpirun --use-hwthread-cpus \
 			--use-hwthread-cpus $(SHERPA_CMD) "EVT_OUTPUT: 0"
