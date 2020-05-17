@@ -39,7 +39,7 @@ public:
 
     _observables = {"pT", "eta", "cos_theta", "inv_m", "o_angle", "o_angle_cs"};
 
-    book(_histos["pT"], "pT", logspace(51, min_pT, energy, true));
+    book(_histos["pT"], "pT", logspace(50, min_pT, energy, true));
     book(_histos["eta"], "eta", 50, -eta, eta);
     book(_histos["cos_theta"], "cos_theta", 50, -1, 1);
     book(_histos["inv_m"], "inv_m", logspace(50, 2 * min_pT, 2 * energy, true));
@@ -50,7 +50,11 @@ public:
   /// Perform the per-event analysis
   void analyze(const Event &event) {
     const Particles &photons =
-        apply<IdentifiedFinalState>(event, "IFS").particles();
+        apply<IdentifiedFinalState>(event, "IFS").particlesByPt();
+
+    // make sure that there are only two photons
+    if (photons.size() != 2)
+      vetoEvent;
 
     // they are both the same, so we take the first
     const auto &photon = photons.front();

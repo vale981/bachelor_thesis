@@ -36,7 +36,7 @@ $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so: $(ANALYSIS_DIR)/$(ANALYSIS_NAME).cc
 ###############################################################################
 
 analysis: $(OUT_DIR)/analysis/Analysis.yoda
-$(OUT_DIR)/analysis/Analysis.yoda: sherpa_xs $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so
+$(OUT_DIR)/analysis/Analysis.yoda: Sherpa.yaml sherpa_xs $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so
 	cd $(OUT_DIR) && \
 		$(SET_RIVET) mpirun --use-hwthread-cpus \
 			--use-hwthread-cpus $(SHERPA_CMD) "OUTPUT: 0"
