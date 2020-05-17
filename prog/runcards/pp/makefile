@@ -12,8 +12,8 @@ SHERPA_CMD:=$(SHERPA) "RESULT_DIRECTORY: Results" "ANALYSIS_OUTPUT: analysis"
 #                               Integrat the XS                               #
 ###############################################################################
 
-sherpa_xs: out/sherpa_xs
-out/sherpa_xs: Sherpa.yaml
+sherpa_xs: $(OUT_DIR)/sherpa_xs
+$(OUT_DIR)/sherpa_xs: Sherpa.yaml
 	cd $(OUT_DIR) && $(SHERPA_CMD) -e 0 -a "" \
 		| sed 's/\x1b\[[0-9;]*m//g' \
 		| perl -ne 'while(/.*\s:\s([0-9]+\.[0-9]+(?:e-?[0-9]+)?)\spb\s\+-\s\(\s([0-9]+\.[0-9]+(?:e-?[0-9]+)?).*$$/g){print "$$1\n$$2\n";}' \
@@ -33,8 +33,8 @@ $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so: $(ANALYSIS_DIR)/$(ANALYSIS_NAME).cc
 #                                 Run Analysis                                #
 ###############################################################################
 
-analysis: out/analysis/Analysis.yoda
-out/analysis/Analysis.yoda: sherpa_xs analysis_cpp
+analysis: $(OUT_DIR)/analysis/Analysis.yoda
+$(OUT_DIR)/analysis/Analysis.yoda: sherpa_xs analysis_cpp
 	cd $(OUT_DIR) && \
 		$(SET_RIVET) mpirun --use-hwthread-cpus \
 			--use-hwthread-cpus $(SHERPA_CMD) "OUTPUT: 0"
