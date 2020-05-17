@@ -11,7 +11,7 @@ SHERPA_CMD:=$(SHERPA) "RESULT_DIRECTORY: Results" "ANALYSIS_OUTPUT: analysis"
 all: sherpa_xs analysis_cpp analysis
 
 ###############################################################################
-#                               Integrat the XS                               #
+#                               Integrate the XS                              #
 ###############################################################################
 
 sherpa_xs: $(OUT_DIR)/sherpa_xs
