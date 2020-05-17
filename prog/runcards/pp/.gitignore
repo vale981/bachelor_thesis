@@ -1,11 +1,4 @@
-# Ignore everything
-*
+out/*
 
-# But not these files...
-!.gitignore
-!Sherpa.yaml
-!makefile
-!sherpa_xs
-!qqgg_proton
-!analysis/*
-!qqgg_proton/*
+!out/analysis
+!out/sherpa_xs
