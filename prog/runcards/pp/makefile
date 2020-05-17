@@ -12,4 +12,4 @@ analysis: Sherpa.yaml
 
 .PHONY: clean
 clean:
-	find * ! -name 'flat_pdf.C' ! -name 'qqgg_simple' ! -name 'analysis' ! -name 'Sherpa.yaml' ! -name 'sherpa_xs' ! -name 'makefile' -exec rm -rf {} +
+	find * ! -name 'qqgg_proton' -name 'flat_pdf.C' ! -name 'qqgg_simple' ! -name 'analysis' ! -name 'Sherpa.yaml' ! -name 'sherpa_xs' ! -name 'makefile' -exec rm -rf {} +

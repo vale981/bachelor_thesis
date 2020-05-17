@@ -6,3 +6,6 @@
 !Sherpa.yaml
 !makefile
 !sherpa_xs
+!qqgg_proton
+!analysis/*
+!qqgg_proton/*
