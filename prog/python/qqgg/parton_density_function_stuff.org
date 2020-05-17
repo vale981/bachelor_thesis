@@ -27,6 +27,8 @@ from tangled import observables
 #+END_SRC
 
 #+RESULTS:
+: The autoreload extension is already loaded. To reload it, use:
+:   %reload_ext autoreload
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -350,14 +352,16 @@ We begin by implementing the same sermon for the lab frame.
 
 * Run Sherpa
 We need the sherpa results later on, so let's run them now.
-#+BEGIN_SRC fish :results output
+#+BEGIN_SRC bash :results output
 cd ../../runcards/pp/
 make all
 #+END_SRC
 
 #+RESULTS:
 :
-: Created output directory: out
+: cd > cd > cd ../../runcards/pp/> cd ../../runcards/pp/
+: > make > make > make all> make all
+: [?2004lCreated output directory: out
 : Copied Sherpa.yaml
 : make: Nothing to be done for 'all'.
 
@@ -777,7 +781,7 @@ And now we compare all the observables with sherpa.
       [
           dict(hist=yoda_hist, hist_kwargs=dict(label="Sherpa")),
           dict(
-              hist=np.histogram(result[:, 0], bins=50, range=interval_η),
+              samples=result[:, 0],
               hist_kwargs=dict(label="own implementation"),
           ),
       ]
@@ -802,13 +806,12 @@ pT drops pretty quickly. We do not have to sort by pT because they're
 both equal.
 #+begin_src jupyter-python :exports both :results raw drawer
   bins = np.logspace(*np.log10([min_pT, e_proton]), 51)
-  pT_hist = np.histogram(observables.p_t(mom[3]), bins=bins)
   yoda_hist_pt, e = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/pT"])
   #yoda_hist_pt = yoda_hist_pt / hist_integral((yoda_hist_pt, e))
   fig, (ax, ax_ratio) = draw_ratio_plot(
       [
           dict(hist=(yoda_hist_pt, e), hist_kwargs=dict(label="sherpa")),
-          dict(hist=pT_hist, hist_kwargs=dict(label="own implementation")),
+          dict(samples=observables.p_t(mom[3]), hist_kwargs=dict(label="own implementation")),
       ]
   )
 
@@ -825,14 +828,15 @@ both equal.
 The invariant mass is not constant anymore.
 #+begin_src jupyter-python :exports both :results raw drawer
   bins = np.logspace(*np.log10([2 * min_pT, 2 * e_proton]), 51)
-  inv_m_hist = np.histogram(observables.inv_m(mom[2], mom[3]), bins=bins)
   yoda_hist_inv_m = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/inv_m"])
 
-  # yoda_hist_pt = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/pT"])
   fig, (ax, ax_ratio) = draw_ratio_plot(
       [
           dict(hist=yoda_hist_inv_m, hist_kwargs=dict(label="sherpa")),
-          dict(hist=inv_m_hist, hist_kwargs=dict(label="own implementation")),
+          dict(
+              samples=observables.inv_m(mom[2], mom[3]),
+              hist_kwargs=dict(label="own implementation"),
+          ),
       ]
   )
 
@@ -848,16 +852,13 @@ The invariant mass is not constant anymore.
 
 The cosθ distribution looks more like the paronic one.
 #+begin_src jupyter-python :exports both :results raw drawer
-  cosθ_hist = np.histogram(
-      observables.cosθ(mom[2]), bins=50, range=interval_cosθ
-  )
   yoda_hist_cosθ = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/cos_theta"])
 
   # yoda_hist_pt = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/pT"])
   fig, (ax, ax_ratio) = draw_ratio_plot(
       [
           dict(hist=yoda_hist_cosθ, hist_kwargs=dict(label="sherpa")),
-          dict(hist=cosθ_hist, hist_kwargs=dict(label="own implementation")),
+          dict(samples=observables.cosθ(mom[2]), hist_kwargs=dict(label="own implementation")),
       ]
   )
 
@@ -868,3 +869,19 @@ The cosθ distribution looks more like the paronic one.
 
 #+RESULTS:
 [[file:./.ob-jupyter/0b56070aaf7db99ca2814c1d96810e46bcdac802.png]]
+
+
+#+begin_src jupyter-python :exports both :results raw drawer
+  observables.o_angle_cs(mom[2], mom[3])
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+# [goto error]
+: ---------------------------------------------------------------------------
+: AttributeError                            Traceback (most recent call last)
+: <ipython-input-44-d7257f074b8c> in <module>
+: ----> 1 observables.o_angle_cs(mom[2], mom[3])
+:
+: AttributeError: module 'tangled.observables' has no attribute 'o_angle_cs'
+:END:

@@ -81,7 +81,11 @@ def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
     reference_error = reference_error / ref_int
 
     for histogram in histograms:
-        heights, _ = histogram["hist"]
+        heights, _ = (
+            histogram["hist"]
+            if "hist" in histogram
+            else np.histogram(histogram["samples"], bins=edges)
+        )
         integral = hist_integral([heights, edges])
         errors = np.sqrt(heights) / integral
         heights = heights / integral
