@@ -18,17 +18,16 @@ OUT_DIR = out
 EVENT_COUNT = 1000
 
 # List of Runcards, see RUNCARD_FOLDER
-RUNCARDS = basic
+RUNCARDS = basic test
 
 ###############################################################################
 #                                    Macros                                   #
 ###############################################################################
 
-THIS_DIR:=$(dir $(abspath $(firstword $(MAKEFILE_LIST))))
-SET_RIVET:=RIVET_ANALYSIS_PATH="$(THIS_DIR)$(ANALYSIS_DIR)"
-SHERPA_CMD:=$(SHERPA) -e $(EVENT_COUNT) "RESULT_DIRECTORY: Results" "ANALYSIS_OUTPUT: analysis"
-$(info $(shell mkdir -p $(OUT_DIR) && echo "Created output directory: $(OUT_DIR)"))
-
+THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+SET_RIVET := RIVET_ANALYSIS_PATH="$(THIS_DIR)$(ANALYSIS_DIR)"
+SHERPA_CMD := $(SHERPA) -e $(EVENT_COUNT) "RESULT_DIRECTORY: Results" "ANALYSIS_OUTPUT: analysis"
+OUT_YODA_FILES := $(foreach card,$(RUNCARDS),$(OUT_DIR)/$(card).yoda)
 all: analysis_cpp analyses histograms
 
 ###############################################################################
@@ -45,12 +44,12 @@ $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so: $(ANALYSIS_DIR)/$(ANALYSIS_NAME).cc
 #                                 Run Analyses                                #
 ###############################################################################
 
-analyses: $(OUT_DIR)/$(RUNCARDS).yoda
-$(OUT_DIR)/$(RUNCARDS).yoda: $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/Sherpa.yaml $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so
+.PHONY: analyses
+analyses: $(OUT_YODA_FILES)
+$(OUT_YODA_FILES): $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/Sherpa.yaml $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so
 	$(eval R_DIR:=$(dir $<))
 	$(eval R_NAME:=$(shell basename $(R_DIR)))
 	$(eval YODA_FILE:=$(R_NAME).yoda)
-
 	cd $(R_DIR) && \
 		$(SET_RIVET) mpirun --use-hwthread-cpus \
 			--use-hwthread-cpus $(SHERPA_CMD) "EVT_OUTPUT: 0"
@@ -60,8 +59,10 @@ $(OUT_DIR)/$(RUNCARDS).yoda: $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/Sherpa.yaml $(A
 ###############################################################################
 #                               Make Histograms                               #
 ###############################################################################
+
+.PHONY: histograms
 histograms: $(OUT_DIR)/analysis/index.html
-$(OUT_DIR)/analysis/index.html: $(OUT_DIR)/$(RUNCARDS).yoda
+$(OUT_DIR)/analysis/index.html: $(OUT_YODA_FILES)
 	cd $(OUT_DIR) && $(SET_RIVET) rivet-mkhtml *.yoda -o analysis
 
 .PHONY: clean
@@ -69,3 +70,6 @@ clean:
 	rm -rf $(OUT_DIR)
 	rm -f $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so
 	cd $(RUNCARD_DIR) && git clean -d -f -X
+
+
+$(info $(shell mkdir -p $(OUT_DIR) && echo "Created output directory: $(OUT_DIR)"))
