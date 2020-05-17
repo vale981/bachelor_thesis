@@ -348,7 +348,20 @@ We begin by implementing the same sermon for the lab frame.
 
 #+RESULTS:
 
-* Checking out the partonic xs.
+* Run Sherpa
+We need the sherpa results later on, so let's run them now.
+#+BEGIN_SRC fish :results output
+cd ../../runcards/pp/
+make all
+#+END_SRC
+
+#+RESULTS:
+:
+: Created output directory: out
+: Copied Sherpa.yaml
+: make: Nothing to be done for 'all'.
+
+* Checking out the partonic xs
 Let's set up a cut for the η of the other photon and codify our
 distribution.
 #+begin_src jupyter-python :exports both :results raw drawer
