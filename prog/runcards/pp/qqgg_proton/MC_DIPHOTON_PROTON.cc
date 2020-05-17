@@ -17,21 +17,6 @@ public:
   /// @name Analysis methods
   //@{
 
-  /// Create a logarithmicly spaced vector
-  template <typename T = double>
-  std::vector<T> logspace(T min, T max, size_t count, bool endpoint = false) {
-    std::vector<T> result(count);
-    min = std::log10(min);
-    max = std::log10(max);
-
-    T step = (max - min) / (count - (endpoint ? 1 : 0));
-    std::generate(result.begin(), result.end(), [&, n = 0] () mutable {
-      return std::pow(10, min + (n ++) * step);
-    });
-
-    return result;
-  }
-
   /// Book histograms and initialise projections before the run
   void init() {
     // Initialise and register projections
@@ -44,7 +29,7 @@ public:
     declare(fs, "FS");
 
     // cut has been made in sherpa
-    IdentifiedFinalState ifs {};
+    IdentifiedFinalState ifs{};
     ifs.acceptId(PID::PHOTON);
     declare(ifs, "IFS");
 
@@ -52,44 +37,60 @@ public:
     double min_pT = 20;
     double eta = 2.5;
 
-    book(_h_pT, "pT", logspace(min_pT, energy, 51, true));
-    book(_h_eta, "eta", 50, -eta, eta);
-    book(_h_cos_theta, "cos_theta", 50, -1, 1);
-    book(_h_inv_m, "inv_m", logspace(2 * min_pT, 2 * energy, 51, true));
+    _observables = {"pT", "eta", "cos_theta", "inv_m", "o_angle", "o_angle_cs"};
+
+    book(_histos["pT"], "pT", logspace(51, min_pT, energy, true));
+    book(_histos["eta"], "eta", 50, -eta, eta);
+    book(_histos["cos_theta"], "cos_theta", 50, -1, 1);
+    book(_histos["inv_m"], "inv_m", logspace(50, 2 * min_pT, 2 * energy, true));
+    book(_histos["o_angle"], "o_angle", 50, 0, 1);
+    book(_histos["o_angle_cs"], "o_angle_cs", 50, 0, 1);
   }
 
   /// Perform the per-event analysis
   void analyze(const Event &event) {
-    const double weight = 1.0;
-
-    const Particles &photons = apply<IdentifiedFinalState>(event, "IFS").particles();
+    const Particles &photons =
+        apply<IdentifiedFinalState>(event, "IFS").particles();
 
     // they are both the same, so we take the first
     const auto &photon = photons.front();
 
-    _h_pT->fill(photon.pT(), weight);
-    _h_eta->fill(photon.eta(), weight);
-    _h_cos_theta->fill(cos(photon.theta()), weight);
-    const auto &moms = photons.moms();
-    const auto total_momentum = std::accumulate(moms.begin(), moms.end(), FourMomentum(0, 0, 0, 0));
+    std::map<string, double> obs;
+    obs["pT"] = photon.pT();
+    obs["eta"] = photon.eta();
+    obs["cos_theta"] = cos(photon.theta());
 
-    _h_inv_m->fill(total_momentum.mass());
+    const auto &moms = photons.moms();
+    const auto total_momentum =
+        std::accumulate(moms.begin(), moms.end(), FourMomentum(0, 0, 0, 0));
+
+    obs["inv_m"] = total_momentum.mass();
+    obs["o_angle"] = std::abs(tanh((photons[1].eta() - photons[0].eta()) / 2));
+
+    //std::abs(photons[0].theta() + photons[1].theta());
+
+    obs["o_angle_cs"] = std::abs(
+        sinh((photons[0].eta() - photons[1].eta())) * 2.0 * photons[0].pT() *
+        photons[1].pT() / sqrt(sqr(obs["inv_m"]) + sqr(total_momentum.pT())) /
+        obs["inv_m"]);
+
+    for (const auto &name : _observables) {
+      _histos[name]->fill(obs[name]);
+    }
   }
 
   //@}
 
   void finalize() {
-    normalize(_h_pT);
-    normalize(_h_eta);
-    normalize(_h_cos_theta);
+    for (auto name : _observables) {
+      normalize(_histos[name]);
+    }
   }
 
   /// @name Histograms
   //@{
-  Histo1DPtr _h_pT;
-  Histo1DPtr _h_eta;
-  Histo1DPtr _h_cos_theta;
-  Histo1DPtr _h_inv_m;
+  std::map<string, Histo1DPtr> _histos;
+  std::vector<string> _observables;
   //@}
 };
 
