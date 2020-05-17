@@ -35,6 +35,11 @@ def inv_m(p_1, p_2):
 def cosθ(p):
     return p[:, 3] / p[:, 0]
 
+def o_angle(p_1, p_2):
+    eta_1 = η(p_1)
+    eta_2 = η(p_2)
+
+    return np.abs(np.tanh((eta_1 - eta_2) / 2))
 
 def o_angle_cs(p_1, p_2):
     eta_1 = η(p_1)
