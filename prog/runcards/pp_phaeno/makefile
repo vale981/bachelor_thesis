@@ -83,4 +83,7 @@ clean:
 	cd $(RUNCARD_DIR) && git clean -d -f -X
 
 
+# Create OUT_DIR if it is not present
+ifeq ("$(wildcard $(OUT_DIR))", "")
 $(info $(shell mkdir -p $(OUT_DIR) && echo "Created output directory: $(OUT_DIR)"))
+endif
