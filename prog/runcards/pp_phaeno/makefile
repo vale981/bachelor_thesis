@@ -28,12 +28,22 @@ THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 SET_RIVET := RIVET_ANALYSIS_PATH="$(THIS_DIR)$(ANALYSIS_DIR)"
 SHERPA_CMD := $(SHERPA) -e $(EVENT_COUNT) "RESULT_DIRECTORY: Results" "ANALYSIS_OUTPUT: analysis"
 OUT_YODA_FILES := $(foreach card,$(RUNCARDS),$(OUT_DIR)/$(card).yoda)
-all: analysis_cpp analyses histograms
+
+# check if outdir is list
+ifneq ($(words $(OUT_DIR)),1)
+$(error "OUT_DIR must be a single directory!")
+endif
+
+# check if outdir is /
+ifeq ($(patsubst /%,,$(OUT_DIR)),)
+$(error "OUT_DIR must be relative to the project root!")
+endif
 
 ###############################################################################
 #                             Build Rivet Analysis                            #
 ###############################################################################
 
+all: analysis_cpp analyses histograms
 analysis_cpp: $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so
 
 $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so: $(ANALYSIS_DIR)/$(ANALYSIS_NAME).cc
@@ -68,7 +78,7 @@ $(OUT_DIR)/analysis/index.html: $(OUT_YODA_FILES)
 
 .PHONY: clean
 clean:
-	rm -rf $(OUT_DIR)
+	rm -rf $(THIS_DIR)$(OUT_DIR)
 	rm -f $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so
 	cd $(RUNCARD_DIR) && git clean -d -f -X
 
