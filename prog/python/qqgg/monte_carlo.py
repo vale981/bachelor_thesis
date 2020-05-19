@@ -13,7 +13,7 @@ import collections
 from typing import Union, List, Tuple, Callable, Iterator
 from multiprocessing import Pool, cpu_count
 import functools
-from scipy.optimize import minimize_scalar, root, shgo
+from scipy.optimize import minimize_scalar, root, shgo, minimize
 from dataclasses import dataclass
 import utility
 import joblib
@@ -161,8 +161,8 @@ def find_upper_bound(f, interval, **kwargs):
         raise RuntimeError("Could not find an upper bound.")
 
 
-def find_upper_bound_vector(f, interval):
-    result = shgo(_negate(f), bounds=interval, options=dict(maxfev=10000))
+def find_upper_bound_vector(f, interval, x0=None, tolerance=0.01):
+    result = minimize(lambda x: -f(*x), x0=x0, bounds=interval, tol=tolerance)
 
     if not result.success:
         raise RuntimeError("Could not find an upper bound.", result)
@@ -888,14 +888,15 @@ def integrate_vegas_nd(
     cubes = generate_cubes(increment_borders)
     volumes = [get_integration_volume(cube) for cube in cubes]
     cube_samples = [np.empty(0) for _ in cubes]
+    cube_sample_points = [np.empty((0, ndim)) for _ in cubes]
     total_points_per_cube = 0
-    maxima = np.empty(num_cubes)
+    maxima = np.empty((num_cubes, 1 + ndim))
     integrals = np.empty(num_cubes)
 
     @joblib.delayed
     def evaluate_integrand(cube):
         points = np.random.uniform(cube[:, 0], cube[:, 1], (points_per_cube, ndim)).T
-        return f(*points, **kwargs)
+        return f(*points, **kwargs), points
 
     with joblib.Parallel(n_jobs=proc) as parallel:
         while True:
@@ -903,9 +904,12 @@ def integrate_vegas_nd(
             total_points_per_cube += points_per_cube
             samples = parallel([evaluate_integrand(cube) for cube in cubes])
 
-            for sample, vol, i in zip(samples, volumes, range(num_cubes)):
+            for (sample, points), vol, i in zip(samples, volumes, range(num_cubes)):
                 # let's re-use the samples from earlier runs
                 cube_samples[i] = np.concatenate([cube_samples[i], sample]).T
+                cube_sample_points[i] = np.concatenate(
+                    [cube_sample_points[i], points.T]
+                )
                 points = cube_samples[i] * vol
                 curr_integral = points.mean()
                 integral += curr_integral
@@ -913,7 +917,12 @@ def integrate_vegas_nd(
                     cube_samples[i].var() * (vol ** 2) / (total_points_per_cube - 1)
                 )
 
-                maxima[i] = cube_samples[i].max()
+                max_index = cube_samples[i].argmax()
+                maxima[i] = [
+                    cube_samples[i][max_index],
+                    *cube_sample_points[i][max_index],
+                ]
+
                 integrals[i] = curr_integral
 
             if np.sqrt(variance) <= epsilon:
@@ -1057,6 +1066,10 @@ def sample_stratified_vector(
     integral = weights.sum()
     weights = np.cumsum(weights / integral)
 
+    maxima = np.array(
+        [find_upper_bound_vector(f, cube[0], cube[1][1:]) for cube in cubes]
+    )
+
     # compiling this function results in quite a speed-up
     @numba.jit(numba.int32(), nopython=True)
     def find_next_index():
@@ -1074,7 +1087,8 @@ def sample_stratified_vector(
         cube_index = find_next_index()
 
         counter = 0
-        cube, maximum, _ = cubes[cube_index]
+        cube, _, _ = cubes[cube_index]
+        maximum = maxima[cube_index]
 
         while counter < chunk_size:
             points = np.random.uniform(
@@ -1108,7 +1122,7 @@ the data about subvolumes.
     """
 
     weights = np.array([weight for _, _, weight in cubes if weight > 0])
-    maxima = np.array([maximum for _, maximum, weight in cubes if weight > 0])
+    maxima = np.array([maximum[0] for _, maximum, weight in cubes if weight > 0])
     volumes = np.array(
         [get_integration_volume(cube) for cube, _, weight in cubes if weight > 0]
     )

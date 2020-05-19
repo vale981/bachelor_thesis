@@ -27,8 +27,6 @@ from tangled import observables
 #+END_SRC
 
 #+RESULTS:
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -522,7 +520,7 @@ And calculate the XS.
       alpha=1.8,
       num_increments=increments,
       num_points_per_cube=10,
-      cache="cache/pdf/total_xs_2_5_20_take19",
+      cache="cache/pdf/total_xs_2_5_20_take20",
   )
 
   total_xs = gev_to_pb(np.array(xs_int_res.combined_result)) * 2 * np.pi
@@ -532,7 +530,7 @@ And calculate the XS.
 #+RESULTS:
 :RESULTS:
 : Loading Cache:  integrate_vegas_nd
-: array([3.86636603e+01, 2.05680570e-02])
+: array([3.86911687e+01, 1.96651183e-02])
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -551,7 +549,7 @@ there are two identical protons.
 #+end_src
 
 #+RESULTS:
-: 0.04327163497143981
+: 0.01666617136615391
 
 The efficiency will be around:
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -559,7 +557,7 @@ The efficiency will be around:
 #+end_src
 
 #+RESULTS:
-: 34.55338145802887
+: 32.89204347314658
 
 Let's export those results for TeX:
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -724,7 +722,7 @@ figure out the cpu mapping.
       cubes=xs_int_res.cubes,
       proc="auto",
       report_efficiency=True,
-      cache="cache/pdf/total_xs_10000_000_2_5_take6",
+      cache="cache/pdf/total_xs_10000_000_2_5_take8",
       status_path="/tmp/status1",
       overestimate_factor=overestimate,
   )
@@ -734,7 +732,7 @@ figure out the cpu mapping.
 #+RESULTS:
 :RESULTS:
 : Loading Cache:  sample_unweighted_array
-: 0.30393438761119607
+: 0.29610040880251154
 :END:
 
 That does look pretty good eh? So lets save it along with the sample size.
@@ -763,7 +761,7 @@ Let's look at a histogramm of eta samples.
 #+RESULTS:
 :RESULTS:
 : 10000000
-[[file:./.ob-jupyter/4fdcf3895a4c50ebc772054351beb7a07022f64c.png]]
+[[file:./.ob-jupyter/0b1b4f39201dac86ebfbfb8953561cfe81a6c70f.png]]
 :END:
 
 Let's use a uniform histogram image size.
@@ -792,7 +790,7 @@ And now we compare all the observables with sherpa.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/e072f341c61916bbc430d0817d207b920a2fc9c2.png]]
+[[file:./.ob-jupyter/8d9bb03fda7305d6effe0cc24b4dcdccc1582ccf.png]]
 
 Hah! there we have it!
 
@@ -823,7 +821,7 @@ both equal.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/79e756f2524fe167b531a82b217dc11c3bc7a496.png]]
+[[file:./.ob-jupyter/9a7122aa4a3690c2785678f85d8ac1919de1187d.png]]
 
 The invariant mass is not constant anymore.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -848,7 +846,7 @@ The invariant mass is not constant anymore.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/29e6b16eb0dda91744aefa36bf80359200a63b45.png]]
+[[file:./.ob-jupyter/65d1b44d76a5f42086735c41d54bd8c6e980e942.png]]
 
 The cosθ distribution looks more like the paronic one.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -867,7 +865,7 @@ The cosθ distribution looks more like the paronic one.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/0b56070aaf7db99ca2814c1d96810e46bcdac802.png]]
+[[file:./.ob-jupyter/0358d3386a74d6aa6d2d8baeb8e94f216acdab13.png]]
 
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -889,7 +887,7 @@ The cosθ distribution looks more like the paronic one.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/fa40f10260d89e3188aa8a526d1332aa49211a67.png]]
+[[file:./.ob-jupyter/89103546935fc538120e54de7c7d4812accd7a58.png]]
 
 In this case the opening angles are the same because the CS frame is
 the same as the ordinary rest frame. The z-axis is the beam axis
@@ -913,4 +911,4 @@ because pT=0!
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/61220a314b39b71a585feadf17441891eb4b54a5.png]]
+[[file:./.ob-jupyter/ac492be843ffd5262cc6d9b61b8e0eda4cd60b5c.png]]
