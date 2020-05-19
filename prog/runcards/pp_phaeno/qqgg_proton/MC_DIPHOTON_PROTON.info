@@ -1,25 +1,18 @@
 # -*- yaml -*-
 Name: MC_DIPHOTON_PROTON
 Year: 2020
-Summary: Simple analysis for a bare d d_bar anihilation into two photons.
-Status: UNVALIDATED NOTREENTRY NOHEPDATA SINGLEWEIGHT UNPHYSICAL
+Summary: Simple analysis for proton proton scattering (through quark anihilation) into two photons.
+Status: UNVALIDATED NOTREENTRY NOHEPDATA SINGLEWEIGHT
 Authors:
  - Valentin Boettcher <hiro@protagon.space>
-#RunInfo: <Describe event types, cuts, and other general generator config tips.>
+RunInfo: pT and eta cuts
 Beams: [93, 93]
 Energies: [[6500, 6500]]
 #Luminosity_fb: 139.0
 Description:
-  'A brief description of what is measured and what it is useful for
-  in terms of MC testing, tuning, reinterpretation, etc. Use LaTeX
-  for maths, e.g. $\pT > 50\;\GeV$.'
+  'An analysis used to compare different configuration of the Sherpa event generator.'
 ValidationInfo:
-  'A description of the process used to validate the Rivet code against
-  the original experimental analysis. Cut-flow tables and similar information
-  are welcome'
+  'Not validated'
 #ReleaseTests:
 # - $A my-hepmc-prefix :MODE=some_rivet_flag
 Keywords: []
-ToDo:
- - Implement the analysis, test it, remove this ToDo, and mark as VALIDATED :-)
- - add more documentation in here

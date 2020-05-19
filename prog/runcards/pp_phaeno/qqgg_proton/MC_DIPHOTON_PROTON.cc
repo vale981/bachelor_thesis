@@ -28,8 +28,9 @@ public:
     FinalState fs;
     declare(fs, "FS");
 
-    // cut has been made in sherpa
-    IdentifiedFinalState ifs{};
+    // we chain in a prompt final state just to be save
+    PromptFinalState prompt{};
+    IdentifiedFinalState ifs(prompt);
     ifs.acceptId(PID::PHOTON);
     declare(ifs, "IFS");
 
