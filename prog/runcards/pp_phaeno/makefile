@@ -18,7 +18,12 @@ OUT_DIR = out
 EVENT_COUNT = 1000
 
 # List of Runcards, see RUNCARD_FOLDER
-RUNCARDS = basic test
+RUNCARDS = basic
+
+# Base Runcard
+BASE_RUNCARD = Sherpa_Base.yaml
+
+SHERPA_EXT_RUNCARD = Sherpa_Ext.yaml
 
 ###############################################################################
 #                                    Macros                                   #
@@ -56,10 +61,16 @@ $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so: $(ANALYSIS_DIR)/$(ANALYSIS_NAME).cc
 
 .PHONY: analyses
 analyses: $(OUT_YODA_FILES)
-$(OUT_YODA_FILES): $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/Sherpa.yaml $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so
+$(OUT_YODA_FILES): $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/$(SHERPA_EXT_RUNCARD) $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so
 	$(eval R_DIR:=$(dir $<))
 	$(eval R_NAME:=$(shell basename $(R_DIR)))
 	$(eval YODA_FILE:=$(R_NAME).yoda)
+
+	@printf "\033[1;31mRunning Sherpa Config: $(R_NAME)\033[0m\n"
+	@printf "\033[1;32mGenerating Sherpa.yaml\033[0m\n"
+	cat $(BASE_RUNCARD) $(R_DIR)$(SHERPA_EXT_RUNCARD) > $(R_DIR)Sherpa.yaml
+
+	@printf "\033[1;32mRunning Sherpa\033[0m\n"
 	cd $(R_DIR) && $(SHERPA_CMD) -e 0
 	cd $(R_DIR) && \
 		$(SET_RIVET) mpirun --use-hwthread-cpus \

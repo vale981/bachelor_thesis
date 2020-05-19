@@ -1,0 +1,16 @@
+# the main scattering process
+PROCESSES:
+- 94 -94 -> 22 22:
+    Order: {QCD: 0, EW: 2}
+    Integration_Error: 0.001
+
+# use pure QED
+EW_SCHEME: alpha0
+
+# disable all advanced processes
+FRAGMENTATION: None
+SHOWER_GENERATOR: None
+MI_HANDLER: None
+
+# no transverse impulses
+BEAM_REMNANTS: false
