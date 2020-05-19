@@ -15,10 +15,10 @@ ANALYSIS_SO_NAME = RivetMcDiphotonProton
 OUT_DIR = out
 
 # Event Count
-EVENT_COUNT = 1000
+EVENT_COUNT = 100000
 
 # List of Runcards, see RUNCARD_FOLDER
-RUNCARDS = basic
+RUNCARDS = basic with_pT
 
 # Base Runcard
 BASE_RUNCARD = Sherpa_Base.yaml
@@ -84,7 +84,7 @@ $(OUT_YODA_FILES): $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/$(SHERPA_EXT_RUNCARD) $(A
 
 .PHONY: histograms
 histograms: $(OUT_DIR)/analysis/index.html
-$(OUT_DIR)/analysis/index.html: $(OUT_YODA_FILES)
+$(OUT_DIR)/analysis/index.html: $(OUT_YODA_FILES) $(ANALYSIS_DIR)/$(ANALYSIS_NAME).plot $(ANALYSIS_DIR)/$(ANALYSIS_NAME).info
 	cd $(OUT_DIR) && $(SET_RIVET) rivet-mkhtml *.yoda -o analysis
 
 .PHONY: clean
