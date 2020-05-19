@@ -98,7 +98,10 @@ stratified sampling (as discussed in \cref{sec:stratsamp-real}) and
 the hit-or-miss method. Because the stratified sampling requires very
 accurate upper bounds, they have been overestimated by
 \result{xs/python/pdf/overesimate}, which lowers the efficiency
-slightly but reduces bias. % TODO: accuracy of integral in hypercubes
+slightly but reduces bias. The monte carlo integrator was used to
+estimate the location of the maximum in each hypercube and then this
+estimate was improved by a numerical maximize.
+% TODO: accuracy of integral in hypercubes
 
 A sample of \result{xs/python/pdf/sample_size} events has been
 generated both in \sherpa\ and through own code. The resulting
