@@ -8,10 +8,19 @@ PDF_SET_VERSIONS: [0, 0]
 # matrix-element calculation
 ME_GENERATORS:
 - Comix
-- Amegic
 
 SCALES: 'VAR{1/2*Abs2(p[0]+p[1])}'
 
+# cuts
+SELECTORS:
+- [Eta, 22, -2.5, 2.5]
+- [PT, 22, 20, 200000000]
+
+ANALYSIS: Rivet
+RIVET:
+  IGNOREBEAMS: 1
+  ANALYSES:
+    - MC_DIPHOTON_PROTON
 # the main scattering process
 PROCESSES:
 - 94 -94 -> 22 22:
@@ -26,16 +35,5 @@ FRAGMENTATION: None
 SHOWER_GENERATOR: None
 MI_HANDLER: None
 
-# cuts
-SELECTORS:
-- [Eta, 22, -2.5, 2.5]
-- [PT, 22, 20, 200000000]
-
 # no transverse impulses
 BEAM_REMNANTS: false
-
-ANALYSIS: Rivet
-RIVET:
-  IGNOREBEAMS: 1
-  ANALYSES:
-    - MC_DIPHOTON_PROTON
