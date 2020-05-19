@@ -18,7 +18,7 @@ OUT_DIR = out
 EVENT_COUNT = 100000
 
 # List of Runcards, see RUNCARD_FOLDER
-RUNCARDS = basic with_pT
+RUNCARDS = basic with_pT with_pT_and_fragmentation
 
 # Base Runcard
 BASE_RUNCARD = Sherpa_Base.yaml
@@ -29,9 +29,11 @@ SHERPA_EXT_RUNCARD = Sherpa_Ext.yaml
 #                                    Macros                                   #
 ###############################################################################
 
+NUM_CPUS = $(shell nproc)
+EVENT_COUNT_CPU = $(shell echo "$(EVENT_COUNT) / $(NUM_CPUS)" | bc)
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 SET_RIVET := RIVET_ANALYSIS_PATH="$(THIS_DIR)$(ANALYSIS_DIR)"
-SHERPA_CMD := $(SHERPA) -e $(EVENT_COUNT) "RESULT_DIRECTORY: Results" "ANALYSIS_OUTPUT: analysis"
+SHERPA_ARGS := -e $(EVENT_COUNT_CPU) "RESULT_DIRECTORY: Results" "ANALYSIS_OUTPUT: analysis"
 OUT_YODA_FILES := $(foreach card,$(RUNCARDS),$(OUT_DIR)/$(card).yoda)
 
 # check if outdir is list
@@ -71,10 +73,9 @@ $(OUT_YODA_FILES): $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/$(SHERPA_EXT_RUNCARD) $(A
 	cat $(BASE_RUNCARD) $(R_DIR)$(SHERPA_EXT_RUNCARD) > $(R_DIR)Sherpa.yaml
 
 	@printf "\033[1;32mRunning Sherpa\033[0m\n"
-	cd $(R_DIR) && $(SHERPA_CMD) -e 0
+	cd $(R_DIR) && $(SHERPA) $(SHERPA_ARGS) -e 0
 	cd $(R_DIR) && \
-		$(SET_RIVET) mpirun --use-hwthread-cpus \
-			--use-hwthread-cpus $(SHERPA_CMD) "EVT_OUTPUT: 0"
+		$(SET_RIVET) $(THIS_DIR)/run_n_sherpas.fish $(NUM_CPUS) $(SHERPA_ARGS) "EVT_OUTPUT: 0"
 	cd $(R_DIR) && yodamerge *.yoda -o $(YODA_FILE) \
 		&& mv $(YODA_FILE) $(THIS_DIR)$(OUT_DIR)/
 

@@ -24,6 +24,10 @@ ME_GENERATORS:
 
 SCALES: 'VAR{1/2*Abs2(p[0]+p[1])}'
 
+PARTICLE_DATA:
+  94:
+    Massive: false
+
 # the main scattering process
 PROCESSES:
 - 94 -94 -> 22 22:

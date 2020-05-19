@@ -9,7 +9,7 @@ PDF_SET_VERSIONS: [0, 0]
 ME_GENERATORS:
 - Comix
 
-SCALES: 'VAR{1/2*Abs2(p[0]+p[1])}'
+#SCALES: 'VAR{1/2*Abs2(p[0]+p[1])}'
 
 # cuts
 SELECTORS:
