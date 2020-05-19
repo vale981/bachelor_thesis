@@ -1067,7 +1067,12 @@ def sample_stratified_vector(
     weights = np.cumsum(weights / integral)
 
     maxima = np.array(
-        [find_upper_bound_vector(f, cube[0], cube[1][1:]) for cube in cubes]
+        [
+            find_upper_bound_vector(
+                f, cube[0], cube[1][1:], tolerance=overestimate_factor - 1
+            )
+            for cube in cubes
+        ]
     )
 
     # compiling this function results in quite a speed-up
