@@ -5,6 +5,9 @@
 #include "Rivet/Projections/FinalState.hh"
 #include "Rivet/Projections/MissingMomentum.hh"
 #include "Rivet/Projections/PromptFinalState.hh"
+#include "Rivet/Projections/VetoedFinalState.hh"
+#include <iostream>
+#include <fstream>
 
 namespace Rivet {
 
@@ -19,20 +22,18 @@ public:
 
   /// Book histograms and initialise projections before the run
   void init() {
-    // Initialise and register projections
-
-    // The basic final-state projection:
-    // all final-state particles within
-    // the given eta acceptance
-    // We hardcode this TODO: make this configurable
-    FinalState fs;
-    declare(fs, "FS");
+    // Calorimeter particles for photon isolation
+    VisibleFinalState visFS;
+    VetoedFinalState calo_fs(visFS);
+    calo_fs.addVetoPairId(PID::MUON);
+    calo_fs.addVetoId(PID::PHOTON);
+    declare(calo_fs, "calo_fs");
 
     // we chain in a prompt final state just to be save
     PromptFinalState prompt{};
     IdentifiedFinalState ifs(prompt);
     ifs.acceptId(PID::PHOTON);
-    declare(ifs, "IFS");
+    declare(ifs, "Photons");
 
     auto energy = info().energies()[0].first;
     double min_pT = 20;
@@ -50,14 +51,51 @@ public:
 
   /// Perform the per-event analysis
   void analyze(const Event &event) {
-    const Particles &photons =
-        apply<IdentifiedFinalState>(event, "IFS").particlesByPt();
+    if (counter % 100 == 0) {
+      // get the command name
+      std::ifstream proc;
+      proc.open("/proc/self/cmdline", std::ios::in);
+      std::string cmdline;
+      std::getline(proc, cmdline);
+      proc.close();
+      MSG_ERROR(cmdline << ": " << counter);
+    }
+    counter++;
+
+    Particles photons =
+      apply<IdentifiedFinalState>(event, "Photons").particlesByPt();
 
     // make sure that there are only two photons
-    if (photons.size() != 2)
+    if (photons.size() < 2)
       vetoEvent;
 
-    // they are both the same, so we take the first
+    photons.resize(2);
+
+    // Require the two photons to be separated in dR
+    if (deltaR(photons[0], photons[1]) < 0.45) vetoEvent;
+
+    const Particles fs = apply<VetoedFinalState>(event, "calo_fs").particles();
+    // Loop over photons and require isolation
+    for (const Particle &photon : photons) {
+      // Compute calo isolation via particles within an R=0.4 cone of the photon
+
+      FourMomentum mom_in_EtCone;
+      for (const Particle &p : fs) {
+        // Reject if not in cone
+        if (deltaR(photon.momentum(), p.momentum()) > 0.4)
+          continue;
+        // Sum momentum
+        mom_in_EtCone += p.momentum();
+      }
+      // subtract core photon
+      mom_in_EtCone -= photon.momentum();
+
+      // Use photon if energy in isolation cone is low enough
+      if (mom_in_EtCone.Et() > 0.045 * photon.momentum().pT() + 6.0 * GeV) {
+        vetoEvent;
+      }
+    }
+
     const auto &photon = photons.front();
 
     std::map<string, double> obs;
@@ -67,7 +105,7 @@ public:
 
     const auto &moms = photons.moms();
     const auto total_momentum =
-        std::accumulate(moms.begin(), moms.end(), FourMomentum(0, 0, 0, 0));
+      std::accumulate(moms.begin(), moms.end(), FourMomentum(0, 0, 0, 0));
 
     obs["inv_m"] = total_momentum.mass();
     obs["o_angle"] = std::abs(tanh((photons[1].eta() - photons[0].eta()) / 2));
@@ -75,9 +113,9 @@ public:
     //std::abs(photons[0].theta() + photons[1].theta());
 
     obs["o_angle_cs"] = std::abs(
-        sinh((photons[0].eta() - photons[1].eta())) * 2.0 * photons[0].pT() *
-        photons[1].pT() / sqrt(sqr(obs["inv_m"]) + sqr(total_momentum.pT())) /
-        obs["inv_m"]);
+                                 sinh((photons[0].eta() - photons[1].eta())) * 2.0 * photons[0].pT() *
+                                 photons[1].pT() / sqrt(sqr(obs["inv_m"]) + sqr(total_momentum.pT())) /
+                                 obs["inv_m"]);
 
     for (const auto &name : _observables) {
       _histos[name]->fill(obs[name]);
@@ -91,6 +129,12 @@ public:
       normalize(_histos[name]);
     }
   }
+
+  /// @name Debugging
+  //@{
+  int counter = 1;
+  std::string cmdline;
+  //@}
 
   /// @name Histograms
   //@{
