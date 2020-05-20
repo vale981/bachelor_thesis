@@ -110,10 +110,19 @@ Viele Gruesse, Frank
  - [[https://lhapdf.hepforge.org/][pdf library]]
 ** Phaeono
 *** pT sortieren
-*** Shower
-*** Fragmentation, MPI
-*** Hadronisation
-***
+*** TODO Shower
+ - pT only works with showers
+ - remnants of proton create showers -> without fragmentation: no hadrons
+ - can create more photons
+****
+*** TODO Fragmentation,
+ - https://sherpa-team.gitlab.io/sherpa/master/manual/parameters/hadronization.html?highlight=fragmentation#id18
+ - showers recombinate to hadrons
+ - more photons
+*** TODO MI
+ - multiple partons interact, create showers etc
+
+
 * Clock Table
 #+BEGIN: clocktable :scope file :maxlevel 2
 #+CAPTION: Clock summary at [2020-03-18 Wed 21:01]
@@ -142,6 +151,12 @@ Viele Gruesse, Frank
 ** PDF members
 ** Sensitivity detectors cite! -> separation from beam
 ** was fuer eine pdf ist das NNPDF31lo
+** TODO four mom. conservation errors
+** TODO Warum Veto nur fuer MUONS
+ - ich habe auch photons gevetoed
+** TODO Initial und finals state radiation?
+** TODO MPI
+   - nur QCD
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!
