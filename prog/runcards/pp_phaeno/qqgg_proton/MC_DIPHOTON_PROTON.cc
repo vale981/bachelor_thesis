@@ -50,17 +50,6 @@ public:
 
   /// Perform the per-event analysis
   void analyze(const Event &event) {
-    if (counter % 100 == 0) {
-      // get the command name
-      std::ifstream proc;
-      proc.open("/proc/self/cmdline", std::ios::in);
-      std::string cmdline;
-      std::getline(proc, cmdline);
-      proc.close();
-      MSG_ERROR(cmdline << ": " << counter);
-    }
-    counter++;
-
     Particles photons =
       apply<IdentifiedFinalState>(event, "Photons").particlesByPt();
 
@@ -131,12 +120,6 @@ public:
       scale(_histos[name], sf);
     }
   }
-
-  /// @name Debugging
-  //@{
-  int counter = 1;
-  std::string cmdline;
-  //@}
 
   /// @name Histograms
   //@{
