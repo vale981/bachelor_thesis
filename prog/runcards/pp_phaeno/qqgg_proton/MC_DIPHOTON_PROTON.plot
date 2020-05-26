@@ -43,3 +43,10 @@ Title=scattering angle in CS frame
 XLabel=$\cos\theta^\ast_\text{CS}$
 LogY=0
 # END PLOT
+
+# BEGIN PLOT /MC_DIPHOTON_PROTON/total_pT
+Title=total $\pT$
+XLabel=$\pT$
+LogY=1
+LogX=1
+# END PLOT
