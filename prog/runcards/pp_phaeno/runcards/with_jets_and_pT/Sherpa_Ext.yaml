@@ -15,4 +15,5 @@ MI_HANDLER: None
 # showers are enabled as well
 INTRINSIC_KPERP:
   ENABLED: true
+BEAM_REMNANTS: true
 SHOWER_GENERATOR: CSS
