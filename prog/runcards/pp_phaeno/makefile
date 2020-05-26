@@ -18,7 +18,7 @@ OUT_DIR = out
 EVENT_COUNT = 100000
 
 # List of Runcards, see RUNCARD_FOLDER
-RUNCARDS = basic with_jets with_jets_and_pT with_pT_and_fragmentation with_pT_and_fragmentation_and_mi
+RUNCARDS = with_pT_and_fragmentation_and_mi basic with_jets with_jets_and_pT with_pT_and_fragmentation
 
 # Runcard Names
 BASE_RUNCARD = Sherpa_Base.yaml
