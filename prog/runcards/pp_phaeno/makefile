@@ -20,16 +20,18 @@ EVENT_COUNT = 100000
 # List of Runcards, see RUNCARD_FOLDER
 RUNCARDS = basic with_jets with_jets_and_pT with_pT_and_fragmentation with_pT_and_fragmentation_and_mi
 
-# Base Runcard
+# Runcard Names
 BASE_RUNCARD = Sherpa_Base.yaml
-
 SHERPA_EXT_RUNCARD = Sherpa_Ext.yaml
+
+# Event Lutput Level
+EVT_OUTPUT = 2
 
 ###############################################################################
 #                                    Macros                                   #
 ###############################################################################
 
-NUM_CPUS = 1 # $(shell nproc)
+NUM_CPUS = $(shell nproc)
 EVENT_COUNT_CPU = $(shell echo "$(EVENT_COUNT) / $(NUM_CPUS)" | bc)
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 SET_RIVET := RIVET_ANALYSIS_PATH="$(THIS_DIR)$(ANALYSIS_DIR)"
@@ -76,7 +78,7 @@ $(OUT_YODA_FILES): $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/$(SHERPA_EXT_RUNCARD) $(A
 	@printf "\033[1;32mRunning Sherpa\033[0m\n"
 	cd $(R_DIR) && $(SHERPA) $(SHERPA_ARGS) -e 0
 	cd $(R_DIR) && \
-		$(SET_RIVET) $(THIS_DIR)/run_n_sherpas.fish $(NUM_CPUS) $(SHERPA_ARGS) "EVT_OUTPUT: 15"
+		$(SET_RIVET) $(THIS_DIR)/run_n_sherpas.fish $(NUM_CPUS) $(SHERPA_ARGS) "EVT_OUTPUT: $(EVT_OUTPUT)"
 	cd $(R_DIR) && yodamerge *.yoda -o $(YODA_FILE) \
 		&& mv $(YODA_FILE) $(THIS_DIR)$(OUT_DIR)/
 
