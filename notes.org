@@ -151,15 +151,31 @@ Viele Gruesse, Frank
 ** PDF members
 ** Sensitivity detectors cite! -> separation from beam
 ** was fuer eine pdf ist das NNPDF31lo
-** TODO four mom. conservation errors
-** TODO Warum Veto nur fuer MUONS
+** four mom. conservation errors
+** Warum Veto nur fuer MUONS
  - ich habe auch photons gevetoed
-** TODO Initial und finals state radiation?
-** TODO MPI
-   - nur QCD
+** Initial und finals state radiation?
+** MPI
+   - nur QCD -> wichtigste prozesse modelliert
+   - The Jimmy model stops here, considering only hard events, and so
+     it can only be applied to underlying event.
+     - doesn't the mpi contain soft inclusive physics
+** Jet algos
+ - what are jet xs? -> particles jets as legs
+ - why ist double counting a problem -> in exact calculation -> same diagramm
+ - IS radiation: all partons?
+** Soft Inclusive
+ - wtf are those processes
+** what does inclusive mean
+** TODO
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!
 
-* TODO
-  - lab xs kuerzen
+* Todo
+** TODO lab xs kuerzen
+** coulomb singularity
+ - immediate particle on shell
+** nur shower
+** TODO shower scale anpassen
+** TODO effekt shower und kperp
