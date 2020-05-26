@@ -18,7 +18,7 @@ OUT_DIR = out
 EVENT_COUNT = 100000
 
 # List of Runcards, see RUNCARD_FOLDER
-RUNCARDS = basic with_pT with_pT_and_fragmentation with_pT_and_fragmentation_and_mi
+RUNCARDS = basic with_jets with_jets_and_pT with_pT_and_fragmentation with_pT_and_fragmentation_and_mi
 
 # Base Runcard
 BASE_RUNCARD = Sherpa_Base.yaml
@@ -29,13 +29,14 @@ SHERPA_EXT_RUNCARD = Sherpa_Ext.yaml
 #                                    Macros                                   #
 ###############################################################################
 
-NUM_CPUS = $(shell nproc)
+NUM_CPUS = 1 # $(shell nproc)
 EVENT_COUNT_CPU = $(shell echo "$(EVENT_COUNT) / $(NUM_CPUS)" | bc)
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 SET_RIVET := RIVET_ANALYSIS_PATH="$(THIS_DIR)$(ANALYSIS_DIR)"
 SHERPA_ARGS := -e $(EVENT_COUNT_CPU) "RESULT_DIRECTORY: Results" "ANALYSIS_OUTPUT: analysis"
-OUT_YODA_FILES := $(foreach card,$(RUNCARDS),$(OUT_DIR)/$(card).yoda)
-
+OUT_YODA_FILE_NAMES := $(foreach card,$(RUNCARDS),$(card).yoda)
+OUT_YODA_FILES := $(foreach name,$(OUT_YODA_FILE_NAMES),$(OUT_DIR)/$(name))
+OUT_YODA_FILE_NAMES_WITH_FLAGS := $(foreach card,$(RUNCARDS),$(card).yoda:'$(shell cat $(RUNCARD_DIR)/$(card)/plot.flags)')
 # check if outdir is list
 ifneq ($(words $(OUT_DIR)),1)
 $(error "OUT_DIR must be a single directory!")
@@ -75,7 +76,7 @@ $(OUT_YODA_FILES): $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/$(SHERPA_EXT_RUNCARD) $(A
 	@printf "\033[1;32mRunning Sherpa\033[0m\n"
 	cd $(R_DIR) && $(SHERPA) $(SHERPA_ARGS) -e 0
 	cd $(R_DIR) && \
-		$(SET_RIVET) $(THIS_DIR)/run_n_sherpas.fish $(NUM_CPUS) $(SHERPA_ARGS) "EVT_OUTPUT: 0"
+		$(SET_RIVET) $(THIS_DIR)/run_n_sherpas.fish $(NUM_CPUS) $(SHERPA_ARGS) "EVT_OUTPUT: 15"
 	cd $(R_DIR) && yodamerge *.yoda -o $(YODA_FILE) \
 		&& mv $(YODA_FILE) $(THIS_DIR)$(OUT_DIR)/
 
@@ -86,7 +87,7 @@ $(OUT_YODA_FILES): $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/$(SHERPA_EXT_RUNCARD) $(A
 .PHONY: histograms
 histograms: $(OUT_DIR)/analysis/index.html
 $(OUT_DIR)/analysis/index.html: $(OUT_YODA_FILES) $(ANALYSIS_DIR)/$(ANALYSIS_NAME).plot $(ANALYSIS_DIR)/$(ANALYSIS_NAME).info
-	cd $(OUT_DIR) && $(SET_RIVET) rivet-mkhtml *.yoda -o analysis
+	cd $(OUT_DIR) && $(SET_RIVET) rivet-mkhtml $(OUT_YODA_FILE_NAMES_WITH_FLAGS) -o analysis
 
 .PHONY: clean
 clean:

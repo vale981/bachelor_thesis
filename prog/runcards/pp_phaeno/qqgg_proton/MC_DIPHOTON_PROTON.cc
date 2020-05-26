@@ -25,8 +25,7 @@ public:
     // Calorimeter particles for photon isolation
     VisibleFinalState visFS;
     VetoedFinalState calo_fs(visFS);
-    calo_fs.addVetoPairId(PID::MUON);
-    calo_fs.addVetoId(PID::PHOTON);
+    calo_fs.addVetoPairId(PID::MUON);  // we also want photon
     declare(calo_fs, "calo_fs");
 
     // we chain in a prompt final state just to be save
@@ -44,7 +43,7 @@ public:
     book(_histos["pT"], "pT", logspace(50, min_pT, energy, true));
     book(_histos["eta"], "eta", 50, -eta, eta);
     book(_histos["cos_theta"], "cos_theta", 50, -1, 1);
-    book(_histos["inv_m"], "inv_m", logspace(50, 2 * min_pT, 2 * energy, true));
+    book(_histos["inv_m"], "inv_m", logspace(50, 1, 2 * energy, true));
     book(_histos["o_angle"], "o_angle", 50, 0, 1);
     book(_histos["o_angle_cs"], "o_angle_cs", 50, 0, 1);
   }
@@ -87,6 +86,7 @@ public:
         // Sum momentum
         mom_in_EtCone += p.momentum();
       }
+
       // subtract core photon
       mom_in_EtCone -= photon.momentum();
 
@@ -125,8 +125,10 @@ public:
   //@}
 
   void finalize() {
+    const double sf = crossSection() / (picobarn * sumOfWeights());
+
     for (auto name : _observables) {
-      normalize(_histos[name]);
+      scale(_histos[name], sf);
     }
   }
 

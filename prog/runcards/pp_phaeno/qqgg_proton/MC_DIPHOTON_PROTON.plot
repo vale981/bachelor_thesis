@@ -35,9 +35,11 @@ XLabel=$\cos\theta$
 # BEGIN PLOT /MC_DIPHOTON_PROTON/o_angle
 Title=scattering angle
 XLabel=$\cos\theta^\ast$
+LogY=0
 # END PLOT
 
 # BEGIN PLOT /MC_DIPHOTON_PROTON/o_angle_cs
 Title=scattering angle in CS frame
 XLabel=$\cos\theta^\ast_\text{CS}$
+LogY=0
 # END PLOT

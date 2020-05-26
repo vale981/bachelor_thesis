@@ -8,7 +8,7 @@ PROCESSES:
 EW_SCHEME: 0
 
 # Enable fragmentation
-FRAGMENTATION: Ahadic
+FRAGMENTATION: Lund
 
 # and multiple interactions
 MI_HANDLER: Amisic
@@ -18,4 +18,5 @@ MI_HANDLER: Amisic
 INTRINSIC_KPERP:
   ENABLED: true
 
+BEAM_REMNANTS: true
 SHOWER_GENERATOR: CSS
