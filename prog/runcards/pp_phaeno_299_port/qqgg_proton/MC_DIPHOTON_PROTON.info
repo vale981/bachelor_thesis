@@ -1,0 +1,18 @@
+# -*- yaml -*-
+Name: MC_DIPHOTON_PROTON
+Year: 2020
+Summary: Simple analysis for proton proton scattering (through quark anihilation) into two photons.
+Status: UNVALIDATED NOTREENTRY NOHEPDATA SINGLEWEIGHT
+Authors:
+ - Valentin Boettcher <hiro@protagon.space>
+RunInfo: pT and eta cuts
+Beams: [93, 93]
+Energies: [[6500, 6500]]
+#Luminosity_fb: 139.0
+Description:
+  'An analysis used to compare different configuration of the Sherpa event generator.'
+ValidationInfo:
+  'Not validated'
+#ReleaseTests:
+# - $A my-hepmc-prefix :MODE=some_rivet_flag
+Keywords: []

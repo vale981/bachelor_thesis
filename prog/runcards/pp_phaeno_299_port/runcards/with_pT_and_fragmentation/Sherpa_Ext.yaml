@@ -1,0 +1,21 @@
+# the main scattering process
+PROCESSES:
+- 94 -94 -> 22 22:
+    Order: {QCD: 0, EW: 2}
+    Integration_Error: 0.001
+
+# use pure QED
+EW_SCHEME: 0
+
+# Enable fragmentation
+FRAGMENTATION: Lund
+
+MI_HANDLER: None
+
+# we explicitly enable transverse momenta
+# showers are enabled as well
+INTRINSIC_KPERP:
+  ENABLED: true
+
+BEAM_REMNANTS: true
+SHOWER_GENERATOR: CSS
