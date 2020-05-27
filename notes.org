@@ -114,7 +114,8 @@ Viele Gruesse, Frank
  - pT only works with showers
  - remnants of proton create showers -> without fragmentation: no hadrons
  - can create more photons
-****
+ - limited -> conserves m_yy
+   - Other recoil scheme [[https://sherpa-team.gitlab.io/sherpa/master/manual/parameters/parton-showers.html#cs-shower-options][CSS_KIN_SCHEME=0]] could fix that
 *** TODO Fragmentation,
  - https://sherpa-team.gitlab.io/sherpa/master/manual/parameters/hadronization.html?highlight=fragmentation#id18
  - showers recombinate to hadrons

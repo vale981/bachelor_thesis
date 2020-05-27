@@ -56,10 +56,10 @@ public:
     double min_pT = 20;
     double eta = 2.5;
 
-    _observables = {{"pT", {min_pT, energy, 50, true}},
+    _observables = {{"pT", {min_pT, energy / 2, 50, true}},
                     {"eta", {-eta, eta}},
                     {"cos_theta", {-1, 1}},
-                    {"inv_m", {0.1, 2 * energy, 50, true}},
+                    {"inv_m", {2 * min_pT, 2 * energy, 50, true}},
                     {"o_angle", {0, 1}},
                     {"o_angle_cs", {0, 1}},
                     {"total_pT", {.01, 2 * energy, 50, true}}};
@@ -121,22 +121,18 @@ public:
     _observables.at("cos_theta").fill(cos(photon.theta()));
 
     const auto &moms = photons.moms();
-    const auto total_momentum =
-        std::accumulate(moms.begin(), moms.end(), FourMomentum(0, 0, 0, 0));
-
+    const auto total_momentum = moms[0] + moms[1];
+    _observables.at("total_pT").fill(total_momentum.pT());
     _observables.at("inv_m").fill(total_momentum.mass());
+
     _observables.at("o_angle").fill(
         std::abs(tanh((photons[1].eta() - photons[0].eta()) / 2)));
-
-    // std::abs(photons[0].theta() + photons[1].theta());
 
     _observables.at("o_angle_cs").fill(std::abs(
         sinh((photons[0].eta() - photons[1].eta())) * 2.0 * photons[0].pT() *
         photons[1].pT() /
         sqrt(sqr(_observables.at("inv_m")._value) + sqr(total_momentum.pT())) /
         _observables.at("inv_m")._value));
-
-    _observables.at("total_pT").fill(total_momentum.pT());
   }
 
   //@}
