@@ -82,6 +82,12 @@ and the total probability of accepting a sample (efficiency
 The closer the volumes enclosed by \(g\) and \(f\) are to each other,
 higher is \(\mathfrak{e}\). This method is called importance sampling
 
+\begin{wrapfigure}[15]{l}{.5\textwidth}
+  \plot{xs_sampling/upper_bound}
+  \caption{\label{fig:distcos} The distribution \cref{eq:distcos} and an upper bound of
+    the form \(a + b\cdot x^2\).}
+\end{wrapfigure}
+
 Choosing \(g\) like \cref{eq:primitiveg} and looking back at
 \cref{eq:solutionsamp} yields \(y = x\cdot A\), so that the sampling
 procedure simplifies to choosing random numbers \(x\in [0,1]\) and
@@ -111,12 +117,6 @@ of~\result{xs/python/naive_th_samp}.
 This very low efficiency stems from the fact, that \(f_{\cos\theta}\)
 is a lot smaller than its upper bound for most of the sampling
 interval.
-
-\begin{wrapfigure}[15]{l}{.5\textwidth}
-  \plot{xs_sampling/upper_bound}
-  \caption{\label{fig:distcos} The distribution \cref{eq:distcos} and an upper bound of
-    the form \(a + b\cdot x^2\).}
-\end{wrapfigure}
 
 Utilizing an upper bound of the form \(a + b\cdot x^2\) with \(a, b\)
 constant improves the efficiency
