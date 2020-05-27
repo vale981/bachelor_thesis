@@ -18,8 +18,8 @@ struct Observable {
   double _value = 0;
   Histo1DPtr _hist = nullptr;
 
-  Observable(double min, double max, int bins = 50, bool log = false)
-      : _min{min}, _max{max}, _bins{bins}, _log{log} {};
+  // Observable(double min, double max, int bins = 50, bool log = false)
+  //     : _min{min}, _max{max}, _bins{bins}, _log{log} {};
 
   void fill(const double value) {
     _value = value;
@@ -27,12 +27,6 @@ struct Observable {
       _hist->fill(value);
     }
   }
-
-  operator double() const { return _value; };
-  // Observable(double min, double max, bool log = false) : _min{min},
-  // _max{max}, _log{log} {
-
-  // }
 };
 
 /// @brief Generate some simple histograms of the diphoton process. TODO: more
@@ -157,7 +151,7 @@ public:
 
   /// @name Histograms
   //@{
-  std::map<string, Observable> _observables;
+  std::map<const std::string, Observable> _observables;
   //@}
 };
 
