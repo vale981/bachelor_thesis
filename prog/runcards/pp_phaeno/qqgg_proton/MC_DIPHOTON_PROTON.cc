@@ -11,6 +11,30 @@
 
 namespace Rivet {
 
+struct Observable {
+  double _min, _max;
+  int _bins = 50;
+  bool _log = false;
+  double _value = 0;
+  Histo1DPtr _hist = nullptr;
+
+  Observable(double min, double max, int bins = 50, bool log = false)
+      : _min{min}, _max{max}, _bins{bins}, _log{log} {};
+
+  void fill(const double value) {
+    _value = value;
+    if (_hist) {
+      _hist->fill(value);
+    }
+  }
+
+  operator double() const { return _value; };
+  // Observable(double min, double max, bool log = false) : _min{min},
+  // _max{max}, _log{log} {
+
+  // }
+};
+
 /// @brief Generate some simple histograms of the diphoton process. TODO: more
 class MC_DIPHOTON_PROTON : public Analysis {
 public:
@@ -38,16 +62,24 @@ public:
     double min_pT = 20;
     double eta = 2.5;
 
-    _observables = {"pT",      "eta",        "cos_theta", "inv_m",
-                    "o_angle", "o_angle_cs", "total_pT"};
+    _observables = {{"pT", {min_pT, energy, 50, true}},
+                    {"eta", {-eta, eta}},
+                    {"cos_theta", {-1, 1}},
+                    {"inv_m", {0.1, 2 * energy, 50, true}},
+                    {"o_angle", {0, 1}},
+                    {"o_angle_cs", {0, 1}},
+                    {"total_pT", {.01, 2 * energy, 50, true}}};
 
-    book(_histos["pT"], "pT", logspace(50, min_pT, energy, true));
-    book(_histos["eta"], "eta", 50, -eta, eta);
-    book(_histos["cos_theta"], "cos_theta", 50, -1, 1);
-    book(_histos["inv_m"], "inv_m", logspace(50, 2 * min_pT, 2 * energy, true));
-    book(_histos["o_angle"], "o_angle", 50, 0, 1);
-    book(_histos["o_angle_cs"], "o_angle_cs", 50, 0, 1);
-    book(_histos["total_pT"], "total_pT", logspace(50, .01, 2 * energy));
+    for (auto &[name, observable] : _observables) {
+      if (observable._log) {
+        book(observable._hist, name,
+             logspace(observable._bins, observable._min, observable._max));
+        continue;
+      }
+
+      book(observable._hist, name, observable._bins, observable._min,
+           observable._max);
+    }
   }
 
   /// Perform the per-event analysis
@@ -90,30 +122,27 @@ public:
 
     const auto &photon = photons.front();
 
-    std::map<string, double> obs;
-    obs["pT"] = photon.pT();
-    obs["eta"] = photon.eta();
-    obs["cos_theta"] = cos(photon.theta());
+    _observables.at("pT").fill(photon.pT());
+    _observables.at("eta").fill(photon.eta());
+    _observables.at("cos_theta").fill(cos(photon.theta()));
 
     const auto &moms = photons.moms();
     const auto total_momentum =
         std::accumulate(moms.begin(), moms.end(), FourMomentum(0, 0, 0, 0));
 
-    obs["inv_m"] = total_momentum.mass();
-    obs["o_angle"] = std::abs(tanh((photons[1].eta() - photons[0].eta()) / 2));
+    _observables.at("inv_m").fill(total_momentum.mass());
+    _observables.at("o_angle").fill(
+        std::abs(tanh((photons[1].eta() - photons[0].eta()) / 2)));
 
     // std::abs(photons[0].theta() + photons[1].theta());
 
-    obs["o_angle_cs"] = std::abs(
+    _observables.at("o_angle_cs").fill(std::abs(
         sinh((photons[0].eta() - photons[1].eta())) * 2.0 * photons[0].pT() *
-        photons[1].pT() / sqrt(sqr(obs["inv_m"]) + sqr(total_momentum.pT())) /
-        obs["inv_m"]);
+        photons[1].pT() /
+        sqrt(sqr(_observables.at("inv_m")._value) + sqr(total_momentum.pT())) /
+        _observables.at("inv_m")._value));
 
-    obs["total_pT"] = total_momentum.pT();
-
-    for (const auto &name : _observables) {
-      _histos[name]->fill(obs[name]);
-    }
+    _observables.at("total_pT").fill(total_momentum.pT());
   }
 
   //@}
@@ -121,15 +150,14 @@ public:
   void finalize() {
     const double sf = crossSection() / (picobarn * sumOfWeights());
 
-    for (auto name : _observables) {
-      scale(_histos[name], sf);
+    for (auto const &[_, observable] : _observables) {
+      scale(observable._hist, sf);
     }
   }
 
   /// @name Histograms
   //@{
-  std::map<string, Histo1DPtr> _histos;
-  std::vector<string> _observables;
+  std::map<string, Observable> _observables;
   //@}
 };
 
