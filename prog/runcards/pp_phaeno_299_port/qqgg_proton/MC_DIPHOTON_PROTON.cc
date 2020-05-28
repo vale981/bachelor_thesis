@@ -91,6 +91,8 @@ public:
     if (deltaR(photons[0], photons[1]) < 0.45)
       vetoEvent;
 
+
+    // require an isolation cone around the photons
     const Particles fs = apply<VetoedFinalState>(event, "calo_fs").particles();
     // Loop over photons and require isolation
     for (const Particle &photon : photons) {
