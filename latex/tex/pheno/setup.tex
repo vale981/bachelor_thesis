@@ -1,0 +1,27 @@
+\section{Set-Up and Analysis}%
+\label{sec:setupan}
+
+To observe the impact on the individual aspect of the proton
+scattering the following run configurations have been defined. They
+are incremental in the sense that each subsequent configuration
+extents the previous one.
+
+\begin{description}
+\item[Basic] The hard process as used in \cref{sec:pdf_results}.
+\item[PS] The shower generator of \sherpa, \emph{CSS} (dipole-shower),
+  is activated and simulates initial state radiation, as there are no
+  partons in the final state yet.
+\item[PS+pT] The beam remnants and intrinsic parton
+  \(\pt\) are simulated, giving rise to final state radiation.
+\item[PS+pT+Hadronization] A cluster hadronization model
+  implemented in \emph{Ahadic} is activated.
+\item[PS+pT+Hadronization+MI] Multiple interactions based on the
+  Sj\"ostrand-van-Zijl are simulated.
+\end{description}
+
+Detailed description of the implementation of those models can be
+found in~\cite{Gleisberg:2008ta} and~\cite{Bothmann:2019yzt}.
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../document"
+%%% End:

@@ -20,7 +20,7 @@
  - [[file:literature/feynman/tk-vorlesung.pdf::64][Kapitel 4.4]]
    - Beispiel zur Berechnung
 
-** ParTicle Physics
+** Particle Physics
 *** Thomson
     :LOGBOOK:
     CLOCK: [2020-03-18 Wed 16:32]--[2020-03-18 Wed 21:01] =>  4:29
@@ -41,6 +41,8 @@
  - [[file:literature/pdf/lhapdf6.pdf][LHAPDF6]]
 ** Pseudo Rapidity
  - https://physics.stackexchange.com/questions/12258/why-is-pseudorapidity-defined-as-log-tan-theta-2
+** Sherpa
+ -
 * Aufgaben
 ** Erste Aufgabenp
    :LOGBOOK:
