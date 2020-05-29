@@ -35,7 +35,7 @@ NUM_CPUS = $(shell nproc)
 EVENT_COUNT_CPU = $(shell echo "$(EVENT_COUNT) / $(NUM_CPUS)" | bc)
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 SET_RIVET := RIVET_ANALYSIS_PATH="$(THIS_DIR)$(ANALYSIS_DIR)"
-SHERPA_ARGS := -e $(EVENT_COUNT_CPU) "RESULT_DIRECTORY:=Results" "ANALYSIS_OUTPUT:=analysis" -a Rivet
+SHERPA_ARGS := -e $(EVENT_COUNT_CPU) "RESULT_DIRECTORY:=Results" "MI_RESULT_DIRECTORY:=Results_MI" "DECAY_RESULT_DIRECTORY:=Results_Decay" "ANALYSIS_OUTPUT:=analysis" -a Rivet
 OUT_YODA_FILE_NAMES := $(foreach card,$(RUNCARDS),$(card).yoda)
 OUT_YODA_FILES := $(foreach name,$(OUT_YODA_FILE_NAMES),$(OUT_DIR)/$(name))
 OUT_YODA_FILE_NAMES_WITH_FLAGS := $(foreach card,$(RUNCARDS),$(card).yoda:'$(shell cat $(RUNCARD_DIR)/$(card)/plot.flags)')
@@ -76,7 +76,7 @@ $(OUT_YODA_FILES): $(OUT_DIR)/%.yoda: $(RUNCARD_DIR)/%/$(SHERPA_EXT_RUNCARD) $(A
 	sed -e '/% TEMPLATE/r $(R_DIR)$(SHERPA_EXT_RUNCARD)' $(BASE_RUNCARD) > $(R_DIR)Run.dat
 
 	@printf "\033[1;32mRunning Sherpa\033[0m\n"
-	cd $(R_DIR) && $(SHERPA) $(SHERPA_ARGS) -e 0
+	cd $(R_DIR) && $(SHERPA) $(SHERPA_ARGS) -e 1 -a 0
 	cd $(R_DIR) && \
 		$(SET_RIVET) $(THIS_DIR)/run_n_sherpas.fish $(NUM_CPUS) $(SHERPA_ARGS) "EVT_OUTPUT:=$(EVT_OUTPUT)"
 	cd $(R_DIR) && yodamerge *.yoda -o $(YODA_FILE) \
