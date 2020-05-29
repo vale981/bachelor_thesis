@@ -64,3 +64,9 @@ XLabel=$\pT$
 LogY=1
 LogX=1
 # END PLOT
+
+# BEGIN PLOT /MC_DIPHOTON_PROTON/xs
+Title=total cross section
+YLabel=$\sigma$
+LogY=0
+# END PLOT
