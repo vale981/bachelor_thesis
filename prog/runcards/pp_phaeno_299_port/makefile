@@ -15,10 +15,10 @@ ANALYSIS_SO_NAME = RivetMcDiphotonProton
 OUT_DIR = out
 
 # Event Count
-EVENT_COUNT = 10000000
+EVENT_COUNT = 100000
 
 # List of Runcards, see RUNCARD_FOLDER
-RUNCARDS = with_pT_and_fragmentation_and_mi with_pT_and_fragmentation basic with_jets with_jets_and_pT
+RUNCARDS = with_pT_and_fragmentation_and_mi basic with_jets with_jets_and_pT with_pT_and_fragmentation
 
 # Runcard Names
 BASE_RUNCARD = Sherpa_Base.dat
