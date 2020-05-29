@@ -21,10 +21,12 @@ struct Observable {
   // Observable(double min, double max, int bins = 50, bool log = false)
   //     : _min{min}, _max{max}, _bins{bins}, _log{log} {};
 
-  void fill(const double value) {
+  /// @brief Wraps Histo1D::fill.
+  template<typename... Params>
+  void fill(double value, Params&&... args) {
     _value = value;
     if (_hist) {
-      _hist->fill(value);
+      _hist->fill(value, std::forward<Params>(args)...);
     }
   }
 };
@@ -52,17 +54,18 @@ public:
     ifs.acceptId(PID::PHOTON);
     declare(ifs, "Photons");
 
-    auto energy = info().energies()[0].first;
     double min_pT = 20;
     double eta = 2.5;
 
-    _observables = {{"pT", {min_pT, energy / 2, 50, true}},
+    _observables = {{"pT", {min_pT, 1100, 50, true}},
+                    {"pT_subl", {min_pT, 1100, 50, true}},
                     {"eta", {-eta, eta}},
                     {"cos_theta", {-1, 1}},
-                    {"inv_m", {2 * min_pT, 2 * energy, 50, true}},
+                    {"inv_m", {2 * min_pT - 1, 2000, 50, true}},
                     {"o_angle", {0, 1}},
                     {"o_angle_cs", {0, 1}},
-                    {"total_pT", {.01, 2 * energy, 50, true}}};
+                    {"total_pT", {.01, 1100, 50, true}},
+                    {"azimuthal_angle", {1.95e-5, PI, 50, true}}};
 
     for (auto &[name, observable] : _observables) {
       if (observable._log) {
@@ -116,11 +119,15 @@ public:
       }
     }
 
-    const auto &photon = photons.front();
+    const auto &photon = photons[0];
+    const auto &photon_subl = photons[1];
 
     _observables.at("pT").fill(photon.pT());
+    _observables.at("pT_subl").fill(photon_subl.pT());
     _observables.at("eta").fill(photon.eta());
     _observables.at("cos_theta").fill(cos(photon.theta()));
+    _observables.at("azimuthal_angle")
+      .fill(PI - mapAngle0ToPi(photon.phi() - photon_subl.phi()));
 
     const auto &moms = photons.moms();
     const auto total_momentum = moms[0] + moms[1];

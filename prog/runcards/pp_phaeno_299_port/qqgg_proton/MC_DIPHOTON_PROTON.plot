@@ -16,6 +16,12 @@ XLabel=$\pT$ [GeV]
 LogX=1
 # END PLOT
 
+# BEGIN PLOT /MC_DIPHOTON_PROTON/pT_subl
+Title=$\pT$ of sub-leading photon
+XLabel=$\pT$ [GeV]
+LogX=1
+# END PLOT
+
 # BEGIN PLOT /MC_DIPHOTON_PROTON/inv_m
 Title=$m_{\gamma\gamma}$ of the two leading photons
 XLabel=$m_{\gamma\gamma}$ [GeV]
@@ -30,6 +36,14 @@ XLabel=$\eta$
 # BEGIN PLOT /MC_DIPHOTON_PROTON/cos_theta
 Title=$\cos\theta$ of leading photon
 XLabel=$\cos\theta$
+# END PLOT
+
+# BEGIN PLOT /MC_DIPHOTON_PROTON/azimuthal_angle
+Title=Azimuthal angle between the photons
+XLabel=$\pi-\Delta\phi_{\gamma\gamma}$ [rad]
+YLabel=$\mathrm{d}\sigma/\mathrm{d}\Delta\phi_{\gamma\gamma}$ [fb rad$^{-1}$]
+LogY=0
+LogX=1
 # END PLOT
 
 # BEGIN PLOT /MC_DIPHOTON_PROTON/o_angle
