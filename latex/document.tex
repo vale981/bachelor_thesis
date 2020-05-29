@@ -10,13 +10,22 @@ captions=nooneline,captions=tableabove,english]{scrbook}
 \usepackage{hirostyle}
 \addbibresource{thesis.bib}
 
-\title{A Study of Monte Carlo Methods and Their Application to Diphoton Production at the LHC}
+\title{A Study of Monte Carlo Methods and their Application to Diphoton Production at the LHC}
 \author{Valentin Boettcher}
+\date{10.~Juni~2020}
 
 \begin{document}
-\input{./tex/title.tex}
-\tableofcontents
 
+\pagenumbering{gobble}
+\input{./tex/title.tex}
+\clearpage
+\input{./tex/abstract.tex}
+\clearpage
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+
+\pagenumbering{arabic}
 \input{./tex/qqgammagamma.tex}
 \input{./tex/qqgammagamma/calculation.tex}
 \input{./tex/qqgammagamma/comparison.tex}
@@ -41,4 +50,6 @@ captions=nooneline,captions=tableabove,english]{scrbook}
 \listoffigures
 \listoftables
 \printbibliography
+\clearpage
+\input{./tex/erklaerung.tex}
 \end{document}

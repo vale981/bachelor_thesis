@@ -64,8 +64,8 @@ public:
                     {"inv_m", {2 * min_pT - 1, 2000, 50, true}},
                     {"o_angle", {0, 1}},
                     {"o_angle_cs", {0, 1}},
-                    {"total_pT", {.01, 1100, 50, true}},
-                    {"azimuthal_angle", {1.95e-5, PI, 50, true}}};
+                    {"total_pT", {1e-5, 1100, 50, true}},
+                    {"azimuthal_angle", {1e-5, PI, 50, true}}};
 
     for (auto &[name, observable] : _observables) {
       if (observable._log) {

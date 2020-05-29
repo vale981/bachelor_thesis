@@ -1,1 +1,45 @@
-\maketitle
+\makeatletter
+\begin{titlepage}
+  \includegraphics[width=5cm]{figs/logo.pdf}
+  \vspace{1em}
+  \hrule
+
+{\centering
+  \setstretch{1.1}
+  \vspace*{5em}
+  {\bfseries\Huge \@title}
+  \vfill
+  \vfill
+  {\large {\bfseries Bachelor-Arbeit} \\
+    zur Erlangung des Hochschulgrades\\
+    Bachelor of Science\\
+    im Bachelor-Studiengang Physik}
+  \vfill
+  vorgelegt von
+  \vspace{1em}
+
+  {{\large \@author} \\
+  geboren am 06.06.1998 in Gera (Th\"uringen)}
+  \vfill
+  {\large Institut für Kern- und Teilchenphysik\\
+    Fachrichtung Physik\\
+    Fakultät Mathematik und Naturwissenschaften\\
+    Technische Universität Dresden \\
+    \the\year}
+
+}
+
+\clearpage
+\null\vfill
+{\large Eingreicht: \@date}
+
+\begin{tabular*}{1.0\linewidth}[h]{ll}
+  1. Gutachter: & Dr. Frank Siegert \\
+  2. Gutachter: & Prof. Dr. Michael Kobel \\
+\end{tabular*}
+\end{titlepage}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../document"
+%%% End:
