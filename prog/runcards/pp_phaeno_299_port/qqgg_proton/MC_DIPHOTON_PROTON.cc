@@ -6,6 +6,7 @@
 #include "Rivet/Projections/MissingMomentum.hh"
 #include "Rivet/Projections/PromptFinalState.hh"
 #include "Rivet/Projections/VetoedFinalState.hh"
+
 #include <fstream>
 #include <iostream>
 
@@ -76,6 +77,7 @@ public:
 
       book(observable._hist, name, observable._bins, observable._min,
            observable._max);
+      book(_h_XS, "xs");
     }
   }
 
@@ -147,8 +149,9 @@ public:
   //@}
 
   void finalize() {
-    const double sf = crossSection() / (picobarn * sumOfWeights());
+    _h_XS->addPoint(0, crossSection() / picobarn, .5, crossSectionError() / picobarn);
 
+    const double sf = crossSection() / (picobarn * sumOfWeights());
     for (auto const &[_, observable] : _observables) {
       scale(observable._hist, sf);
     }
@@ -157,6 +160,7 @@ public:
   /// @name Histograms
   //@{
   std::map<const std::string, Observable> _observables;
+  Scatter2DPtr _h_XS;
   //@}
 };
 
