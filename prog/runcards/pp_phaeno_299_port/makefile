@@ -15,7 +15,7 @@ ANALYSIS_SO_NAME = RivetMcDiphotonProton
 OUT_DIR = out
 
 # Event Count
-EVENT_COUNT = 100000
+EVENT_COUNT = 1000000
 
 # List of Runcards, see RUNCARD_FOLDER
 RUNCARDS = with_pT_and_fragmentation_and_mi basic with_jets with_jets_and_pT with_pT_and_fragmentation
