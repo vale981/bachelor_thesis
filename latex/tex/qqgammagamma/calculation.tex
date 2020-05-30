@@ -113,24 +113,25 @@ form \cref{eq:gbricks}.
     \Gamma_{ij} &= \sum_{\lambda_1\lambda_2}
     \tr(\Gamma_i\ps_2\Gamma_j\ps_1)\\
     &= \sum_{\lambda_1\lambda_2}
-    \tr[\pses(a_i)(\ps_1-\ps(a_i))\pses(b_i)\ps_2\pes(b_i)(\ps_1 -
-    \ps(a_i))\pes(a_i)\ps_1]
+    \tr[\pses(a_i)(\ps_1-\ps(a_i))\pses(b_i)\ps_2\pes(b_j)(\ps_1 -
+    \ps(a_j))\pes(a_j)\ps_1]
   \end{split}
 \end{equation}
 
 The sum over plarisation can be simplified by utilizing the
-completeness relation for polarisation vectors for \emph{external}
-photons \cref{eq:polcomp}.
+completeness relation for polarisation vectors for \emph{real} photons
+\cref{eq:polcomp}.
 
 \begin{equation}
   \label{eq:polcomp}
   \sum_{\lambda=1}^{2}\pe_{(\lambda)}^\mu\pe_{(\lambda)}^{*\nu} = -g^{\mu\nu}
 \end{equation}
 
-For \(i=j\) and by utilizing \(\gamma_\mu\sl{a}\gamma^\mu=-2\sl{a}\),
- \(\gamma_\mu\sl{a}\sl{b}\sl{c}\gamma^\mu=-2\sl{c}\sl{b}\sl{a}\) as
+For \(i=j\) \cref{eq:gii} follows by utilizing
+\(\gamma_\mu\sl{a}\gamma^\mu=-2\sl{a}\),
+\(\gamma_\mu\sl{a}\sl{b}\sl{c}\gamma^\mu=-2\sl{c}\sl{b}\sl{a}\) as
 well as \(\ps_i\ps_i=p_i\cdot p_i = 0\) and the well known trace
-theorems for the gamma matrices \cref{eq:gii} follows.
+theorems for the gamma matrices.
 \begin{equation}
   \label{eq:gii}
   \begin{split}
@@ -150,7 +151,7 @@ albeit with more technical effort.\footnote{If I learned one thing, it
 \begin{equation}
   \label{eq:gij}
   \begin{split}
-\Gamma_{ii} &=
+\Gamma_{ij} &=
 \tr[\gamma_\mu(\ps_1-\ps(a_i))\gamma^\nu\ps_2\gamma^\mu(\ps_1-\ps(a_j))\gamma_\nu\ps_1)]\\
 &= -2\tr[\ps_2\gamma^\nu(\ps_1-\ps(a_i))(\ps_1-\ps(a_j))\gamma_\nu\ps_1)]
    \\
