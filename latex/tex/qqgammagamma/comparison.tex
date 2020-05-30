@@ -37,9 +37,9 @@ two identical photons in the final state.
   \centering
   \plot{xs/total_xs}
   \caption[Plot of the total cross section of the \(\qqgg\)
-  process.]{\label{fig:totxs} The total cross section
+  process.]{\label{fig:totxs} The cross section
     (\cref{eq:total-crossec}) of the process for a pseudo-rapidity
-    range of \([-\eta, \eta]\).}
+    integrated over \([-\eta, \eta]\).}
   \end{subfigure}
 \end{figure}
 
@@ -48,20 +48,19 @@ The differential cross section \cref{eq:crossec} (see also
 small scattering angles the absolute square of the momentum carried by
 the virtual quark in \cref{fig:qqggfeyn} goes to zero, which in the
 mass-less limit means that the virtual quark comes \emph{on-shell} and
-thus the process becomes resonant.  Because \(m=0\) is the limit for
-\(\ecm\rightarrow\infty\), the cross section would still have strong
-peaks for angles near \(0,\pi\) at high energies so that the result is
-not altogether nonphysical. The divergence of the cross section itself
-is also not the problem here, because it can be transformed into a
-form where the divergence does not occur (see \cref{eq:xs-eta}).
+thus the process becomes resonant. The divergence of the cross section
+itself is also not the problem here, because it can be transformed
+into a form where the divergence does not occur (see
+\cref{eq:xs-eta}).
 
 The differential cross section is clearly symmetric around
 \(\theta=\frac{\pi}{2}\) as was to be expected\footnote{Such
-  properties are very handy and intuitive checks for calculations
-  along the way.}, because the photons are indistinguishable. To
-compare the cross section to experiment and to simulation an interval
-around \(\theta=\frac{\pi}{2}\) has to be chosen, where the first
-order, mass-less approximation may yield a physical result.
+  properties have been very handy and intuitive checks for
+  calculations along the way.}, because the photons are
+indistinguishable. To compare the cross section to experiment and to
+simulation an interval around \(\theta=\frac{\pi}{2}\) has to be
+chosen, where the leading order, mass-less approximation may yield a
+physical result.
 
 The total cross section in such an interval, given by
 integrating \cref{eq:crossec} for \(\theta\in [\theta_1, \theta_2]\)
@@ -84,10 +83,10 @@ in \cref{eq:total-crossec}.
 As can be seen in \cref{fig:totxs}, the cross section, integrated over
 an interval of \([-\eta, \eta]\), is dominated by the linear
 contributions in \cref{eq:total-crossec} and would result in an
-infinity if no cut on \(\eta\) would be made.  Choosing
+infinity if no cut on \(\eta\) would be imposed. Choosing
 \(\eta\in [-2.5,2.5]\) and \(\ecm=\SI{100}{\giga\electronvolt}\) the
-process was Monte Carlo integrated in \sherpa\ using the runcard
-in \cref{sec:qqggruncard}. This runcard describes the exact same (first
+process was Monte Carlo integrated in \sherpa\ using the runcard in
+\cref{sec:qqggruncard}. This runcard describes the exact same (leading
 order) process as the calculated cross section.
 
 \sherpa\ arrives at the cross section \result{xs/sherpa_xs}. Plugging
