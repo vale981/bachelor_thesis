@@ -5,39 +5,42 @@ Monte carlo methods have been and still are one of the most important
 tools for theoretical calculations in particle physics. Be it for
 validating the well established standard model or for making
 predictions about new theories, monte carlo simulations are the
-crucial \emph{adapter} of theory and experimental data, making them
+crucial interface of theory and experimental data, making them
 directly comparable. Furthermore horizontal scaling is almost trivial
 to implement in monte carlo algorithms, making them well adapted to
-modern parallel computing.
+modern parallel computing. In this the thesis, the use of monte carlo
+methods will be traced through from simple integration to the
+simulation of proton-proton scattering.
 
-The \emph{Drosophila} of this thesis is the quark annihilation into
-two photons \(\qqgg\), henceforth called the diphoton process. It
-forms an important background to the higgs decay channel
+The ``Drosophila'' of this thesis is the quark annihilation into two
+photons \(\qqgg\), henceforth called the diphoton process. It forms an
+important background to the higgs decay channel
 \(H\rightarrow \gamma\gamma\) and a process of recent interest
 \(HH\rightarrow b\bar{b}\gamma\gamma\)~\cite{aaboud2018:sf}, while
-still being a pure QED process. The differential and total cross
-section of this process is being calculated in leading order in
-\cref{chap:qqgg} and the obtained result is compared to the total
-cross section obtained with the \sherpa~\cite{Gleisberg:2008ta} event
-generator, used as matrix element integrator. In \cref{chap:mc} some
-simple monte carlo methods are discussed, implemented and their
-results compared. First monte carlo integration is studies and the
-\vegas\ algorithm~\cite{Lepage:19781an} is implemented and
+still being a pure QED process and thus calculable by hand within the
+scope of this thesis. The differential and total cross section of this
+process is being calculated in leading order in \cref{chap:qqgg} and
+the obtained result is compared to the total cross section obtained
+with the \sherpa~\cite{Gleisberg:2008ta} event generator, used as
+matrix element integrator. In \cref{chap:mc} some simple monte carlo
+methods are discussed, implemented and their results compared. First
+monte carlo integration is studies and the \vegas\
+algorithm~\cite{Lepage:19781an} is implemented and
 evaluated. Subsequently monte carlo sampling methods are explored and
 the output of \vegas\ is used to improve the sampling
 efficiency. Histograms of observables are generated and compared to
 histograms from \sherpa using the \rivet~\cite{Bierlich:2019rhm}
-analysis framework. \Cref{chap:pdf} deals with proton proton
+analysis framework. \Cref{chap:pdf} deals with proton-proton
 scattering in the partonic picture using parton density functions,
 resulting in the implementation of a simple event generator for
-\(\ppgg\) scattering. The integration and sampling algorithms and
-their implementation are adapted to the mulidimensional case and
-histograms of observables are generated with good efficiency.  Because
-a real \(pp\) scattering event also incorporates processes like parton
-showers, hadronization and multiple interactions, a realistic
-simulation should account for those effects. The impact of those
-effects on observables is studied in \cref{chap:pheno} using the
-\sherpa event generator.
+\(\ppgg\) scattering at \lhc conditions. The integration and sampling
+algorithms and their implementation are adapted to the
+multidimensional case and histograms of observables are generated with
+good efficiency.  Because a real \(pp\) scattering event also
+incorporates processes like parton showers, hadronization and multiple
+interactions, a realistic simulation should account for those
+effects. The impact of those effects on observables is studied in
+\cref{chap:pheno} using the \sherpa event generator.
 
 %%% Local Variables: ***
 %%% mode: latex ***
