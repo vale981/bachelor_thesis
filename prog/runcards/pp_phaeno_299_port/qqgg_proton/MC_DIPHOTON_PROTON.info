@@ -6,8 +6,8 @@ Status: UNVALIDATED NOTREENTRY NOHEPDATA SINGLEWEIGHT
 Authors:
  - Valentin Boettcher <hiro@protagon.space>
 RunInfo: pT and eta cuts
-Beams: [93, 93]
-Energies: [[6500, 6500]]
+Beams: [2212, 2212]
+Energies: [6500, 6500]
 #Luminosity_fb: 139.0
 Description:
   'An analysis used to compare different configuration of the Sherpa event generator.'

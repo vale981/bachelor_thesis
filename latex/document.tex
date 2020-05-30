@@ -5,7 +5,7 @@
 
 \documentclass[fontsize=12pt,paper=a4,open=any,parskip=half,
 twoside=false,toc=listof,toc=bibliography,fleqn,leqno,
-captions=nooneline,captions=tableabove,english]{scrbook}
+captions=nooneline,captions=tableabove,english,DIV=16]{scrbook}
 
 \usepackage{hirostyle}
 \addbibresource{thesis.bib}
@@ -16,16 +16,17 @@ captions=nooneline,captions=tableabove,english]{scrbook}
 
 \begin{document}
 
-\pagenumbering{roman}
+\pagenumbering{Alph}
 \input{./tex/title.tex}
 \clearpage
 \input{./tex/abstract.tex}
 \clearpage
-\pagenumbering{roman}
 \tableofcontents
 \clearpage
 
 \pagenumbering{arabic}
+\input{./tex/introduction.tex}
+
 \input{./tex/qqgammagamma.tex}
 \input{./tex/qqgammagamma/calculation.tex}
 \input{./tex/qqgammagamma/comparison.tex}
@@ -43,7 +44,9 @@ captions=nooneline,captions=tableabove,english]{scrbook}
 \input{./tex/pheno/setup.tex}
 \input{./tex/pheno/discussion.tex}
 
+\clearpage
 \appendix
+\pagenumbering{roman}
 \input{./tex/appendix.tex}
 
 \clearpage
