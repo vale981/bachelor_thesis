@@ -6,7 +6,7 @@ Consider a function
 probability density on
 \(\rho\colon \vb{x}\in\Omega\mapsto\mathbb{R}_{\geq 0}\) with
 \(\int_{\Omega}\rho(\vb{x})\dd{\vb{x}} = 1\).  By multiplying \(f\)
-with a \(1\) in the fashion of \cref{eq:baseintegral}, the Integral
+with a one in the fashion of \cref{eq:baseintegral}, the integral
 of \(f\) over \(\Omega\) can be interpreted as the expected value
 \(\EX{F/\Rho}\) of the random variable \(F/\Rho\) under the
 distribution \(\rho\). This is the key to most Monte Carlo methods.
@@ -17,8 +17,8 @@ distribution \(\rho\). This is the key to most Monte Carlo methods.
   \qty[\frac{f(\vb{x})}{\rho(\vb{x})}] \rho(\vb{x}) \dd{\vb{x}} = \EX{\frac{F}{\Rho}}
 \end{equation}
 
-The expected value \(\EX{F/\Rho}\) can be approximated by taking the
-mean of \(F/\Rho\) with \(N\) finite samples
+The expected value \(\EX{F/\Rho}\) can be approximated by calculating
+the mean of \(F/\Rho\) with \(N\) finite samples
 \(\{\vb{x}_i\}_{i\in\overline{1,N}}\sim\rho\) (distributed according
 to \(\rho\)), where \(N\) is a very large integer.
 
@@ -43,11 +43,9 @@ expected value \(\EX{X_i}=\mathbb{E}\) and variance
                             \frac{\sigma^2}{N}  \label{eq:variance-mean}
 \end{gather}
 
-Because
-\(\frac{\sigma^2}{N}\xrightarrow{N\rightarrow\infty}
-0\) \cref{eq:approxexp} really converges to \(I\). For finite \(N\)
+Because \(\frac{\sigma^2}{N}\xrightarrow{N\rightarrow\infty} 0\)
+\cref{eq:approxexp} really converges to \(I\). For finite \(N\) the
 value of \cref{eq:approxexp} varies around \(I\) with the variance
-
 \(\VAR{F/\Rho}\cdot N^{-1}\) as in \cref{eq:varI}.
 
 \begin{align}
@@ -77,13 +75,14 @@ The convergence of \cref{eq:approxexp} is not dependent on the
 dimensionality of the integration volume as opposed to many other
 numerical integration algorithms (trapezoid rule, Simpsons rule) that
 usually converge like \(N^{-\frac{k}{n}}\) with \(k\in\mathbb{N}\) as
-opposed to \(N^{-\frac{k}{n}}\) with Monte Carlo. Because integrals in
-particle physics usually have a high dimensionality, Monte Carlo
-integration is suitable there. When implementing Monte Carlo methods,
-the random samples can be obtained through hardware or software random
-number generators (RNGs). Most implementations utilize software RNGs
-because supply pseudo-random numbers in a reproducible way, which
-facilitates deniability and comparability.
+opposed to \(N^{-\frac{k}{n}}\) with Monte Carlo. Because phase space
+integrals in particle physics usually have a high dimensionality,
+Monte Carlo integration is suitable approach there. When implementing
+Monte Carlo methods, the random samples can be obtained through
+hardware or software random number generators (RNGs). Most
+implementations utilize software RNGs because supply pseudo-random
+numbers in a reproducible way, which facilitates deniability and
+comparability.~\cite{buckley:2011ge}
 
 \subsection{Naive Monte-Carlo Integration and Change of Variables}
 \label{sec:naivechange}
@@ -126,15 +125,19 @@ a target accuracy of \(\varepsilon=10^{-3}\) results in
 \result{xs/python/xs_mc} with a sample size of
 \result{xs/python/xs_mc_N}.
 
-Changing variables and integrating \cref{eq:xs-eta} over \(\eta\)
-with the same target accuracy yields~\result{xs/python/xs_mc_eta} with
-a sample size of just~\result{xs/python/xs_mc_eta_N}. The dramatic
+Changing variables and integrating \cref{eq:xs-eta} over \(\eta\) with
+the same target accuracy yields~\result{xs/python/xs_mc_eta} with a
+sample size of just~\result{xs/python/xs_mc_eta_N}. The dramatic
 reduction in variance and sample size can be understood qualitatively
 by studying \cref{fig:xs-int-comp}. The differential cross section in
 terms of \(\eta\)~(\cref{fig:xs-int-eta}) is less steep than the
 differential cross section in terms of
 \(\theta\)~(\cref{fig:xs-int-theta}) and takes on significant values
-over most of the integration interval.
+over most of the integration interval. In general, the Jacobian
+arising in variable transformation has the same effect as the
+probability density in importance sampling. It can be shown that
+importance sampling and change of variables are formally equivalent
+(see \ref{sec:equap}).
 
 \begin{figure}[ht]
   \centering
