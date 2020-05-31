@@ -182,3 +182,75 @@ Viele Gruesse, Frank
 ** nur shower
 ** TODO shower scale anpassen
 ** TODO effekt shower und kperp
+* Observations
+** Azimuthal Angle
+ - 0 for basic
+ - converge at large angle -> expected
+ - smaller angle with PS
+ - all other similar, pT a little bit bigger than pT+hadrons
+ - with MI -> a bit lower than most others
+ - in general flattens out
+
+** Cos Θ
+ - similar shape as before
+ - all others a little bit enhanced over basic
+ - Hadonization usually highest
+ - converge at big angles
+ - MI quite lower
+
+** η
+ - big drop at extremes
+ - more weight towards center (isolation?)
+ - drop already with PS, mode With hadronization
+ - most drop with MI and pT -> why that difference with hadronization
+   - could still be statistical
+ - hadronized xs seems enhanced
+ - but shape change dominated through PSeudo
+
+** Invariant Mass
+ - very similar to basic process, no huge effects
+ - hadronziation on top
+ - pT+hadrons similar, enhanced
+ - mi lower (even than basic)
+ - max ~ 200 Gev
+
+** Scattering Angle
+ - enhanced at small angles
+ - all converge to zero
+ - mostly compatible
+ - mi lower
+
+** Scattering Angle in CS Frame
+ - similar to lab frame (total pT not that big on average ~1 GeV, Around 500 GeV max)
+ - all effects converge to the same non-zero
+   - finite pT -> photons with small scattering angle pass cuts
+   - likeness to lab frame -> good generalisation, interesting effect may be isolated
+ - mi lower on average
+
+** pT leading
+ - first 2 bins lower than basic, others bigger
+   - shifting the pT distribution -> intrinsic + jet pT
+ - PS a little bit enhanced in first bin
+ - from pT on all similar
+ - mi lower on average
+
+** pT subleading
+ - very similar in shape
+ - almost constant factor smaller with PS, pT
+ - pT, hadrons compat, mi a little lower
+ - total pT shift -> subleading gets less pT
+
+** total pT
+ - most at ~ 2 Gev
+ - max around 100 Gev (as inv mass)
+ - steep drop after ~ 50 GeV
+ - pig differences at low pT, MI enhnaced (here isolation seems to work better, less transverse jets?), statistics
+ - pS not enough, only with pT (remnants) conclusive picture
+
+** XS
+ - with all other effects similar
+ - why is MI not bigger? -> does not modify IS!
+
+** overal
+ - mi lower
+ - remnants+pT usually pretty good approx
