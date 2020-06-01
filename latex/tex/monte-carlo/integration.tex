@@ -163,30 +163,30 @@ importance sampling and change of variables are formally equivalent
 \label{sec:mcintvegas}
 
 Stratified sampling gives optimal results, when the variance in every
-sub-volume is the same~\cite{Lepage:19781an}. In importance sampling,
+sub-volume is the same\cite{Lepage:19781an}. In importance sampling
 the optimal probability distribution is given
 by \cref{eq:optimalrho}, where \(f(\Omega) \geq 0\) is presumed
 without loss of generality. When applying \vegas\ to multi dimensional
 integrals, \cref{eq:optimalrho} is usually modified to factorize into
-distributions for each variable to simplify calculations.
+distributions for each variable.
 
 \begin{equation}
   \label{eq:optimalrho}
   \rho(\vb{x}) = \frac{f(\vb{x})}{\int_\Omega f(\vb{y})\dd{y}}
 \end{equation}
 
-The idea behind \vegas\ is to subdivide \(\Omega\) into hypercubes
-(create a grid), define \(\rho\) as step-function on those hypercubes
-and iteratively approximating \cref{eq:optimalrho}, instead of trying
-to minimize the variance directly~\cite{Lepage:19781an}. In the end,
-the samples are concentrated where \(f\) takes on the highest values
-and changes most rapidly. This is done by subdividing the hypercubes
-into smaller chunks, based on their contribution to the integral and
-then varying the hypercube borders until all hypercubes contain the
-same number of chunks. Note that no knowledge about the integrand is
-required. The probability density used by \vegas\ is given in
-\cref{eq:vegasrho} with \(K\) being the number of hypercubes and
-\(\Omega_i\) being the hypercubes themselves.
+The idea behind \vegas\ is to subdivide \(\Omega\) into hypercubes,
+define \(\rho\) as step-function on those hypercubes and iteratively
+approximating \cref{eq:optimalrho}, instead of trying to minimize the
+variance directly~\cite{Lepage:19781an}. In the end, the samples are
+concentrated where \(f\) takes on the highest values and changes most
+rapidly. This is done by subdividing the hypercubes into smaller
+chunks, based on their contribution to the integral and then varying
+the hypercube borders until all hypercubes contain the same number of
+chunks. Note that no knowledge about the integrand is required. The
+probability density used by \vegas\ is given in \cref{eq:vegasrho}
+with \(K\) being the number of hypercubes and \(\Omega_i\) being the
+hypercubes themselves.
 
 \begin{equation}
   \label{eq:vegasrho}
@@ -210,12 +210,14 @@ increments. Applying \vegas\ to \cref{eq:crossec} with
 \result{xs/python/xs_mc_θ_vegas_K} increments yields
 \result{xs/python/xs_mc_θ_vegas} with
 \result{xs/python/xs_mc_θ_vegas_N} samples. This result is comparable
-with tho one obtained by parameter transformation in
-\cref{sec:naivechange}.  The sample count \(N\) is the total number of
-evaluations of \(f\). The resulting increments and the weighted
-integrand \(f/\rho\) are depicted in \cref{fig:xs-int-vegas}, along
-with the original integrand and it is intuitively clear, that the
-variance is being reduced. Smaller increments correspond to higher
+with tho one obtained by parameter transformation
+in \cref{sec:naivechange}.  The sample count \(N\) is the number of
+samples of the final integration and not the total number of
+evaluations of \(f\) and is mentioned here, to illustrate the effect
+of using stratified sampling. The resulting increments and the
+weighted integrand \(f/\rho\) are depicted in \cref{fig:xs-int-vegas},
+along with the original integrand and it is intuitively clear, that
+the variance is being reduced. Smaller increments correspond to higher
 sample density and lower weights, flattening out the integrand.
 
 Generally the result gets better with more increments, but at the cost
