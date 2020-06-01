@@ -433,12 +433,16 @@ def integrate_vegas(
     # start with equally sized intervals
     interval_borders = np.linspace(*interval, num_increments + 1, endpoint=True)
 
+    N = 0
+
     def evaluate_integrand(interval_borders, interval_lengths, samples_per_increment):
+        nonlocal N
         intervals = np.array((interval_borders[:-1], interval_borders[1:]))
         sample_points = np.random.uniform(
             *intervals, (samples_per_increment, num_increments)
         ).T
 
+        N += samples_per_increment * num_increments
         weighted_f_values = f(sample_points, **kwargs) * interval_lengths[:, None]
 
         # the mean here has absorbed the num_increments
@@ -455,7 +459,7 @@ def integrate_vegas(
     integrals = []
     variances = []
 
-    vegas_iterations, integral, variance = 0, 0, 0
+    vegas_iterations = integral = variance = 0
     while True:
         vegas_iterations += 1
         interval_lengths = interval_borders[1:] - interval_borders[:-1]
@@ -518,11 +522,7 @@ def integrate_vegas(
         variance = 1 / np.sqrt(np.sum(integrals ** 2 / variances ** 2)) * integral
 
     return VegasIntegrationResult(
-        integral,
-        np.sqrt(variance),
-        points_per_increment * num_increments,
-        interval_borders,
-        vegas_iterations,
+        integral, np.sqrt(variance), N, interval_borders, vegas_iterations,
     )
 
 
