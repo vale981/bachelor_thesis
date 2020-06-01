@@ -170,7 +170,8 @@ Viele Gruesse, Frank
 ** Soft Inclusive
  - wtf are those processes
 ** what does inclusive mean
-** TODO
+** TODO Normalize to XS
+** TODO y axis label for normalized histos
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!
