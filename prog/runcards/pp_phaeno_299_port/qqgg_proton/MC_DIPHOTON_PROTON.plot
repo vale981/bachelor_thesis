@@ -69,4 +69,6 @@ LogX=1
 Title=total cross section
 YLabel=$\sigma$
 LogY=0
+YMin=42
+YMax=48
 # END PLOT

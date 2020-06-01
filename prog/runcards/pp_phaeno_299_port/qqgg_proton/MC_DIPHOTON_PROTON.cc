@@ -62,7 +62,7 @@ public:
                     {"pT_subl", {min_pT, 1100, 50, true}},
                     {"eta", {-eta, eta}},
                     {"cos_theta", {-1, 1}},
-                    {"inv_m", {2 * min_pT - 1, 2000, 50, true}},
+                    {"inv_m", {0.001, 2000, 50, true}},
                     {"o_angle", {0, 1}},
                     {"o_angle_cs", {0, 1}},
                     {"total_pT", {1e-5, 1100, 50, true}},
@@ -151,9 +151,9 @@ public:
   void finalize() {
     _h_XS->addPoint(0, crossSection() / picobarn, .5, crossSectionError() / picobarn);
 
-    const double sf = crossSection() / (picobarn * sumOfWeights());
+    const double sf = crossSection() / picobarn;
     for (auto const &[_, observable] : _observables) {
-      scale(observable._hist, sf);
+      normalize(observable._hist, sf);
     }
   }
 
