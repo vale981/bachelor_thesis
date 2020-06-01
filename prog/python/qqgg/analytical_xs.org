@@ -23,8 +23,6 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 * Implementation
 ** Center of Mass Frame
@@ -267,7 +265,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.05452351445607765, sigma=0.0008867170311389319, N=2632)
+: IntegrationResult(result=0.054058736201892936, sigma=0.0009406977417774582, N=2331)
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -277,7 +275,7 @@ We gonna export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 2632\)
+: \(N = 2331\)
 
 *** Integration over η
 Plot the intgrand of the pseudo rap.
@@ -303,7 +301,7 @@ Plot the intgrand of the pseudo rap.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.055152960966221104, sigma=0.0009757996028774925, N=136)
+: IntegrationResult(result=0.053406777481589965, sigma=0.0009728516117407012, N=137)
 
 As we see, the result is a little better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.  But
@@ -318,19 +316,19 @@ And yet again export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 136\)
+: \(N = 137\)
 
 *** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+begin_src jupyter-python :exports both :results raw drawer
-  num_increments = 11
+  num_increments = 20
   xs_pb_vegas = monte_carlo.integrate_vegas(
       xs_pb_int,
       interval,
       num_increments=num_increments,
       alpha=1.5,
       increment_epsilon=0.01,
-      vegas_point_density=50,
+      vegas_point_density=15,
       epsilon=.001,
       acumulate=False,
   )
@@ -338,9 +336,11 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.052918534774420684, sigma=0.0005869054667969002, N=132, increment_borders=array([0.16380276, 0.23764875, 0.34453935, 0.50327444, 0.7664946 ,
-:        1.23784117, 1.90878556, 2.37571652, 2.63923147, 2.80114603,
-:        2.90614478, 2.9777899 ]), vegas_iterations=49)
+: VegasIntegrationResult(result=0.052773271883732584, sigma=0.0006119771217887033, N=920, increment_borders=array([0.16380276, 0.20109846, 0.24530873, 0.30103045, 0.37106657,
+:        0.45713119, 0.56758289, 0.71432935, 0.91252993, 1.17768957,
+:        1.55420491, 1.91978804, 2.20362647, 2.40547652, 2.55765843,
+:        2.67560835, 2.76436094, 2.83801142, 2.89499662, 2.94066386,
+:        2.9777899 ]), vegas_iterations=23)
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. Here this gives
@@ -351,11 +351,12 @@ And export that as tex.
   tex_value(*xs_pb_vegas.combined_result, unit=r'\pico\barn',
             prefix=r'\sigma = ', save=('results', 'xs_mc_θ_vegas.tex'))
   tex_value(xs_pb_vegas.N, prefix=r'N = ', save=('results', 'xs_mc_θ_vegas_N.tex'))
+  tex_value(xs_pb_vegas.vegas_iterations, prefix=r'\times', save=('results', 'xs_mc_θ_vegas_it.tex'))
   tex_value(num_increments, prefix=r'K = ', save=('results', 'xs_mc_θ_vegas_K.tex'))
 #+end_src
 
 #+RESULTS:
-: \(K = 11\)
+: \(K = 20\)
 
 Surprisingly, acumulation, the result ain't much different.
 This depends, of course, on the iteration count.
@@ -365,17 +366,19 @@ This depends, of course, on the iteration count.
       interval,
       num_increments=num_increments,
       alpha=1.5,
-      increment_epsilon=0.02,
-      vegas_point_density=50,
-      epsilon=0.001,
+      increment_epsilon=0.01,
+      vegas_point_density=20,
+      epsilon=.001,
       acumulate=True,
   )
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.054225318295709576, sigma=0.0005344279674182307, N=132, increment_borders=array([0.16380276, 0.2587029 , 0.3891672 , 0.5762728 , 0.8571485 ,
-:        1.28238038, 1.83744442, 2.27650294, 2.56160191, 2.75138565,
-:        2.88334181, 2.9777899 ]), vegas_iterations=6)
+: VegasIntegrationResult(result=0.05379385150190898, sigma=0.0003068472335040267, N=760, increment_borders=array([0.16380276, 0.20176444, 0.24723471, 0.30169898, 0.3725654 ,
+:        0.46249133, 0.57260516, 0.71753884, 0.9047832 , 1.17676749,
+:        1.53514921, 1.91009792, 2.19262501, 2.40344474, 2.55656491,
+:        2.67302165, 2.76296776, 2.83550718, 2.89246912, 2.93998605,
+:        2.9777899 ]), vegas_iterations=19)
 
 Let's define some little helpers.
 #+begin_src jupyter-python :exports both :tangle tangled/plot_utils.py
@@ -480,7 +483,7 @@ And now we plot the integrand with the incremens.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/097d97f95301c20b933658fb98da2248ddd4f515.png]]
+[[file:./.ob-jupyter/d3b48be87b26058e6083e6f3a138e935436e3a87.png]]
 *** Testing the Statistics
 Let's battle test the statistics.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -497,7 +500,7 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.703
+: 0.688
 
 So we see: the standard deviation is sound.
 
@@ -523,7 +526,11 @@ Doing the same thing with =VEGAS= works as well.
 #+end_src
 
 #+RESULTS:
-: 0.659
+:RESULTS:
+: /home/hiro/Documents/Projects/UNI/Bachelor/prog/python/qqgg/monte_carlo.py:451: RuntimeWarning: invalid value encountered in double_scalars
+:   variance = (
+: 0.0
+:END:
 
 ** Sampling and Analysis
 Define the sample number.
@@ -562,10 +569,7 @@ Now we monte-carlo sample our distribution. We observe that the efficiency his v
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-: Loading Cache:  sample_unweighted_array
-: 0.027412017976489476
-:END:
+: 0.02738751517805198
 
 Let's save that.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -639,7 +643,7 @@ at least a little bit better. The numeric inversion is horribly inefficent.
 #+end_src
 
 #+RESULTS:
-: 0.07903786860621394
+: 0.07904706665774734
 <<cosθ-bare-eff>>
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -807,167 +811,7 @@ The histogram for cosθ.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  BrokenPipeErrorTraceback (most recent call last)
-  <ipython-input-147-104ce6323a34> in <module>
-        1 fig, _ = draw_histo_auto(cosθ_sample, r'$\cos\theta$')
-  ----> 2 save_fig(fig, 'histo_cos_theta', 'xs', size=(4,3))
-        3 hist_cosθ = np.histogram(cosθ_sample, bins=50, range=interval_cosθ)
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/utility.py in save_fig(fig, title, folder, size)
-      210
-      211     fig.savefig(f"./figs/{folder}/{title}.pdf")
-  --> 212     fig.savefig(f"./figs/{folder}/{title}.pgf")
-      213
-      214
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in savefig(self, fname, transparent, **kwargs)
-     2201             self.patch.set_visible(frameon)
-     2202
-  -> 2203         self.canvas.print_figure(fname, **kwargs)
-     2204
-     2205         if frameon:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backend_bases.py in print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, **kwargs)
-     2096
-     2097             try:
-  -> 2098                 result = print_method(
-     2099                     filename,
-     2100                     dpi=dpi,
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in print_pgf(self, fname_or_fh, *args, **kwargs)
-      888             if not cbook.file_requires_unicode(file):
-      889                 file = codecs.getwriter("utf-8")(file)
-  --> 890             self._print_pgf_to_fh(file, *args, **kwargs)
-      891
-      892     def _print_pdf_to_fh(self, fh, *args, **kwargs):
-
-  /usr/lib/python3.8/site-packages/matplotlib/cbook/deprecation.py in wrapper(*args, **kwargs)
-      356                 f"%(removal)s.  If any parameter follows {name!r}, they "
-      357                 f"should be pass as keyword, not positionally.")
-  --> 358         return func(*args, **kwargs)
-      359
-      360     return wrapper
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _print_pgf_to_fh(self, fh, dryrun, bbox_inches_restore, *args, **kwargs)
-      870                                      RendererPgf(self.figure, fh),
-      871                                      bbox_inches_restore=bbox_inches_restore)
-  --> 872         self.figure.draw(renderer)
-      873
-      874         # end the pgfpicture environment
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in draw(self, renderer)
-     1733
-     1734             self.patch.draw(renderer)
-  -> 1735             mimage._draw_list_compositing_images(
-     1736                 renderer, self, artists, self.suppressComposite)
-     1737
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axes/_base.py in draw(self, renderer, inframe)
-     2628             renderer.stop_rasterizing()
-     2629
-  -> 2630         mimage._draw_list_compositing_images(renderer, self, artists)
-     2631
-     2632         renderer.close_group('axes')
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in draw(self, renderer, *args, **kwargs)
-     1226
-     1227         ticks_to_draw = self._update_ticks()
-  -> 1228         ticklabelBoxes, ticklabelBoxes2 = self._get_tick_bboxes(ticks_to_draw,
-     1229                                                                 renderer)
-     1230
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in _get_tick_bboxes(self, ticks, renderer)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in <listcomp>(.0)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in get_window_extent(self, renderer, dpi)
-      903             raise RuntimeError('Cannot get window extent w/o renderer')
-      904
-  --> 905         bbox, info, descent = self._get_layout(self._renderer)
-      906         x, y = self.get_unitless_position()
-      907         x, y = self.get_transform().transform((x, y))
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in _get_layout(self, renderer)
-      297             clean_line, ismath = self._preprocess_math(line)
-      298             if clean_line:
-  --> 299                 w, h, d = renderer.get_text_width_height_descent(
-      300                     clean_line, self._fontproperties, ismath=ismath)
-      301             else:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_text_width_height_descent(self, s, prop, ismath)
-      755
-      756         # get text metrics in units of latex pt, convert to display units
-  --> 757         w, h, d = (LatexManager._get_cached_or_new()
-      758                    .get_width_height_descent(s, prop))
-      759         # TODO: this should be latex_pt_to_in instead of mpl_pt_to_in
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_width_height_descent(self, text, prop)
-      356
-      357         # send textbox to LaTeX and wait for prompt
-  --> 358         self._stdin_writeln(textbox)
-      359         try:
-      360             self._expect_prompt()
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _stdin_writeln(self, s)
-      257         self.latex_stdin_utf8.write(s)
-      258         self.latex_stdin_utf8.write("\n")
-  --> 259         self.latex_stdin_utf8.flush()
-      260
-      261     def _expect(self, s):
-
-  BrokenPipeError: [Errno 32] Broken pipe
-#+end_example
-[[file:./.ob-jupyter/55f6fa41daff4d08906fe1cdfb4a2346424a7d4a.png]]
-:END:
+[[file:./.ob-jupyter/ebc5d8873924ff1b194ac2855e0c701a67359392.png]]
 
 *** Observables
 Now we define some utilities to draw real 4-momentum samples.
@@ -1092,19 +936,19 @@ Lets try it out.
       charge,
       esp,
       proc='auto',
-      momentum_cache="cache/momenta_bare_cos_theta",
+      momentum_cache="cache/momenta_bare_cos_θ_1",
   )
   momentum_sample
 #+end_src
 
 #+RESULTS:
-: array([[100.        ,  28.46610715,  16.9831103 ,  94.34646103],
-:        [100.        ,  51.71601961,  65.92749715,  54.58038508],
-:        [100.        ,  15.78541887,  10.82393532, -98.15122503],
+: array([[100.        ,  43.62555709,  21.21790392, -87.44490449],
+:        [100.        ,  41.38722348,  52.29638318, -74.51299242],
+:        [100.        ,  52.85217407,  65.6183037 , -53.85987297],
 :        ...,
-:        [100.        ,  48.42633448,  55.48001559, -67.65247962],
-:        [100.        ,  75.10416081,  54.08991946, -37.86351333],
-:        [100.        ,  77.62958602,  62.09229857, -10.87169874]])
+:        [100.        ,  49.13037192,  24.63978227, -83.54093419],
+:        [100.        ,  66.19768512,  12.47637819,  73.90674173],
+:        [100.        ,  22.11649396,  29.96005732, -92.80762717]])
 
 
 Now let's make a histogram of the η distribution.
@@ -1117,167 +961,7 @@ Now let's make a histogram of the η distribution.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  BrokenPipeErrorTraceback (most recent call last)
-  <ipython-input-151-ac89c3c72c1a> in <module>
-        3     η_sample, r"$eta$", range=interval_η, rethist=True
-        4 )
-  ----> 5 save_fig(fig, "histo_eta", "xs_sampling", size=[3, 3])
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/utility.py in save_fig(fig, title, folder, size)
-      210
-      211     fig.savefig(f"./figs/{folder}/{title}.pdf")
-  --> 212     fig.savefig(f"./figs/{folder}/{title}.pgf")
-      213
-      214
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in savefig(self, fname, transparent, **kwargs)
-     2201             self.patch.set_visible(frameon)
-     2202
-  -> 2203         self.canvas.print_figure(fname, **kwargs)
-     2204
-     2205         if frameon:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backend_bases.py in print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, **kwargs)
-     2096
-     2097             try:
-  -> 2098                 result = print_method(
-     2099                     filename,
-     2100                     dpi=dpi,
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in print_pgf(self, fname_or_fh, *args, **kwargs)
-      888             if not cbook.file_requires_unicode(file):
-      889                 file = codecs.getwriter("utf-8")(file)
-  --> 890             self._print_pgf_to_fh(file, *args, **kwargs)
-      891
-      892     def _print_pdf_to_fh(self, fh, *args, **kwargs):
-
-  /usr/lib/python3.8/site-packages/matplotlib/cbook/deprecation.py in wrapper(*args, **kwargs)
-      356                 f"%(removal)s.  If any parameter follows {name!r}, they "
-      357                 f"should be pass as keyword, not positionally.")
-  --> 358         return func(*args, **kwargs)
-      359
-      360     return wrapper
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _print_pgf_to_fh(self, fh, dryrun, bbox_inches_restore, *args, **kwargs)
-      870                                      RendererPgf(self.figure, fh),
-      871                                      bbox_inches_restore=bbox_inches_restore)
-  --> 872         self.figure.draw(renderer)
-      873
-      874         # end the pgfpicture environment
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in draw(self, renderer)
-     1733
-     1734             self.patch.draw(renderer)
-  -> 1735             mimage._draw_list_compositing_images(
-     1736                 renderer, self, artists, self.suppressComposite)
-     1737
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axes/_base.py in draw(self, renderer, inframe)
-     2628             renderer.stop_rasterizing()
-     2629
-  -> 2630         mimage._draw_list_compositing_images(renderer, self, artists)
-     2631
-     2632         renderer.close_group('axes')
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in draw(self, renderer, *args, **kwargs)
-     1226
-     1227         ticks_to_draw = self._update_ticks()
-  -> 1228         ticklabelBoxes, ticklabelBoxes2 = self._get_tick_bboxes(ticks_to_draw,
-     1229                                                                 renderer)
-     1230
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in _get_tick_bboxes(self, ticks, renderer)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in <listcomp>(.0)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in get_window_extent(self, renderer, dpi)
-      903             raise RuntimeError('Cannot get window extent w/o renderer')
-      904
-  --> 905         bbox, info, descent = self._get_layout(self._renderer)
-      906         x, y = self.get_unitless_position()
-      907         x, y = self.get_transform().transform((x, y))
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in _get_layout(self, renderer)
-      297             clean_line, ismath = self._preprocess_math(line)
-      298             if clean_line:
-  --> 299                 w, h, d = renderer.get_text_width_height_descent(
-      300                     clean_line, self._fontproperties, ismath=ismath)
-      301             else:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_text_width_height_descent(self, s, prop, ismath)
-      755
-      756         # get text metrics in units of latex pt, convert to display units
-  --> 757         w, h, d = (LatexManager._get_cached_or_new()
-      758                    .get_width_height_descent(s, prop))
-      759         # TODO: this should be latex_pt_to_in instead of mpl_pt_to_in
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_width_height_descent(self, text, prop)
-      356
-      357         # send textbox to LaTeX and wait for prompt
-  --> 358         self._stdin_writeln(textbox)
-      359         try:
-      360             self._expect_prompt()
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _stdin_writeln(self, s)
-      257         self.latex_stdin_utf8.write(s)
-      258         self.latex_stdin_utf8.write("\n")
-  --> 259         self.latex_stdin_utf8.flush()
-      260
-      261     def _expect(self, s):
-
-  BrokenPipeError: [Errno 32] Broken pipe
-#+end_example
-[[file:./.ob-jupyter/ece032c2cff4382899198f165b8db1e0016dbeb8.png]]
-:END:
+[[file:./.ob-jupyter/0cefb0de82a158b41c584233d998e73661627b2f.png]]
 
 
 And the same for the p_t (transverse momentum) distribution.
@@ -1290,167 +974,7 @@ And the same for the p_t (transverse momentum) distribution.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  BrokenPipeErrorTraceback (most recent call last)
-  <ipython-input-152-571bccd8fff9> in <module>
-        3     p_t_sample, r"$p_T$ [GeV]", range=interval_pt, rethist=True
-        4 )
-  ----> 5 save_fig(fig, "histo_pt", "xs_sampling", size=[3, 3])
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/utility.py in save_fig(fig, title, folder, size)
-      210
-      211     fig.savefig(f"./figs/{folder}/{title}.pdf")
-  --> 212     fig.savefig(f"./figs/{folder}/{title}.pgf")
-      213
-      214
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in savefig(self, fname, transparent, **kwargs)
-     2201             self.patch.set_visible(frameon)
-     2202
-  -> 2203         self.canvas.print_figure(fname, **kwargs)
-     2204
-     2205         if frameon:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backend_bases.py in print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, **kwargs)
-     2096
-     2097             try:
-  -> 2098                 result = print_method(
-     2099                     filename,
-     2100                     dpi=dpi,
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in print_pgf(self, fname_or_fh, *args, **kwargs)
-      888             if not cbook.file_requires_unicode(file):
-      889                 file = codecs.getwriter("utf-8")(file)
-  --> 890             self._print_pgf_to_fh(file, *args, **kwargs)
-      891
-      892     def _print_pdf_to_fh(self, fh, *args, **kwargs):
-
-  /usr/lib/python3.8/site-packages/matplotlib/cbook/deprecation.py in wrapper(*args, **kwargs)
-      356                 f"%(removal)s.  If any parameter follows {name!r}, they "
-      357                 f"should be pass as keyword, not positionally.")
-  --> 358         return func(*args, **kwargs)
-      359
-      360     return wrapper
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _print_pgf_to_fh(self, fh, dryrun, bbox_inches_restore, *args, **kwargs)
-      870                                      RendererPgf(self.figure, fh),
-      871                                      bbox_inches_restore=bbox_inches_restore)
-  --> 872         self.figure.draw(renderer)
-      873
-      874         # end the pgfpicture environment
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in draw(self, renderer)
-     1733
-     1734             self.patch.draw(renderer)
-  -> 1735             mimage._draw_list_compositing_images(
-     1736                 renderer, self, artists, self.suppressComposite)
-     1737
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axes/_base.py in draw(self, renderer, inframe)
-     2628             renderer.stop_rasterizing()
-     2629
-  -> 2630         mimage._draw_list_compositing_images(renderer, self, artists)
-     2631
-     2632         renderer.close_group('axes')
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in draw(self, renderer, *args, **kwargs)
-     1226
-     1227         ticks_to_draw = self._update_ticks()
-  -> 1228         ticklabelBoxes, ticklabelBoxes2 = self._get_tick_bboxes(ticks_to_draw,
-     1229                                                                 renderer)
-     1230
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in _get_tick_bboxes(self, ticks, renderer)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in <listcomp>(.0)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in get_window_extent(self, renderer, dpi)
-      903             raise RuntimeError('Cannot get window extent w/o renderer')
-      904
-  --> 905         bbox, info, descent = self._get_layout(self._renderer)
-      906         x, y = self.get_unitless_position()
-      907         x, y = self.get_transform().transform((x, y))
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in _get_layout(self, renderer)
-      297             clean_line, ismath = self._preprocess_math(line)
-      298             if clean_line:
-  --> 299                 w, h, d = renderer.get_text_width_height_descent(
-      300                     clean_line, self._fontproperties, ismath=ismath)
-      301             else:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_text_width_height_descent(self, s, prop, ismath)
-      755
-      756         # get text metrics in units of latex pt, convert to display units
-  --> 757         w, h, d = (LatexManager._get_cached_or_new()
-      758                    .get_width_height_descent(s, prop))
-      759         # TODO: this should be latex_pt_to_in instead of mpl_pt_to_in
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_width_height_descent(self, text, prop)
-      356
-      357         # send textbox to LaTeX and wait for prompt
-  --> 358         self._stdin_writeln(textbox)
-      359         try:
-      360             self._expect_prompt()
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _stdin_writeln(self, s)
-      257         self.latex_stdin_utf8.write(s)
-      258         self.latex_stdin_utf8.write("\n")
-  --> 259         self.latex_stdin_utf8.flush()
-      260
-      261     def _expect(self, s):
-
-  BrokenPipeError: [Errno 32] Broken pipe
-#+end_example
-[[file:./.ob-jupyter/5a7ef720cb89e8d6f35dddcc201f4ef4b8b00874.png]]
-:END:
+[[file:./.ob-jupyter/bfee9d12cdae264248514daef92e83a4b737e49c.png]]
 
 That looks somewhat fishy, but it isn't.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -1465,167 +989,7 @@ That looks somewhat fishy, but it isn't.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  BrokenPipeErrorTraceback (most recent call last)
-  <ipython-input-153-1affe46c82dd> in <module>
-        6 ax.set_ylim([0, gev_to_pb(diff_xs_p_t(interval_pt[1] -.01, charge, esp))])
-        7 ax.set_ylabel(r'$\frac{d\sigma}{dp_t}$ [pb]')
-  ----> 8 save_fig(fig, 'diff_xs_p_t', 'xs_sampling', size=[4, 2])
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/utility.py in save_fig(fig, title, folder, size)
-      210
-      211     fig.savefig(f"./figs/{folder}/{title}.pdf")
-  --> 212     fig.savefig(f"./figs/{folder}/{title}.pgf")
-      213
-      214
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in savefig(self, fname, transparent, **kwargs)
-     2201             self.patch.set_visible(frameon)
-     2202
-  -> 2203         self.canvas.print_figure(fname, **kwargs)
-     2204
-     2205         if frameon:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backend_bases.py in print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, **kwargs)
-     2096
-     2097             try:
-  -> 2098                 result = print_method(
-     2099                     filename,
-     2100                     dpi=dpi,
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in print_pgf(self, fname_or_fh, *args, **kwargs)
-      888             if not cbook.file_requires_unicode(file):
-      889                 file = codecs.getwriter("utf-8")(file)
-  --> 890             self._print_pgf_to_fh(file, *args, **kwargs)
-      891
-      892     def _print_pdf_to_fh(self, fh, *args, **kwargs):
-
-  /usr/lib/python3.8/site-packages/matplotlib/cbook/deprecation.py in wrapper(*args, **kwargs)
-      356                 f"%(removal)s.  If any parameter follows {name!r}, they "
-      357                 f"should be pass as keyword, not positionally.")
-  --> 358         return func(*args, **kwargs)
-      359
-      360     return wrapper
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _print_pgf_to_fh(self, fh, dryrun, bbox_inches_restore, *args, **kwargs)
-      870                                      RendererPgf(self.figure, fh),
-      871                                      bbox_inches_restore=bbox_inches_restore)
-  --> 872         self.figure.draw(renderer)
-      873
-      874         # end the pgfpicture environment
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in draw(self, renderer)
-     1733
-     1734             self.patch.draw(renderer)
-  -> 1735             mimage._draw_list_compositing_images(
-     1736                 renderer, self, artists, self.suppressComposite)
-     1737
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axes/_base.py in draw(self, renderer, inframe)
-     2628             renderer.stop_rasterizing()
-     2629
-  -> 2630         mimage._draw_list_compositing_images(renderer, self, artists)
-     2631
-     2632         renderer.close_group('axes')
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in draw(self, renderer, *args, **kwargs)
-     1226
-     1227         ticks_to_draw = self._update_ticks()
-  -> 1228         ticklabelBoxes, ticklabelBoxes2 = self._get_tick_bboxes(ticks_to_draw,
-     1229                                                                 renderer)
-     1230
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in _get_tick_bboxes(self, ticks, renderer)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in <listcomp>(.0)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in get_window_extent(self, renderer, dpi)
-      903             raise RuntimeError('Cannot get window extent w/o renderer')
-      904
-  --> 905         bbox, info, descent = self._get_layout(self._renderer)
-      906         x, y = self.get_unitless_position()
-      907         x, y = self.get_transform().transform((x, y))
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in _get_layout(self, renderer)
-      297             clean_line, ismath = self._preprocess_math(line)
-      298             if clean_line:
-  --> 299                 w, h, d = renderer.get_text_width_height_descent(
-      300                     clean_line, self._fontproperties, ismath=ismath)
-      301             else:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_text_width_height_descent(self, s, prop, ismath)
-      755
-      756         # get text metrics in units of latex pt, convert to display units
-  --> 757         w, h, d = (LatexManager._get_cached_or_new()
-      758                    .get_width_height_descent(s, prop))
-      759         # TODO: this should be latex_pt_to_in instead of mpl_pt_to_in
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_width_height_descent(self, text, prop)
-      356
-      357         # send textbox to LaTeX and wait for prompt
-  --> 358         self._stdin_writeln(textbox)
-      359         try:
-      360             self._expect_prompt()
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _stdin_writeln(self, s)
-      257         self.latex_stdin_utf8.write(s)
-      258         self.latex_stdin_utf8.write("\n")
-  --> 259         self.latex_stdin_utf8.flush()
-      260
-      261     def _expect(self, s):
-
-  BrokenPipeError: [Errno 32] Broken pipe
-#+end_example
 [[file:./.ob-jupyter/29724b8c1f2b0005a05f64f999cf95d248ee0082.png]]
-:END:
 this is strongly peaked at p_t=100GeV. (The jacobian goes like 1/x there!)
 
 *** Sampling the η cross section
@@ -1637,7 +1001,7 @@ An again we see that the efficiency is way, way! better...
       interval_η,
       report_efficiency=True,
       proc="auto",
-      cache="cache/sample_bare_eta",
+      cache="cache/sample_bare_eta_1",
   )
   tex_value(
       η_efficiency * 100,
@@ -1672,167 +1036,7 @@ Let's draw a histogram to compare with the previous results.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  BrokenPipeErrorTraceback (most recent call last)
-  <ipython-input-155-a44cc86e8a96> in <module>
-       14 ax_hist.legend(loc="upper center", fontsize="small")
-       15 ax_ratio.set_xlabel(r"$\eta$")
-  ---> 16 save_fig(fig, "comparison_eta", "xs_sampling", size=(4, 4))
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/utility.py in save_fig(fig, title, folder, size)
-      210
-      211     fig.savefig(f"./figs/{folder}/{title}.pdf")
-  --> 212     fig.savefig(f"./figs/{folder}/{title}.pgf")
-      213
-      214
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in savefig(self, fname, transparent, **kwargs)
-     2201             self.patch.set_visible(frameon)
-     2202
-  -> 2203         self.canvas.print_figure(fname, **kwargs)
-     2204
-     2205         if frameon:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backend_bases.py in print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, **kwargs)
-     2096
-     2097             try:
-  -> 2098                 result = print_method(
-     2099                     filename,
-     2100                     dpi=dpi,
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in print_pgf(self, fname_or_fh, *args, **kwargs)
-      888             if not cbook.file_requires_unicode(file):
-      889                 file = codecs.getwriter("utf-8")(file)
-  --> 890             self._print_pgf_to_fh(file, *args, **kwargs)
-      891
-      892     def _print_pdf_to_fh(self, fh, *args, **kwargs):
-
-  /usr/lib/python3.8/site-packages/matplotlib/cbook/deprecation.py in wrapper(*args, **kwargs)
-      356                 f"%(removal)s.  If any parameter follows {name!r}, they "
-      357                 f"should be pass as keyword, not positionally.")
-  --> 358         return func(*args, **kwargs)
-      359
-      360     return wrapper
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _print_pgf_to_fh(self, fh, dryrun, bbox_inches_restore, *args, **kwargs)
-      870                                      RendererPgf(self.figure, fh),
-      871                                      bbox_inches_restore=bbox_inches_restore)
-  --> 872         self.figure.draw(renderer)
-      873
-      874         # end the pgfpicture environment
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in draw(self, renderer)
-     1733
-     1734             self.patch.draw(renderer)
-  -> 1735             mimage._draw_list_compositing_images(
-     1736                 renderer, self, artists, self.suppressComposite)
-     1737
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axes/_base.py in draw(self, renderer, inframe)
-     2628             renderer.stop_rasterizing()
-     2629
-  -> 2630         mimage._draw_list_compositing_images(renderer, self, artists)
-     2631
-     2632         renderer.close_group('axes')
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in draw(self, renderer, *args, **kwargs)
-     1226
-     1227         ticks_to_draw = self._update_ticks()
-  -> 1228         ticklabelBoxes, ticklabelBoxes2 = self._get_tick_bboxes(ticks_to_draw,
-     1229                                                                 renderer)
-     1230
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in _get_tick_bboxes(self, ticks, renderer)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in <listcomp>(.0)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in get_window_extent(self, renderer, dpi)
-      903             raise RuntimeError('Cannot get window extent w/o renderer')
-      904
-  --> 905         bbox, info, descent = self._get_layout(self._renderer)
-      906         x, y = self.get_unitless_position()
-      907         x, y = self.get_transform().transform((x, y))
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in _get_layout(self, renderer)
-      297             clean_line, ismath = self._preprocess_math(line)
-      298             if clean_line:
-  --> 299                 w, h, d = renderer.get_text_width_height_descent(
-      300                     clean_line, self._fontproperties, ismath=ismath)
-      301             else:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_text_width_height_descent(self, s, prop, ismath)
-      755
-      756         # get text metrics in units of latex pt, convert to display units
-  --> 757         w, h, d = (LatexManager._get_cached_or_new()
-      758                    .get_width_height_descent(s, prop))
-      759         # TODO: this should be latex_pt_to_in instead of mpl_pt_to_in
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_width_height_descent(self, text, prop)
-      356
-      357         # send textbox to LaTeX and wait for prompt
-  --> 358         self._stdin_writeln(textbox)
-      359         try:
-      360             self._expect_prompt()
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _stdin_writeln(self, s)
-      257         self.latex_stdin_utf8.write(s)
-      258         self.latex_stdin_utf8.write("\n")
-  --> 259         self.latex_stdin_utf8.flush()
-      260
-      261     def _expect(self, s):
-
-  BrokenPipeError: [Errno 32] Broken pipe
-#+end_example
-[[file:./.ob-jupyter/7c85d1ad4f9c9fee5e05ee020bfe8e35fc9e6781.png]]
-:END:
+[[file:./.ob-jupyter/fa5580b6453276fd6045e826efca5ee0128cb6c8.png]]
 
 Looks good to me :).
 
@@ -1843,7 +1047,7 @@ distribution. We throw away the integral, but keep the increments.
 #+begin_src jupyter-python :exports both :results raw drawer
   K = 10
   increments = monte_carlo.integrate_vegas(
-      dist_cosθ, interval_cosθ, num_increments=K, alpha=1, increment_epsilon=0.001
+      dist_cosθ, interval_cosθ, num_increments=K, alpha=1, increment_epsilon=0.01
   ).increment_borders
   tex_value(
       K, prefix=r"K = ", save=("results", "vegas_samp_num_increments.tex"),
@@ -1852,9 +1056,9 @@ distribution. We throw away the integral, but keep the increments.
 #+end_src
 
 #+RESULTS:
-: array([-9.86614298e-01, -9.69511959e-01, -9.31063095e-01, -8.39151573e-01,
-:        -6.03283026e-01,  9.79006388e-04,  6.02102760e-01,  8.38379298e-01,
-:         9.31040175e-01,  9.69832368e-01,  9.86614298e-01])
+: array([-0.9866143 , -0.96915875, -0.92958567, -0.83518973, -0.60026818,
+:        -0.00759974,  0.59335065,  0.83415798,  0.92874567,  0.96902194,
+:         0.9866143 ])
 
 Visualizing the increment borders gives us the information we want.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -1871,8 +1075,8 @@ Visualizing the increment borders gives us the information we want.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f8a8cb825b0>
-[[file:./.ob-jupyter/b4b1e7c332c55259afcda37c371f1edc4a56c0ea.png]]
+: <matplotlib.legend.Legend at 0x7ff0e9b4b1f0>
+[[file:./.ob-jupyter/03a1c910bdf4fcefa3ee81b2b1c5d6fe4a7c51a5.png]]
 :END:
 
 We can now plot the reweighted distribution to observe the variance
@@ -1896,167 +1100,7 @@ reduction visually.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  BrokenPipeErrorTraceback (most recent call last)
-  <ipython-input-158-9649dddfedb1> in <module>
-       12 )
-       13 ax.legend(fontsize="small")
-  ---> 14 save_fig(fig, "vegas_strat_dist", "xs_sampling", size=(3, 2.3))
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/utility.py in save_fig(fig, title, folder, size)
-      210
-      211     fig.savefig(f"./figs/{folder}/{title}.pdf")
-  --> 212     fig.savefig(f"./figs/{folder}/{title}.pgf")
-      213
-      214
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in savefig(self, fname, transparent, **kwargs)
-     2201             self.patch.set_visible(frameon)
-     2202
-  -> 2203         self.canvas.print_figure(fname, **kwargs)
-     2204
-     2205         if frameon:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backend_bases.py in print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, **kwargs)
-     2096
-     2097             try:
-  -> 2098                 result = print_method(
-     2099                     filename,
-     2100                     dpi=dpi,
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in print_pgf(self, fname_or_fh, *args, **kwargs)
-      888             if not cbook.file_requires_unicode(file):
-      889                 file = codecs.getwriter("utf-8")(file)
-  --> 890             self._print_pgf_to_fh(file, *args, **kwargs)
-      891
-      892     def _print_pdf_to_fh(self, fh, *args, **kwargs):
-
-  /usr/lib/python3.8/site-packages/matplotlib/cbook/deprecation.py in wrapper(*args, **kwargs)
-      356                 f"%(removal)s.  If any parameter follows {name!r}, they "
-      357                 f"should be pass as keyword, not positionally.")
-  --> 358         return func(*args, **kwargs)
-      359
-      360     return wrapper
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _print_pgf_to_fh(self, fh, dryrun, bbox_inches_restore, *args, **kwargs)
-      870                                      RendererPgf(self.figure, fh),
-      871                                      bbox_inches_restore=bbox_inches_restore)
-  --> 872         self.figure.draw(renderer)
-      873
-      874         # end the pgfpicture environment
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in draw(self, renderer)
-     1733
-     1734             self.patch.draw(renderer)
-  -> 1735             mimage._draw_list_compositing_images(
-     1736                 renderer, self, artists, self.suppressComposite)
-     1737
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axes/_base.py in draw(self, renderer, inframe)
-     2628             renderer.stop_rasterizing()
-     2629
-  -> 2630         mimage._draw_list_compositing_images(renderer, self, artists)
-     2631
-     2632         renderer.close_group('axes')
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in draw(self, renderer, *args, **kwargs)
-     1226
-     1227         ticks_to_draw = self._update_ticks()
-  -> 1228         ticklabelBoxes, ticklabelBoxes2 = self._get_tick_bboxes(ticks_to_draw,
-     1229                                                                 renderer)
-     1230
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in _get_tick_bboxes(self, ticks, renderer)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in <listcomp>(.0)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in get_window_extent(self, renderer, dpi)
-      903             raise RuntimeError('Cannot get window extent w/o renderer')
-      904
-  --> 905         bbox, info, descent = self._get_layout(self._renderer)
-      906         x, y = self.get_unitless_position()
-      907         x, y = self.get_transform().transform((x, y))
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in _get_layout(self, renderer)
-      297             clean_line, ismath = self._preprocess_math(line)
-      298             if clean_line:
-  --> 299                 w, h, d = renderer.get_text_width_height_descent(
-      300                     clean_line, self._fontproperties, ismath=ismath)
-      301             else:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_text_width_height_descent(self, s, prop, ismath)
-      755
-      756         # get text metrics in units of latex pt, convert to display units
-  --> 757         w, h, d = (LatexManager._get_cached_or_new()
-      758                    .get_width_height_descent(s, prop))
-      759         # TODO: this should be latex_pt_to_in instead of mpl_pt_to_in
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_width_height_descent(self, text, prop)
-      356
-      357         # send textbox to LaTeX and wait for prompt
-  --> 358         self._stdin_writeln(textbox)
-      359         try:
-      360             self._expect_prompt()
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _stdin_writeln(self, s)
-      257         self.latex_stdin_utf8.write(s)
-      258         self.latex_stdin_utf8.write("\n")
-  --> 259         self.latex_stdin_utf8.flush()
-      260
-      261     def _expect(self, s):
-
-  BrokenPipeError: [Errno 32] Broken pipe
-#+end_example
-[[file:./.ob-jupyter/6dd7abec05014326e131219324363a3bfe9d5701.png]]
-:END:
+[[file:./.ob-jupyter/7ed815fe4c0403b951ffe65a58254fb4d2ea777e.png]]
 
 
 I am batman! Let's plot the weighting distribution.
@@ -2071,167 +1115,7 @@ I am batman! Let's plot the weighting distribution.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  BrokenPipeErrorTraceback (most recent call last)
-  <ipython-input-159-5e0c9e4b9bde> in <module>
-        5 ax.set_ylabel(r"$\rho")
-        6 ax.set_xlim(*interval_cosθ)
-  ----> 7 save_fig(fig, "vegas_rho", "xs_sampling", size=(3, 2.3))
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/utility.py in save_fig(fig, title, folder, size)
-      210
-      211     fig.savefig(f"./figs/{folder}/{title}.pdf")
-  --> 212     fig.savefig(f"./figs/{folder}/{title}.pgf")
-      213
-      214
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in savefig(self, fname, transparent, **kwargs)
-     2201             self.patch.set_visible(frameon)
-     2202
-  -> 2203         self.canvas.print_figure(fname, **kwargs)
-     2204
-     2205         if frameon:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backend_bases.py in print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, **kwargs)
-     2096
-     2097             try:
-  -> 2098                 result = print_method(
-     2099                     filename,
-     2100                     dpi=dpi,
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in print_pgf(self, fname_or_fh, *args, **kwargs)
-      888             if not cbook.file_requires_unicode(file):
-      889                 file = codecs.getwriter("utf-8")(file)
-  --> 890             self._print_pgf_to_fh(file, *args, **kwargs)
-      891
-      892     def _print_pdf_to_fh(self, fh, *args, **kwargs):
-
-  /usr/lib/python3.8/site-packages/matplotlib/cbook/deprecation.py in wrapper(*args, **kwargs)
-      356                 f"%(removal)s.  If any parameter follows {name!r}, they "
-      357                 f"should be pass as keyword, not positionally.")
-  --> 358         return func(*args, **kwargs)
-      359
-      360     return wrapper
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _print_pgf_to_fh(self, fh, dryrun, bbox_inches_restore, *args, **kwargs)
-      870                                      RendererPgf(self.figure, fh),
-      871                                      bbox_inches_restore=bbox_inches_restore)
-  --> 872         self.figure.draw(renderer)
-      873
-      874         # end the pgfpicture environment
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in draw(self, renderer)
-     1733
-     1734             self.patch.draw(renderer)
-  -> 1735             mimage._draw_list_compositing_images(
-     1736                 renderer, self, artists, self.suppressComposite)
-     1737
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axes/_base.py in draw(self, renderer, inframe)
-     2628             renderer.stop_rasterizing()
-     2629
-  -> 2630         mimage._draw_list_compositing_images(renderer, self, artists)
-     2631
-     2632         renderer.close_group('axes')
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in draw(self, renderer, *args, **kwargs)
-     1226
-     1227         ticks_to_draw = self._update_ticks()
-  -> 1228         ticklabelBoxes, ticklabelBoxes2 = self._get_tick_bboxes(ticks_to_draw,
-     1229                                                                 renderer)
-     1230
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in _get_tick_bboxes(self, ticks, renderer)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in <listcomp>(.0)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in get_window_extent(self, renderer, dpi)
-      903             raise RuntimeError('Cannot get window extent w/o renderer')
-      904
-  --> 905         bbox, info, descent = self._get_layout(self._renderer)
-      906         x, y = self.get_unitless_position()
-      907         x, y = self.get_transform().transform((x, y))
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in _get_layout(self, renderer)
-      297             clean_line, ismath = self._preprocess_math(line)
-      298             if clean_line:
-  --> 299                 w, h, d = renderer.get_text_width_height_descent(
-      300                     clean_line, self._fontproperties, ismath=ismath)
-      301             else:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_text_width_height_descent(self, s, prop, ismath)
-      755
-      756         # get text metrics in units of latex pt, convert to display units
-  --> 757         w, h, d = (LatexManager._get_cached_or_new()
-      758                    .get_width_height_descent(s, prop))
-      759         # TODO: this should be latex_pt_to_in instead of mpl_pt_to_in
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_width_height_descent(self, text, prop)
-      356
-      357         # send textbox to LaTeX and wait for prompt
-  --> 358         self._stdin_writeln(textbox)
-      359         try:
-      360             self._expect_prompt()
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _stdin_writeln(self, s)
-      257         self.latex_stdin_utf8.write(s)
-      258         self.latex_stdin_utf8.write("\n")
-  --> 259         self.latex_stdin_utf8.flush()
-      260
-      261     def _expect(self, s):
-
-  BrokenPipeError: [Errno 32] Broken pipe
-#+end_example
-[[file:./.ob-jupyter/97eeaec15040f56b8812558b065705e61ef89716.png]]
-:END:
+[[file:./.ob-jupyter/85e6ea9512cfeb6dc2810a09357e213cbfb46d79.png]]
 
 Now, draw a sample and look at the efficiency.
 
@@ -2242,13 +1126,13 @@ Now, draw a sample and look at the efficiency.
       increment_borders=increments,
       report_efficiency=True,
       proc="auto",
-      cache="cache/sample_bare_cos_theta_vegas",
+      cache="cache/sample_bare_cos_theta_vegas_1",
   )
   cosθ_efficiency_strat
 #+end_src
 
 #+RESULTS:
-: 0.5898349056603774
+: 0.599386385426654
 
 #+begin_src jupyter-python :exports both :results raw drawer
   tex_value(
@@ -2260,7 +1144,7 @@ Now, draw a sample and look at the efficiency.
 #+end_src
 
 #+RESULTS:
-: \(\mathfrak{e} = 59\%\)
+: \(\mathfrak{e} = 60\%\)
 
 If we compare that to [[cosθ-bare-eff]], we can see the improvement :P.
 It is even better the [[η-eff]].  The histogram looks just the same.
@@ -2271,166 +1155,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-
-  BrokenPipeErrorTraceback (most recent call last)
-  <ipython-input-162-ff4d6a24ae42> in <module>
-        1 fig, _ = draw_histo_auto(cosθ_sample_strat, r'$\cos\theta$')
-  ----> 2 save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
-
-  ~/Documents/Projects/UNI/Bachelor/prog/python/qqgg/utility.py in save_fig(fig, title, folder, size)
-      210
-      211     fig.savefig(f"./figs/{folder}/{title}.pdf")
-  --> 212     fig.savefig(f"./figs/{folder}/{title}.pgf")
-      213
-      214
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in savefig(self, fname, transparent, **kwargs)
-     2201             self.patch.set_visible(frameon)
-     2202
-  -> 2203         self.canvas.print_figure(fname, **kwargs)
-     2204
-     2205         if frameon:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backend_bases.py in print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, **kwargs)
-     2096
-     2097             try:
-  -> 2098                 result = print_method(
-     2099                     filename,
-     2100                     dpi=dpi,
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in print_pgf(self, fname_or_fh, *args, **kwargs)
-      888             if not cbook.file_requires_unicode(file):
-      889                 file = codecs.getwriter("utf-8")(file)
-  --> 890             self._print_pgf_to_fh(file, *args, **kwargs)
-      891
-      892     def _print_pdf_to_fh(self, fh, *args, **kwargs):
-
-  /usr/lib/python3.8/site-packages/matplotlib/cbook/deprecation.py in wrapper(*args, **kwargs)
-      356                 f"%(removal)s.  If any parameter follows {name!r}, they "
-      357                 f"should be pass as keyword, not positionally.")
-  --> 358         return func(*args, **kwargs)
-      359
-      360     return wrapper
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _print_pgf_to_fh(self, fh, dryrun, bbox_inches_restore, *args, **kwargs)
-      870                                      RendererPgf(self.figure, fh),
-      871                                      bbox_inches_restore=bbox_inches_restore)
-  --> 872         self.figure.draw(renderer)
-      873
-      874         # end the pgfpicture environment
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/figure.py in draw(self, renderer)
-     1733
-     1734             self.patch.draw(renderer)
-  -> 1735             mimage._draw_list_compositing_images(
-     1736                 renderer, self, artists, self.suppressComposite)
-     1737
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axes/_base.py in draw(self, renderer, inframe)
-     2628             renderer.stop_rasterizing()
-     2629
-  -> 2630         mimage._draw_list_compositing_images(renderer, self, artists)
-     2631
-     2632         renderer.close_group('axes')
-
-  /usr/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
-      135     if not_composite or not has_images:
-      136         for a in artists:
-  --> 137             a.draw(renderer)
-      138     else:
-      139         # Composite any adjacent images together
-
-  /usr/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
-       36                 renderer.start_filter()
-       37
-  ---> 38             return draw(artist, renderer, *args, **kwargs)
-       39         finally:
-       40             if artist.get_agg_filter() is not None:
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in draw(self, renderer, *args, **kwargs)
-     1226
-     1227         ticks_to_draw = self._update_ticks()
-  -> 1228         ticklabelBoxes, ticklabelBoxes2 = self._get_tick_bboxes(ticks_to_draw,
-     1229                                                                 renderer)
-     1230
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in _get_tick_bboxes(self, ticks, renderer)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/axis.py in <listcomp>(.0)
-     1171     def _get_tick_bboxes(self, ticks, renderer):
-     1172         """Return lists of bboxes for ticks' label1's and label2's."""
-  -> 1173         return ([tick.label1.get_window_extent(renderer)
-     1174                  for tick in ticks if tick.label1.get_visible()],
-     1175                 [tick.label2.get_window_extent(renderer)
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in get_window_extent(self, renderer, dpi)
-      903             raise RuntimeError('Cannot get window extent w/o renderer')
-      904
-  --> 905         bbox, info, descent = self._get_layout(self._renderer)
-      906         x, y = self.get_unitless_position()
-      907         x, y = self.get_transform().transform((x, y))
-
-  /usr/lib/python3.8/site-packages/matplotlib/text.py in _get_layout(self, renderer)
-      297             clean_line, ismath = self._preprocess_math(line)
-      298             if clean_line:
-  --> 299                 w, h, d = renderer.get_text_width_height_descent(
-      300                     clean_line, self._fontproperties, ismath=ismath)
-      301             else:
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_text_width_height_descent(self, s, prop, ismath)
-      755
-      756         # get text metrics in units of latex pt, convert to display units
-  --> 757         w, h, d = (LatexManager._get_cached_or_new()
-      758                    .get_width_height_descent(s, prop))
-      759         # TODO: this should be latex_pt_to_in instead of mpl_pt_to_in
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in get_width_height_descent(self, text, prop)
-      356
-      357         # send textbox to LaTeX and wait for prompt
-  --> 358         self._stdin_writeln(textbox)
-      359         try:
-      360             self._expect_prompt()
-
-  /usr/lib/python3.8/site-packages/matplotlib/backends/backend_pgf.py in _stdin_writeln(self, s)
-      257         self.latex_stdin_utf8.write(s)
-      258         self.latex_stdin_utf8.write("\n")
-  --> 259         self.latex_stdin_utf8.flush()
-      260
-      261     def _expect(self, s):
-
-  BrokenPipeError: [Errno 32] Broken pipe
-#+end_example
-[[file:./.ob-jupyter/59e299b7b7c8ef40a4ca8a5deb72fa9c75eb8903.png]]
-:END:
+[[file:./.ob-jupyter/e5a0b48e734e9986fe341dfd1ada1c6e25840b90.png]]
 
 *** Some Histograms with Rivet
 **** Init
@@ -2496,15 +1221,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 
 #+RESULTS:
 :RESULTS:
-# [goto error]
-: ---------------------------------------------------------------------------
-: NameError                                 Traceback (most recent call last)
-: <ipython-input-165-77f1f172a366> in <module>
-:       3     "pT": dict(reference=hist_obs_pt, label="$p_T$ [GeV]"),
-:       4     "eta": dict(reference=hist_obs_η, label=r"$\eta$"),
-: ----> 5     "cos_theta": dict(reference=hist_cosθ, label=r"$\cos\theta$"),
-:       6 }
-:       7
-:
-: NameError: name 'hist_cosθ' is not defined
+[[file:./.ob-jupyter/fb8e257eb0229c2390980e5b561ae794528ddb70.png]]
+[[file:./.ob-jupyter/21c32ef920ddd216f35b8ba0d42e4354ec7c91e0.png]]
+[[file:./.ob-jupyter/f76da25ecf242b59178613842a4b9d2655f0bc00.png]]
 :END:
