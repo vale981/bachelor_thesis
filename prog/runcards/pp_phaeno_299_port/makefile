@@ -14,6 +14,9 @@ ANALYSIS_SO_NAME = RivetMcDiphotonProton
 # Output Directory
 OUT_DIR = out
 
+# Result Directory
+RES_DIR = results
+
 # Event Count
 EVENT_COUNT = 1000000
 
@@ -40,6 +43,9 @@ OUT_YODA_FILE_NAMES := $(foreach card,$(RUNCARDS),$(card).yoda)
 OUT_YODA_FILES := $(foreach name,$(OUT_YODA_FILE_NAMES),$(OUT_DIR)/$(name))
 PLOT_FLAG_FILES := $(foreach card,$(RUNCARDS),$(RUNCARD_DIR)/$(card)/plot.flags)
 OUT_YODA_FILE_NAMES_WITH_FLAGS := $(foreach card,$(RUNCARDS),$(card).yoda:"$(shell cat $(RUNCARD_DIR)/$(card)/plot.flags)")
+PDF_FILES := $(addsuffix .pdf,$(RUNCARDS))
+RES_PDFS := $(addprefix $(RES_DIR)/,$(PDF_FILES))
+
 # check if outdir is list
 ifneq ($(words $(OUT_DIR)),1)
 $(error "OUT_DIR must be a single directory!")
@@ -98,8 +104,21 @@ clean:
 	rm -f $(ANALYSIS_DIR)/$(ANALYSIS_SO_NAME).so
 	cd $(RUNCARD_DIR) && git clean -d -f -X
 
+###############################################################################
+#                          Generate Result Directory                          #
+###############################################################################
 
-# Create OUT_DIR if it is not present
+$(RES_PDFS): histograms
+	cp $(OUT_DIR)/analysis/$(ANALYSIS_NAME)/*.pdf $(RES_DIR)/
+
+###############################################################################
+#                               Auto Create Dirs                              #
+###############################################################################
+# Create OUT_DIR, RES_DIR if it is not present
 ifeq ("$(wildcard $(OUT_DIR))", "")
 $(info $(shell mkdir -p $(OUT_DIR) && echo "Created output directory: $(OUT_DIR)"))
+endif
+
+ifeq ("$(wildcard $(RES_DIR))", "")
+$(info $(shell mkdir -p $(RES_DIR) && echo "Created result directory: $(RES_DIR)"))
 endif
