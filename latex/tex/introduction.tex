@@ -42,11 +42,6 @@ interactions, a realistic simulation should account for those
 effects. The impact of those effects on observables is studied in
 \cref{chap:pheno} using the \sherpa\ event generator.
 
-The (literate) python code, used to generate most of the results and
-figures can be found on under
-\url{https://github.com/vale981/bachelor_thesis/} and more
-specifically in the subdirectory \texttt{prog/python/qqgg}.
-
 \section{Conventions}%
 \label{sec:convent}
 
@@ -54,6 +49,23 @@ Throughout natural units with \(c=1, \hbar = 1, k_B=1, \varepsilon_0
 = 1\) are used unless stated otherwise. Histograms without label on
 the y-axis are normalized to unity and to be interpreted as
 probability densities.
+
+\section{Source Code}%
+\label{sec:source}
+
+The (literate) python code, used to generate most of the results and
+figures can be found on under
+\url{https://github.com/vale981/bachelor_thesis/} and more
+specifically in the subdirectory \texttt{prog/python/qqgg}.
+
+The file \texttt{monte\_carlo.py} implements all the monte-carlo
+algorithm related functionality as a module. The file
+\texttt{analytical\_xs.org} contains a literate computation notebook
+that generates all the results of \cref{chap:mc}. The file
+\texttt{parton\_density\_function\_stuff.org} contains all the
+computations for \cref{chap:pdf}. The python code makes heavy use of
+\href{https://www.scipy.org/}{scipy} (and of course
+\href{https://numpy.org/}{numpy}).
 
 %%% Local Variables: ***
 %%% mode: latex ***
