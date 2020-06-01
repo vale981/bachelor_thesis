@@ -478,10 +478,9 @@ def integrate_vegas(
         )
 
         interval_borders[1:-1] = interval_borders[0] + increment_borders
-        if (
-            np.linalg.norm(increment_borders - new_increment_borders)
-            < increment_epsilon
-        ):
+
+        weights = integral_steps / integral
+        if (weights.max() - weights.min()) < increment_epsilon:
             break
 
         increment_borders = new_increment_borders
