@@ -79,4 +79,10 @@ YLabel=$\sigma$ [pb]
 LogY=0
 YMin=42
 YMax=48
+XLabel=
+LogY=0
+ShowZero=0
+XCustomMajorTicks=0.    $\quad$
+XMinorTickMarks=0
+LegendAlign=r
 # END PLOT
