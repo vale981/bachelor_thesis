@@ -50,7 +50,6 @@ public:
     declare(calo_fs, "calo_fs");
 
     // we chain in a prompt final state just to be save
-
     PromptFinalState prompt(Cuts::abseta <= 2.5 && Cuts::pT >= 20);
     IdentifiedFinalState ifs(prompt);
     ifs.acceptId(PID::PHOTON);
@@ -67,7 +66,7 @@ public:
                     {"o_angle", {0, 1}},
                     {"o_angle_cs", {0, 1}},
                     {"total_pT", {1e-5, 1100, 50, true}},
-                    {"azimuthal_angle", {1e-5, PI}}};
+                    {"azimuthal_angle", {1e-2, PI}}};
 
     for (auto &[name, observable] : _observables) {
       if (observable._log) {
@@ -78,15 +77,14 @@ public:
 
       book(observable._hist, name, observable._bins, observable._min,
            observable._max);
-      book(_h_XS, "xs");
-      book(_xs, "yy_xs");
+      book(_xs, "xs");
     }
   }
 
   /// Perform the per-event analysis
   void analyze(const Event &event) {
     Particles photons =
-        apply<IdentifiedFinalState>(event, "Photons").particlesByPt();
+      apply<IdentifiedFinalState>(event, "Photons").particlesByPt();
 
     // make sure that there are only two photons
     if (photons.size() < 2)
@@ -149,14 +147,18 @@ public:
 
     // Fill fiducial cross section
     _xs->fill();
+    _ct += 1;
   }
 
   //@}
 
   void finalize() {
-    _h_XS->addPoint(0, crossSection() / picobarn, .5, crossSectionError() / picobarn);
-    const double sf = 1;
+    const double sf = crossSection() / (picobarn * sumOfWeights());
+    MSG_ERROR(crossSection());
+    MSG_ERROR(sf);
     scale(_xs, sf);
+    MSG_ERROR("XS " << _xs->val());
+    MSG_ERROR((float)_ct * crossSection() / (float)numEvents());
     for (auto const &[_, observable] : _observables) {
       scale(observable._hist, sf);
     }
@@ -165,8 +167,8 @@ public:
   /// @name Histograms
   //@{
   std::map<const std::string, Observable> _observables;
-  Scatter2DPtr _h_XS;
   CounterPtr _xs;
+  double _ct = 0;
   //@}
 };
 
