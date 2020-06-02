@@ -65,8 +65,9 @@ accomplished are choosing a suitable \(\rho\) (importance sampling),
 by transforming the integral onto another variable, a combination of
 both approaches or by subdividing integration volume into several
 sub-volumes of different size while keeping the sample size constant
-in all sub-volumes (stratified sampling). Combining ideas from
-importance sampling and stratified sampling leads to the \vegas\
+in all sub-volumes (stratified sampling).\footnote{There are of course
+  still other methods like the multi-channel method.} Combining ideas
+from importance sampling and stratified sampling leads to the \vegas\
 algorithm~\cite{Lepage:19781an} that approximates the optimal
 distribution of importance sampling by adaptive subdivision of the
 integration volume into a grid.
