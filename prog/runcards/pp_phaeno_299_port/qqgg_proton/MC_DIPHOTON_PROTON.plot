@@ -29,6 +29,8 @@ Title=$m_{\gamma\gamma}$ of the two leading photons
 XLabel=$m_{\gamma\gamma}$ [GeV]
 YLabel=$\mathrm{d}\sigma/\mathrm{d}m_{\gamma\gamma}$ [pb GeV$^{-1}$]
 LogX=1
+XMin=1
+XMax=400
 # END PLOT
 
 # BEGIN PLOT /MC_DIPHOTON_PROTON/eta

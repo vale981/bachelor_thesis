@@ -18,10 +18,15 @@ OUT_DIR = out
 RES_DIR = results
 
 # Event Count
-EVENT_COUNT = 1000000
+EVENT_COUNT = 10
 
 # List of Runcards, see RUNCARD_FOLDER
-RUNCARDS = with_pT_and_fragmentation_and_mi basic with_jets with_jets_and_pT with_pT_and_fragmentation
+RUNCARDS = \
+	basic \
+        with_jets \
+        with_jets_and_pT \
+        #with_pT_and_fragmentation
+	#with_pT_and_fragmentation_and_mi \
 
 # Runcard Names
 BASE_RUNCARD = Sherpa_Base.dat
@@ -114,6 +119,7 @@ $(RES_PDFS): histograms
 ###############################################################################
 #                               Auto Create Dirs                              #
 ###############################################################################
+
 # Create OUT_DIR, RES_DIR if it is not present
 ifeq ("$(wildcard $(OUT_DIR))", "")
 $(info $(shell mkdir -p $(OUT_DIR) && echo "Created output directory: $(OUT_DIR)"))

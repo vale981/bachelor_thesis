@@ -50,7 +50,8 @@ public:
     declare(calo_fs, "calo_fs");
 
     // we chain in a prompt final state just to be save
-    PromptFinalState prompt{};
+
+    PromptFinalState prompt(Cuts::abseta <= 2.5 && Cuts::pT >= 20);
     IdentifiedFinalState ifs(prompt);
     ifs.acceptId(PID::PHOTON);
     declare(ifs, "Photons");
@@ -66,7 +67,7 @@ public:
                     {"o_angle", {0, 1}},
                     {"o_angle_cs", {0, 1}},
                     {"total_pT", {1e-5, 1100, 50, true}},
-                    {"azimuthal_angle", {1e-5, PI, 50, true}}};
+                    {"azimuthal_angle", {1e-5, PI}}};
 
     for (auto &[name, observable] : _observables) {
       if (observable._log) {
@@ -78,6 +79,7 @@ public:
       book(observable._hist, name, observable._bins, observable._min,
            observable._max);
       book(_h_XS, "xs");
+      book(_xs, "yy_xs");
     }
   }
 
@@ -144,16 +146,19 @@ public:
         photons[1].pT() /
         sqrt(sqr(_observables.at("inv_m")._value) + sqr(total_momentum.pT())) /
         _observables.at("inv_m")._value));
+
+    // Fill fiducial cross section
+    _xs->fill();
   }
 
   //@}
 
   void finalize() {
     _h_XS->addPoint(0, crossSection() / picobarn, .5, crossSectionError() / picobarn);
-
-    const double sf = crossSection() / picobarn;
+    const double sf = 1;
+    scale(_xs, sf);
     for (auto const &[_, observable] : _observables) {
-      normalize(observable._hist, sf);
+      scale(observable._hist, sf);
     }
   }
 
@@ -161,6 +166,7 @@ public:
   //@{
   std::map<const std::string, Observable> _observables;
   Scatter2DPtr _h_XS;
+  CounterPtr _xs;
   //@}
 };
 
