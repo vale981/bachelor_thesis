@@ -23,7 +23,7 @@
 
 (selector){
   PseudoRapidity 22 -2.5 2.5;
-  PT 22 20 200000000;
+  PT 22 15 200000000;
 }(selector)
 
 (analysis){
