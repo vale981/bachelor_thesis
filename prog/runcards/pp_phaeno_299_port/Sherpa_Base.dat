@@ -22,13 +22,14 @@
 }(processes)
 
 (selector){
-  PseudoRapidity 22 -2.5 2.5;
-  PT 22 15 200000000;
+  PseudoRapidity 22 -3 3;
+  PT 22 5 200000000;
 }(selector)
 
 (analysis){
   BEGIN_RIVET {
     -a MC_DIPHOTON_PROTON;
     IGNOREBEAMS 1;
+    USE_HEPMC_NAMED_WEIGHTS 0;
   } END_RIVET
 }(analysis)
