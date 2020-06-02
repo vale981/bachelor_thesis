@@ -9,7 +9,7 @@ probability density on
 with a one in the fashion of \cref{eq:baseintegral}, the integral
 of \(f\) over \(\Omega\) can be interpreted as the expected value
 \(\EX{F/\Rho}\) of the random variable \(F/\Rho\) under the
-distribution \(\rho\). This is the key to most Monte Carlo methods.
+distribution \(\rho\). This is the key to most MC methods.
 
 \begin{equation}
   \label{eq:baseintegral}
@@ -76,10 +76,10 @@ The convergence of \cref{eq:approxexp} is not dependent on the
 dimensionality of the integration volume as opposed to many other
 numerical integration algorithms (trapezoid rule, Simpsons rule) that
 usually converge like \(N^{-\frac{k}{n}}\) with \(k\in\mathbb{N}\) as
-opposed to \(N^{-\frac{k}{n}}\) with Monte Carlo. Because phase space
+opposed to \(N^{-\frac{k}{n}}\) with MC. Because phase space
 integrals in particle physics usually have a high dimensionality,
-Monte Carlo integration is suitable approach there. When implementing
-Monte Carlo methods, the random samples can be obtained through
+MC integration is suitable approach there. When implementing
+MC methods, the random samples can be obtained through
 hardware or software random number generators (RNGs). Most
 implementations utilize software RNGs because supply pseudo-random
 numbers in a reproducible way, which facilitates deniability and
