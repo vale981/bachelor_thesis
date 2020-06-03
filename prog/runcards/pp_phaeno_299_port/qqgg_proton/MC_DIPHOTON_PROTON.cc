@@ -93,9 +93,9 @@ public:
     photons.resize(2);
 
     // Require the two photons to be separated in dR
-    if (deltaR(photons[0], photons[1]) < 0.45)
+    if (deltaR(photons[0], photons[1]) < 0.45) {
       vetoEvent;
-
+    }
 
     // require an isolation cone around the photons
     const Particles fs = apply<VetoedFinalState>(event, "calo_fs").particles();
@@ -154,11 +154,7 @@ public:
 
   void finalize() {
     const double sf = crossSection() / (picobarn * sumOfWeights());
-    MSG_ERROR(crossSection());
-    MSG_ERROR(sf);
     scale(_xs, sf);
-    MSG_ERROR("XS " << _xs->val());
-    MSG_ERROR((float)_ct * crossSection() / (float)numEvents());
     for (auto const &[_, observable] : _observables) {
       scale(observable._hist, sf);
     }

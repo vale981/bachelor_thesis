@@ -172,6 +172,9 @@ Viele Gruesse, Frank
 ** what does inclusive mean
 ** Normalize to XS
 ** y axis label for normalized histos
+** TODO PDF cannot be derived: in principle?
+** TODO still compatible?
+** TODO cite atlas paper (analysis?)
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!
@@ -183,6 +186,12 @@ Viele Gruesse, Frank
 ** nur shower
 ** TODO shower scale anpassen
 ** TODO effekt shower und kperp
+** TODO y-axis a.u.!
+** TODO mean, var einzeichnen
+** TODO Variance of vegas weighted f!
+** TODO look at xs plot -> they seem different
+** TODO take new sample: still bias?
+
 * Observations
 ** Azimuthal Angle
  - 0 for basic

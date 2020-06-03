@@ -18,15 +18,15 @@ OUT_DIR = out
 RES_DIR = results
 
 # Event Count
-EVENT_COUNT = 1000000
+EVENT_COUNT = 10000000
 
 # List of Runcards, see RUNCARD_FOLDER
 RUNCARDS =\
+	with_pT_and_fragmentation_and_mi \
+        with_pT_and_fragmentation \
 	with_jets_and_pT \
-	# with_pT_and_fragmentation_and_mi \
-	# basic \
-        # with_jets \
-        # with_pT_and_fragmentation \
+        with_jets \
+	basic \
 
 # Runcard Names
 BASE_RUNCARD = Sherpa_Base.dat
@@ -43,7 +43,7 @@ NUM_CPUS = $(shell nproc)
 EVENT_COUNT_CPU = $(shell echo "$(EVENT_COUNT) / $(NUM_CPUS)" | bc)
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 SET_RIVET := RIVET_ANALYSIS_PATH="$(THIS_DIR)$(ANALYSIS_DIR)"
-SHERPA_ARGS := -e $(EVENT_COUNT_CPU) "RESULT_DIRECTORY:=Results" "EVT_OUTPUT=$(EVT_OUTPUT)" "EVENT_OUTPUT=HepMC3_GenEvent[events]" -a Rivet
+SHERPA_ARGS := -e $(EVENT_COUNT_CPU) "RESULT_DIRECTORY:=Results" "EVT_OUTPUT=$(EVT_OUTPUT)" -a Rivet
 OUT_YODA_FILE_NAMES := $(foreach card,$(RUNCARDS),$(card).yoda)
 OUT_YODA_FILES := $(foreach name,$(OUT_YODA_FILE_NAMES),$(OUT_DIR)/$(name))
 PLOT_FLAG_FILES := $(foreach card,$(RUNCARDS),$(RUNCARD_DIR)/$(card)/plot.flags)
