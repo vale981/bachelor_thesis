@@ -357,9 +357,7 @@ make all
 
 #+RESULTS:
 :
-: cd > cd > cd ../../runcards/pp/> cd ../../runcards/pp/
-: > make > make > make all> make all
-: [?2004lCreated output directory: out
+: [hiro@Lobsang pp]$ Created output directory: out
 : Copied Sherpa.yaml
 : make: Nothing to be done for 'all'.
 
@@ -389,7 +387,7 @@ The total cross section is as follows:
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=3.3227190591280343e-14, sigma=9.580739400896628e-17, N=92242)
+: IntegrationResult(result=3.354460240737936e-14, sigma=9.577610605597931e-17, N=92435)
 
 
 We have to convert that to picobarn.
@@ -398,7 +396,7 @@ We have to convert that to picobarn.
 #+end_src
 
 #+RESULTS:
-| 1.293798261146746e-05 | 3.730542292863327e-08 |
+| 1.3061576225140022e-05 | 3.729324004514266e-08 |
 
 That is compatible with sherpa!
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -422,7 +420,7 @@ We can take some samples as well.
 #+end_src
 
 #+RESULTS:
-: -1.8206970308592774
+: -1.8206987195337727
 
 #+begin_src jupyter-python :exports both :results raw drawer
 part_hist = np.histogram(part_samples, bins=50, range=[-2.5, 2.5])
@@ -432,8 +430,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.axes._subplots.AxesSubplot at 0x7fe59fb758e0>
-[[file:./.ob-jupyter/8271f26121eaa49c22291d66b2323643bcc19536.png]]
+: <matplotlib.axes._subplots.AxesSubplot at 0x7f78bd2f8400>
+[[file:./.ob-jupyter/3f34da852e80250f7ce0e41706252cdfa675ec62.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -453,8 +451,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fe59fa0f6a0>
-[[file:./.ob-jupyter/85ebdcc09e8cee976e3e96ca9763ea582577db25.png]]
+: <matplotlib.legend.Legend at 0x7f78bccabfa0>
+[[file:./.ob-jupyter/88ab8238b5d8326cf3ffbff961189b099dcb47cd.png]]
 :END:
 #+begin_src jupyter-python :exports both :results raw drawer
   part_momenta = momenta(
@@ -483,8 +481,8 @@ draw_histogram(ax, part_hist)
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fe59fa05ac0>
-[[file:./.ob-jupyter/d7999e9cc4f0670a5aa179ba8b40e80b4db9bb88.png]]
+: <matplotlib.legend.Legend at 0x7f78b71848e0>
+[[file:./.ob-jupyter/61880311eee246e30fc9c8f565587265d25ece35.png]]
 :END:
 
 * Total XS
@@ -534,12 +532,12 @@ And calculate the XS.
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  sherpa, sherpa_σ = np.loadtxt("../../runcards/pp/sherpa_xs")
+  sherpa, sherpa_σ = np.loadtxt("../../runcards/pp/out/sherpa_xs")
   sherpa, sherpa_σ  # GeV
 #+end_src
 
 #+RESULTS:
-| 38.7275 | 0.0280886 |
+| 38.6816 | 0.0355418 |
 
 A factor of two used to be in here. It stemmed from the fact, that
 there are two identical protons.
@@ -549,7 +547,7 @@ there are two identical protons.
 #+end_src
 
 #+RESULTS:
-: 0.01666617136615391
+: -0.010096407949866753
 
 The efficiency will be around:
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -577,7 +575,7 @@ Let's export those results for TeX:
 #+end_src
 
 #+RESULTS:
-: \(\sigma_s = \SI{38.728\pm 0.028}{\pico\barn}\)
+: \(\sigma_s = \SI{38.682\pm 0.036}{\pico\barn}\)
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
@@ -635,10 +633,7 @@ Now we create an eye-candy surface plot.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
 : \(x_2 = 0.01\)
-[[file:./.ob-jupyter/542b03d025920448ba653b470ec6492cbdd1e4a7.png]]
-:END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
   from mpl_toolkits.mplot3d import Axes3D
@@ -679,10 +674,7 @@ Now we create an eye-candy surface plot.
 #+end_src
 
 #+RESULTS:
-:RESULTS:
 : \(\eta = 2.50\)
-[[file:./.ob-jupyter/d47db0dde9ae59979f271a7cba8dfc46be3f1dd3.png]]
-:END:
 
 Lets plot how the pdf looks.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -695,7 +687,6 @@ Lets plot how the pdf looks.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/7fe9d3bd60427cf20af835649efbcbaafefbb3e0.png]]
 
 
 Overestimating the upper bounds helps with bias.
@@ -790,7 +781,7 @@ And now we compare all the observables with sherpa.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/8d9bb03fda7305d6effe0cc24b4dcdccc1582ccf.png]]
+[[file:./.ob-jupyter/1bd1360926e9896e78f071e71df8e1dd619d7d24.png]]
 
 Hah! there we have it!
 
@@ -821,7 +812,7 @@ both equal.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/9a7122aa4a3690c2785678f85d8ac1919de1187d.png]]
+[[file:./.ob-jupyter/0f5a3e52e2afbac6671029996a21f3a859d19d6f.png]]
 
 The invariant mass is not constant anymore.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -846,7 +837,7 @@ The invariant mass is not constant anymore.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/65d1b44d76a5f42086735c41d54bd8c6e980e942.png]]
+[[file:./.ob-jupyter/063a7278fa35bee2c5319cf56afb6279fdb39de3.png]]
 
 The cosθ distribution looks more like the paronic one.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -865,7 +856,7 @@ The cosθ distribution looks more like the paronic one.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/0358d3386a74d6aa6d2d8baeb8e94f216acdab13.png]]
+[[file:./.ob-jupyter/c26130081aff57a8cf49f28fc15a6c6333525993.png]]
 
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -887,7 +878,7 @@ The cosθ distribution looks more like the paronic one.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/89103546935fc538120e54de7c7d4812accd7a58.png]]
+[[file:./.ob-jupyter/1ecb7835b6be5475d9086efb55c4988fc871aa82.png]]
 
 In this case the opening angles are the same because the CS frame is
 the same as the ordinary rest frame. The z-axis is the beam axis
@@ -911,4 +902,4 @@ because pT=0!
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/ac492be843ffd5262cc6d9b61b8e0eda4cd60b5c.png]]
+[[file:./.ob-jupyter/c7955c2fbbaba499fcc00f7215e9ad03ba8b88a5.png]]

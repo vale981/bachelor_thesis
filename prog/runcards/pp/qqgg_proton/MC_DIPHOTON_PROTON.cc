@@ -50,7 +50,7 @@ public:
   /// Perform the per-event analysis
   void analyze(const Event &event) {
     const Particles &photons =
-        apply<IdentifiedFinalState>(event, "IFS").particlesByPt();
+        apply<IdentifiedFinalState>(event, "IFS").particles();
 
     // make sure that there are only two photons
     if (photons.size() != 2)

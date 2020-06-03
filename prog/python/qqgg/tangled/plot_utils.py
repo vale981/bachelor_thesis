@@ -106,7 +106,6 @@ def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
         )
 
         set_up_axis(ax_ratio, pimp_top=False)
-        ax_ratio.set_ylabel("ratio")
         draw_histogram(
             ax_ratio,
             [
@@ -129,6 +128,8 @@ def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
             normalize_to=None,
         )
 
+        ax_ratio.set_ylabel("ratio")
+
     return fig, (ax_hist, ax_ratio)
 
 
@@ -143,6 +144,7 @@ def draw_histogram(
     errorbars=True,
     hist_kwargs=dict(color="#1f77b4"),
     errorbar_kwargs=dict(),
+        autoau=True,
     normalize_to=None,
 ):
     """Draws a histogram with optional errorbars using the step style.
@@ -151,6 +153,7 @@ def draw_histogram(
     :param histogram: an array of the form [heights, edges]
     :param hist_kwargs: keyword args to pass to `ax.step`
     :param errorbar_kwargs: keyword args to pass to `ax.errorbar`
+    :param autoau: if set, the y axis will receive an a.u. label
     :param normalize_to: if set, the histogram will be normalized to the value
     :returns: the given axis
     """
@@ -178,6 +181,7 @@ def draw_histogram(
         ax.errorbar(centers, heights, deviations, linestyle="none", **errorbar_kwargs)
 
     ax.set_xlim(*[edges[0], edges[-1]])
+    ax.set_ylabel("a.u.")
 
     return ax
 
