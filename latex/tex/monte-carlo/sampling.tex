@@ -1,26 +1,32 @@
-\section{Monte-Carlo Sampling}%
+\section{Monte Carlo Sampling}%
 \label{sec:mcsamp}
 
 Drawing representative samples from a probability distribution (for
 example a differential cross section) results in a set of
-\emph{events}, the same kind of data, that is gathered in experiments
-and from which one can the calculate samples from the distribution of
-other observables without explicit transformation of the
-distribution. Here the one-dimensional case is discussed.
+\emph{events}. This procedure is called sampling and produces the same
+kind of data, that is gathered in experiments and from which one can
+then calculate samples from the distribution of other observables
+event-by-event without explicit transformation of the
+distribution. Furthermore, these samples can be used as the basis for
+more involved simulations (see \cref{chap:pheno}). Sampling shares
+many characteristics with integration and thus the methods discussed
+here use similar terminology and often inherit their fundamental ideas
+from the integration methods.
 
-Sampling a multi-dimensional distribution is equivalent to sampling
-one dimensional distributions by reducing the distribution itself to
-one variable through integration over the remaining variables and
-then, keeping the first variable fixed, sampling the other variables
-in a likewise manner.
+Here the one-dimensional case is discussed.  Sampling a
+multi-dimensional distribution is equivalent to sampling one
+dimensional distributions by reducing the distribution itself to one
+variable through integration over the remaining variables and then,
+keeping the first variable fixed, sampling the other variables in a
+likewise manner.
 
 Consider a function \(f\colon x\in\Omega\mapsto\mathbb{R}_{\geq 0}\)
 where \(\Omega = [0, 1]\) without loss of generality. Such a function
 is proportional to a probability density \(\tilde{f}\). When \(X\) is
 a uniformly distributed random variable on~\([0, 1]\) (which can be
-easily generated) then a sample \({x_i}\) of this variable can be
+easily generated), then a sample \({x_i}\) of this variable can be
 transformed into a sample of \(Y\sim\tilde{f}\). Let \(x\) be a single
-sample of \(X\), then a sample \(y\) of \(Y\) can be obtained by
+sample of \(X\). A sample \(y\) of \(Y\) can be obtained by
 solving \cref{eq:takesample} for \(y\).
 
 \begin{equation}
@@ -35,10 +41,11 @@ to \cref{eq:takesample}, the probability that
 \int_{0}^{y'+\dd{y}'}f(x')\dd{x'}]\) which is
 \(A^{-1}\qty(\int_{0}^{y'+\dd{y}'}f(x')\dd{x'} -
 \int_{0}^{y'}f(x')\dd{x'}) = A^{-1} f(y')\dd{y}'\). So \(y\) is really
-distributed according to \(f/A\).
+distributed according to \(f/A=\tilde{f}\).
 
-If the antiderivative \(F\) of is known, then the solution
-of \cref{eq:takesample} is given by \cref{eq:solutionsamp}.
+If the antiderivative \(F\) (and its inverse) of \(f\) is known, then
+the solution of \cref{eq:takesample} is given by
+\cref{eq:solutionsamp}.
 
 \begin{equation}
   \label{eq:solutionsamp}
@@ -51,9 +58,9 @@ obtained numerically or one can change variables to simplify.
 
 \subsection{Importance Sampling and Hit or Miss}%
 \label{sec:hitmiss}
-If integrating \(f\) and/or inverting \(F\) is too expensive or a
-fully \(f\)-agnostic method is desired, the problem can be
-reformulated by introducing a positive function
+If integrating \(f\) or inverting \(F\) is too expensive or a fully
+\(f\)-agnostic method is desired, the problem can be reformulated by
+introducing a positive function
 \(g\colon x\in\Omega\mapsto\mathbb{R}_{\geq 0}\) with
 \(\forall x\in\Omega\colon g(x)\geq f(x)\).
 
@@ -71,8 +78,9 @@ probability~\(f/g\), so that \(g\) cancels out. This is known as the
 \end{equation}
 
 The thus obtained samples are then distributed according to \(f/B\)
-and the total probability of accepting a sample (efficiency
-\(\mathfrak{e}\)) is given by hat \cref{eq:impsampeff} holds.
+and the total probability of accepting a sample, also called the
+efficiency \(\mathfrak{e}\), is given by hat \cref{eq:impsampeff}
+holds.
 
 \begin{equation}
   \label{eq:impsampeff}
@@ -80,13 +88,7 @@ and the total probability of accepting a sample (efficiency
 \end{equation}
 
 The closer the volumes enclosed by \(g\) and \(f\) are to each other,
-higher is \(\mathfrak{e}\). This method is called importance sampling
-
-\begin{wrapfigure}[15]{l}{.5\textwidth}
-  \plot{xs_sampling/upper_bound}
-  \caption{\label{fig:distcos} The distribution \cref{eq:distcos} and an upper bound of
-    the form \(a + b\cdot x^2\).}
-\end{wrapfigure}
+higher is \(\mathfrak{e}\).
 
 Choosing \(g\) like \cref{eq:primitiveg} and looking back at
 \cref{eq:solutionsamp} yields \(y = x\cdot A\), so that the sampling
@@ -95,13 +97,19 @@ accepting them with the probability \(f(x)/g(x)\). The efficiency of
 this approach is related to how much \(f\) differs from
 \(f_{\text{max}}\) which in turn related to the variance of
 \(f\). Minimizing variance will therefore improve sampling
-performance. The method can also in higher dimensions be used without
-modification.
+performance. The method can also be used in higher dimensions without
+modification and has again been implemented and evaluated.
 
 \begin{equation}
   \label{eq:primitiveg}
   g=\max_{x\in\Omega}f(x)=f_{\text{max}}
 \end{equation}
+
+\begin{wrapfigure}[15]{l}{.5\textwidth}
+  \plot{xs_sampling/upper_bound}
+  \caption{\label{fig:distcos} The distribution \cref{eq:distcos} and an upper bound of
+    the form \(a + b\cdot x^2\).}
+\end{wrapfigure}
 
 Using the upper bound defined in \cref{eq:primitiveg} with the
 distribution for \(\cos\theta\) derived from the differential cross
@@ -115,14 +123,12 @@ of~\result{xs/python/naive_th_samp}.
 \end{equation}
 
 This very low efficiency stems from the fact, that \(f_{\cos\theta}\)
-is a lot smaller than its upper bound for most of the sampling
-interval.
+is a lot smaller than its maximum in most of the sampling interval.
 
 Utilizing an upper bound of the form \(a + b\cdot x^2\) with \(a, b\)
 constant improves the efficiency
 to~\result{xs/python/tuned_th_samp}. The distribution, as well as the
 upper bound are depicted in \cref{fig:distcos}.
-
 
 \subsection{Importance Sampling through Change of Variables}%
 \label{sec:importsamp}
@@ -130,8 +136,8 @@ upper bound are depicted in \cref{fig:distcos}.
 When transforming \(f\) to a new variable \(y=y(x)\) one arrives at
 \cref{eq:transff} and may reduce variance, analogous to
 \cref{sec:naivechange}. Transforming the distribution in a beneficial
-way in the context of sampling a distribution is called
-\emph{importance sampling}.
+way in is an alternative method of performing \emph{importance
+  sampling}.
 
 \begin{equation}
   \label{eq:transff}
@@ -140,31 +146,30 @@ way in the context of sampling a distribution is called
 
 The optimal transformation would be the solution of \(y = F(x)\)
 (\(F\) being the antiderivative), so that
-\(f(x(y)) \cdot \dv{x(y)}{y} = 1\), which is the same as sampling in
-the way described in \cref{eq:solutionsamp}. This is no coincident as
-it can be shown, that this method is equivalent with the method
-described in \cref{sec:hitmiss} \cite{Lepage:19781an}. The technical
-trade-off of this method is that one has to chain it with some other
-sampling technique (\(\tilde{f}\) still has to be sampled). On the
-other hand the step of generating samples distributed according to
-\(g\) falls away.
+\(f(x(y)) \cdot \dv{x(y)}{y} = 1\). But transforming \(f\) in this way
+is the same as solving \cref{eq:takesample} which is a problem that
+has been addressed in \cref{sec:hitmiss}. The difference here is, that
+we restate the sampling problem in \(y\) space, which separates the
+step of converting our \(y\) samples to \(x\) samples away from the
+sampling process (see \cref{sec:obs}). Solving \cref{eq:takesample}
+may now be easier, or applying the hit or miss method may be more
+efficient.
 
 When transforming the differential cross-section to the pseudo
 rapidity \(\eta\) the efficiency of the hit or miss method rises
 to~\result{xs/python/eta_eff} so applying this method in conjunction
-with others is worthwhile.
+with others is worthwhile (see \cref{fig:xs-int-comp}).
 
 \subsection{Hit or Miss and \vegas}%
 \label{sec:stratsamp}
 
-Finding a suitable upper bound or variable transform requires effort
-and detail knowledge about the distribution and is hard to
-automate\footnote{Sherpa does in fact do this by looking at the
-  propagators in the matrix elements.}.  Revisiting the idea
-behind \cref{eq:takesample2d} but looking at probability density
-\(\rho\) on \(\Omega\) leads to a slight reformulation of the method
-discussed in \cref{sec:hitmiss}. Note that without loss of generality
-one can again choose \(\Omega = [0, 1]\).
+Finding a suitable upper bound or variable transformation requires
+effort and detail knowledge about the distribution and is hard to
+automate. Revisiting the idea behind \cref{eq:takesample2d} but
+looking at a probability density \(\rho\) on \(\Omega\) leads to a
+slight reformulation of the method discussed in
+\cref{sec:hitmiss}. Note that without loss of generality one can again
+choose \(\Omega = [0, 1]\).
 
 Define \(h=\max_{x\in\Omega}f(x)/\rho(x)\), take a sample
 \(\{\tilde{x}_i\}\sim\rho\) distributed according to \(\rho\) and
@@ -172,11 +177,7 @@ accept each sample point with the probability
 \(f(x_i)/(\rho(x_i)\cdot h)\).  This is very similar to the procedure
 described in \cref{sec:hitmiss} with \(g=\rho\cdot h\), but here the
 step of generating samples distributed according to \(\rho\) is left
-out.
-
-The important benefit of this method is, that step of generating
-samples according to some other function \(g\) is no longer
-necessary. This is useful when samples of \(\rho\) can be obtained
+out as these samples are assumed to be available or can be obtained
 with little effort (see below). The efficiency of this method is given
 by \cref{eq:strateff}.
 
@@ -200,20 +201,21 @@ constraint \(\int_0^1\rho(x)\dd{x}=1\) to be considered.
 
 The closer \(h\) approaches \(A\) the better the efficiency gets. In
 the optimal case \(\rho=f/A\) and thus \(h=A\) or
-\(\mathfrak{e} = 1\). Now this distribution can be approximated in the
-way discussed in \cref{sec:mcintvegas} by using the hypercubes found
-by~\vegas and simply generating the same number of uniformly
-distributed samples in each hypercube (stratified sampling). The
-distribution \(\rho\) takes on the form \cref{eq:vegasrho}. The
-effect of this approach is visualized in \cref{fig:vegasdist} and the
-resulting sampling efficiency \result{xs/python/strat_th_samp} (using
+\(\mathfrak{e} = 1\). This distribution can be approximated in the way
+discussed in \cref{sec:mcintvegas} by using the hypercubes found
+by~\vegas\ and simply generating the same number of uniformly
+distributed samples in each hypercube. The distribution \(\rho\) takes
+on the form \cref{eq:vegasrho}. The effect of this approach is
+visualized in \cref{fig:vegasdist} and the resulting sampling
+efficiency \result{xs/python/strat_th_samp} (using
 \result{xs/python/vegas_samp_num_increments} increments) is a great
-improvement over the hit or miss method in \cref{sec:hitmiss}. By using
-more increments better efficiencies can be achieved, although the
-run-time of \vegas\ increases. The advantage of \vegas\ in this
-situation is, that the computation of the increments has to be done
-only once and can be reused. Furthermore, no special knowledge about
-the distribution \(f\) is required.
+improvement over the hit or miss method in \cref{sec:hitmiss} and even
+surpasses the variable transformation to \(\eta\). By using more
+increments better efficiencies can be achieved, although the run-time
+of \vegas\ increases. The advantage of \vegas\ in this situation is,
+that the computation of the increments has to be done only once and
+can be reused. Furthermore, no special knowledge about the
+distribution \(f\) is required.
 
 \begin{figure}[ht]
   \centering
@@ -223,8 +225,7 @@ the distribution \(f\) is required.
     differential cross-section and the \vegas-weighted
     distribution]{\label{fig:vegasdist} The distribution for
       \(\cos\theta\) (see \cref{eq:distcos}) and the \vegas-weighted
-      distribution. The inc It is intuitively clear, how variance is
-      being reduced.}
+      distribution.}
   \end{subfigure}
   \begin{subfigure}{.49\textwidth}
     \plot{xs_sampling/vegas_rho}
@@ -237,6 +238,45 @@ the distribution \(f\) is required.
     and weighting distribution.}
 \end{figure}
 
+
+
+\subsection{Stratified Sampling}
+\label{sec:stratsamp-real}
+
+Yet another approach is to subdivide the sampling volume \(\Omega\)
+into \(K\) sub-volumes \(\Omega_i\subset\Omega\) and then take a
+number of samples from each volume proportional to the integral of the
+function \(f\) in that volume. This is known as \emph{stratified
+  sampling}. The advantage of this method is, that it is now possible
+to optimize the sampling in each sub-volume independently.
+
+Let \(N\) be the total sample count (\(N\gg 1\)),
+\(A_i = \int_{\Omega_i}f(x)\dd{x}\) and \(A=\sum_iA_i\).
+Then we can calculate the total efficiency of taking \(N_i=A_i/A \cdot N\)
+samples in each is then given by \cref{eq:rstrateff}.
+
+\begin{equation}
+  \label{eq:rstrateff}
+  \mathfrak{e} = \frac{\sum_i N_i}{\sum_i N_i/\mathfrak{e}_i} =
+  \frac{\sum_i A_i/A\cdot N}{\sum_i A_i/A\cdot N/ \mathfrak{e}_i} = \frac{\sum_i A_i}{\sum_i A_i/\mathfrak{e}_i}
+\end{equation}
+
+In the case when all \(\mathfrak{e}_i\) are the same, the total
+efficiency is the same as the individual efficiencies. In the case of
+one efficiency being much smaller then the others, this efficiency
+dominates the overall efficiency (assuming somewhat similar
+\(A_i\)). So in general one should optimize so that the individual
+efficiencies are roughly the same. Using the \(\Omega_i\) generated by
+\vegas\ has the advantage, that this requirement can be approximated
+and the \(A_i\) have already been obtained by \vegas. The technical
+difficulty in the implementation is the way in which sample points get
+distributed among the sub-volumes. The pitfall here is that the
+\(A_i\) (and the upper bounds for the hit-or-miss method) have to be
+determined increasingly accurate with growing sample size.
+
+This method will be applied to multi-dimensional sampling in
+\cref{sec:pdf_results}.
+
 \subsection{Observables}%
 \label{sec:obs}
 
@@ -245,11 +285,10 @@ observables can be calculated from those samples without having to
 transform the distribution into new variables. This is due to the
 discrete nature of the samples. Suppose there is an observable
 \(\gamma\colon\Omega\mapsto\mathbb{R}\). Now to take a sample
-\(\{x_i\}\) of \(\gamma\) we sample \(f\)\footnote{As defined
-  in \cref{sec:mcsamp}.} and convert the sample values by simply
-applying \(\gamma\). This is equivalent to
-substituting \(y=\gamma^{-1}(z)\) in \cref{eq:takesample} and solving
-for \(z\).
+\(\{x_i\}\) of \(\gamma\) we sample \(f\) and convert the sample
+values by simply applying \(\gamma\), where \(f\) is as defined in
+\cref{sec:mcsamp}. This is equivalent to substituting
+\(y=\gamma^{-1}(z)\) in \cref{eq:takesample} and solving for \(z\).
 
 The probability that \(z\in[z', z'+\dd{z'}]\) now is the same as the
 probability that
@@ -273,8 +312,8 @@ as described in \cref{eq:observables}.
 
 \begin{align}
   \label{eq:observables}
-  \pt &= \sqrt{(p_1)^2+(p_2)^2} & \eta &=
-                                         \frac{\abs{\vb{p}}}{\pt}\cdot\sign(p^3)
+  \pt &= \sqrt{(p_x)^2+(p_y)^2} & \eta &=
+                                         \arcosh\qty(\frac{\abs{\vb{p}}}{\pt})\cdot\sign(p_z)
 \end{align}
 
 The histograms in \cref{fig:histos} have been created by generating
@@ -284,7 +323,7 @@ contains reference histograms created by generating events with
 toolkit~\cite{Bierlich:2019rhm}. The utilized analysis can be found
 in \cref{sec:simpdiphotriv}.
 
-\begin{figure}[hb]
+\begin{figure}[ht]
   \centering \plot{xs_sampling/diff_xs_p_t}
   \caption{\label{fig:diff-xs-pt} The differential cross section
     transformed to \(\pt\).}
@@ -309,53 +348,17 @@ in \cref{sec:simpdiphotriv}.
 \end{figure}
 
 Where \cref{fig:histeta} shows clear resemblance of
-\cref{fig:xs-int-eta}, the sharp peak in \cref{fig:histpt} around
-\(\pt=\SI{100}{\giga\electronvolt}\) seems surprising. When
-transforming the differential cross section to \(\pt\) it can be seen
-in \cref{fig:diff-xs-pt} that there really is a singularity at
-\(\pt =\abs{\vb{p}}\). This singularity will vanish once considering a
-more realistic process (see \cref{chap:pdf}). Furthermore the
-histograms \cref{fig:histeta,fig:histpt} are consistent
-with their \rivet-generated counterparts and are therefore considered
-valid.
-
-
-\subsection{Stratified Sampling}
-\label{sec:stratsamp-real}
-
-A different approach is to subdivide the sampling volume \(\Omega\)
-into \(K\) sub-volumes \(\Omega_i\subset\Omega\) and then take a
-number of samples from each volume proportional to the integral of the
-function \(f\)\footnote{As defined in \cref{sec:mcsamp}.} in that
-volume. The advantage of this method is, that it is now possible to
-optimize the sampling in each sub-volume independently.
-
-Let \(N\) be the total sample count (\(N\gg 1\)),
-\(A_i = \int_{\Omega_i}f(x)\dd{x}\) and \(A=\sum_iA_i\).
-Then we can calculate the total efficiency of taking \(N_i=A_i/A \cdot N\)
-samples in each is then given by \cref{eq:rstrateff}.
-
-\begin{equation}
-  \label{eq:rstrateff}
-  \mathfrak{e} = \frac{\sum_i N_i}{\sum_i N_i/\mathfrak{e}_i} =
-  \frac{\sum_i A_i/A\cdot N}{\sum_i A_i/A\cdot N/ \mathfrak{e}_i} = \frac{\sum_i A_i}{\sum_i A_i/\mathfrak{e}_i}
-\end{equation}
-
-In the case when all \(\mathfrak{e}_i\) are the same, the total
-efficiency is the same as the individual efficiencies. In the case of
-one efficiency being much smaller then the others, this efficiency
-dominates the overall efficiency (assuming somewhat similar
-\(A_i\)). So in general one should optimize so that the individual
-efficiencies are roughly the same. Using the \(\Omega_i\) generated by
-\vegas\ has the advantage, that exactly this requirement is fulfilled
-and the \(A_i\) have already been obtained by \vegas. The technical
-difficulty in the implementation is the way in which sample points get
-distributed among the sub-volumes. The pitfall here is that the
-\(A_i\) (and the upper bounds for the hit-or-miss method) have to be
-determined increasingly accurate with growing sample size.
-
-This method will be applied to multi-dimensional sampling in
-\cref{sec:pdf_results}.
+\cref{fig:xs-int-eta}, the peak and the rise before this peak in
+\cref{fig:histpt} around \(\pt=\SI{100}{\giga\electronvolt}\) seems
+surprising and opens the possibility for the production of hard
+transverse photons. When transforming the differential cross section
+to \(\pt\) it can be seen in \cref{fig:diff-xs-pt} that there really
+is a singularity at \(\pt = \ecm\), due to a term
+\(1/\sqrt{1-(2\cdot \pt/\ecm)^2}\) stemming from the Jacobian
+determinant.  This singularity will vanish once considering a more
+realistic process (see \cref{chap:pdf}). Furthermore the histograms
+\cref{fig:histeta,fig:histpt} are consistent with their
+\rivet-generated counterparts and are therefore considered valid.
 
 %%% Local Variables:
 %%% mode: latex

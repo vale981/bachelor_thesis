@@ -12,7 +12,7 @@
 \usepackage[backend=biber, language=english, style=phys]{biblatex}
 \usepackage{siunitx}
 \usepackage[pdfencoding=auto]{hyperref} % load late
-\usepackage{cleveref}
+\usepackage[capitalize]{cleveref}
 % \usepackage[activate={true,nocompatibility},final,tracking=true,spacing=true,factor=1100,stretch=10,shrink=10]{microtype}
 \usepackage{caption}
 \usepackage[list=true, font=small,
@@ -28,6 +28,7 @@ labelformat=brace, position=top]{subcaption}
 \usepackage{fancyvrb}
 \usepackage[autostyle=true]{csquotes}
 \usepackage{setspace}
+\usepackage{newunicodechar}
 
 %% use the current pgfplots
 \pgfplotsset{compat=1.16}
@@ -81,6 +82,9 @@ labelformat=brace, position=top]{subcaption}
 %% Font for headings
 \addtokomafont{disposition}{\rmfamily}
 
+%% Minus Sign for Matplotlib
+\newunicodechar{−}{-}
+
 % Macros
 
 %% qqgg
@@ -110,6 +114,7 @@ labelformat=brace, position=top]{subcaption}
 
 %% area hyperbolicus
 \DeclareMathOperator{\artanh}{artanh}
+\DeclareMathOperator{\arcosh}{arcosh}
 
 %% Fast Slash
 \let\sl\slashed
