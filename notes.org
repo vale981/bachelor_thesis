@@ -181,9 +181,6 @@ Viele Gruesse, Frank
 
 * Todo
 ** TODO lab xs kuerzen
-** coulomb singularity
- - immediate particle on shell
-** nur shower
 ** TODO shower scale anpassen
 ** TODO effekt shower und kperp
 ** TODO y-axis a.u.!

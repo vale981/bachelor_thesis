@@ -3622,6 +3622,12 @@
 \end{pgfscope}%
 \end{pgfscope}%
 \begin{pgfscope}%
+\definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
+\pgfsetstrokecolor{textcolor}%
+\pgfsetfillcolor{textcolor}%
+\pgftext[x=0.337083in,y=2.598785in,,bottom,rotate=90.000000]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont a.u.}%
+\end{pgfscope}%
+\begin{pgfscope}%
 \pgfpathrectangle{\pgfqpoint{0.736806in}{1.396181in}}{\pgfqpoint{3.064583in}{2.405208in}}%
 \pgfusepath{clip}%
 \pgfsetbuttcap%
