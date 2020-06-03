@@ -7,15 +7,15 @@ are incremental in the sense that each subsequent configuration
 extents the previous one.
 
 \begin{description}
-\item[Basic] The hard process on parton level as used in \cref{sec:pdf_results}.
-\item[PS] The shower generator of \sherpa, \emph{CSS} (dipole-shower),
+\item[LO] The hard process on parton level as used in \cref{sec:pdf_results}.
+\item[LO+PS] The shower generator of \sherpa, \emph{CSS} (dipole-shower),
   is activated and simulates initial state radiation, as there are no
   partons in the final state yet.
-\item[PS+pT] The beam remnants and intrinsic parton
+\item[LO+PS+pT] The beam remnants and intrinsic parton
   \(\pt\) are simulated, giving rise to final state radiation.
-\item[PS+pT+Hadronization] A cluster hadronization model
+\item[LO+PS+pT+Hadronization] A cluster hadronization model
   implemented in \emph{Ahadic} is activated.
-\item[PS+pT+Hadronization+MI] Multiple interactions based on the
+\item[LO+PS+pT+Hadronization+MI] Multiple interactions based on the
   Sj\"ostrand-van-Zijl are simulated.
 \end{description}
 
@@ -31,14 +31,19 @@ as \SI{6500}{\giga\electronvolt} to resemble \lhc\ conditions.
 The analysis is similar to the one used in \cref{sec:ppevents} with
 the addition of the observable of total transverse momentum of the
 photon pair, which now can be non-zero. Because the final state now
-contains multiple photons, the two photons with the highest \(\pt\)
-(leading photons) are selected. Furthermore a cone of
+potentially contains additional photons from hadron decays, the
+analysis only selects prompt photons with the highest \(\pt\) (leading
+photons). Furthermore a cone of
 \(R = \sqrt{\qty(\Delta\varphi)^2 + \qty(\Delta\eta)^2} = 0.4\) around
-each photon must not contain more than \SI{4.5}{\percent}
-(\(+ \SI{6}{\giga\electronvolt}\)), so that photons stemming from
-showers are filtered out. For similar reasons the leading photons are
-required to have \(\Delta R > 0.45\). The code of the analysis is
-listed in \cref{sec:ppanalysisfull}.
+each photon must not contain more than \SI{4.5}{\percent} of the
+photon transverse momentum (\(+ \SI{6}{\giga\electronvolt}\)),
+attempting to exclude photons stemming from hadron decay are filtered
+out. The leading photons are required to have \(\Delta R > 0.45\), to
+filter out colinear photons, as they likely stem from hadron
+decays. In truth, the analysis already excludes such photons, but to
+be compatible with experimental data, which must rely on such
+criteria, they have been included. The code of the analysis is listed
+in \cref{sec:ppanalysisfull}.
 
 % TODO: refer back to this in discussion
 % TODO: cite analysis template

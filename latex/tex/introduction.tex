@@ -3,31 +3,32 @@
 
 MC (MC) methods have been and still are one of the most important
 tools for numerical calculations in particle physics. Be it for
-validating the well established standard model or for making
+validating the well established Standard Model or for making
 predictions about new theories, MC simulations are the
 crucial interface of theory and experimental data, making them
-directly comparable. Furthermore horizontal scaling is almost trivial
-to implement in MC algorithms, making them well adapted to
-modern parallel computing. In this thesis, the use of MC
-methods will be traced through from simple integration to the
-simulation of proton-proton scattering.
+directly comparable.%  Furthermore horizontal scaling is almost trivial
+% to implement in MC algorithms, making them well adapted to
+% modern parallel computing.
+In this thesis, the use of MC methods will be traced through from
+simple integration to the simulation of proton-proton scattering.
 
-The ``Drosophila'' of this thesis is the quark annihilation into two
+The ``Guinea Pig'' of this thesis is the quark annihilation into two
 photons \(\qqgg\), henceforth called the diphoton process. It forms an
-important background to the higgs decay channel
-\(H\rightarrow \gamma\gamma\) and to a dihiggs decay
+important background to the Higgs decay channel
+\(H\rightarrow \gamma\gamma\) (which was instrumental in its
+discovery) and to a dihiggs decay
 \(HH\rightarrow b\bar{b}\gamma\gamma\)~\cite{aaboud2018:sf}, while
-still being a pure QED process and thus calculable by hand within the
-scope of this thesis. The differential and total cross section of this
-process is being calculated in leading order in \cref{chap:qqgg} and
-the obtained result is compared to the total cross section obtained
-with the \sherpa~\cite{Gleisberg:2008ta} event generator, used as
-matrix element integrator. In \cref{chap:mc} some simple MC
-methods are discussed, implemented and their results
-compared. Beginning with a study of MC integration the
-\vegas\ algorithm~\cite{Lepage:19781an} is implemented and
-evaluated. Subsequently MC sampling methods are explored and
-the output of \vegas\ is used to improve the sampling
+still being a pure QED process at leading order and thus calculable by
+hand within the scope of this thesis. The differential and total cross
+section of this process is being calculated in leading order in
+\cref{chap:qqgg} and the obtained result is compared to the total
+cross section obtained with the \sherpa~\cite{Gleisberg:2008ta} event
+generator, used as matrix element integrator. In \cref{chap:mc} some
+simple MC methods are discussed, implemented and their results
+compared. Beginning with a study of MC integration the \vegas\
+algorithm~\cite{Lepage:19781an} is implemented and
+evaluated. Subsequently MC sampling methods are explored and the
+output of \vegas\ is used to improve the sampling
 efficiency. Histograms of observables are generated and compared to
 histograms from \sherpa\ using the \rivet~\cite{Bierlich:2019rhm}
 analysis framework. \Cref{chap:pdf} deals with proton-proton
@@ -46,15 +47,13 @@ effects. The impact of those effects on observables is studied in
 \label{sec:convent}
 
 Throughout natural units with \(c=1, \hbar = 1, k_B=1, \varepsilon_0
-= 1\) are used unless stated otherwise. Histograms without label on
-the y-axis are normalized to unity and to be interpreted as
-probability densities.
+= 1\) are used unless stated otherwise.
 
 \section{Source Code}%
 \label{sec:source}
 
 The (literate) python code, used to generate most of the results and
-figures can be found on under
+figures can be found under
 \url{https://github.com/vale981/bachelor_thesis/} and more
 specifically in the subdirectory \texttt{prog/python/qqgg}.
 
@@ -64,8 +63,8 @@ algorithm related functionality as a module. The file
 that generates all the results of \cref{chap:mc}. The file
 \texttt{parton\_density\_function\_stuff.org} contains all the
 computations for \cref{chap:pdf}. The python code makes heavy use of
-\href{https://www.scipy.org/}{scipy} (and of course
-\href{https://numpy.org/}{numpy}).
+\href{https://www.scipy.org/}{scipy}~\cite{2020Virtanen:Sc} (and of
+course \href{https://numpy.org/}{numpy}).
 
 %%% Local Variables: ***
 %%% mode: latex ***

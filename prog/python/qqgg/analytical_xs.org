@@ -156,13 +156,24 @@ esp = 200  # GeV
 
 #+RESULTS:
 
+Let's save that stuff.
+#+begin_src jupyter-python :exports both :results raw drawer
+  tex_value(η, prefix=r"\abs{\eta}\leq ", prec=1, save=("results", "eta.tex"))
+  tex_value(
+      esp, prefix=r"\ecm = ", unit=r"\giga\electronvolt", save=("results", "ecm.tex")
+  )
+#+end_src
+
+
+#+RESULTS:
+: \(\ecm = \SI{200}{\giga\electronvolt}\)
+
 Set up the integration and plot intervals.
 #+begin_src jupyter-python :exports both :results raw drawer
 interval_η = [-η, η]
 interval = η_to_θ([-η, η])
 interval_cosθ = np.cos(interval)
 interval_pt = np.sort(η_to_pt([0, η], esp/2))
-plot_interval = [0.1, np.pi-.1]
 #+end_src
 
 #+RESULTS:
@@ -173,6 +184,22 @@ but that doen't reduce variance and would complicate things now.
 #+end_note
 
 ** Analytical Integration
+Let's plot a more detailed view of the xs.
+#+begin_src jupyter-python :exports both :results raw drawer
+  plot_points = np.linspace(np.pi/2 - 0.5, np.pi/2 + 0.5, 1000)
+  plot_points = plot_points[plot_points > 0]
+
+  fig, ax = set_up_plot()
+  ax.plot(plot_points, gev_to_pb(diff_xs(plot_points, charge=charge, esp=esp)))
+  ax.set_xlabel(r"$\theta$")
+  ax.set_ylabel(r"$d\sigma/d\Omega$ [pb]")
+  ax.set_xlim([plot_points.min(), plot_points.max()])
+  save_fig(fig, "diff_xs_zoom", "xs", size=[2.5, 2.5])
+#+end_src
+
+#+RESULTS:
+[[file:./.ob-jupyter/3986a139c4a6c3a27b1ef12a26b2e8f3ce473547.png]]
+
  And now calculate the cross section in picobarn.
  #+BEGIN_SRC jupyter-python :exports both :results raw file :file xs.tex
    xs_gev = total_xs_eta(η, charge, esp)
@@ -203,12 +230,15 @@ but that doen't reduce variance and would complicate things now.
  Compared to sherpa, it's pretty close.
  #+NAME: 81b5ed93-0312-45dc-beec-e2ba92e22626
  #+BEGIN_SRC jupyter-python :exports both :results raw drawer
-   sherpa = 0.05380
-   xs_pb - sherpa
+   sherpa = np.loadtxt("../../runcards/qqgg/sherpa_xs", delimiter=",")
+   tex_value(
+       ,*sherpa, unit=r"\pico\barn", prefix=r"\sigma = ", prec=6, save=("results", "xs_sherpa.tex")
+   )
+   xs_pb - sherpa[0]
  #+END_SRC
 
  #+RESULTS: 81b5ed93-0312-45dc-beec-e2ba92e22626
- : -6.7112594623469635e-06
+ : -5.112594623490896e-07
 
  I had to set the runcard option ~EW_SCHEME: alpha0~ to use the pure
  QED coupling constant.
@@ -216,21 +246,19 @@ but that doen't reduce variance and would complicate things now.
 ** Numerical Integration
 Plot our nice distribution:
 #+begin_src jupyter-python :exports both :results raw drawer
-  plot_points = np.linspace(*plot_interval, 1000)
+  plot_points = np.linspace(*np.arccos(interval_cosθ), 1000)
+  plot_points = plot_points[plot_points > 0]
 
   fig, ax = set_up_plot()
   ax.plot(plot_points, gev_to_pb(diff_xs(plot_points, charge=charge, esp=esp)))
   ax.set_xlabel(r'$\theta$')
   ax.set_ylabel(r'$d\sigma/d\Omega$ [pb]')
   ax.set_xlim([plot_points.min(), plot_points.max()])
-  ax.axvline(interval[0], color='gray', linestyle='--')
-  ax.axvline(interval[1], color='gray', linestyle='--', label=rf'$|\eta|={η}$')
-  ax.legend()
   save_fig(fig, 'diff_xs', 'xs', size=[2.5, 2.5])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/3dd905e7608b91a9d89503cb41660152f3b4b55c.png]]
+[[file:./.ob-jupyter/ea9069041c3e2ccd18c7642001c20d374696498d.png]]
 
 Define the integrand.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -248,7 +276,7 @@ Plot the integrand. # TODO: remove duplication
   fig, ax = set_up_plot()
   ax.plot(plot_points, xs_pb_int(plot_points))
   ax.set_xlabel(r'$\theta$')
-  ax.set_ylabel(r'$2\pi\cdot d\sigma/d\theta [pb]')
+  ax.set_ylabel(r'$2\pi\cdot d\sigma/d\theta$ [pb]')
   ax.set_xlim([plot_points.min(), plot_points.max()])
   ax.axvline(interval[0], color='gray', linestyle='--')
   ax.axvline(interval[1], color='gray', linestyle='--', label=rf'$|\eta|={η}$')
@@ -256,7 +284,7 @@ Plot the integrand. # TODO: remove duplication
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/ccb6653162c81c3f3e843225cb8d759178f497e0.png]]
+[[file:./.ob-jupyter/0faa37f24e5e531a55c6679794b5ad84f98ed47b.png]]
 *** Integral over θ
 Intergrate σ with the mc method.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -326,9 +354,9 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
       xs_pb_int,
       interval,
       num_increments=num_increments,
-      alpha=1.5,
-      increment_epsilon=0.01,
-      vegas_point_density=15,
+      alpha=2,
+      increment_epsilon=0.02,
+      vegas_point_density=20,
       epsilon=.001,
       acumulate=False,
   )
@@ -336,11 +364,11 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.052773271883732584, sigma=0.0006119771217887033, N=920, increment_borders=array([0.16380276, 0.20109846, 0.24530873, 0.30103045, 0.37106657,
-:        0.45713119, 0.56758289, 0.71432935, 0.91252993, 1.17768957,
-:        1.55420491, 1.91978804, 2.20362647, 2.40547652, 2.55765843,
-:        2.67560835, 2.76436094, 2.83801142, 2.89499662, 2.94066386,
-:        2.9777899 ]), vegas_iterations=23)
+: VegasIntegrationResult(result=0.053415671595191345, sigma=0.0006275962280404523, N=280, increment_borders=array([0.16380276, 0.20536326, 0.25384714, 0.31480502, 0.39193629,
+:        0.48757604, 0.60550147, 0.75723929, 0.96215207, 1.23107803,
+:        1.56182395, 1.89731315, 2.17107801, 2.37597223, 2.52898466,
+:        2.64874341, 2.74453741, 2.82025926, 2.88209227, 2.93279579,
+:        2.9777899 ]), vegas_iterations=7)
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. Here this gives
@@ -365,8 +393,8 @@ This depends, of course, on the iteration count.
       xs_pb_int,
       interval,
       num_increments=num_increments,
-      alpha=1.5,
-      increment_epsilon=0.01,
+      alpha=2,
+      increment_epsilon=0.02,
       vegas_point_density=20,
       epsilon=.001,
       acumulate=True,
@@ -374,11 +402,11 @@ This depends, of course, on the iteration count.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.05379385150190898, sigma=0.0003068472335040267, N=760, increment_borders=array([0.16380276, 0.20176444, 0.24723471, 0.30169898, 0.3725654 ,
-:        0.46249133, 0.57260516, 0.71753884, 0.9047832 , 1.17676749,
-:        1.53514921, 1.91009792, 2.19262501, 2.40344474, 2.55656491,
-:        2.67302165, 2.76296776, 2.83550718, 2.89246912, 2.93998605,
-:        2.9777899 ]), vegas_iterations=19)
+: VegasIntegrationResult(result=0.053638937795766034, sigma=0.00041459931173526546, N=280, increment_borders=array([0.16380276, 0.20595251, 0.25473743, 0.31600983, 0.39036863,
+:        0.48642444, 0.61192596, 0.76541368, 0.96544251, 1.24106758,
+:        1.57551962, 1.90430764, 2.16425611, 2.36635898, 2.52157247,
+:        2.64333433, 2.7431946 , 2.82557121, 2.88798018, 2.93770475,
+:        2.9777899 ]), vegas_iterations=7)
 
 Let's define some little helpers.
 #+begin_src jupyter-python :exports both :tangle tangled/plot_utils.py
@@ -459,7 +487,7 @@ And now we plot the integrand with the incremens.
   ax.set_xlabel(r"$\theta$")
   ax.set_ylabel(r"$2\pi\cdot d\sigma/d\theta$ [pb]")
   ax.set_ylim([0, 0.09])
-
+  plot_points = np.linspace(*interval, 1000)
   ax.plot(plot_points, xs_pb_int(plot_points), label="Distribution")
 
   plot_increments(
@@ -483,7 +511,7 @@ And now we plot the integrand with the incremens.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/d3b48be87b26058e6083e6f3a138e935436e3a87.png]]
+[[file:./.ob-jupyter/1c53bfcbf349269eff9f54eb58b9639ed9e6ce21.png]]
 *** Testing the Statistics
 Let's battle test the statistics.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -981,15 +1009,15 @@ That looks somewhat fishy, but it isn't.
   fig, ax = set_up_plot()
   points = np.linspace(interval_pt[0], interval_pt[1] - .01, 1000)
   ax.plot(points, gev_to_pb(diff_xs_p_t(points, charge, esp)))
-  ax.set_xlabel(r'$p_T$')
+  ax.set_xlabel(r'$p_\mathrm{T}$')
   ax.set_xlim(interval_pt[0], interval_pt[1] + 1)
   ax.set_ylim([0, gev_to_pb(diff_xs_p_t(interval_pt[1] -.01, charge, esp))])
-  ax.set_ylabel(r'$\frac{d\sigma}{dp_t}$ [pb]')
+  ax.set_ylabel(r'$\frac{\mathrm{d}\sigma}{\mathrm{d}p_\mathrm{T}}$ [pb]')
   save_fig(fig, 'diff_xs_p_t', 'xs_sampling', size=[4, 2])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/29724b8c1f2b0005a05f64f999cf95d248ee0082.png]]
+[[file:./.ob-jupyter/5c39a14515ced9b3f1d5d0cdd0c4fe75921ee3a7.png]]
 this is strongly peaked at p_t=100GeV. (The jacobian goes like 1/x there!)
 
 *** Sampling the η cross section

@@ -27,24 +27,35 @@ two identical photons in the final state.
 
 \begin{figure}[ht]
   \centering
-  \begin{subfigure}[c]{.45\textwidth}
+  \begin{subfigure}[t]{.49\textwidth}
+    \centering \plot{xs/diff_xs_zoom}
+
+    \caption[Plot of the differential cross section of the \(\qqgg\)
+    process.]{\label{fig:diffxs_zoom} The differential cross section as a
+      function of the polar angle \(\theta\) in the crucial region.}
+  \end{subfigure}
+  \begin{subfigure}[t]{.49\textwidth}
     \centering \plot{xs/diff_xs}
     \caption[Plot of the differential cross section of the \(\qqgg\)
     process.]{\label{fig:diffxs} The differential cross section as a
-      function of the polar angle \(\theta\). }
+      function of the polar angle \(\theta\) over the full integration
+      interval. }
   \end{subfigure}
-  \begin{subfigure}[c]{.45\textwidth}
+  \begin{subfigure}[t]{.49\textwidth}
   \centering
   \plot{xs/total_xs}
   \caption[Plot of the total cross section of the \(\qqgg\)
   process.]{\label{fig:totxs} The cross section
-    (\cref{eq:total-crossec}) of the process for a pseudo-rapidity
+    \cref{eq:total-crossec} of the process for a pseudo-rapidity
     integrated over \([-\eta, \eta]\).}
-  \end{subfigure}
+\end{subfigure}
+\caption{\label{fig:xsfirst} Plots of the differntial and total cross section
+  for \(\qqgg\).}
 \end{figure}
 
 The differential cross section \cref{eq:crossec} (see also
-\cref{fig:diffxs}) is divergent for angles near zero or \(\pi\). At
+\cref{fig:diffxs}) is divergent for angles near zero or \(\pi\) but
+remains finite in the physical region (see \cref{fig:diffxs_zoom}). At
 small scattering angles the absolute square of the momentum carried by
 the virtual quark in \cref{fig:qqggfeyn} goes to zero, which in the
 mass-less limit means that the virtual quark comes \emph{on-shell} and
@@ -84,15 +95,16 @@ As can be seen in \cref{fig:totxs}, the cross section, integrated over
 an interval of \([-\eta, \eta]\), is dominated by the linear
 contributions in \cref{eq:total-crossec} and would result in an
 infinity if no cut on \(\eta\) would be imposed. Choosing
-\(\eta\in [-2.5,2.5]\) and \(\ecm=\SI{100}{\giga\electronvolt}\) the
+\result{xs/python/eta} and \result{xs/python/ecm} the
 process was MC integrated in \sherpa\ using the runcard in
 \cref{sec:qqggruncard}. This runcard describes the exact same (leading
 order) process as the calculated cross section.
 
-\sherpa\ arrives at the cross section \result{xs/sherpa_xs}. Plugging
-the same parameters into \cref{eq:total-crossec} gives
-\result{xs/python/xs} which is within the uncertainty range of the
-\sherpa\ value. This verifies the result for the total cross section.
+\sherpa\ arrives at the cross section
+\result{xs/python/xs_sherpa}. Plugging the same parameters into
+\cref{eq:total-crossec} gives \result{xs/python/xs} which is within
+the uncertainty range of the \sherpa\ value. This verifies the result
+for the total cross section.
 
 %%% Local Variables:
 %%% mode: latex

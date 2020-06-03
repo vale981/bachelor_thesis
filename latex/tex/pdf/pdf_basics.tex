@@ -2,10 +2,11 @@
 \label{sec:pdf_basics}
 
 Parton Density Functions encode, restricting considerations to leading
-order, the probability to \emph{encounter} a constituent parton (quark
-or gluon) of a hadron with a certain momentum fraction \(x\) at a
-certain factorization scale \(Q^2\). PDFs are normalized according to
-\cref{eq:pdf-norm}, where the sum runs over all partons.
+order, the probability to encounter a constituent parton (quark or
+gluon) of a hadron with a certain momentum fraction \(x\) at a certain
+factorization scale \(Q^2\) in a scattering process. PDFs are
+normalized according to \cref{eq:pdf-norm}, where the sum runs over
+all partons.
 
 \begin{equation}
   \label{eq:pdf-norm}
@@ -14,23 +15,24 @@ certain factorization scale \(Q^2\). PDFs are normalized according to
 
 More precisely \({f_i}\) denotes a PDF set, which is referred to
 simply as PDF in the following.  PDFs can not be derived from first
-principles (at the moment) and have to be determined experimentally
-for low \(Q^2\) and are evolved to higher \(Q^2\) through the
-\emph{DGLAP} equations~\cite{altarelli:1977af} at different orders of
-perturbation theory.  In deep inelastic scattering \(Q^2\) is just the
-negative over the momentum transfer \(-q^2\). For more complicated
-processes \(Q^2\) has to be chosen in a way that reflects the
-\emph{momentum resolution} of the process. If the perturbation series
-behind the process would be expanded to the exact solution, the
+principles and have to be determined experimentally for low \(Q^2\)
+and are evolved to higher \(Q^2\) through the \emph{DGLAP}
+equations~\cite{altarelli:1977af} at different orders of perturbation
+theory.  In deep inelastic scattering \(Q^2\) is just the negative
+over the momentum transfer \(-q^2\). For more complicated processes
+\(Q^2\) has to be chosen in a way that reflects the
+\emph{energy-momentum scale} of the process. If the perturbation
+series behind the process would be expanded to the exact solution, the
 dependence on the factorization scale vanishes. In lower orders, one
 has to choose the scale in a \emph{physically
   meaningful}\footnote{That means: not in an arbitrary way.} way,
 which reflects characteristics of the process~\cite{altarelli:1977af}.
 
-In the case of \(\qqgg\) the mean of the Mandelstam variables \(\hat{t}\)
-and \(\hat{u}\), which is equal to \(\hat{s}/2\), can be used. This
-choice is lorentz-invariant and reflects the s/u-channel nature of the
-process.
+In the case of \(\qqgg\) the mean of the Mandelstam variables
+\(\hat{t}\) and \(\hat{u}\), which is equal to \(\hat{s}/2\), can be
+used. This choice is lorentz-invariant and reflects the s/u-channel
+nature of the process, although the \(\pt\) of photon would also have
+been a good choice~\cite[18]{buckley:2011ge}.
 
 The (differential) hadronic cross section for scattering of two
 partons in equal hadrons is given in \cref{eq:pdf-xs}. Here \(i,j\)
