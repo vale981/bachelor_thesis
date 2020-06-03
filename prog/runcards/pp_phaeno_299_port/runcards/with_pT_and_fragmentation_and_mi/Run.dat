@@ -29,7 +29,7 @@ BEAM_REMNANTS 1;
 
 (selector){
   PseudoRapidity 22 -3 3;
-  PT 22 10 200000000;
+  PT 22 2 200000000;
 }(selector)
 
 (analysis){
