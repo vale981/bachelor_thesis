@@ -701,7 +701,12 @@ Overestimating the upper bounds helps with bias.
 #+end_src
 
 #+RESULTS:
+:RESULTS:
 : \(\SI{10}{\percent}\)
+[[file:./.ob-jupyter/542b03d025920448ba653b470ec6492cbdd1e4a7.png]]
+[[file:./.ob-jupyter/d47db0dde9ae59979f271a7cba8dfc46be3f1dd3.png]]
+[[file:./.ob-jupyter/7fe9d3bd60427cf20af835649efbcbaafefbb3e0.png]]
+:END:
 
 Now we sample some events. Doing this in parallel helps. We let the os
 figure out the cpu mapping.
@@ -723,7 +728,7 @@ figure out the cpu mapping.
 #+RESULTS:
 :RESULTS:
 : Loading Cache:  sample_unweighted_array
-: 0.29610040880251154
+: 0.224625235474479
 :END:
 
 That does look pretty good eh? So lets save it along with the sample size.
@@ -739,7 +744,7 @@ That does look pretty good eh? So lets save it along with the sample size.
 #+end_src
 
 #+RESULTS:
-: \(\mathfrak{e}=\SI{30}{\percent}\)
+: \(\mathfrak{e}=\SI{22}{\percent}\)
 
 ** Observables
 Let's look at a histogramm of eta samples.
@@ -752,7 +757,7 @@ Let's look at a histogramm of eta samples.
 #+RESULTS:
 :RESULTS:
 : 10000000
-[[file:./.ob-jupyter/0b1b4f39201dac86ebfbfb8953561cfe81a6c70f.png]]
+[[file:./.ob-jupyter/3f76bed3326f0d9836b62f346473ed5485530dfb.png]]
 :END:
 
 Let's use a uniform histogram image size.
@@ -781,7 +786,7 @@ And now we compare all the observables with sherpa.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/1bd1360926e9896e78f071e71df8e1dd619d7d24.png]]
+[[file:./.ob-jupyter/a11fa54b137bf71723efa5d017af87abef67b637.png]]
 
 Hah! there we have it!
 

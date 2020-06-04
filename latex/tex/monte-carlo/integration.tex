@@ -134,15 +134,16 @@ Changing variables and integrating \cref{eq:xs-eta} over \(\eta\) with
 the same target accuracy yields~\result{xs/python/xs_mc_eta} with a
 sample size of just~\result{xs/python/xs_mc_eta_N}. The dramatic
 reduction in variance and sample size can be understood qualitatively
-by studying \cref{fig:xs-int-comp}. The differential cross section in
-terms of \(\eta\)~(\cref{fig:xs-int-eta}) is less steep than the
+by studying \cref{fig:xs-int-comp}, which shows both integrands with
+the same y-axis scaling and their standard deviation visualized. The
 differential cross section in terms of
-\(\theta\)~(\cref{fig:xs-int-theta}) and takes on large values
-over most of the integration interval. In general, the Jacobian
-arising in variable transformation has the same effect as the
-probability density in importance sampling. It can be shown that
-importance sampling and change of variables are formally equivalent
-(see \ref{sec:equap}).
+\(\eta\)~(\cref{fig:xs-int-eta}) is less steep than the differential
+cross section in terms of \(\theta\)~(\cref{fig:xs-int-theta}) and
+takes on large values over most of the integration interval. In
+general, the Jacobian arising in variable transformation has the same
+effect as the probability density in importance sampling. It can be
+shown that importance sampling and change of variables are formally
+equivalent (see \ref{sec:equap}).
 
 \begin{figure}[ht]
   \centering
@@ -161,7 +162,8 @@ importance sampling and change of variables are formally equivalent
       with the integration borders visualized as gray lines.}
   \end{subfigure}
   \caption{\label{fig:xs-int-comp} Comparison of two parametrisations
-    of the differential cross section.}
+    of the differential cross section. The same y-axis scaling has
+    been chosen to visualize the difference in variance.}
 \end{figure}
 
 \subsection{Integration with \vegas}
@@ -212,9 +214,10 @@ and \(\Omega_i\) being the hypercubes themselves.
 \begin{figure}[ht]
   \centering \plot{xs/xs_integrand_vegas}
   \caption[\(2\pi\dv{\sigma}{\theta}\) scaled to increments found by
-  \vegas\ ]{\label{fig:xs-int-vegas} The same integrand as
-    in \cref{fig:xs-int-theta} with \vegas-generated increments and
-    weighting applied (\(f/\rho\)).}
+  \vegas\ ]{\label{fig:xs-int-vegas} The same integrand as in
+    \cref{fig:xs-int-theta} with \vegas-generated increments and
+    weighting applied (\(f/\rho\)). The colored bands are the standard
+    deviations of the distributions with matching color.}
 \end{figure}
 
 This algorithm has been implemented in python and applied to
