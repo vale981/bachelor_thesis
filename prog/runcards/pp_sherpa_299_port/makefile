@@ -5,7 +5,7 @@ sherpa_xs: Run.dat
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 analysis: Run.dat
-	RIVET_ANALYSIS_PATH="$(ROOT_DIR)/../../analysis/qqgg_proton" mpirun --use-hwthread-cpus --use-hwthread-cpus $(SHERPA) ANALYSIS=Rivet
+	RIVET_ANALYSIS_PATH="$(ROOT_DIR)/qqgg_proton" mpirun --use-hwthread-cpus --use-hwthread-cpus $(SHERPA) ANALYSIS=Rivet EVT_OUTPUT=2
 	yodamerge *.yoda -o Analysis_all.yoda
 	rivet-mkhtml Analysis_all.yoda -o analysis
 	mv Analysis_all.yoda analysis/Analysis.yoda
