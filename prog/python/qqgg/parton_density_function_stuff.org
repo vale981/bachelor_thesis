@@ -532,12 +532,12 @@ And calculate the XS.
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
-  sherpa, sherpa_σ = np.loadtxt("../../runcards/pp/out/sherpa_xs")
+  sherpa, sherpa_σ = np.loadtxt("../../runcards/pp_sherpa_299_port/sherpa_xs")
   sherpa, sherpa_σ  # GeV
 #+end_src
 
 #+RESULTS:
-| 38.6816 | 0.0355418 |
+| 38.6728 | 0.0368322 |
 
 A factor of two used to be in here. It stemmed from the fact, that
 there are two identical protons.
@@ -547,7 +547,7 @@ there are two identical protons.
 #+end_src
 
 #+RESULTS:
-: -0.010096407949866753
+: -0.0012964079498659457
 
 The efficiency will be around:
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -575,7 +575,7 @@ Let's export those results for TeX:
 #+end_src
 
 #+RESULTS:
-: \(\sigma_s = \SI{38.682\pm 0.036}{\pico\barn}\)
+: \(\sigma_s = \SI{38.673\pm 0.037}{\pico\barn}\)
 
 * Event generation
 We set up a new distribution. Look at that cut sugar!
@@ -728,7 +728,7 @@ figure out the cpu mapping.
 #+RESULTS:
 :RESULTS:
 : Loading Cache:  sample_unweighted_array
-: 0.224625235474479
+: 0.29610040880251154
 :END:
 
 That does look pretty good eh? So lets save it along with the sample size.
@@ -744,7 +744,7 @@ That does look pretty good eh? So lets save it along with the sample size.
 #+end_src
 
 #+RESULTS:
-: \(\mathfrak{e}=\SI{22}{\percent}\)
+: \(\mathfrak{e}=\SI{30}{\percent}\)
 
 ** Observables
 Let's look at a histogramm of eta samples.
@@ -757,7 +757,7 @@ Let's look at a histogramm of eta samples.
 #+RESULTS:
 :RESULTS:
 : 10000000
-[[file:./.ob-jupyter/3f76bed3326f0d9836b62f346473ed5485530dfb.png]]
+[[file:./.ob-jupyter/0b1b4f39201dac86ebfbfb8953561cfe81a6c70f.png]]
 :END:
 
 Let's use a uniform histogram image size.
@@ -769,7 +769,7 @@ Let's use a uniform histogram image size.
 
 And now we compare all the observables with sherpa.
 #+begin_src jupyter-python :exports both :results raw drawer
-  yoda_file = yoda.read("../../runcards/pp/out/analysis/Analysis.yoda")
+  yoda_file = yoda.read("../../runcards/pp_sherpa_299_port/analysis/Analysis.yoda")
   yoda_hist = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/eta"])
   fig, (ax, ax_ratio) = draw_ratio_plot(
       [
@@ -786,7 +786,7 @@ And now we compare all the observables with sherpa.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/a11fa54b137bf71723efa5d017af87abef67b637.png]]
+[[file:./.ob-jupyter/a32ee488f4357426e3acecb1a5baaeddc367ee9b.png]]
 
 Hah! there we have it!
 
@@ -817,7 +817,7 @@ both equal.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/0f5a3e52e2afbac6671029996a21f3a859d19d6f.png]]
+[[file:./.ob-jupyter/deeb122e09b948ea416db671bfe1838aedeae84a.png]]
 
 The invariant mass is not constant anymore.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -842,7 +842,7 @@ The invariant mass is not constant anymore.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/063a7278fa35bee2c5319cf56afb6279fdb39de3.png]]
+[[file:./.ob-jupyter/a7708226adeb9782b68ffb10003c280d8dd19ef2.png]]
 
 The cosθ distribution looks more like the paronic one.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -861,7 +861,7 @@ The cosθ distribution looks more like the paronic one.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/c26130081aff57a8cf49f28fc15a6c6333525993.png]]
+[[file:./.ob-jupyter/5bf3849e8196878ba4585a09e496e852b9969866.png]]
 
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -883,7 +883,7 @@ The cosθ distribution looks more like the paronic one.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/1ecb7835b6be5475d9086efb55c4988fc871aa82.png]]
+[[file:./.ob-jupyter/cd50dc4eb341d959871bf4288ff3620556a53970.png]]
 
 In this case the opening angles are the same because the CS frame is
 the same as the ordinary rest frame. The z-axis is the beam axis
@@ -907,4 +907,4 @@ because pT=0!
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/c7955c2fbbaba499fcc00f7215e9ad03ba8b88a5.png]]
+[[file:./.ob-jupyter/9ae6d76460a0d99d6e64cd85c8d0b712984b93d6.png]]

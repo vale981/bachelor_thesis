@@ -5,9 +5,9 @@ sherpa_xs: Run.dat
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 analysis: Run.dat
-	RIVET_ANALYSIS_PATH="$(ROOT_DIR)/qqgg_proton" mpirun --use-hwthread-cpus --use-hwthread-cpus $(SHERPA) ANALYSIS=Rivet EVT_OUTPUT=2
-	yodamerge *.yoda -o Analysis_all.yoda
-	rivet-mkhtml Analysis_all.yoda -o analysis
+	RIVET_ANALYSIS_PATH="$(ROOT_DIR)/qqgg_proton" mpirun --use-hwthread-cpus --use-hwthread-cpus $(SHERPA) -a Rivet EVT_OUTPUT=2
+	RIVET_ANALYSIS_PATH="$(ROOT_DIR)/qqgg_proton" python2 $(shell which rivet-merge) -e *.yoda -o Analysis_all.yoda
+	RIVET_ANALYSIS_PATH="$(ROOT_DIR)/qqgg_proton" rivet-mkhtml Analysis_all.yoda -o analysis
 	mv Analysis_all.yoda analysis/Analysis.yoda
 
 .PHONY: clean
