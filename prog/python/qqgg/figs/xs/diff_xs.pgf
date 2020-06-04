@@ -3753,7 +3753,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=0.425625in,y=1.447917in,,bottom,rotate=90.000000]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle d\sigma/d\Omega\) [pb]}%
+\pgftext[x=0.425625in,y=1.447917in,,bottom,rotate=90.000000]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle \mathrm{d}\sigma/\mathrm{d}\Omega\) [pb]}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfpathrectangle{\pgfqpoint{0.894792in}{0.594444in}}{\pgfqpoint{1.406597in}{1.706944in}}%

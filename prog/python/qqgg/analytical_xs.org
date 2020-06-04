@@ -194,13 +194,13 @@ Let's plot a more detailed view of the xs.
   fig, ax = set_up_plot()
   ax.plot(plot_points, gev_to_pb(diff_xs(plot_points, charge=charge, esp=esp)))
   ax.set_xlabel(r"$\theta$")
-  ax.set_ylabel(r"$d\sigma/d\Omega$ [pb]")
+  ax.set_ylabel(r"$\mathrm{d}\sigma/\mathrm{d}\Omega$ [pb]")
   ax.set_xlim([plot_points.min(), plot_points.max()])
   save_fig(fig, "diff_xs_zoom", "xs", size=[2.5, 2.5])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/3986a139c4a6c3a27b1ef12a26b2e8f3ce473547.png]]
+[[file:./.ob-jupyter/7466ab6e4dd5f81d66dae2e1ba4531efa6885336.png]]
 
  And now calculate the cross section in picobarn.
  #+BEGIN_SRC jupyter-python :exports both :results raw file :file xs.tex
@@ -254,13 +254,13 @@ Plot our nice distribution:
   fig, ax = set_up_plot()
   ax.plot(plot_points, gev_to_pb(diff_xs(plot_points, charge=charge, esp=esp)))
   ax.set_xlabel(r'$\theta$')
-  ax.set_ylabel(r'$d\sigma/d\Omega$ [pb]')
+  ax.set_ylabel(r'$\mathrm{d}\sigma/\mathrm{d}\Omega$ [pb]')
   ax.set_xlim([plot_points.min(), plot_points.max()])
   save_fig(fig, 'diff_xs', 'xs', size=[2.5, 2.5])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/ea9069041c3e2ccd18c7642001c20d374696498d.png]]
+[[file:./.ob-jupyter/37306932df4d28e56eff37c1b1dbe5efcf5f38c5.png]]
 
 Define the integrand.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -276,17 +276,27 @@ Define the integrand.
 Plot the integrand. # TODO: remove duplication
 #+begin_src jupyter-python :exports both :results raw drawer
   fig, ax = set_up_plot()
+  plot_points = np.linspace(*interval, 100)
+  vals = xs_pb_int(plot_points)
   ax.plot(plot_points, xs_pb_int(plot_points))
-  ax.set_xlabel(r'$\theta$')
-  ax.set_ylabel(r'$2\pi\cdot d\sigma/d\theta$ [pb]')
+  ax.set_xlabel(r"$\theta$")
+  ax.set_ylabel(r"$2\pi\cdot \mathrm{d}\sigma/\mathrm{d}\theta$ [pb]")
   ax.set_xlim([plot_points.min(), plot_points.max()])
-  ax.axvline(interval[0], color='gray', linestyle='--')
-  ax.axvline(interval[1], color='gray', linestyle='--', label=rf'$|\eta|={η}$')
-  save_fig(fig, 'xs_integrand', 'xs', size=[3, 2.2])
+  ax.axhline(vals.mean(), color="gray", linestyle="--", label="mean")
+  ax.axhspan(
+      vals.mean() - vals.std(),
+      vals.mean() + vals.std(),
+      alpha=0.1,
+      color="red",
+      label=r"$\sigma$",
+  )
+  ax.legend()
+  ax.set_ylim([0, 0.09])
+  save_fig(fig, "xs_integrand", "xs", size=[3, 2.2])
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/0faa37f24e5e531a55c6679794b5ad84f98ed47b.png]]
+[[file:./.ob-jupyter/ae89081fd4dc96b3851ae0ed83ef1a8bf24957a3.png]]
 *** Integral over θ
 Intergrate σ with the mc method.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -295,7 +305,7 @@ Intergrate σ with the mc method.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.05441855281261322, sigma=0.0009320238641639787, N=2409)
+: IntegrationResult(result=0.05404067829354404, sigma=0.0009555507112178561, N=2042)
 
 We gonna export that as tex.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -305,24 +315,37 @@ We gonna export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 2409\)
+: \(N = 2042\)
 
 *** Integration over η
 Plot the intgrand of the pseudo rap.
 #+begin_src jupyter-python :exports both :results raw drawer
   fig, ax = set_up_plot()
-  points = np.linspace(-4, 4, 1000)
-  ax.set_xlim([-4, 4])
-  ax.plot(points, xs_pb_int_η(points))
-  ax.set_xlabel(r'$\eta$')
-  ax.set_ylabel(r'$2\pi\cdot d\sigma/d\eta$ [pb]')
-  ax.axvline(interval_η[0], color='gray', linestyle='--')
-  ax.axvline(interval_η[1], color='gray', linestyle='--', label=rf'$|\eta|={η}$')
-  save_fig(fig, 'xs_integrand_eta', 'xs', size=[3, 2])
+  points = np.linspace(*interval_η, 1000)
+  ax.set_xlim(*interval_η)
+  vals = xs_pb_int_η(points)
+  ax.plot(points, vals)
+  ax.set_xlabel(r"$\eta$")
+  ax.set_ylabel(r"$2\pi\cdot \mathrm{d}\sigma/\mathrm{d}\eta$ [pb]")
+  ax.axhline(vals.mean(), color="gray", linestyle="--", label="mean")
+  ax.axhspan(
+      vals.mean() - vals.std(),
+      vals.mean() + vals.std(),
+      alpha=0.1,
+      color="red",
+      label=r"$\sigma$",
+  )
+  ax.legend()
+  ax.set_ylim([0, 0.09])
+  save_fig(fig, "xs_integrand_eta", "xs", size=[3, 2.2])
+  vals.std()
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/87a932866f779a2a07abed4ca251fa98113beca7.png]]
+:RESULTS:
+: 0.0022315324126441238
+[[file:./.ob-jupyter/df9765373fa441d9bd5b8c72e4570b6e57a4efd1.png]]
+:END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
   xs_pb_η = monte_carlo.integrate(xs_pb_int_η,
@@ -331,7 +354,7 @@ Plot the intgrand of the pseudo rap.
 #+end_src
 
 #+RESULTS:
-: IntegrationResult(result=0.05426132486294707, sigma=0.0009290107243898728, N=139)
+: IntegrationResult(result=0.0539225823635837, sigma=0.0009726447951613801, N=129)
 
 As we see, the result is a little better if we use pseudo rapidity,
 because the differential cross section does not difverge anymore.  But
@@ -346,7 +369,7 @@ And yet again export that as tex.
 #+end_src
 
 #+RESULTS:
-: \(N = 139\)
+: \(N = 129\)
 
 *** Using =VEGAS=
 Now we use =VEGAS= on the θ parametrisation and see what happens.
@@ -366,11 +389,11 @@ Now we use =VEGAS= on the θ parametrisation and see what happens.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.054422216787080396, sigma=0.0006957439458710827, N=320, increment_borders=array([0.16380276, 0.20314863, 0.25135645, 0.3082272 , 0.38103424,
-:        0.47262521, 0.58514375, 0.73529155, 0.93749124, 1.21905652,
-:        1.56938338, 1.9110467 , 2.18331756, 2.39006538, 2.53961158,
-:        2.65719576, 2.75135653, 2.8268643 , 2.88979691, 2.93870107,
-:        2.9777899 ]), vegas_iterations=8)
+: VegasIntegrationResult(result=0.055228064564004795, sigma=0.0007080815177218788, N=280, increment_borders=array([0.16380276, 0.20233559, 0.2483101 , 0.30892526, 0.38540143,
+:        0.48404666, 0.61040504, 0.77646193, 0.99569736, 1.28300786,
+:        1.62098314, 1.94122381, 2.19922166, 2.39276424, 2.54204101,
+:        2.65643191, 2.75079333, 2.82673522, 2.88773282, 2.93692007,
+:        2.9777899 ]), vegas_iterations=7)
 
 This is pretty good, although the variance reduction may be achieved
 partially by accumulating the results from all runns. Here this gives
@@ -404,10 +427,10 @@ This depends, of course, on the iteration count.
 #+end_src
 
 #+RESULTS:
-: VegasIntegrationResult(result=0.05380568600350274, sigma=0.0004383152837432189, N=280, increment_borders=array([0.16380276, 0.20873527, 0.25987008, 0.325169  , 0.40498176,
-:        0.50009823, 0.61991719, 0.77579454, 0.97831119, 1.24824315,
-:        1.58407857, 1.9121678 , 2.17348661, 2.37979953, 2.53271166,
-:        2.65311043, 2.74962598, 2.82685265, 2.88861077, 2.93721048,
+: VegasIntegrationResult(result=0.05324756245499766, sigma=0.0004329603286199391, N=280, increment_borders=array([0.16380276, 0.20604579, 0.25571171, 0.31360373, 0.38994537,
+:        0.48567316, 0.60719424, 0.75914834, 0.96094206, 1.23541039,
+:        1.57009106, 1.90475795, 2.18153577, 2.38026918, 2.53394687,
+:        2.65380143, 2.74689675, 2.82228553, 2.88410754, 2.93498124,
 :        2.9777899 ]), vegas_iterations=7)
 
 Let's define some little helpers.
@@ -439,7 +462,7 @@ Let's define some little helpers.
 
 
   def plot_vegas_weighted_distribution(
-      ax, points, dist, increment_borders, *args, **kwargs
+      ax, points, dist, increment_borders, integral=None, color="orange", *args, **kwargs
   ):
       """Plot the distribution with VEGAS weights applied.
 
@@ -452,12 +475,34 @@ Let's define some little helpers.
       num_increments = increment_borders.size
       weighted_dist = dist.copy()
 
+      var = 0
+      total_weight = points.max() - points.min()
       for left_border, right_border in zip(increment_borders[:-1], increment_borders[1:]):
           length = right_border - left_border
           mask = (left_border <= points) & (points <= right_border)
           weighted_dist[mask] = dist[mask] * num_increments * length
+          if integral:
+              var += (
+                  np.sum((integral - weighted_dist[mask]) ** 2)
+                  / (weighted_dist[mask].size - 1)
+                  ,* length
+                  / total_weight
+              )
 
-      ax.plot(points, weighted_dist, *args, **kwargs)
+      if integral:
+          std = np.sqrt(var)
+          ax.axhline(weighted_dist.mean(), color=color, linestyle="--")
+          ax.axhspan(
+              weighted_dist.mean() - std,
+              weighted_dist.mean() + std,
+              color=color,
+              alpha=0.2,
+              linestyle="--",
+          )
+
+      ax.plot(
+          points, weighted_dist, *args, color=color, **kwargs,
+      )
 
 
   def plot_stratified_rho(ax, points, increment_borders, *args, **kwargs):
@@ -487,10 +532,18 @@ And now we plot the integrand with the incremens.
   fig, ax = set_up_plot()
   ax.set_xlim(*interval)
   ax.set_xlabel(r"$\theta$")
-  ax.set_ylabel(r"$2\pi\cdot d\sigma/d\theta$ [pb]")
+  ax.set_ylabel(r"$2\pi\cdot \mathrm{d}\sigma/\mathrm{d}\theta$ [pb]")
   ax.set_ylim([0, 0.09])
   plot_points = np.linspace(*interval, 1000)
+  vals = xs_pb_int(plot_points)
   ax.plot(plot_points, xs_pb_int(plot_points), label="Distribution")
+  ax.axhline(vals.mean(), color="C0", linestyle="--")
+  ax.axhspan(
+      vals.mean() - vals.std(),
+      vals.mean() + vals.std(),
+      alpha=0.1,
+      color="C0",
+  )
 
   plot_increments(
       ax,
@@ -505,6 +558,7 @@ And now we plot the integrand with the incremens.
       plot_points,
       xs_pb_int(plot_points),
       xs_pb_vegas.increment_borders,
+      xs_pb_vegas.result,
       label="Weighted Distribution",
   )
 
@@ -513,7 +567,7 @@ And now we plot the integrand with the incremens.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/1e0c8273dbe61996ca889bbb21ba8f0a7469023a.png]]
+[[file:./.ob-jupyter/b8300645a28ff7d6830df60fd0044ee5ce5c5415.png]]
 *** Testing the Statistics
 Let's battle test the statistics.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -530,7 +584,7 @@ Let's battle test the statistics.
 #+end_src
 
 #+RESULTS:
-: 0.681
+: 0.677
 
 So we see: the standard deviation is sound.
 
@@ -623,12 +677,12 @@ Our distribution has a lot of variance, as can be seen by plotting it.
   fig, ax = set_up_plot()
   ax.plot(pts, dist_cosθ(pts))
   ax.set_xlabel(r'$\cos\theta$')
-  ax.set_ylabel(r'$\frac{d\sigma}{d\Omega}$')
+  ax.set_ylabel(r'$\frac{\mathrm{d}\sigma}{\mathrm{d}\Omega}$')
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-: Text(0, 0.5, '$\\frac{d\\sigma}{d\\Omega}$')
+: Text(0, 0.5, '$\\frac{\mathrm{d}\\sigma}{\mathrm{d}\\Omega}$')
 [[file:./.ob-jupyter/a9e1c809c0f72c09ab5e91022ecd407fcc833d95.png]]
 :END:
 
@@ -652,12 +706,12 @@ We define a friendly and easy to integrate upper limit function.
 
   ax.legend(fontsize='small')
   ax.set_xlabel(r"$\cos\theta$")
-  ax.set_ylabel(r"$\frac{d\sigma}{d\cos\theta}$ [pb]")
+  ax.set_ylabel(r"$\frac{\mathrm{d}\sigma}{\mathrm{d}\cos\theta}$ [pb]")
   save_fig(fig, "upper_bound", "xs_sampling", size=(3, 2.5))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/647593b36e5170280820c31c63b884cae0ebbee6.png]]
+[[file:./.ob-jupyter/d5f9e5a84f6ec36d0bca418a3a42ff283f6e45c8.png]]
 
 
 To increase our efficiency, we have to specify an upper bound. That is
@@ -1066,11 +1120,11 @@ Let's draw a histogram to compare with the previous results.
   η_hist = np.histogram(η_sample, bins=50)
   fig, (ax_hist, ax_ratio) = draw_ratio_plot(
       [
-          dict(hist=η_hist, hist_kwargs=dict(label=r"sampled from $d\sigma / d\eta$"),),
+          dict(hist=η_hist, hist_kwargs=dict(label=r"sampled from $\mathrm{d}\sigma / d\eta$"),),
           dict(
               hist=hist_obs_η,
               hist_kwargs=dict(
-                  label=r"sampled from $d\sigma / d\cos\theta$", color="black"
+                  label=r"sampled from $\mathrm{d}\sigma / d\cos\theta$", color="black"
               ),
           ),
       ],
@@ -1102,8 +1156,8 @@ distribution. We throw away the integral, but keep the increments.
 #+end_src
 
 #+RESULTS:
-: array([-0.9866143 , -0.96911901, -0.92943323, -0.836433  , -0.60453944,
-:        -0.0163465 ,  0.59290895,  0.83243019,  0.92859895,  0.96906649,
+: array([-0.9866143 , -0.96916115, -0.9297287 , -0.8368118 , -0.60013666,
+:         0.00111691,  0.59866117,  0.83547058,  0.93009757,  0.96938499,
 :         0.9866143 ])
 
 Visualizing the increment borders gives us the information we want.
@@ -1112,7 +1166,7 @@ Visualizing the increment borders gives us the information we want.
   fig, ax = set_up_plot()
   ax.plot(pts, dist_cosθ(pts))
   ax.set_xlabel(r'$\cos\theta$')
-  ax.set_ylabel(r'$\frac{d\sigma}{d\Omega}$')
+  ax.set_ylabel(r'$\frac{\mathrm{d}\sigma}{\mathrm{d}\Omega}$')
   ax.set_xlim(*interval_cosθ)
   plot_increments(ax, increments,
                   label='Increment Borderds', color='gray', linestyle='--')
@@ -1121,8 +1175,8 @@ Visualizing the increment borders gives us the information we want.
 
 #+RESULTS:
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7fd1f3749df0>
-[[file:./.ob-jupyter/105fdf87f6e38965222c89c9dc8c02daace518a0.png]]
+: <matplotlib.legend.Legend at 0x7f897b6cf9a0>
+[[file:./.ob-jupyter/ab9fdc8943d59f77ea4d3e89b4acf56e6967e8cf.png]]
 :END:
 
 We can now plot the reweighted distribution to observe the variance
@@ -1136,7 +1190,7 @@ reduction visually.
       ax, pts, dist_cosθ(pts), increments, label="Weighted Distribution"
   )
   ax.set_xlabel(r"$\cos\theta$")
-  ax.set_ylabel(r"$\frac{d\sigma}{d\cos\theta}$")
+  ax.set_ylabel(r"$\frac{\mathrm{d}\sigma}{\mathrm{d}\cos\theta}$")
   ax.set_xlim(*interval_cosθ)
   plot_increments(
       ax, increments, label="Increment Borderds", color="gray", linestyle="--"
@@ -1146,7 +1200,7 @@ reduction visually.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/86e58bac2e91a82f143e0d30c0ecae740747f155.png]]
+[[file:./.ob-jupyter/deca4f34c00da181d0dd97eb9bb340d80336f78a.png]]
 
 
 I am batman! Let's plot the weighting distribution.
@@ -1155,13 +1209,13 @@ I am batman! Let's plot the weighting distribution.
   fig, ax = set_up_plot()
   plot_stratified_rho(ax, pts, increments)
   ax.set_xlabel(r"$\cos\theta$")
-  ax.set_ylabel(r"$\rho")
+  ax.set_ylabel(r"$\rho$")
   ax.set_xlim(*interval_cosθ)
   save_fig(fig, "vegas_rho", "xs_sampling", size=(3, 2.3))
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/d1bbf6f7f3495fe2fad259dacf20537d861ed94c.png]]
+[[file:./.ob-jupyter/c4f803471d6c9ad54693a866fd4e16edd7788e6c.png]]
 
 Now, draw a sample and look at the efficiency.
 

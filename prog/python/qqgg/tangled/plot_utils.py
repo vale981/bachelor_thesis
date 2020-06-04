@@ -25,7 +25,7 @@ def plot_increments(ax, increment_borders, label=None, *args, **kwargs):
 
 
 def plot_vegas_weighted_distribution(
-    ax, points, dist, increment_borders, *args, **kwargs
+    ax, points, dist, increment_borders, integral=None, color="orange", *args, **kwargs
 ):
     """Plot the distribution with VEGAS weights applied.
 
@@ -38,12 +38,34 @@ def plot_vegas_weighted_distribution(
     num_increments = increment_borders.size
     weighted_dist = dist.copy()
 
+    var = 0
+    total_weight = points.max() - points.min()
     for left_border, right_border in zip(increment_borders[:-1], increment_borders[1:]):
         length = right_border - left_border
         mask = (left_border <= points) & (points <= right_border)
         weighted_dist[mask] = dist[mask] * num_increments * length
+        if integral:
+            var += (
+                np.sum((integral - weighted_dist[mask]) ** 2)
+                / (weighted_dist[mask].size - 1)
+                * length
+                / total_weight
+            )
 
-    ax.plot(points, weighted_dist, *args, **kwargs)
+    if integral:
+        std = np.sqrt(var)
+        ax.axhline(weighted_dist.mean(), color=color, linestyle="--")
+        ax.axhspan(
+            weighted_dist.mean() - std,
+            weighted_dist.mean() + std,
+            color=color,
+            alpha=0.2,
+            linestyle="--",
+        )
+
+    ax.plot(
+        points, weighted_dist, *args, color=color, **kwargs,
+    )
 
 
 def plot_stratified_rho(ax, points, increment_borders, *args, **kwargs):
