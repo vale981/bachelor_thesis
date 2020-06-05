@@ -816,14 +816,14 @@ both equal.
   ax.set_yscale("log")
   ax.set_xscale("log")
   ax_ratio.set_xlabel(r"$p_T$ [GeV]")
-  ax.legend()
+  ax.legend(fontsize=8)
   save_fig(fig, "pt_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
 :RESULTS:
 : True
-[[file:./.ob-jupyter/a42b055ba888e45bbc0be6483dc59c302a4e5972.png]]
+[[file:./.ob-jupyter/ac21842ec98182309887ae92c7d090ddd14d417b.png]]
 :END:
 
 The invariant mass is not constant anymore.
@@ -843,14 +843,14 @@ The invariant mass is not constant anymore.
   ax.set_yscale("log")
   ax.set_xscale("log")
   ax_ratio.set_xlabel(r"Invariant Mass [GeV]")
-  ax.legend()
+  ax.legend(fontsize=8)
   save_fig(fig, "inv_m_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
 :RESULTS:
 : True
-[[file:./.ob-jupyter/498cc781cf480413602d4e1a9a1ea484a4b92f8f.png]]
+[[file:./.ob-jupyter/4b563a7a294b2d04fbbb71d2a3da66f1cac6b55e.png]]
 :END:
 
 The cosθ distribution looks more like the paronic one.
@@ -865,14 +865,14 @@ The cosθ distribution looks more like the paronic one.
   )
 
   ax_ratio.set_xlabel(r"$\cos\theta$")
-  ax.legend()
+  ax.legend(fontsize=8)
   save_fig(fig, "cos_theta_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
 :RESULTS:
 : True
-[[file:./.ob-jupyter/981ceda03c0d51f4b5e1a6efaae4ae275005876a.png]]
+[[file:./.ob-jupyter/c4b0b9f3d8dd2e61e6be1b9a8323fe8a5b934007.png]]
 :END:
 
 
@@ -890,14 +890,14 @@ The cosθ distribution looks more like the paronic one.
   )
 
   ax_ratio.set_xlabel(r"$|\cos\theta^\ast|$ CS Frame")
-  ax.legend()
+  ax.legend(fontsize=8)
   save_fig(fig, "o_angle_cs_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
 :RESULTS:
 : True
-[[file:./.ob-jupyter/db2cd45260bb65ac6fec32e0a6dcd10cd6043b73.png]]
+[[file:./.ob-jupyter/df597463c6cd461ca9f9960254924e679c919d0d.png]]
 :END:
 
 In this case the opening angles are the same because the CS frame is
@@ -917,12 +917,12 @@ because pT=0!
   )
 
   ax_ratio.set_xlabel(r"$|\cos\theta|$")
-  ax.legend()
+  ax.legend(fontsize=8)
   save_fig(fig, "o_angle_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
 :RESULTS:
 : True
-[[file:./.ob-jupyter/05fd59c31479c7a56aab554c340e2ef2c3d0f10c.png]]
+[[file:./.ob-jupyter/f933e141f2acc796bbb10f90a52152c182c89aed.png]]
 :END:
