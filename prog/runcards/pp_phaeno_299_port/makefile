@@ -18,7 +18,7 @@ OUT_DIR = out
 RES_DIR = results
 
 # Event Count
-EVENT_COUNT = 10000000
+EVENT_COUNT = 1000
 
 # List of Runcards, see RUNCARD_FOLDER
 RUNCARDS =\

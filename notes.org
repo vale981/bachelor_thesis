@@ -183,10 +183,10 @@ Viele Gruesse, Frank
 ** TODO lab xs kuerzen
 ** TODO shower scale anpassen
 ** TODO effekt shower und kperp
-** TODO y-axis a.u.!
-** TODO mean, var einzeichnen
-** TODO Variance of vegas weighted f!
-** TODO look at xs plot -> they seem different
+** DONE y-axis a.u.!
+** DONE mean, var einzeichnen
+** DONE Variance of vegas weighted f!
+** DONE look at xs plot -> they seem different
 ** TODO take new sample: still bias?
 
 * Observations

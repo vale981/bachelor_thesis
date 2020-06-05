@@ -50,7 +50,7 @@ Title=Azimuthal angle between the photons
 XLabel=$\pi-\Delta\phi_{\gamma\gamma}$ [rad]
 YLabel=$\mathrm{d}\sigma/\mathrm{d}\Delta\phi_{\gamma\gamma}$ [pb rad$^{-1}$]
 LogY=0
-LogX=1
+LogX=0
 # END PLOT
 
 # BEGIN PLOT /MC_DIPHOTON_PROTON/o_angle
@@ -68,7 +68,7 @@ LogY=0
 # END PLOT
 
 # BEGIN PLOT /MC_DIPHOTON_PROTON/total_pT
-Title=total $\pT$
+Title=$\pT$ of the $\gamma\gamma$ system
 XLabel=$\pT$
 YLabel=$\mathrm{d}\sigma/\mathrm{d}\pT_{\gamma\gamma}$ [pb GeV$^{-1}$]
 LogY=1

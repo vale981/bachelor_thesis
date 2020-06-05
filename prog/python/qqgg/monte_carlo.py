@@ -1061,15 +1061,14 @@ def sample_stratified_vector(
     total_accepted = 0
 
     cubes = [cube for cube in cubes if cube[2] > 0]  # filter out cubes with zero weight
+    # print([integrate(f, cube).result for cube, _, _ in cubes])
     weights = np.array([weight for _, _, weight in cubes])
     integral = weights.sum()
     weights = np.cumsum(weights / integral)
 
     maxima = np.array(
         [
-            find_upper_bound_vector(
-                f, cube[0], cube[1][1:], tolerance=overestimate_factor - 1
-            )
+            find_upper_bound_vector(f, cube[0], cube[1][1:], tolerance=0.01)
             for cube in cubes
         ]
     )
