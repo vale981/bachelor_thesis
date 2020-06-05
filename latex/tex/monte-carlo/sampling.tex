@@ -33,7 +33,7 @@ solving \cref{eq:takesample} for \(y\).
   \label{eq:takesample}
   \int_{0}^{y}f(x')\dd{x'} = x\cdot\int_0^1f(x')\dd{x'} = x\cdot A
 \end{equation}
-
+%
 This can be shown by observing that, according
 to \cref{eq:takesample}, the probability that
 \(y\in[y', y'+\dd{y}']\) is the same as the probability that
@@ -46,7 +46,7 @@ distributed according to \(f/A=\tilde{f}\).
 If the antiderivative \(F\) (and its inverse) of \(f\) is known, then
 the solution of \cref{eq:takesample} is given by
 \cref{eq:solutionsamp}.
-
+%
 \begin{equation}
   \label{eq:solutionsamp}
   y = F^{-1}(x\cdot A + F(0))
@@ -69,7 +69,7 @@ which are distributed according to \(g/B\), where
 \(B=\int_0^1g(x)\dd{x}\) and then accepts them with the
 probability~\(f/g\), so that \(g\) cancels out. This is known as the
 \emph{hit or miss} implementation of importance sampling.
-
+%
 \begin{equation}
   \label{eq:takesample2d}
   \int_{0}^{y}f(x')\dd{x'} =
@@ -81,7 +81,7 @@ The thus obtained samples are then distributed according to \(f/B\)
 and the total probability of accepting a sample, also called the
 efficiency \(\mathfrak{e}\), is given by hat \cref{eq:impsampeff}
 holds.
-
+%
 \begin{equation}
   \label{eq:impsampeff}
   \int_0^1\frac{g(x)}{B}\cdot\frac{f(x)}{g(x)}\dd{x} = \int_0^1\frac{f(x)}{B}\dd{x} = \frac{A}{B} = \mathfrak{e}\leq 1
@@ -99,7 +99,7 @@ this approach is related to how much \(f\) differs from
 \(f\). Minimizing variance will therefore improve sampling
 performance. The method can also be used in higher dimensions without
 modification and has again been implemented and evaluated.
-
+%
 \begin{equation}
   \label{eq:primitiveg}
   g=\max_{x\in\Omega}f(x)=f_{\text{max}}

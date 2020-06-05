@@ -4,16 +4,11 @@
 % load early
 \usepackage[english]{babel}
 \usepackage{newpxtext,newpxmath}
-\KOMAoptions{DIV=last}
 \usepackage{physics}
-\usepackage{graphicx, booktabs, float, scrhack}
+\usepackage{graphicx, booktabs, float}
 \usepackage{mathtools,amssymb}
-\usepackage[automark]{scrlayer-scrpage}
 \usepackage[backend=biber, language=english, style=phys]{biblatex}
 \usepackage{siunitx}
-\usepackage[pdfencoding=auto]{hyperref} % load late
-\usepackage[capitalize]{cleveref}
-% \usepackage[activate={true,nocompatibility},final,tracking=true,spacing=true,factor=1100,stretch=10,shrink=10]{microtype}
 \usepackage{caption}
 \usepackage[list=true, font=small,
 labelformat=brace, position=top]{subcaption}
@@ -24,11 +19,14 @@ labelformat=brace, position=top]{subcaption}
 \usepackage[newfloat]{minted}
 \usepackage{pgfplots}
 \usepackage{ifdraft}
-\usepackage{microtype}
+\usepackage[activate={protrusion,expansion,auto}]{microtype}
 \usepackage{fancyvrb}
 \usepackage[autostyle=true]{csquotes}
 \usepackage{setspace}
 \usepackage{newunicodechar}
+\usepackage[pdfencoding=auto]{hyperref} % load late
+\usepackage[capitalize]{cleveref}
+\usepackage{scrhack}
 
 %% use the current pgfplots
 \pgfplotsset{compat=1.16}
