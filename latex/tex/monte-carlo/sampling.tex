@@ -34,18 +34,16 @@ solving \cref{eq:takesample} for \(y\).
   \int_{0}^{y}f(x')\dd{x'} = x\cdot\int_0^1f(x')\dd{x'} = x\cdot A
 \end{equation}
 %
-This can be shown by observing that, according
-to \cref{eq:takesample}, the probability that
-\(y\in[y', y'+\dd{y}']\) is the same as the probability that
-\(x\in A^{-1}\qty[\int_{0}^{y'}f(x')\dd{x'},
-\int_{0}^{y'+\dd{y}'}f(x')\dd{x'}]\) which is
-\(A^{-1}\qty(\int_{0}^{y'+\dd{y}'}f(x')\dd{x'} -
-\int_{0}^{y'}f(x')\dd{x'}) = A^{-1} f(y')\dd{y}'\). So \(y\) is really
-distributed according to \(f/A=\tilde{f}\).
-
-If the antiderivative \(F\) (and its inverse) of \(f\) is known, then
-the solution of \cref{eq:takesample} is given by
-\cref{eq:solutionsamp}.
+This can be shown by observing that, according to
+\cref{eq:takesample}, the probability that \(y\in[y', y'+\dd{y}']\) is
+the same as the probability that
+\[x\in A^{-1}\qty[\int_{0}^{y'}f(x')\dd{x'},
+\int_{0}^{y'+\dd{y}'}f(x')\dd{x'}]\] which is
+\[A^{-1}\qty(\int_{0}^{y'+\dd{y}'}f(x')\dd{x'} -
+  \int_{0}^{y'}f(x')\dd{x'}) = A^{-1} f(y')\dd{y}'\] and therefore
+\(y\) is really distributed according to \(f/A=\tilde{f}\). If the
+antiderivative \(F\) (and its inverse) of \(f\) is known, then the
+solution of \cref{eq:takesample} is given by \cref{eq:solutionsamp}.
 %
 \begin{equation}
   \label{eq:solutionsamp}
@@ -105,11 +103,12 @@ modification and has again been implemented and evaluated.
   g=\max_{x\in\Omega}f(x)=f_{\text{max}}
 \end{equation}
 %
-\begin{wrapfigure}[15]{l}{.5\textwidth}
+\begin{figure}[ht]
+  \centering
   \plot{xs_sampling/upper_bound}
   \caption{\label{fig:distcos} The distribution \cref{eq:distcos} and an upper bound of
     the form \(a + b\cdot x^2\).}
-\end{wrapfigure}
+\end{figure}
 %
 Using the upper bound defined in \cref{eq:primitiveg} with the
 distribution for \(\cos\theta\) derived from the differential cross
