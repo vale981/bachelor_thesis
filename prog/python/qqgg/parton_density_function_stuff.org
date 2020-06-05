@@ -29,6 +29,8 @@ from tangled import observables
 #+RESULTS:
 : The autoreload extension is already loaded. To reload it, use:
 :   %reload_ext autoreload
+: /home/hiro/Documents/Projects/UNI/Bachelor/prog/python/qqgg/tangled/plot_utils.py:94: SyntaxWarning: assertion is always true, perhaps remove parentheses?
+:   assert (1 <= confidence <= 3, "Confidence must be 1, 2 or three.")
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -54,6 +56,8 @@ We gonna export that for reference in the tex document.
 
 
 #+RESULTS:
+: \(\abs{\eta} \leq 2\)
+
 : \(\abs{\eta} \leq 2\)
 
 * Implementation
@@ -491,14 +495,14 @@ draw_histogram(ax, part_hist)
 Now, it would be interesting to know the total cross section.
 So let's define the increments for VEGAS.
 #+begin_src jupyter-python :exports both :results raw drawer
-  increments = np.array([4, 100, 100])
+  increments = np.array([4, 120, 120])
   tex_value(
       np.prod(increments), prefix=r"K=", prec=0, save=("results/pdf/", "num_increments.tex")
   )
 #+end_src
 
 #+RESULTS:
-: \(K=40000\)
+: \(K=57600\)
 
 And calculate the XS.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -520,7 +524,7 @@ And calculate the XS.
       alpha=1.8,
       num_increments=increments,
       num_points_per_cube=10,
-      cache="cache/pdf/total_xs_2_5_20_take22",
+      cache="cache/pdf/total_xs_2_5_20_take23",
   )
 
   total_xs = gev_to_pb(np.array(xs_int_res.combined_result)) * 2 * np.pi
@@ -530,7 +534,7 @@ And calculate the XS.
 #+RESULTS:
 :RESULTS:
 : Loading Cache:  integrate_vegas_nd
-: array([3.86891167e+01, 9.39243388e-03])
+: array([3.86851979e+01, 1.05247063e-02])
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -549,7 +553,7 @@ there are two identical protons.
 #+end_src
 
 #+RESULTS:
-: 0.006924228292849407
+: 0.0018731991381157435
 
 The efficiency will be around:
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -557,7 +561,7 @@ The efficiency will be around:
 #+end_src
 
 #+RESULTS:
-: 36.68699853098365
+: 39.67314636678912
 
 Let's export those results for TeX:
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -693,7 +697,7 @@ Lets plot how the pdf looks.
 
 Overestimating the upper bounds helps with bias.
 #+begin_src jupyter-python :exports both :results raw drawer
-  overestimate = 1.1
+  overestimate = 1.01
   tex_value(
       (overestimate - 1) * 100,
       unit=r"\percent",
@@ -715,7 +719,7 @@ figure out the cpu mapping.
       cubes=xs_int_res.cubes,
       proc="auto",
       report_efficiency=True,
-      cache="cache/pdf/total_xs_10000_000_2_5_take12",
+      cache="cache/pdf/total_xs_10000_000_2_5_take14",
       status_path="/tmp/status1",
       overestimate_factor=overestimate,
   )
@@ -725,7 +729,7 @@ figure out the cpu mapping.
 #+RESULTS:
 :RESULTS:
 : Loading Cache:  sample_unweighted_array
-: 0.3615754237122427
+: 0.33370937676408785
 :END:
 
 That does look pretty good eh? So lets save it along with the sample size.
@@ -741,7 +745,7 @@ That does look pretty good eh? So lets save it along with the sample size.
 #+end_src
 
 #+RESULTS:
-: \(\mathfrak{e}=\SI{36}{\percent}\)
+: \(\mathfrak{e}=\SI{33}{\percent}\)
 
 ** Observables
 Let's look at a histogramm of eta samples.
@@ -754,7 +758,7 @@ Let's look at a histogramm of eta samples.
 #+RESULTS:
 :RESULTS:
 : 10000000
-[[file:./.ob-jupyter/764bd95aedbef68e7709a84780df593399e347a4.png]]
+[[file:./.ob-jupyter/aeb53fbebdd825a96ad35df3007a0d9075e40e4c.png]]
 :END:
 
 Let's use a uniform histogram image size.
@@ -778,15 +782,14 @@ And now we compare all the observables with sherpa.
       ]
   )
   ax_ratio.set_xlabel(r"$\eta$")
-  ax.legend()
+  ax.legend(fontsize=8)
   save_fig(fig, "eta_hist", "pdf", size=hist_size)
 #+end_src
 
 #+RESULTS:
 :RESULTS:
-: 1.0
-: 0.78
-[[file:./.ob-jupyter/1b1562da892b4caff29588dde88a04cc3256ae35.png]]
+: True
+[[file:./.ob-jupyter/b811d538125c2965b5cf4ab1e920e1e5253039fa.png]]
 :END:
 
 Hah! there we have it!
@@ -819,9 +822,8 @@ both equal.
 
 #+RESULTS:
 :RESULTS:
-: 1.0
-: 0.86
-[[file:./.ob-jupyter/45cc8fbfa523c8faf704505d716ebc299a1a44fd.png]]
+: True
+[[file:./.ob-jupyter/a42b055ba888e45bbc0be6483dc59c302a4e5972.png]]
 :END:
 
 The invariant mass is not constant anymore.
@@ -846,7 +848,10 @@ The invariant mass is not constant anymore.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/9ad48ff715bb6445bf5a0c515e4a4f41593146fe.png]]
+:RESULTS:
+: True
+[[file:./.ob-jupyter/498cc781cf480413602d4e1a9a1ea484a4b92f8f.png]]
+:END:
 
 The cosθ distribution looks more like the paronic one.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -866,9 +871,8 @@ The cosθ distribution looks more like the paronic one.
 
 #+RESULTS:
 :RESULTS:
-: 1.0
-: 0.82
-[[file:./.ob-jupyter/d834978baba81dba0e2f052f1965b62ae736c151.png]]
+: True
+[[file:./.ob-jupyter/981ceda03c0d51f4b5e1a6efaae4ae275005876a.png]]
 :END:
 
 
@@ -892,20 +896,19 @@ The cosθ distribution looks more like the paronic one.
 
 #+RESULTS:
 :RESULTS:
-: 1.0
-: 0.9
-[[file:./.ob-jupyter/22100d74fc1e07aa9ac75e22dd38ce49eaad89d4.png]]
+: True
+[[file:./.ob-jupyter/db2cd45260bb65ac6fec32e0a6dcd10cd6043b73.png]]
 :END:
 
 In this case the opening angles are the same because the CS frame is
 the same as the ordinary rest frame. The z-axis is the beam axis
 because pT=0!
 #+begin_src jupyter-python :exports both :results raw drawer
-  yoda_hist_cosθ = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/o_angle"])
+  yoda_hist_oa = yoda_to_numpy(yoda_file["/MC_DIPHOTON_PROTON/o_angle"])
 
   fig, (ax, ax_ratio) = draw_ratio_plot(
       [
-          dict(hist=yoda_hist_cosθ, hist_kwargs=dict(label="sherpa")),
+          dict(hist=yoda_hist_oa, hist_kwargs=dict(label="sherpa")),
           dict(
               samples=observables.o_angle(mom[2], mom[3]),
               hist_kwargs=dict(label="own implementation"),
@@ -919,4 +922,7 @@ because pT=0!
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/28abf9fcf1840bc31a5819d380a8eff0c2ef3e43.png]]
+:RESULTS:
+: True
+[[file:./.ob-jupyter/05fd59c31479c7a56aab554c340e2ef2c3d0f10c.png]]
+:END:

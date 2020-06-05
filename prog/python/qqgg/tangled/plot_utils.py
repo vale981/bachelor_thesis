@@ -91,6 +91,7 @@ import matplotlib.gridspec as gridspec
 
 
 def test_compatibility(hist_1, hist_2, confidence=1):
+    assert (1 <= confidence <= 3, "Confidence must be 1, 2 or three.")
     mask = hist_1 > hist_2
     comp_greater = hist_1[mask] - confidence * np.sqrt(hist_1[mask]) <= hist_2[
         mask
@@ -99,7 +100,11 @@ def test_compatibility(hist_1, hist_2, confidence=1):
         ~mask
     ] - confidence * np.sqrt(hist_2[~mask])
 
-    return (np.count_nonzero(comp_greater) + np.count_nonzero(comp_lower)) / len(hist_1)
+    compat = [0.6827, .9545, .9973]
+    ratio = (np.count_nonzero(comp_greater) + np.count_nonzero(comp_lower)) / len(
+        hist_1
+    )
+    return ratio >= compat[confidence - 1], ratio
 
 
 def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
@@ -114,13 +119,20 @@ def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
     reference = reference / ref_int
     reference_error = reference_error / ref_int
 
-    for histogram in histograms:
+    for i, histogram in enumerate(histograms):
         heights, _ = (
             histogram["hist"]
             if "hist" in histogram
             else np.histogram(histogram["samples"], bins=edges)
         )
-        print(test_compatibility(heights, histograms[0]["hist"][0]))
+
+        if i > 0:
+            compat, ratio = test_compatibility(heights, histograms[0]["hist"][0], 2)
+            histogram["hist_kwargs"]["label"] = (
+                histogram["hist_kwargs"].get("label", "")
+                + "\n" + rf"w/i $2\sigma = {ratio*100:.0f}\%$"
+                + (" OK" if compat else "INCOMP")
+            )
 
         integral = hist_integral([heights, edges])
         errors = np.sqrt(heights) / integral
