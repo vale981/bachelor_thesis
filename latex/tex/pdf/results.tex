@@ -14,7 +14,7 @@ top quark). The sum has been symmetized, otherwise a double sum with
 \(q\) and \(\bar{q}\) would have been necessary. The choice of \(Q^2\)
 is justified in \cref{sec:pdf_basics} and formulated in
 \cref{eq:q2-explicit}.
-
+%
 \begin{gather}
   \label{eq:weighteddist}
   \frac{\dd[3]{\sigma}}{\dd{\eta}\dd{x_1}\dd{x_2}} =
@@ -23,7 +23,7 @@ is justified in \cref{sec:pdf_basics} and formulated in
   \label{eq:q2-explicit}
   Q^2 = 2x_1x_2E_p^2
 \end{gather}
-
+%
 The PDF set being used in the following has been fitted (and
 \emph{DGLAP} developed) at leading order and is the central member of
 the PDF set \verb|NNPDF31_lo_as_0118| provided by \emph{NNPDF}
@@ -70,7 +70,7 @@ the distribution retains some likeness with the partonic distribution
 sub-optimal for hit-or-miss sampling, only having significant magnitude
 when \(x_1\) or \(x_2\) are small (\cref{fig:dist-pdf-fixed-eta}) and
 being very steep.
-
+%
 \begin{figure}[ht]
   \centering
   \begin{subfigure}{1\textwidth}
@@ -79,7 +79,7 @@ being very steep.
       with PDFs for fixed \protect \result{xs/python/pdf/second_x} in
       picobarn.}
   \end{subfigure}
-
+%
   \begin{subfigure}{1\textwidth}
     \centering \plot{pdf/dist3d_eta_const}
     \caption{\label{fig:dist-pdf-fixed-eta}Differential cross section
@@ -89,7 +89,7 @@ being very steep.
   \caption{\label{fig:dist-pdf-3d}Differential cross section
     convolved with PDFs with one parameter fixed.}
 \end{figure}
-
+%
 To remedy that, one has to use a more efficient sampling algorithm
 (\vegas) or impose very restrictive cuts. The self-coded
 implementation used here can be found in \cref{sec:pycode} and employs
@@ -180,14 +180,14 @@ naively expect some likeness to \cref{fig:distcos} but the cuts
 imposed alter the distribution quite considerably, cutting of the
 \(\cos\theta^\ast\rightarrow 1\) region.
 % TODO: come back to that in next chapter TODO: graphic (tikz)
-
+%
 \begin{align}
   \cos\theta^\ast &= \tanh\frac{\eta_1 - \eta_2}{2} \label{eq:sangle}\\
   \cos\theta^*_\text{CS} &= \frac{\sinh(\eta_1 -
                            \eta_2)}{\sqrt{1+(p_{\text{T},1} + p_{\text{T},2})^2/m_{\gamma\gamma}^2}}\cdot
                           \frac{2p_{\text{T},1}p_{\text{T},2}}{m_{\gamma\gamma}^2}\label{eq:sangle-cs}
 \end{align}
-
+%
 \begin{figure}[hp]
   \centering
   \begin{subfigure}{.49\textwidth}
@@ -211,7 +211,7 @@ imposed alter the distribution quite considerably, cutting of the
     }
   \end{subfigure}
 \end{figure}
-
+%
 \begin{figure}
   \ContinuedFloat
   \begin{subfigure}{.49\textwidth}
@@ -229,7 +229,7 @@ imposed alter the distribution quite considerably, cutting of the
     and normalized to unity. The sample size was \protect
     \result{xs/python/pdf/sample_size}. }
 \end{figure}
-
+%
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../../document"

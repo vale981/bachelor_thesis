@@ -10,25 +10,25 @@ with a one in the fashion of \cref{eq:baseintegral}, the integral of
 \(f\) over \(\Omega\) can be interpreted as the expected value
 \(\EX{F/\Rho}\) of the random variable \(F/\Rho\) under the
 distribution \(\rho\). This is the key to most MC methods.
-
+%
 \begin{equation}
   \label{eq:baseintegral}
   I = \int_\Omega f(\vb{x}) \dd{\vb{x}} = \int_\Omega
   \qty[\frac{f(\vb{x})}{\rho(\vb{x})}] \rho(\vb{x}) \dd{\vb{x}} = \EX{\frac{F}{\Rho}}
 \end{equation}
-
+%
 The expected value \(\EX{F/\Rho}\) can be approximated by calculating
 the mean of \(F/\Rho\) with \(N\) finite samples
 \(\{\vb{x}_i\}_{i\in\overline{1,N}}\sim\rho\) (distributed according
 to \(\rho\)), where \(N\) is a very large integer.
-
+%
 \begin{equation}
   \label{eq:approxexp}
   \EX{\frac{F}{\Rho}} \approx
   \frac{1}{N}\sum_{i=1}^N\frac{f(\vb{x_i})}{\rho(\vb{x_i})}
   \xrightarrow{N\rightarrow\infty} I
 \end{equation}
-
+%
 The convergence of \cref{eq:approxexp} is due to the nature of the
 expected value \cref{eq:evalue-mean} and
 variance \cref{eq:variance-mean} of the mean
@@ -36,18 +36,18 @@ variance \cref{eq:variance-mean} of the mean
 variables \(\{X_i\}_{i\in\overline{1,N}}\) with the same distribution,
 expected value \(\EX{X_i}=\mathbb{E}\) and variance
 \(\sigma_i^2 = \sigma^2\).
-
+%
 \begin{gather}
   \EX{\overline{X}} = \frac{1}{N}\sum_i\EX{X_i} = \mathbb{E} \label{eq:evalue-mean}\\
   \sigma^2_{\overline{X}} = \sum_i\frac{\sigma_i^2}{N^2} =
                             \frac{\sigma^2}{N}  \label{eq:variance-mean}
 \end{gather}
-
+%
 Because \(\frac{\sigma^2}{N}\xrightarrow{N\rightarrow\infty} 0\)
 \cref{eq:approxexp} really converges to \(I\). For finite \(N\) the
 value of \cref{eq:approxexp} varies around \(I\) with the variance
 \(\VAR{F/\Rho}\cdot N^{-1}\) as in \cref{eq:varI}.
-
+%
 \begin{align}
   \VAR{\frac{F}{\Rho}} &= \int_\Omega \qty[I -
   \frac{f(\vb{x})}{\rho(\vb{x})}]^2 \rho({\vb{x}}) \dd{\vb{x}} =
@@ -57,7 +57,7 @@ value of \cref{eq:approxexp} varies around \(I\) with the variance
   &\approx \frac{1}{N - 1}\sum_i \qty[I -
   \frac{f(\vb{x_i})}{\rho(\vb{x_i})}]^2  \label{eq:varI-approx}
 \end{align}
-
+%
 The goal now is to reduce \(\VAR{F/\Rho}\) to speed up the convergence
 of \cref{eq:approxexp} and achieve higher accuracy with fewer function
 evaluations. There are at least three angles of attack
@@ -95,35 +95,35 @@ facilitates deniability and comparability~\cite{buckley:2011ge}.
 
 The simplest choice for \(\rho\) is given
 by \cref{eq:simplep}, the uniform distribution.
-
+%
 \begin{equation}
   \label{eq:simplep}
   \rho(\vb{x}) = \frac{1}{\int_{\Omega}1\dd{\vb{x'}}} =
   \frac{1}{\abs{\Omega}}
 \end{equation}
-
+%
 With this distribution \cref{eq:approxexp}
 becomes \cref{eq:approxexp-uniform}. In other words, \(I\) is just
 the mean of \(f\) in \(\Omega\), henceforth
 called \(\bar{f}\), multiplied with the volume.
-
+%
 \begin{equation}
   \label{eq:approxexp-uniform}
   \EX{\frac{F}{\Rho}} \approx
   \frac{\abs{\Omega}}{N}\sum_{i=1}^N f(\vb{x_i}) = \abs{\Omega}\cdot\bar{f}
 \end{equation}
-
+%
 The variance \(\VAR{I}=\VAR{F/\Rho}\) is now given
 by \cref{eq:approxvar-I}. Note that the factor \(\abs{\Omega}\) gets
 squared when approximating the integral by the sum.
-
+%
 \begin{equation}
   \label{eq:approxvar-I}
   \VAR{I} = \abs{\Omega}\int_\Omega f(\vb{x})^2 -
   \underbrace{\qty(\frac{I}{\abs{\Omega}})^2}_{=\bar{f}} \dd{\vb{x}} \equiv \abs{\Omega}\cdot\sigma_f^2 \approx
   \frac{\abs{\Omega}^2}{N-1}\sum_{i}\qty[f(\vb{x}_i) - \bar{f}]^2
 \end{equation}
-
+%
 Applying this method to integrate the \(\qqgg\) cross section from
 \cref{eq:crossec} over a \(\theta\) interval, equivalent to
 \(\eta\in [-2.5, 2.5]\) with a target accuracy of
@@ -144,7 +144,7 @@ general, the Jacobian arising in variable transformation has the same
 effect as the probability density in importance sampling. It can be
 shown that importance sampling and change of variables are formally
 equivalent (see \ref{sec:equap}).
-
+%
 \begin{figure}[ht]
   \centering
   \begin{subfigure}[c]{.49\textwidth}
@@ -165,7 +165,7 @@ equivalent (see \ref{sec:equap}).
     of the differential cross section. The same y-axis scaling has
     been chosen to visualize the difference in variance.}
 \end{figure}
-
+%
 \subsection{Integration with \vegas}
 \label{sec:mcintvegas}
 
@@ -176,12 +176,12 @@ by \cref{eq:optimalrho}, where \(f(\Omega) \geq 0\) is presumed
 without loss of generality. When applying \vegas\ to multi dimensional
 integrals,~\cref{eq:optimalrho} is usually modified to factorize into
 distributions for each variable to simplify calculations.
-
+%
 \begin{equation}
   \label{eq:optimalrho}
   \rho(\vb{x}) = \frac{f(\vb{x})}{\int_\Omega f(\vb{y})\dd{y}}
 \end{equation}
-
+%
 The idea behind \vegas\ is to subdivide \(\Omega\) into hypercubes
 (create a grid), define \(\rho\) as step-function with constant value
 on those hypercubes and iteratively approximating
@@ -201,7 +201,7 @@ be found in~\cite{Lepage:19781an}.  Note that no knowledge about the
 integrand is required. The probability density used by \vegas\ is
 given in \cref{eq:vegasrho} with \(K\) being the number of hypercubes
 and \(\Omega_i\) being the hypercubes themselves.
-
+%
 \begin{equation}
   \label{eq:vegasrho}
   \rho(\vb{x}) = K\cdot
@@ -210,7 +210,7 @@ and \(\Omega_i\) being the hypercubes themselves.
     0 & \text{otherwise}
   \end{cases}
 \end{equation}
-
+%
 \begin{figure}[ht]
   \centering \plot{xs/xs_integrand_vegas}
   \caption[\(2\pi\dv{\sigma}{\theta}\) scaled to increments found by
@@ -219,7 +219,7 @@ and \(\Omega_i\) being the hypercubes themselves.
     weighting applied (\(f/\rho\)). The colored bands are the standard
     deviations of the distributions with matching color.}
 \end{figure}
-
+%
 This algorithm has been implemented in python and applied to
 \cref{eq:crossec}.  In one dimension the hypercubes become simple
 interval increments and applying \vegas\ to \cref{eq:crossec} with

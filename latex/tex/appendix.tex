@@ -60,7 +60,7 @@ Define a variable transformation as in \cref{eq:rfuncsap}, where the
 inverses are taken with reference to the variables before the
 semicolon and \(a,b\in [0, 1]\). The inverse can be taken, as
 \(\rho > 0\).
-
+%
 \begin{equation}
   \label{eq:rfuncsap}
   \begin{split}
@@ -70,7 +70,7 @@ semicolon and \(a,b\in [0, 1]\). The inverse can be taken, as
   \vb{x} &= \mqty(x \\ y) = \mqty(R_x^{-1}(a) \\ R_y^{-1}(b, x(a)))
   \end{split}
 \end{equation}
-
+%
 The Jacobian determinant is thus given by \cref{eq:jacap}.
 \begin{equation}
   \label{eq:jacap}
@@ -78,18 +78,18 @@ The Jacobian determinant is thus given by \cref{eq:jacap}.
   \frac{1}{\int_y\rho(x(a), y)\dd{y}}\cdot \frac{\int_y\rho(x(a),
     y)\dd{y}}{\rho(x(a), y(a, b))} = \frac{1}{\rho(x(a), y(a, b))}
 \end{equation}
-
+%
 The integral \cref{eq:baseintegral} becomes \cref{eq:newintap} which
 is the same as if \(f\) (interpreted as a probability density) was
 transformed to the variables \(a, b\).
-
+%
 \begin{equation}
   \label{eq:newintap}
   \int_\Omega
   \qty[\frac{f(\vb{x})}{\rho(\vb{x})}] \rho(\vb{x}) \dd{\vb{x}} =
   \int_0^1\int_0^1 \frac{f(x(a), y(a,b))}{\rho(x(a), y(a, b))} \dd{a}\dd{b}
 \end{equation}
-
+%
 That means taking sampling points \(\{\vb{x_i}\}\sim \rho\) and
 weighting samples with \(1/\rho(\vb{x})\) is equivalent to taking
 uniformly distributed samples of \(f\) in \(a,b\) space with the
