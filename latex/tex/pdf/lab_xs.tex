@@ -16,34 +16,34 @@ proton energies\footnote{When the transverse momentum of the partons
   can be neglected.}, the quark momenta are simply
 \(p_{1,2}=x_{1,2}\cdot\bar{p}_{1,2}\) and their invariant mass is thus
 given by \cref{eq:ecm_partons}.
-
+%
 \begin{equation}
   \label{eq:ecm_partons}
   \ecm = \sqrt{4x_1x_2}\cdot E_P
 \end{equation}
-
+%
 The center of momentum frame moves with a velocity
 \(\beta = (x_1-x_2)/(x_1+x_2)\). Because (pseudo-)rapidities are
 additive, it is simplest to work with cross section in terms of the
 pseudo-rapidity.  The pseudo-rapidity of a final state photon in the
 c.m.-frame of the partons is therefore given
 by \cref{eq:rap_phot_lf}.
-
+%
 \begin{equation}
   \label{eq:rap_phot_lf}
   \eta^\ast = \eta - w = \eta - \artanh(\beta)
 \end{equation}
-
+%
 Because \(\dd{\eta^\ast}/{\dd{\eta}} = 1\) the cross section
 from \cref{eq:xs-eta} becomes \cref{eq:xs-eta-lab}, where \(\eta\) is
 the pseudo-rapidity one photon.
-
+%
 \begin{equation}
   \label{eq:xs-eta-lab}
   \dv{\sigma}{\eta} = 2\pi\cdot\frac{\alpha^2Z^4}{24 E_p^2
     x_1x_2}\cdot\qty(\tanh(\eta - w)^2 + 1)
 \end{equation}
-
+%
 \begin{wrapfigure}{R}{0.4\textwidth}
 \centering
 \begin{tikzpicture}
@@ -64,7 +64,7 @@ where \(\theta\) is the polar angle of the ``first'' final state
 photon.  These relation are easily transcribed to \(\eta\) dependence
 by using the identity \(\cos(\theta) = \tanh(\eta)\).
 
-
+%
 \begin{align}
   \label{eq:lab-momenta-fs}
   p_3 &= \frac{2x_1x_2E_p}{x_1+x_2 - (x_1 - x_2)\cdot\cos(\theta)}\cdot
@@ -72,7 +72,7 @@ by using the identity \(\cos(\theta) = \tanh(\eta)\).
   p_4 &= \frac{E_p}{x_1+x_2 - (x_1 - x_2)\cdot\cos(\theta)}\cdot
   \mqty((x_1^2+x_2^2) - (x_1^2-x_2^2)\cos(\theta) \\ 0 \\ -2x_1x_2\sin(\theta) \\ (x_1^2-x_2^2) - (x_1^2+x_2^2)\cos(\theta))
 \end{align}
-
+%
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../../document"

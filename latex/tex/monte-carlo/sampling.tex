@@ -28,7 +28,7 @@ easily generated), then a sample \({x_i}\) of this variable can be
 transformed into a sample of \(Y\sim\tilde{f}\). Let \(x\) be a single
 sample of \(X\). A sample \(y\) of \(Y\) can be obtained by
 solving \cref{eq:takesample} for \(y\).
-
+%
 \begin{equation}
   \label{eq:takesample}
   \int_{0}^{y}f(x')\dd{x'} = x\cdot\int_0^1f(x')\dd{x'} = x\cdot A
@@ -51,7 +51,7 @@ the solution of \cref{eq:takesample} is given by
   \label{eq:solutionsamp}
   y = F^{-1}(x\cdot A + F(0))
 \end{equation}
-
+%
 Note that \(F\) is always invertible because \(F\) is
 increasing monotonically. Of course \(F\) and its inverse can be
 obtained numerically or one can change variables to simplify.
@@ -76,7 +76,7 @@ probability~\(f/g\), so that \(g\) cancels out. This is known as the
   \int_{0}^{y}g(x')\cdot\frac{f(x')}{g(x')}\dd{x'}
   = \int_{0}^{y}g(x')\int_{0}^{\frac{f(x')}{g(x')}}\dd{z}\dd{x'}
 \end{equation}
-
+%
 The thus obtained samples are then distributed according to \(f/B\)
 and the total probability of accepting a sample, also called the
 efficiency \(\mathfrak{e}\), is given by hat \cref{eq:impsampeff}
@@ -86,7 +86,7 @@ holds.
   \label{eq:impsampeff}
   \int_0^1\frac{g(x)}{B}\cdot\frac{f(x)}{g(x)}\dd{x} = \int_0^1\frac{f(x)}{B}\dd{x} = \frac{A}{B} = \mathfrak{e}\leq 1
 \end{equation}
-
+%
 The closer the volumes enclosed by \(g\) and \(f\) are to each other,
 higher is \(\mathfrak{e}\).
 
@@ -104,24 +104,24 @@ modification and has again been implemented and evaluated.
   \label{eq:primitiveg}
   g=\max_{x\in\Omega}f(x)=f_{\text{max}}
 \end{equation}
-
+%
 \begin{wrapfigure}[15]{l}{.5\textwidth}
   \plot{xs_sampling/upper_bound}
   \caption{\label{fig:distcos} The distribution \cref{eq:distcos} and an upper bound of
     the form \(a + b\cdot x^2\).}
 \end{wrapfigure}
-
+%
 Using the upper bound defined in \cref{eq:primitiveg} with the
 distribution for \(\cos\theta\) derived from the differential cross
 section \cref{eq:crossec} given in \cref{eq:distcos}
 (\(\mathfrak{C}\) being a constant) results in a sampling efficiency
 of~\result{xs/python/naive_th_samp}.
-
+%
 \begin{equation}
   \label{eq:distcos}
   f_{\cos\theta}(x=\cos\theta) = \mathfrak{C}\cdot\frac{1+x^2}{1-x^2}
 \end{equation}
-
+%
 This very low efficiency stems from the fact, that \(f_{\cos\theta}\)
 is a lot smaller than its maximum in most of the sampling interval.
 
@@ -138,12 +138,12 @@ When transforming \(f\) to a new variable \(y=y(x)\) one arrives at
 \cref{sec:naivechange}. Transforming the distribution in a beneficial
 way in is an alternative method of performing \emph{importance
   sampling}.
-
+%
 \begin{equation}
   \label{eq:transff}
   \tilde{f} = f(x(y)) \cdot \dv{x(y)}{y}
 \end{equation}
-
+%
 The optimal transformation would be the solution of \(y = F(x)\)
 (\(F\) being the antiderivative), so that
 \(f(x(y)) \cdot \dv{x(y)}{y} = 1\). But transforming \(f\) in this way
@@ -180,25 +180,25 @@ step of generating samples distributed according to \(\rho\) is left
 out as these samples are assumed to be available or can be obtained
 with little effort (see below). The efficiency of this method is given
 by \cref{eq:strateff}.
-
+%
 \begin{equation}
   \label{eq:strateff}
   \mathfrak{e} = \int_0^1\rho(x)\frac{f(x)}{\rho(x)\cdot h}\dd{x} = \frac{A}{h}
 \end{equation}
-
+%
 It may seem startling that \(h\) determines the efficiency, because
 \(h\) is a (global) maximum and \(A\) is an integral
 but \cref{eq:hlessa} states that \(\mathfrak{e}\) is well-formed
 (\(\mathfrak{e}\leq 1\)). Albeit \(h\) is determined through a single
 point, being the maximum is a global property and there is also the
 constraint \(\int_0^1\rho(x)\dd{x}=1\) to be considered.
-
+%
 \begin{equation}
   \label{eq:hlessa}
   A = \int_0^1\rho(x)\frac{f(x)}{\rho(x)}\dd{x} \leq
   \int_0^1\rho(x)\cdot h\dd{x} = h
 \end{equation}
-
+%
 The closer \(h\) approaches \(A\) the better the efficiency gets. In
 the optimal case \(\rho=f/A\) and thus \(h=A\) or
 \(\mathfrak{e} = 1\). This distribution can be approximated in the way
@@ -216,7 +216,7 @@ of \vegas\ increases. The advantage of \vegas\ in this situation is,
 that the computation of the increments has to be done only once and
 can be reused. Furthermore, no special knowledge about the
 distribution \(f\) is required.
-
+%
 \begin{figure}[ht]
   \centering
   \begin{subfigure}{.49\textwidth}
@@ -237,7 +237,7 @@ distribution \(f\) is required.
   \caption{\label{fig:vegas-weighting} \vegas-weighted distribution
     and weighting distribution.}
 \end{figure}
-
+%
 
 
 \subsection{Stratified Sampling}
@@ -254,13 +254,13 @@ Let \(N\) be the total sample count (\(N\gg 1\)),
 \(A_i = \int_{\Omega_i}f(x)\dd{x}\) and \(A=\sum_iA_i\).
 Then we can calculate the total efficiency of taking \(N_i=A_i/A \cdot N\)
 samples in each is then given by \cref{eq:rstrateff}.
-
+%
 \begin{equation}
   \label{eq:rstrateff}
   \mathfrak{e} = \frac{\sum_i N_i}{\sum_i N_i/\mathfrak{e}_i} =
   \frac{\sum_i A_i/A\cdot N}{\sum_i A_i/A\cdot N/ \mathfrak{e}_i} = \frac{\sum_i A_i}{\sum_i A_i/\mathfrak{e}_i}
 \end{equation}
-
+%
 In the case when all \(\mathfrak{e}_i\) are the same, the total
 efficiency is the same as the individual efficiencies. In the case of
 one efficiency being much smaller then the others, this efficiency
@@ -309,26 +309,26 @@ observables can be drawn.
 The observables considered here are the transverse momentum \(\pt\)
 and the pseudo rapidity \(\eta\) which can be computed from 4-momentum
 as described in \cref{eq:observables}.
-
+%
 \begin{align}
   \label{eq:observables}
   \pt &= \sqrt{(p_x)^2+(p_y)^2} & \eta &=
                                          \arcosh\qty(\frac{\abs{\vb{p}}}{\pt})\cdot\sign(p_z)
 \end{align}
-
+%
 The histograms in \cref{fig:histos} have been created by generating
 \result{xs/python/4imp-sample-size} samples. \Cref{fig:histos} also
 contains reference histograms created by generating events with
 \sherpa\ and analyzing them with the \rivet\
 toolkit~\cite{Bierlich:2019rhm}. The utilized analysis can be found
 in \cref{sec:simpdiphotriv}.
-
+%
 \begin{figure}[ht]
   \centering \plot{xs_sampling/diff_xs_p_t}
   \caption{\label{fig:diff-xs-pt} The differential cross section
     transformed to \(\pt\).}
 \end{figure}
-
+%
 \begin{figure}[p]
   \centering
 
@@ -346,7 +346,7 @@ in \cref{sec:simpdiphotriv}.
     from a sample of 4-momenta and normalized to unity. The plots
     include histograms generated by \sherpa\ and \rivet.}
 \end{figure}
-
+%
 Where \cref{fig:histeta} shows clear resemblance of
 \cref{fig:xs-int-eta}, the peak and the rise before this peak in
 \cref{fig:histpt} around \(\pt=\SI{100}{\giga\electronvolt}\) seems
