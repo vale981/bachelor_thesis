@@ -90,6 +90,18 @@ def plot_stratified_rho(ax, points, increment_borders, *args, **kwargs):
 import matplotlib.gridspec as gridspec
 
 
+def test_compatibility(hist_1, hist_2, confidence=1):
+    mask = hist_1 > hist_2
+    comp_greater = hist_1[mask] - confidence * np.sqrt(hist_1[mask]) <= hist_2[
+        mask
+    ] + confidence * np.sqrt(hist_2[mask])
+    comp_lower = hist_1[~mask] + confidence * np.sqrt(hist_1[~mask]) >= hist_2[
+        ~mask
+    ] - confidence * np.sqrt(hist_2[~mask])
+
+    return (np.count_nonzero(comp_greater) + np.count_nonzero(comp_lower)) / len(hist_1)
+
+
 def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
     fig, (ax_hist, ax_ratio) = set_up_plot(
         2, 1, sharex=True, gridspec_kw=dict(height_ratios=[3, 1], hspace=0), **kwargs
@@ -108,6 +120,8 @@ def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
             if "hist" in histogram
             else np.histogram(histogram["samples"], bins=edges)
         )
+        print(test_compatibility(heights, histograms[0]["hist"][0]))
+
         integral = hist_integral([heights, edges])
         errors = np.sqrt(heights) / integral
         heights = heights / integral
@@ -166,7 +180,7 @@ def draw_histogram(
     errorbars=True,
     hist_kwargs=dict(color="#1f77b4"),
     errorbar_kwargs=dict(),
-        autoau=True,
+    autoau=True,
     normalize_to=None,
 ):
     """Draws a histogram with optional errorbars using the step style.
