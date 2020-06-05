@@ -5310,15 +5310,15 @@
 \pgfsetstrokecolor{currentstroke}%
 \pgfsetstrokeopacity{0.800000}%
 \pgfsetdash{}{0pt}%
-\pgfpathmoveto{\pgfqpoint{1.558346in}{2.885352in}}%
-\pgfpathlineto{\pgfqpoint{3.068390in}{2.885352in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{3.091529in}{2.885352in}}{\pgfqpoint{3.091529in}{2.908491in}}%
+\pgfpathmoveto{\pgfqpoint{1.558346in}{2.752303in}}%
+\pgfpathlineto{\pgfqpoint{3.068390in}{2.752303in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{3.091529in}{2.752303in}}{\pgfqpoint{3.091529in}{2.775442in}}%
 \pgfpathlineto{\pgfqpoint{3.091529in}{3.220403in}}%
 \pgfpathquadraticcurveto{\pgfqpoint{3.091529in}{3.243542in}}{\pgfqpoint{3.068390in}{3.243542in}}%
 \pgfpathlineto{\pgfqpoint{1.558346in}{3.243542in}}%
 \pgfpathquadraticcurveto{\pgfqpoint{1.535207in}{3.243542in}}{\pgfqpoint{1.535207in}{3.220403in}}%
-\pgfpathlineto{\pgfqpoint{1.535207in}{2.908491in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{1.535207in}{2.885352in}}{\pgfqpoint{1.558346in}{2.885352in}}%
+\pgfpathlineto{\pgfqpoint{1.535207in}{2.775442in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{1.535207in}{2.752303in}}{\pgfqpoint{1.558346in}{2.752303in}}%
 \pgfpathclose%
 \pgfusepath{stroke,fill}%
 \end{pgfscope}%
@@ -5346,15 +5346,21 @@
 \definecolor{currentstroke}{rgb}{1.000000,0.498039,0.054902}%
 \pgfsetstrokecolor{currentstroke}%
 \pgfsetdash{}{0pt}%
-\pgfpathmoveto{\pgfqpoint{1.581485in}{2.994567in}}%
-\pgfpathlineto{\pgfqpoint{1.812874in}{2.994567in}}%
+\pgfpathmoveto{\pgfqpoint{1.581485in}{2.917399in}}%
+\pgfpathlineto{\pgfqpoint{1.812874in}{2.917399in}}%
 \pgfusepath{stroke}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=1.905429in,y=2.954074in,left,base]{\color{textcolor}\rmfamily\fontsize{8.330000}{9.996000}\selectfont Own Implementation}%
+\pgftext[x=1.905429in, y=2.954074in, left, base]{\color{textcolor}\rmfamily\fontsize{8.330000}{9.996000}\selectfont Own Implementation}%
+\end{pgfscope}%
+\begin{pgfscope}%
+\definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
+\pgfsetstrokecolor{textcolor}%
+\pgfsetfillcolor{textcolor}%
+\pgftext[x=1.905429in, y=2.827505in, left, base]{\color{textcolor}\rmfamily\fontsize{8.330000}{9.996000}\selectfont w/i \(\displaystyle 2\sigma = 96\%\) OK}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
