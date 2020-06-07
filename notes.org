@@ -175,6 +175,7 @@ Viele Gruesse, Frank
 ** TODO PDF cannot be derived: in principle?
 ** TODO still compatible?
 ** TODO cite atlas paper (analysis?)
+** TODO call it distribution?
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!
@@ -219,7 +220,7 @@ Viele Gruesse, Frank
  - minimum around 1GeV -> massless limit ~OK
 
 ** Scattering Angle
- - shapewise similar -> bit flatter than basic
+ - shapewise similar -> bit flatter than basic, more center
  - cuts force 0 at extremes (pT invariant in z boosts)
 
 ** Scattering Angle in CS Frame
@@ -227,7 +228,9 @@ Viele Gruesse, Frank
  - at extreme angles: PS+pT enhanced: smaller pT also included
    - weak effect, not 2 sigma!
    - would need more events
-
+ - enhancement in center gone (normalized!) -> symmetry restored!
+ - greates differentce in low scat, angle regeime CUTS+Normalization
+ - hard process not really affected through higher order effects (apart from kinematics!)
 
 ** pT leading
  - shifted towards higher pT
@@ -238,6 +241,8 @@ Viele Gruesse, Frank
  - apart from total xs shift: not much difference
  - interesting because one would espect enhancement at lower pT, which is hardly visible
 *** TODO check that with normalized plots
+ - visible but minute!
+ - culled by cuts
 ** Azimuthal Angle
  - as expected, a lot of weight at low angles
  - LO+PS: greater weight at higher pT -> bigger shifts in angle
@@ -252,6 +257,7 @@ Viele Gruesse, Frank
    -> less on the hard process quarks?
    - no interleaving in SHERPA
    - minimizes rel. transv. mom or shuffling if no mpi
+   - maybe isolation better for low pT ?
 
 ** overall
  - everything more than PS+PT: isolation

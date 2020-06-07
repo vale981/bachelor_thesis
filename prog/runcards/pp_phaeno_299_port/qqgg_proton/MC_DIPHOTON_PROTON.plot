@@ -79,12 +79,11 @@ LogX=1
 Title=total cross section
 YLabel=$\sigma$ [pb]
 LogY=0
-#YMin=42
-#YMax=48
+YMin=32
+YMax=40
 XLabel=
 LogY=0
-ShowZero=0
-XCustomMajorTicks=0.    $\quad$
 XMinorTickMarks=0
 LegendAlign=r
+RatioPlot=0
 # END PLOT
