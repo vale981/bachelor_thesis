@@ -12,22 +12,22 @@ comparable.
 In this thesis, the use of MC methods will be traced through from
 simple integration to the simulation of proton-proton scattering.
 
-The ``guinea pig'' here is the quark-antiquark annihilation into two
+The test subject here is the quark-antiquark annihilation into two
 photons \(\qqgg\), henceforth called the diphoton process. It forms an
 important background to the Higgs decay channel
 \(H\rightarrow \gamma\gamma\), which was instrumental in its
 discovery, and to a dihiggs decay
 \(HH\rightarrow b\bar{b}\gamma\gamma\), a process of recent
 interest~\cite{aaboud2018:sf} to study the higgs self coupling and
-probe the limits of the SM. All the while the process is still pure
-QED at leading order and thus calculable by hand within the scope of
-this thesis as is being done in \cref{chap:qqgg}. The obtained result
-is compared to the total cross section obtained with the
-\sherpa~\cite{Gleisberg:2008ta} event generator, used as matrix
-element integrator. In \cref{chap:mc} some simple MC methods are
-discussed, implemented and their results compared. After studying some
-basic MC integration methods, the \vegas\
-algorithm~\cite{Lepage:19781an} is implemented and
+probe the limits of the SM. All the while, the process is still pure
+QED (Quantum Electrodynamics) at leading order and thus calculable by
+hand within the scope of this thesis as is being done in
+\cref{chap:qqgg}. The obtained result is compared to the total cross
+section obtained with the \sherpa~\cite{Gleisberg:2008ta} event
+generator, used as matrix element integrator. In \cref{chap:mc} some
+simple MC methods are discussed, implemented and their results
+compared. After studying some basic MC integration methods, the
+\vegas\ algorithm~\cite{Lepage:19781an} is implemented and
 evaluated. Subsequently MC sampling methods, which are closely related
 to the integration methods, are explored and the output of \vegas\ is
 used to improve the sampling efficiency. Histograms of observables are
@@ -39,8 +39,8 @@ event generator for \(\ppgg\) scattering at \lhc\ conditions. Some
 integration and sampling algorithms and their implementation are
 adapted to the multidimensional case and histograms of observables are
 generated with good efficiency. Because a real \(pp\) scattering event
-also entails processes like parton showers, hadronization and
-multiple interactions, a realistic simulation should account for those
+also entails processes like parton showers, hadronization and multiple
+interactions, a realistic simulation should account for those
 effects. The impact of those effects on observables is studied in
 \cref{chap:pheno} using the \sherpa\ event generator.
 
@@ -69,13 +69,14 @@ computations for \cref{chap:pdf}. The python code makes heavy use of
 \href{https://www.scipy.org/}{scipy}~\cite{2020Virtanen:Sc} (and of
 course \href{https://numpy.org/}{numpy}).
 
-\section{Sherpa Versions}%
+\section{Software Versions}%
 \label{sec:versions}
 
 In \cref{sec:compsher,chap:mc} the development version of \sherpa\ has
 been used. \Cref{chap:pdf,chap:pheno} use version \texttt{2.2.10} for
 reasons of stability.
 
+In the whole thesis, the version \texttt{3.1.0} of \rivet\ was used.
 
 %%% Local Variables: ***
 %%% mode: latex ***

@@ -4,7 +4,7 @@
 To observe the impact on the individual aspect of the proton
 scattering the following run configurations have been defined. They
 are incremental in the sense that each subsequent configuration
-extents the previous one.
+extents the previous one and thus called stages.
 %
 \begin{description}
 \item[LO] The hard process on parton level as used in \cref{sec:pdf_results}.
@@ -12,14 +12,14 @@ extents the previous one.
   is activated and simulates initial state radiation, as there are no
   partons in the final state yet.
 \item[LO+PS+pT] The beam remnants are simulated, giving rise to final state radiation.
-  Also the partons are being assigned primordial \(pt\), distributed
+  Also the partons are being assigned primordial \(\pt\), distributed
   like a Gaussian with a mean value of \SI{.8}{\giga\electronvolt} and
   a standard deviation of \SI{.8}{\giga\electronvolt}\footnote{Those
     values are \sherpa 's defaults.}.
 \item[LO+PS+pT+Hadronization] A cluster hadronization model
   implemented in \emph{Ahadic} is activated.
 \item[LO+PS+pT+Hadronization+MI] Multiple interactions based on the
-  Sj\"ostrand-van-Zijl are simulated.
+  Sj\"ostrand-van-Zijl Model are simulated.
 \end{description}
 %
 A detailed description of the implementation of those models can be
@@ -27,16 +27,27 @@ found in~\cite{Gleisberg:2008ta} and~\cite{Bothmann:2019yzt}.
 
 The runcard implementing the \texttt{LO+PS+pT+Hadronization+MI}
 configuration can be found in \cref{sec:ppruncardfull}. The
-\(\abs{\eta}\leq 2.5\) and \(\pt > \SI{20}{\giga\electronvolt}\) cuts are
-the same as in \cref{sec:ppxs} and the beam energies have been chosen
-as \SI{6500}{\giga\electronvolt} to resemble \lhc\ conditions.
+\(\abs{\eta}\leq 2.5\) and \(\pt > \SI{20}{\giga\electronvolt}\) cuts
+are the same as in \cref{sec:ppxs} and the beam energies have been
+chosen as \SI{6500}{\giga\electronvolt} to resemble \lhc\ conditions.
+The cuts on the hard process have been loosened to
+\(\pt \geq \SI{5}{\giga\electronvolt}\) and \(\abs{\eta}\leq 3\) to
+because jets and primordial \(\pt\) can increase the final state
+\(\pt\) to fall into the analysis cuts.
 
 The analysis is similar to the one used in \cref{sec:ppevents} with
-the addition of the observable of total transverse momentum of the
-photon pair, which now can be non-zero. Because the final state now
-potentially contains additional photons from hadron decays, the
-analysis only selects prompt photons with the highest \(\pt\) (leading
-photons). Furthermore a cone of
+the addition of some observables arising from the possibility of
+non-zero transverse momentum of the photon pair:
+%
+\begin{itemize}
+\item total transverse momentum of the photon pair
+\item azimuth angle between the two photons
+\item transverse momentum of the sub-leading photon (see below)
+\end{itemize}
+%
+Because the final state now potentially contains additional photons
+from hadron decays, the analysis only selects prompt photons with the
+highest \(\pt\) (leading photons). Furthermore a cone of
 \(R = \sqrt{\qty(\Delta\varphi)^2 + \qty(\Delta\eta)^2} = 0.4\) around
 each photon must not contain more than \SI{4.5}{\percent} of the
 photon transverse momentum (\(+ \SI{6}{\giga\electronvolt}\)),
@@ -47,6 +58,8 @@ decays. In truth, the analysis already excludes such photons, but to
 be compatible with experimental data, which must rely on such
 criteria, they have been included. The code of the analysis is listed
 in \cref{sec:ppanalysisfull}.
+
+The production of photons in showers has not been considered.
 
 % TODO: refer back to this in discussion
 % TODO: cite analysis template
