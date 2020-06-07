@@ -91,7 +91,7 @@ import matplotlib.gridspec as gridspec
 
 
 def test_compatibility(hist_1, hist_2, confidence=1):
-    assert (1 <= confidence <= 3, "Confidence must be 1, 2 or three.")
+    assert 1 <= confidence <= 3, "Confidence must be 1, 2 or three."
     mask = hist_1 > hist_2
     comp_greater = hist_1[mask] - confidence * np.sqrt(hist_1[mask]) <= hist_2[
         mask

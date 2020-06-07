@@ -59,7 +59,7 @@ the calculation for the two dimensional case is illustrative.
 Define a variable transformation as in \cref{eq:rfuncsap}, where the
 inverses are taken with reference to the variables before the
 semicolon and \(a,b\in [0, 1]\). The inverse can be taken, as
-\(\rho > 0\).
+\(\rho > 0\) is assumed and so all integrals are monotonic.
 %
 \begin{equation}
   \label{eq:rfuncsap}
@@ -98,6 +98,9 @@ appropriate transformation.
 This works, because the transformation law \cref{eq:rfuncsap}
 uniformly distributed samples into samples distributed like \(\rho\).
 
+Given a variable transformation, one can reconstruct a corresponding
+probability density, by chaining the Jacobian with the inverse of that
+transformation.
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../document"
