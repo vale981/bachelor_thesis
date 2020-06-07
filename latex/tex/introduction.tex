@@ -1,54 +1,56 @@
 \chapter{Introduction}%
 \label{chap:intro}
 
-MC (MC) methods have been and still are one of the most important
-tools for numerical calculations in particle physics. Be it for
-validating the well established Standard Model or for making
-predictions about new theories, MC simulations are the
-crucial interface of theory and experimental data, making them
-directly comparable.%  Furthermore horizontal scaling is almost trivial
-% to implement in MC algorithms, making them well adapted to
-% modern parallel computing.
+Monte Carlo (MC) methods have been and still are one of the most
+important tools for numerical calculations in particle physics. Be it
+for validating the well established Standard Model (SM) or for making
+predictions about new theories, MC simulations are the crucial
+interface of theory and experimental data, making them directly
+comparable.
+% Furthermore horizontal scaling is almost trivial to implement in MC
+% algorithms, making them well adapted to modern parallel computing.
 In this thesis, the use of MC methods will be traced through from
 simple integration to the simulation of proton-proton scattering.
 
-The ``Guinea Pig'' of this thesis is the quark annihilation into two
+The ``guinea pig'' here is the quark-antiquark annihilation into two
 photons \(\qqgg\), henceforth called the diphoton process. It forms an
 important background to the Higgs decay channel
-\(H\rightarrow \gamma\gamma\) (which was instrumental in its
-discovery) and to a dihiggs decay
-\(HH\rightarrow b\bar{b}\gamma\gamma\)~\cite{aaboud2018:sf}, while
-still being a pure QED process at leading order and thus calculable by
-hand within the scope of this thesis. The differential and total cross
-section of this process is being calculated in leading order in
-\cref{chap:qqgg} and the obtained result is compared to the total
-cross section obtained with the \sherpa~\cite{Gleisberg:2008ta} event
-generator, used as matrix element integrator. In \cref{chap:mc} some
-simple MC methods are discussed, implemented and their results
-compared. Beginning with a study of MC integration the \vegas\
+\(H\rightarrow \gamma\gamma\), which was instrumental in its
+discovery, and to a dihiggs decay
+\(HH\rightarrow b\bar{b}\gamma\gamma\), a process of recent
+interest~\cite{aaboud2018:sf} to study the higgs self coupling and
+probe the limits of the SM. All the while the process is still pure
+QED at leading order and thus calculable by hand within the scope of
+this thesis as is being done in \cref{chap:qqgg}. The obtained result
+is compared to the total cross section obtained with the
+\sherpa~\cite{Gleisberg:2008ta} event generator, used as matrix
+element integrator. In \cref{chap:mc} some simple MC methods are
+discussed, implemented and their results compared. After studying some
+basic MC integration methods, the \vegas\
 algorithm~\cite{Lepage:19781an} is implemented and
-evaluated. Subsequently MC sampling methods are explored and the
-output of \vegas\ is used to improve the sampling
-efficiency. Histograms of observables are generated and compared to
-histograms from \sherpa\ using the \rivet~\cite{Bierlich:2019rhm}
-analysis framework. \Cref{chap:pdf} deals with proton-proton
-scattering in the partonic picture using parton density functions,
-ending with the implementation of a simple event generator for
-\(\ppgg\) scattering at \lhc\ conditions. Some integration and
-sampling algorithms and their implementation are adapted to the
-multidimensional case and histograms of observables are generated with
-good efficiency.  Because a real \(pp\) scattering event also
-incorporates processes like parton showers, hadronization and multiple
-interactions, a realistic simulation should account for those
+evaluated. Subsequently MC sampling methods, which are closely related
+to the integration methods, are explored and the output of \vegas\ is
+used to improve the sampling efficiency. Histograms of observables are
+generated and compared to histograms from \sherpa\ using the
+\rivet~\cite{Bierlich:2019rhm} analysis framework. \Cref{chap:pdf}
+deals with proton-proton scattering in the partonic picture using
+parton density functions, ending with the implementation of a simple
+event generator for \(\ppgg\) scattering at \lhc\ conditions. Some
+integration and sampling algorithms and their implementation are
+adapted to the multidimensional case and histograms of observables are
+generated with good efficiency. Because a real \(pp\) scattering event
+also entails processes like parton showers, hadronization and
+multiple interactions, a realistic simulation should account for those
 effects. The impact of those effects on observables is studied in
 \cref{chap:pheno} using the \sherpa\ event generator.
 
 \section{Conventions}%
 \label{sec:convent}
 
-Throughout natural units with \(c=1, \hbar = 1, k_B=1, \varepsilon_0
-= 1\) are used unless stated otherwise. The QED coupling constant was
-set to the value \(\alpha = 1/137.036\) in \sherpa.
+Throughout natural units with
+\(c=1, \hbar = 1, k_B=1, \varepsilon_0 = 1\) are used unless stated
+otherwise. The fine structure constant's value \(\alpha = 1/137.036\)
+is configured in \sherpa\ and used in analytic calculations.
 
 \section{Source Code}%
 \label{sec:source}
@@ -66,6 +68,14 @@ that generates all the results of \cref{chap:mc}. The file
 computations for \cref{chap:pdf}. The python code makes heavy use of
 \href{https://www.scipy.org/}{scipy}~\cite{2020Virtanen:Sc} (and of
 course \href{https://numpy.org/}{numpy}).
+
+\section{Sherpa Versions}%
+\label{sec:versions}
+
+In \cref{sec:compsher,chap:mc} the development version of \sherpa\ has
+been used. \Cref{chap:pdf,chap:pheno} use version \texttt{2.2.10} for
+reasons of stability.
+
 
 %%% Local Variables: ***
 %%% mode: latex ***

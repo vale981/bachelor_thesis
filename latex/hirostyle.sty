@@ -19,7 +19,7 @@ labelformat=brace, position=top]{subcaption}
 \usepackage[newfloat]{minted}
 \usepackage{pgfplots}
 \usepackage{ifdraft}
-\usepackage[activate={protrusion,expansion,auto}]{microtype}
+\usepackage{microtype}
 \usepackage{fancyvrb}
 \usepackage[autostyle=true]{csquotes}
 \usepackage{setspace}
@@ -51,7 +51,7 @@ labelformat=brace, position=top]{subcaption}
   \includegraphics[draft=false,width=\textwidth,#1]{./figs/rivet/#2.pdf}}
 
 %% Including Results
-\newcommand{\result}[1]{\input{./results/#1}}
+\newcommand{\result}[1]{\input{./results/#1}\!}
 
 %% SI units
 \sisetup{separate-uncertainty = true}

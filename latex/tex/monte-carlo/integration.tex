@@ -5,11 +5,11 @@ Consider a function
 \(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\) and a
 probability density on
 \(\rho\colon \vb{x}\in\Omega\mapsto\mathbb{R}_{\geq 0}\) with
-\(\int_{\Omega}\rho(\vb{x})\dd{\vb{x}} = 1\).  By multiplying \(f\)
-with a one in the fashion of \cref{eq:baseintegral}, the integral of
-\(f\) over \(\Omega\) can be interpreted as the expected value
-\(\EX{F/\Rho}\) of the random variable \(F/\Rho\) under the
-distribution \(\rho\). This is the key to most MC methods.
+\(\rho(\Omega) > 0,\; \int_{\Omega}\rho(\vb{x})\dd{\vb{x}} = 1\).  By
+multiplying \(f\) with a one in the fashion of \cref{eq:baseintegral},
+the integral of \(f\) over \(\Omega\) can be interpreted as the
+expected value \(\EX{F/\Rho}\) of the random variable \(F/\Rho\) under
+the distribution \(\rho\). This is the key to most MC methods.
 %
 \begin{equation}
   \label{eq:baseintegral}
@@ -44,9 +44,11 @@ expected value \(\EX{X_i}=\mathbb{E}\) and variance
 \end{gather}
 %
 Because \(\frac{\sigma^2}{N}\xrightarrow{N\rightarrow\infty} 0\)
-\cref{eq:approxexp} really converges to \(I\). For finite \(N\) the
-value of \cref{eq:approxexp} varies around \(I\) with the variance
-\(\VAR{F/\Rho}\cdot N^{-1}\) as in \cref{eq:varI}.
+\cref{eq:approxexp} really converges to \(I\). For finite, but large
+\(N\) the value of \cref{eq:approxexp} is distributed (in increasingly
+good approximation) according to a normal distribution around \(I\)
+with the variance \(\VAR{F/\Rho}\cdot N^{-1}\) as in \cref{eq:varI} by
+virtue of the central limit theorem.
 %
 \begin{align}
   \VAR{\frac{F}{\Rho}} &= \int_\Omega \qty[I -
@@ -63,30 +65,31 @@ of \cref{eq:approxexp} and achieve higher accuracy with fewer function
 evaluations. There are at least three angles of attack
 in~\ref{eq:baseintegral}, namely the distribution \(\rho\), the
 variable \(\vb{x}\), and the integration volume
-\(\Omega\). Accordingly some ways variance reductions can be
+\(\Omega\). Accordingly, some ways variance reductions can be
 accomplished are choosing a suitable \(\rho\) (importance sampling),
 by transforming the integral onto another variable or by subdividing
 integration volume into several sub-volumes of different size while
-keeping the sample size constant in all sub-volumes (stratified
-sampling).\footnote{There are of course still other methods like the
-  multi-channel method.}\footnote{Of course, combinations of these
-  methods can be applied as well.}  Combining ideas from importance
-sampling and stratified sampling leads to the \vegas\
+keeping the sample size constant in all sub-volumes (a special case of
+stratified sampling).\footnote{There are of course still other methods
+  like the multi-channel method.}\footnote{Of course, combinations of
+  these methods can be applied as well.}  Combining ideas from
+importance sampling and stratified sampling leads to the \vegas\
 algorithm~\cite{Lepage:19781an} that approximates the optimal
 distribution of importance sampling by adaptive subdivision of the
 integration volume into a grid.
 
-The convergence of \cref{eq:approxexp} is not dependent on the
+The convergence of \cref{eq:approxexp} is independent of the
 dimensionality of the integration volume as opposed to many other
 numerical integration algorithms (trapezoid rule, Simpsons rule) that
 usually converge like \(N^{-\frac{k}{n}}\) with
-\(k\in\mathbb{N}_{>0}\) and \(n\) being the dimensionality as opposed
-to \(N^{-\frac{k}{n}}\) with MC. Because phase space integrals in
-particle physics usually have a high dimensionality, MC integration is
-a suitable approach there. When implementing MC methods, the random
-samples can be obtained through hardware or software random number
-generators (RNGs). Most implementations utilize software RNGs because
-they supply pseudo-random numbers in a reproducible way, which
+\(k\in\mathbb{N}_{>0}\) and \(n\) being the dimensionality.  MC
+integration in it's simplest form converges like \(N^{-\frac{1}{2}}\)
+in \emph{all} dimensions. Because phase space integrals in particle
+physics usually have a high dimensionality, MC integration is a
+suitable approach for those problems. When implementing MC methods,
+the random samples can be obtained through hardware or software random
+number generators (RNGs). Most implementations utilize software RNGs
+because they supply pseudo-random numbers in a reproducible way, which
 facilitates deniability and comparability~\cite{buckley:2011ge}.
 % TODO: maybe remove, ask Frank
 
@@ -102,10 +105,10 @@ by \cref{eq:simplep}, the uniform distribution.
   \frac{1}{\abs{\Omega}}
 \end{equation}
 %
-With this distribution \cref{eq:approxexp}
-becomes \cref{eq:approxexp-uniform}. In other words, \(I\) is just
-the mean of \(f\) in \(\Omega\), henceforth
-called \(\bar{f}\), multiplied with the volume.
+With this distribution \cref{eq:approxexp} becomes
+\cref{eq:approxexp-uniform}. In other words, \(I\) is just the mean
+value of \(f\) in \(\Omega\), henceforth called \(\bar{f}\),
+multiplied with the volume.
 %
 \begin{equation}
   \label{eq:approxexp-uniform}

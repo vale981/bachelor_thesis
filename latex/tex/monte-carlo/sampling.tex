@@ -165,7 +165,7 @@ with others is worthwhile (see \cref{fig:xs-int-comp}).
 Finding a suitable upper bound or variable transformation requires
 effort and detail knowledge about the distribution and is hard to
 automate. Revisiting the idea behind \cref{eq:takesample2d} but
-looking at a probability density \(\rho\) on \(\Omega\) leads to a
+looking at a probability density \(\rho > 0\) on \(\Omega\) leads to a
 slight reformulation of the method discussed in
 \cref{sec:hitmiss}. Note that without loss of generality one can again
 choose \(\Omega = [0, 1]\).
@@ -245,7 +245,8 @@ distribution \(f\) is required.
 Yet another approach is to subdivide the sampling volume \(\Omega\)
 into \(K\) sub-volumes \(\Omega_i\subset\Omega\) and then take a
 number of samples from each volume proportional to the integral of the
-function \(f\) in that volume. This is known as \emph{stratified
+function \(f\) in that volume. In the context of sampling of
+distributions, this is known as \emph{stratified
   sampling}. The advantage of this method is, that it is now possible
 to optimize the sampling in each sub-volume independently.
 

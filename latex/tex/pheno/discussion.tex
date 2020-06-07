@@ -3,6 +3,9 @@
 \begin{figure}[ht]
   \centering
   \begin{subfigure}[t]{.49\textwidth}
+    \rivethist{pheno/xs}
+  \end{subfigure}
+  \begin{subfigure}[t]{.49\textwidth}
     \rivethist{pheno/cos_theta}
   \end{subfigure}
   \begin{subfigure}[t]{.49\textwidth}
@@ -17,19 +20,26 @@
   \begin{subfigure}[t]{.49\textwidth}
     \rivethist{pheno/o_angle_cs}
   \end{subfigure}
-  \begin{subfigure}[t]{.49\textwidth}
-    \rivethist{pheno/pT}
-  \end{subfigure}
 \end{figure}
 %
 \begin{figure}[t]
-  \centering
-  \ContinuedFloat
+  \centering \ContinuedFloat
+  \begin{subfigure}[t]{.49\textwidth}
+    \rivethist{pheno/pT}
+  \end{subfigure}
+  \begin{subfigure}[t]{.49\textwidth}
+    \rivethist{pheno/pT_subl}
+  \end{subfigure}
+  \begin{subfigure}[t]{.49\textwidth}
+    \rivethist{pheno/azimuthal_angle}
+  \end{subfigure}
   \begin{subfigure}[t]{.49\textwidth}
     \rivethist{pheno/total_pT}
   \end{subfigure}
-  \caption{\label{fig:holhistos}bla}
+  \caption{\label{fig:holhistos} Histograms of observables generated
+    by simulations with increasingly more effects turned on.}
 \end{figure}
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../../document"

@@ -207,11 +207,11 @@ Let's plot a more detailed view of the xs.
    xs_gev = total_xs_eta(η, charge, esp)
    xs_pb = gev_to_pb(xs_gev)
    tex_value(xs_pb, unit=r'\pico\barn', prefix=r'\sigma = ',
-             prec=6, save=('results', 'xs.tex'))
+             prec=7, save=('results', 'xs.tex'))
  #+END_SRC
 
  #+RESULTS:
- : \(\sigma = \SI{0.053793}{\pico\barn}\)
+ : \(\sigma = \SI{0.0537933}{\pico\barn}\)
  # [goto error]
 
  Lets plot the total xs as a function of η.

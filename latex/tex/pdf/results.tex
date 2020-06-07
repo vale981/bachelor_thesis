@@ -124,19 +124,20 @@ weight may be oversampled. At various points, the
 \texttt{numba}~\cite{lam2015:po} package has been used to just-in-time
 compile code to increase performance. The python
 \texttt{multiprocessing} module is used to parallelize the sampling
-and exploit all CPU cores. Although the \vegas\ step is very time
-intensive, but the actual sampling performance is in the same order of
-magnitude as \sherpa, but some parameters have to be manually tuned.
+and exploit all CPU cores. Although the \vegas\ step is very
+(\emph{very}) time intensive, but the actual sampling performance is
+in the same order of magnitude as \sherpa, but some parameters have to
+be manually tuned.
 
 A sample of \result{xs/python/pdf/sample_size} events has been
 generated both in \sherpa\ (with the same cuts) and through own
 code. The resulting histograms of some observables are depicted in
 \cref{fig:pdf-histos}. The sampling efficiency achieved was
 \result{xs/python/pdf/samp_eff} using a total of
-\result{xs/python/pdf/num_increments} hypercubes.  As can be seen, the
-distributions are compatible with each other. The sherpa runcard
-utilized here and the analysis used to produce the histograms can be
-found in \cref{sec:ppruncard,sec:ppanalysis}. When comparing
+\result{xs/python/pdf/num_increments} hypercubes. The distributions
+are compatible with each other. The sherpa runcard utilized here and
+the analysis used to produce the histograms can be found in
+\cref{sec:ppruncard,sec:ppanalysis}. When comparing
 \cref{fig:pdf-eta,fig:histeta} it becomes apparent, that the PDF has
 substantial influence on the resulting distribution. Also the center
 of momentum energy is not constant anymore and has a steep peak at low

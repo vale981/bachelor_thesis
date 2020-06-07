@@ -18,7 +18,7 @@ OUT_DIR = out
 RES_DIR = results
 
 # Event Count
-EVENT_COUNT = 1000
+EVENT_COUNT = 10000000
 
 # List of Runcards, see RUNCARD_FOLDER
 RUNCARDS =\
@@ -39,7 +39,7 @@ EVT_OUTPUT = 2
 #                                    Macros                                   #
 ###############################################################################
 
-NUM_CPUS = $(shell nproc)
+NUM_CPUS = 4 #$(shell nproc)
 EVENT_COUNT_CPU = $(shell echo "$(EVENT_COUNT) / $(NUM_CPUS)" | bc)
 THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 SET_RIVET := RIVET_ANALYSIS_PATH="$(THIS_DIR)$(ANALYSIS_DIR)"
@@ -119,6 +119,9 @@ clean:
 
 $(RES_PDFS): histograms
 	cp $(OUT_DIR)/analysis/$(ANALYSIS_NAME)/*.pdf $(RES_DIR)/
+
+.PHONY: results
+results: $(RES_PDFS)
 
 ###############################################################################
 #                               Auto Create Dirs                              #

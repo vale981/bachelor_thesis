@@ -11,8 +11,11 @@ extents the previous one.
 \item[LO+PS] The shower generator of \sherpa, \emph{CSS} (dipole-shower),
   is activated and simulates initial state radiation, as there are no
   partons in the final state yet.
-\item[LO+PS+pT] The beam remnants and intrinsic parton
-  \(\pt\) are simulated, giving rise to final state radiation.
+\item[LO+PS+pT] The beam remnants are simulated, giving rise to final state radiation.
+  Also the partons are being assigned primordial \(pt\), distributed
+  like a Gaussian with a mean value of \SI{.8}{\giga\electronvolt} and
+  a standard deviation of \SI{.8}{\giga\electronvolt}\footnote{Those
+    values are \sherpa 's defaults.}.
 \item[LO+PS+pT+Hadronization] A cluster hadronization model
   implemented in \emph{Ahadic} is activated.
 \item[LO+PS+pT+Hadronization+MI] Multiple interactions based on the

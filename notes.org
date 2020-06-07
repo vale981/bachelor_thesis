@@ -187,9 +187,15 @@ Viele Gruesse, Frank
 ** DONE mean, var einzeichnen
 ** DONE Variance of vegas weighted f!
 ** DONE look at xs plot -> they seem different
-** TODO take new sample: still bias?
+** DONE take new sample: still bias?
 
 * Observations
+** XS
+ - highest LO: isolation easiest
+   - dispite nothing being pushed into the cuts
+ - others pretty much in sequence: the more effects the lower -> isolation
+ - hadronisation improves isolation: less noise
+ - MI: more noise
 ** Azimuthal Angle
  - 0 for basic
  - converge at large angle -> expected
@@ -198,67 +204,57 @@ Viele Gruesse, Frank
  - in general flattens out
 
 ** Cos Θ
- - similar shape as before
- - all others a little bit enhanced over basic
- - Hadonization usually highest but within range of others
- - converge at big angles
- - MI a little lower in center region
-
+ - familiar, a little less steep
+ - apart from total xs differences: rather compatible
 ** η
- - big drop at extremes
- - more weight towards center (isolation?)
- - drop already with PS, mode With hadronization
- - most drop with MI and pT -> why that difference with hadronization
-   - could still be statistical
- - hadronized xs seems enhanced
- - but shape change dominated through PSeudo
+ - again, a little less steep: enhancement in center through pT
+ - shapewise compatible
+ - long drop to MI visible
 
 ** Invariant Mass
- - very similar to basic process, no huge effects
- - max ~ 300 Gev
- - generally shiftet to lower energies (under the cuts, additional pT -> pass cut)
- - all but basic copatible with ps,ps+pt enhanced over hadrons (noise?)
- - very few smaller than cut with mi
- - PS alone enhanced towards high myy but low in last bin
- - mi seems ban
+ - now c.m. Energies lower than cut pass: pT
+ - lo+ps: enhanced towards higher cm enegies (at lowers compat)
+   - due to higher pT boosts favored + higher xs
+ - steep decile: pdf
+ - minimum around 1GeV -> massless limit ~OK
 
 ** Scattering Angle
- - enhanced at small angles
- - all converge to zero
- - mostly compatible
- - mi lower
+ - shapewise similar -> bit flatter than basic
+ - cuts force 0 at extremes (pT invariant in z boosts)
 
 ** Scattering Angle in CS Frame
- - similar to lab frame (total pT not that big on average ~1 GeV, Around 500 GeV max)
- - all effects converge to the same non-zero
-   - finite pT -> photons with small scattering angle pass cuts
-   - likeness to lab frame -> good generalisation, interesting effect may be isolated
- - mi lower on average
+ - does not go to zero due to finite pT
+ - at extreme angles: PS+pT enhanced: smaller pT also included
+   - weak effect, not 2 sigma!
+   - would need more events
+
 
 ** pT leading
- - first 2 bins lower than basic, others bigger
-   - shifting the pT distribution -> intrinsic + jet pT
- - PS a little bit enhanced in first bin
- - from pT on all similar
- - mi lower on average
+ - shifted towards higher pT
+ - at pT > 1GeV compatible
+ - pT < 1GeV
 
 ** pT subleading
- - very similar in shape
- - almost constant factor smaller with PS, pT
- - pT, hadrons compat, mi a little lower
- - total pT shift -> subleading gets less pT
+ - apart from total xs shift: not much difference
+ - interesting because one would espect enhancement at lower pT, which is hardly visible
+*** TODO check that with normalized plots
+** Azimuthal Angle
+ - as expected, a lot of weight at low angles
+ - LO+PS: greater weight at higher pT -> bigger shifts in angle
+ - rotation symmetry: boos in each direction equally likely -> similar shapse
+ - BASIC always back to back
+ - > ps+pt -> greater weight at lower pT so more often back to back
+** TODO total pT
+ - steep drop after maximum in the order of 1GeV
+ - in region around <2 GEV splitt: Jet momemnta dropp off (resummation, sudakov)
+   - primordial k_perp mean .8 GeV enhances lower regions
+ - MI oddly enhanced at very low pT: more PS from other interactions
+   -> less on the hard process quarks?
+   - no interleaving in SHERPA
+   - minimizes rel. transv. mom or shuffling if no mpi
 
-** total pT
- - most at ~ 2 Gev
- - max around 100 Gev (as inv mass)
- - steep drop after ~ 50 GeV
- - pig differences at low pT, MI enhnaced (here isolation seems to work better, less transverse jets?), statistics
- - pS not enough, only with pT (remnants) conclusive picture
-
-** XS
- - with all other effects similar
- - why is MI not bigger? -> does not modify IS!
-
-** overal
- - mi lower
- - remnants+pT usually pretty good approx
+** overall
+ - everything more than PS+PT: isolation
+ - biggest effect is the jet kick, photons are no qcd particles and
+   not touched after hard process
+ - no em radiation activated: would add more noise, here no additional photons
