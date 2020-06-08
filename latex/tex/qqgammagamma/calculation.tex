@@ -1,6 +1,23 @@
 \section{Calculation of the Cross Section to Leading Order}%
 \label{sec:qqggcalc}
 
+\begin{wrapfigure}{R}{0.4\textwidth}
+\centering
+\begin{tikzpicture}
+  \coordinate (origin) at (0,0);
+
+  \draw[-Latex] (origin) -- (-2,0) node[left] {\(p_3\)};
+  \draw[-Latex] (origin) -- (2,0) coordinate (p4) node[right] {\(p_4\)};
+  \draw[Latex-,rotate=40] (origin) -- (2,0) coordinate (p2) node[right] {\(p_2\)};
+  \draw[Latex-,rotate=40] (origin) -- (-2,0) node[left] {\(p_1\)};
+  \draw[fill=black] (origin) circle (.03);
+
+  \draw pic["$\theta$", draw=black, <->, angle eccentricity=1.2, angle radius=1cm] {angle=p4--origin--p2};
+\end{tikzpicture}
+\caption{\label{fig:qqimpulses} Momentum diagram for the process
+  \(\qqgg\) in the massles limit.}
+\end{wrapfigure}
+%
 After labeling the incoming quarks and outcoming photons, as well as
 the momenta according to \cref{fig:qqggfeyn}, the Feynman rules for
 QED yield the matrix elements in \cref{eq:matel}, where \(Z\) is the
@@ -18,7 +35,52 @@ would clutter the notation. The matrix element for
   \mathcal{M}_2 &= \frac{(gZ)^2}{\qty(p_1 - p_4)^2}\vsb(1)\pses(3)(\ps_1 - \ps_3)\pses(4)\us(2)
 \end{align}
 %
-To simplify notation, some shorthands are intruduced
+\begin{figure}[hb]
+  \centering
+  \begin{subfigure}[c]{.4\textwidth}
+  \centering
+  \begin{tikzpicture}
+    \begin{feynman}
+    \diagram [small,horizontal=i2 to a] {
+      i2 [particle=\(q\)] -- [fermion, momentum=\(p_2\)] a --
+      [fermion, reversed momentum=\(q\)] b,
+      i1 [particle=\(\bar{q}\)] -- [anti fermion, momentum'=\(p_1\)] b,
+      i2 -- [opacity=0] i1,
+      a -- [photon, momentum=\(p_3\)] f1 [particle=\(\gamma\)],
+      b -- [photon, momentum'=\(p_4\)] f2 [particle=\(\gamma\)],
+      f1 -- [opacity=0] f2,
+    };
+    \end{feynman}
+  \end{tikzpicture}
+  \subcaption{u channel}
+  \end{subfigure}
+  \begin{subfigure}[c]{.4\textwidth}
+  \centering
+  \begin{tikzpicture}
+    \begin{feynman}
+      \diagram [small,horizontal=i2 to a] {
+      i2 [particle=\(q\)] -- [fermion, momentum=\(p_2\)] a --
+      [fermion, reversed momentum'=\(q\)] b,
+      i1 [particle=\(\bar{q}\)] -- [anti fermion, momentum'=\(p_1\)] b,
+      i2 -- [opacity=0] i1,
+      a -- [draw=none] f2 [particle=\(\gamma\)],
+      b -- [draw=none] f1 [particle=\(\gamma\)],
+      f1 -- [opacity=0] f2,
+    };
+    \diagram* {
+      (a) -- [photon] (f1),
+      (b) -- [photon] (f2),
+    };
+    \end{feynman}
+  \end{tikzpicture}
+    \subcaption{\label{fig:qqggfeyn2}t channel}
+  \end{subfigure}
+%
+  \caption{Leading order diagrams for \(\qqgg\).}%
+  \label{fig:qqggfeyn}
+\end{figure}
+
+To simplify notation, some shorthands are introduced
 in \cref{eq:scshort}.
 \begin{equation}
   \label{eq:scshort}
@@ -26,23 +88,6 @@ in \cref{eq:scshort}.
     s(x) &= \sin(x) & c(x) &= \cos(x) \\ s'(x) &= \sin(\frac{x}{2}) & c'(x) &= \cos(\frac{x}{2})
   \end{split}
 \end{equation}
-
-\begin{wrapfigure}{R}{0.4\textwidth}
-\centering
-\begin{tikzpicture}
-  \coordinate (origin) at (0,0);
-
-  \draw[-Latex] (origin) -- (-2,0) node[left] {\(p_3\)};
-  \draw[-Latex] (origin) -- (2,0) coordinate (p4) node[right] {\(p_4\)};
-  \draw[Latex-,rotate=40] (origin) -- (2,0) coordinate (p2) node[right] {\(p_2\)};
-  \draw[Latex-,rotate=40] (origin) -- (-2,0) node[left] {\(p_1\)};
-  \draw[fill=black] (origin) circle (.03);
-
-  \draw pic["$\theta$", draw=black, <->, angle eccentricity=1.2, angle radius=1cm] {angle=p4--origin--p2};
-\end{tikzpicture}
-\caption{\label{fig:qqimpulses} Momentum diagram for the proces
-  \(\qqgg\) in the massles limit.}
-\end{wrapfigure}
 %
 All calculations are made with respect to the center of momentum
 (c.m.) frame unless stated otherwise. The momenta in the c.m. frame
@@ -118,7 +163,7 @@ form \cref{eq:gbricks}.
   \end{split}
 \end{equation}
 %
-The sum over plarisation can be simplified by utilizing the
+The sum over polarization can be simplified by utilizing the
 completeness relation for polarization vectors for \emph{real} photons
 \cref{eq:polcomp}.
 %
@@ -145,8 +190,7 @@ theorems for the gamma matrices.
 %
 The same tricks as well as the commutation relation for gamma matrices
 can be utilized for the case \(i\neq j\) and lead to \cref{eq:gij},
-albeit with more technical effort.\footnote{If I learned one thing, it
-  is the importance of doing calculations with the utmost verbosity.}
+albeit with more technical effort.
 %
 \begin{equation}
   \label{eq:gij}
@@ -155,8 +199,8 @@ albeit with more technical effort.\footnote{If I learned one thing, it
 \tr[\gamma_\mu(\ps_1-\ps(a_i))\gamma^\nu\ps_2\gamma^\mu(\ps_1-\ps(a_j))\gamma_\nu\ps_1)]\\
 &= -2\tr[\ps_2\gamma^\nu(\ps_1-\ps(a_i))(\ps_1-\ps(a_j))\gamma_\nu\ps_1)]
    \\
-&=-16\qty[(p_1p_2)(2(p_ap(a_j)) - p(a_i)p(a_j)) +
-(p_1p(a_i))(p_2p(a_j)) - (p_1p(a_j))(p_2p(a_i))]
+&=-16\qty[(p_1\cdot p_2)(2(p_a\cdot p(a_j)) - p(a_i)\cdot p(a_j)) +
+(p_1\cdot p(a_i))(p_2\cdot p(a_j)) - (p_1\cdot p(a_j))(p_2\cdot p(a_i))]
 \end{split}
 \end{equation}
 %
@@ -164,9 +208,8 @@ The crucial step here was to sum over \(\mu\) and utilizing
 \(\gamma ^{\mu }\gamma ^{\nu }\gamma ^{\rho }\gamma ^{\sigma }\gamma
 _{\mu }=-2\gamma ^{\sigma }\gamma ^{\rho }\gamma ^{\nu }\).
 
-
 After multiplying out the terms in \cref{eq:averagedm} and plugging in
-\cref{eq:gii,eq:gij} there results (with some rather technical
+\cref{eq:gii,eq:gij} their results (with some rather technical
 simplifications) the averaged matrix element of
 \cref{eq:averagedm_final}. It is noteworthy that the mixing terms
 cancel out, in other terms: \(\Gamma_{12} + \Gamma_{21} = 0\). The
