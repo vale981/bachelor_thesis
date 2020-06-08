@@ -90,7 +90,7 @@ RatioPlot=0
 
 # BEGIN PLOT /MC_DIPHOTON_PROTON/isolation_discard
 Title=fraction of events discarded through isolation cuts
-YLabel=Count
+YLabel=Fraction
 LogY=0
 XLabel=
 LogY=0
@@ -102,7 +102,7 @@ ErrorBars=1
 
 # BEGIN PLOT /MC_DIPHOTON_PROTON/cut_discard
 Title=fraction of events discarded through phase space cuts
-YLabel=Count
+YLabel=Fraction
 LogY=0
 XLabel=
 #LogY=1
