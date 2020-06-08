@@ -36,7 +36,7 @@ public:
     auto energy = info().energies()[0].first;
     book(_h_pT, "pT", 50, 16.3, energy);
     book(_h_eta, "eta", 50, -2.5, 2.5);
-    book(_h_cos_theta, "cos_theta", 50, -.986, .986);
+    book(_h_cos_theta, "cos_theta", 50, -1, 1);
   }
 
   /// Perform the per-event analysis
