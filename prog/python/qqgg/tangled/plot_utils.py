@@ -88,23 +88,21 @@ def plot_stratified_rho(ax, points, increment_borders, *args, **kwargs):
     ax.plot(points, ρ, *args, **kwargs)
 
 import matplotlib.gridspec as gridspec
+from scipy.stats import chi2
 
 
-def test_compatibility(hist_1, hist_2, confidence=1):
-    assert 1 <= confidence <= 3, "Confidence must be 1, 2 or three."
-    mask = hist_1 > hist_2
-    comp_greater = hist_1[mask] - confidence * np.sqrt(hist_1[mask]) <= hist_2[
-        mask
-    ] + confidence * np.sqrt(hist_2[mask])
-    comp_lower = hist_1[~mask] + confidence * np.sqrt(hist_1[~mask]) >= hist_2[
-        ~mask
-    ] - confidence * np.sqrt(hist_2[~mask])
-
-    compat = [0.6827, .9545, .9973]
-    ratio = (np.count_nonzero(comp_greater) + np.count_nonzero(comp_lower)) / len(
-        hist_1
+def test_compatibility(hist_1, hist_2):
+    hist_2.reshape(hist_1.shape)
+    test = np.sum(
+        np.divide(
+            ((hist_1 - hist_2) ** 2).astype(float),
+            (hist_1 + hist_2).astype(float),
+            out=np.zeros_like(hist_1).astype(float),
+            where=(hist_1 + hist_2) > 0,
+        )
     )
-    return ratio >= compat[confidence - 1], ratio
+
+    return test, 1 - chi2.cdf(test, len(hist_1))
 
 
 def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
@@ -127,11 +125,11 @@ def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
         )
 
         if i > 0:
-            compat, ratio = test_compatibility(heights, histograms[0]["hist"][0], 2)
+            test, ratio = test_compatibility(heights, histograms[0]["hist"][0])
             histogram["hist_kwargs"]["label"] = (
                 histogram["hist_kwargs"].get("label", "")
-                + "\n" + rf"w/i $2\sigma = {ratio*100:.0f}\%$"
-                + (" OK" if compat else "INCOMP")
+                + "\n"
+                + rf"$P = {ratio:.2f}\; T = {test:.2f}$"
             )
 
         integral = hist_integral([heights, edges])

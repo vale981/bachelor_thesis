@@ -138,7 +138,11 @@ def sample_momenta(sample_num, interval, charge, esp, seed=None, **kwargs):
     """
 
     cosθ_sample = monte_carlo.sample_unweighted_array(
-        sample_num, lambda x: diff_xs_cosθ(x, charge, esp), interval_cosθ, **kwargs
+        sample_num,
+        lambda x: diff_xs_cosθ(x, charge, esp),
+        interval,
+        upper_bound=diff_xs_cosθ(interval[0], charge, esp),
+        **kwargs
     )
 
     φ_sample = np.random.uniform(0, 1, sample_num)
