@@ -23,8 +23,6 @@
 #+END_SRC
 
 #+RESULTS: 53548778-a4c1-461a-9b1f-0f401df12b08
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 * Implementation
 ** Center of Mass Frame
@@ -755,23 +753,21 @@ Nice! And now draw some histograms.
 We define an auxilliary method for convenience.
 #+begin_src jupyter-python :exports both :results raw drawer :tangle tangled/plot_utils.py
   import matplotlib.gridspec as gridspec
+  from scipy.stats import chi2
 
 
-  def test_compatibility(hist_1, hist_2, confidence=1):
-      assert 1 <= confidence <= 3, "Confidence must be 1, 2 or three."
-      mask = hist_1 > hist_2
-      comp_greater = hist_1[mask] - confidence * np.sqrt(hist_1[mask]) <= hist_2[
-          mask
-      ] + confidence * np.sqrt(hist_2[mask])
-      comp_lower = hist_1[~mask] + confidence * np.sqrt(hist_1[~mask]) >= hist_2[
-          ~mask
-      ] - confidence * np.sqrt(hist_2[~mask])
-
-      compat = [0.6827, .9545, .9973]
-      ratio = (np.count_nonzero(comp_greater) + np.count_nonzero(comp_lower)) / len(
-          hist_1
+  def test_compatibility(hist_1, hist_2):
+      hist_2.reshape(hist_1.shape)
+      test = np.sum(
+          np.divide(
+              ((hist_1 - hist_2) ** 2).astype(float),
+              (hist_1 + hist_2).astype(float),
+              out=np.zeros_like(hist_1).astype(float),
+              where=(hist_1 + hist_2) > 0,
+          )
       )
-      return ratio >= compat[confidence - 1], ratio
+
+      return test, 1 - chi2.cdf(test, len(hist_1))
 
 
   def draw_ratio_plot(histograms, normalize_to=1, **kwargs):
@@ -794,11 +790,11 @@ We define an auxilliary method for convenience.
           )
 
           if i > 0:
-              compat, ratio = test_compatibility(heights, histograms[0]["hist"][0], 2)
+              test, ratio = test_compatibility(heights, histograms[0]["hist"][0])
               histogram["hist_kwargs"]["label"] = (
                   histogram["hist_kwargs"].get("label", "")
-                  + "\n" + rf"w/i $2\sigma = {ratio*100:.0f}\%$"
-                  + (" OK" if compat else "INCOMP")
+                  + "\n"
+                  + rf"$P = {ratio:.2f}\; T = {test:.2f}$"
               )
 
           integral = hist_integral([heights, edges])
@@ -957,7 +953,11 @@ Now we define some utilities to draw real 4-momentum samples.
       """
 
       cosθ_sample = monte_carlo.sample_unweighted_array(
-          sample_num, lambda x: diff_xs_cosθ(x, charge, esp), interval_cosθ, **kwargs
+          sample_num,
+          lambda x: diff_xs_cosθ(x, charge, esp),
+          interval,
+          upper_bound=diff_xs_cosθ(interval[0], charge, esp),
+          ,**kwargs
       )
 
       φ_sample = np.random.uniform(0, 1, sample_num)
@@ -1057,7 +1057,7 @@ Lets try it out.
       charge,
       esp,
       proc='auto',
-      momentum_cache="cache/momenta_bare_cos_θ_1",
+      momentum_cache="cache/momenta_bare_cos_θ_2",
   )
   momentum_sample
 #+end_src
@@ -1065,13 +1065,13 @@ Lets try it out.
 #+RESULTS:
 :RESULTS:
 : Loading Cache:  sample_momenta
-: array([[100.        ,  43.62555709,  21.21790392, -87.44490449],
-:        [100.        ,  41.38722348,  52.29638318, -74.51299242],
-:        [100.        ,  52.85217407,  65.6183037 , -53.85987297],
+: array([[100.        ,  43.67585275,  30.26877444, -84.71257982],
+:        [100.        ,  31.52841907,  18.93244254, -92.99205025],
+:        [100.        ,  41.50104089,  22.42426285, -88.1749173 ],
 :        ...,
-:        [100.        ,  49.13037192,  24.63978227, -83.54093419],
-:        [100.        ,  66.19768512,  12.47637819,  73.90674173],
-:        [100.        ,  22.11649396,  29.96005732, -92.80762717]])
+:        [100.        ,  28.42418488,  10.01244637,  95.35101799],
+:        [100.        ,  38.34990584,  49.07853825,  78.23414731],
+:        [100.        ,  64.31352553,  18.0419806 , -74.41946902]])
 :END:
 
 
@@ -1085,7 +1085,7 @@ Now let's make a histogram of the η distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/0cefb0de82a158b41c584233d998e73661627b2f.png]]
+[[file:./.ob-jupyter/51ab48dd059a08fee7dd510858497a37494e9986.png]]
 
 
 And the same for the p_t (transverse momentum) distribution.
@@ -1098,7 +1098,7 @@ And the same for the p_t (transverse momentum) distribution.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/bfee9d12cdae264248514daef92e83a4b737e49c.png]]
+[[file:./.ob-jupyter/e66bea82201e39254b79ebcf5d67f25e1fc7b0fc.png]]
 
 That looks somewhat fishy, but it isn't.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -1294,6 +1294,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+end_src
 
 #+RESULTS:
+: Welcome to JupyROOT 6.20/04
 
 **** Plot the Histos
 #+RESULTS:
@@ -1320,9 +1321,9 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 #+begin_src jupyter-python :exports both :results raw drawer
   yoda_file = yoda.read("../../runcards/qqgg/analysis/Analysis.yoda")
   sherpa_histos = {
-      "pT": dict(reference=hist_obs_pt, label="$p_T$ [GeV]"),
-      "eta": dict(reference=hist_obs_η, label=r"$\eta$"),
-      "cos_theta": dict(reference=hist_cosθ, label=r"$\cos\theta$"),
+      "pT": dict(reference=p_t_sample, label="$p_T$ [GeV]"),
+      "eta": dict(reference=η_sample, label=r"$\eta$"),
+      "cos_theta": dict(reference=cosθ_sample, label=r"$\cos\theta$"),
   }
 
   for key, sherpa_hist in sherpa_histos.items():
@@ -1338,7 +1339,7 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
                   errorbars=True,
               ),
               dict(
-                  hist=sherpa_hist["reference"],
+                  samples=sherpa_hist["reference"],
                   hist_kwargs=dict(label="Own Implementation"),
               ),
           ],
@@ -1350,7 +1351,10 @@ save_fig(fig, 'histo_cos_theta_strat', 'xs', size=(4,3))
 
 #+RESULTS:
 :RESULTS:
-[[file:./.ob-jupyter/f5684d4226d79ad803f08dd1555bd4a1814ec54d.png]]
-[[file:./.ob-jupyter/07a3dbd1fae5f6c2c75c20126e43c1e8414801a4.png]]
-[[file:./.ob-jupyter/b8d2592bec20061e0b4bed8787473566ffb59893.png]]
+: 1000000 1000000
+: 1000000 1000000
+: 1000000 1000000
+[[file:./.ob-jupyter/8e2e91bb3b84d156ced2badb0a43ebb12a6c899b.png]]
+[[file:./.ob-jupyter/935bfb8dd4efc0a5dda495044c13a253e23fb471.png]]
+[[file:./.ob-jupyter/d788eb3b63ddc3081faf9bab8e781b48ee4b3382.png]]
 :END:

@@ -2930,15 +2930,15 @@
 \pgfsetstrokecolor{currentstroke}%
 \pgfsetstrokeopacity{0.800000}%
 \pgfsetdash{}{0pt}%
-\pgfpathmoveto{\pgfqpoint{1.319278in}{2.275612in}}%
-\pgfpathlineto{\pgfqpoint{2.723611in}{2.275612in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{2.745833in}{2.275612in}}{\pgfqpoint{2.745833in}{2.297834in}}%
+\pgfpathmoveto{\pgfqpoint{1.319278in}{2.289300in}}%
+\pgfpathlineto{\pgfqpoint{2.723611in}{2.289300in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{2.745833in}{2.289300in}}{\pgfqpoint{2.745833in}{2.311523in}}%
 \pgfpathlineto{\pgfqpoint{2.745833in}{2.723611in}}%
 \pgfpathquadraticcurveto{\pgfqpoint{2.745833in}{2.745833in}}{\pgfqpoint{2.723611in}{2.745833in}}%
 \pgfpathlineto{\pgfqpoint{1.319278in}{2.745833in}}%
 \pgfpathquadraticcurveto{\pgfqpoint{1.297055in}{2.745833in}}{\pgfqpoint{1.297055in}{2.723611in}}%
-\pgfpathlineto{\pgfqpoint{1.297055in}{2.297834in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{1.297055in}{2.275612in}}{\pgfqpoint{1.319278in}{2.275612in}}%
+\pgfpathlineto{\pgfqpoint{1.297055in}{2.311523in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{1.297055in}{2.289300in}}{\pgfqpoint{1.319278in}{2.289300in}}%
 \pgfpathclose%
 \pgfusepath{stroke,fill}%
 \end{pgfscope}%
@@ -2966,8 +2966,8 @@
 \definecolor{currentstroke}{rgb}{1.000000,0.498039,0.054902}%
 \pgfsetstrokecolor{currentstroke}%
 \pgfsetdash{}{0pt}%
-\pgfpathmoveto{\pgfqpoint{1.341500in}{2.433611in}}%
-\pgfpathlineto{\pgfqpoint{1.563722in}{2.433611in}}%
+\pgfpathmoveto{\pgfqpoint{1.341500in}{2.440456in}}%
+\pgfpathlineto{\pgfqpoint{1.563722in}{2.440456in}}%
 \pgfusepath{stroke}%
 \end{pgfscope}%
 \begin{pgfscope}%
@@ -2980,7 +2980,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=1.652611in, y=2.347834in, left, base]{\color{textcolor}\rmfamily\fontsize{8.000000}{9.600000}\selectfont w/i \(\displaystyle 2\sigma = 98\%\) OK}%
+\pgftext[x=1.652611in, y=2.355300in, left, base]{\color{textcolor}\rmfamily\fontsize{8.000000}{9.600000}\selectfont \(\displaystyle P = 0.27\; T = 55.67\)}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
