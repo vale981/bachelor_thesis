@@ -3,10 +3,9 @@ sherpa_xs: Sherpa.yaml
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 analysis: Sherpa.yaml
-	RIVET_ANALYSIS_PATH="$(ROOT_DIR)/../../analysis/qqgg_simple/" mpirun --use-hwthread-cpus --use-hwthread-cpus  Sherpa "OUTPUT: 0"
-	yodamerge *.yoda -o Analysis_all.yoda
-	rivet-mkhtml Analysis_all.yoda -o analysis
-	mv Analysis_all.yoda analysis/Analysis.yoda
+	RIVET_ANALYSIS_PATH="$(ROOT_DIR)/../../analysis/qqgg_simple/" Sherpa "OUTPUT: 2"
+	rivet-mkhtml Analysis.yoda -o analysis
+	mv Analysis.yoda analysis/Analysis.yoda
 
 .PHONY: clean
 clean:
