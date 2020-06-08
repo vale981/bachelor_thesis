@@ -2,7 +2,7 @@
 OUTPUT: 3
 
 # event count
-EVENTS: 1000000/8
+EVENTS: 1000000
 
 # save results
 GENERATE_RESULT_DIRECTORY: true
