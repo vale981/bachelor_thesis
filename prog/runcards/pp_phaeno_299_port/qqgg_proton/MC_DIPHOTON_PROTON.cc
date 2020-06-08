@@ -23,8 +23,7 @@ struct Observable {
   //     : _min{min}, _max{max}, _bins{bins}, _log{log} {};
 
   /// @brief Wraps Histo1D::fill.
-  template<typename... Params>
-  void fill(double value, Params&&... args) {
+  template <typename... Params> void fill(double value, Params &&... args) {
     _value = value;
     if (_hist) {
       _hist->fill(value, std::forward<Params>(args)...);
@@ -77,14 +76,17 @@ public:
 
       book(observable._hist, name, observable._bins, observable._min,
            observable._max);
-      book(_xs, "xs");
     }
+
+    book(_xs, "xs");
+    book(_isolation_discard, "isolation_discard");
+    book(_cut_discard, "cut_discard");
   }
 
   /// Perform the per-event analysis
   void analyze(const Event &event) {
     Particles photons =
-      apply<IdentifiedFinalState>(event, "Photons").particlesByPt();
+        apply<IdentifiedFinalState>(event, "Photons").particlesByPt();
 
     // make sure that there are only two photons
     if (photons.size() < 2)
@@ -94,6 +96,7 @@ public:
 
     // Require the two photons to be separated in dR
     if (deltaR(photons[0], photons[1]) < 0.45) {
+      _isolation_discard->fill(1);
       vetoEvent;
     }
 
@@ -117,6 +120,7 @@ public:
 
       // Use photon if energy in isolation cone is low enough
       if (mom_in_EtCone.Et() > 0.045 * photon.momentum().pT() + 6.0 * GeV) {
+        _isolation_discard->fill(1);
         vetoEvent;
       }
     }
@@ -129,7 +133,7 @@ public:
     _observables.at("eta").fill(photon.eta());
     _observables.at("cos_theta").fill(cos(photon.theta()));
     _observables.at("azimuthal_angle")
-      .fill(PI - mapAngle0ToPi(photon.phi() - photon_subl.phi()));
+        .fill(PI - mapAngle0ToPi(photon.phi() - photon_subl.phi()));
 
     const auto &moms = photons.moms();
     const auto total_momentum = moms[0] + moms[1];
@@ -139,15 +143,15 @@ public:
     _observables.at("o_angle").fill(
         std::abs(tanh((photons[1].eta() - photons[0].eta()) / 2)));
 
-    _observables.at("o_angle_cs").fill(std::abs(
-        sinh((photons[0].eta() - photons[1].eta())) * 2.0 * photons[0].pT() *
-        photons[1].pT() /
-        sqrt(sqr(_observables.at("inv_m")._value) + sqr(total_momentum.pT())) /
-        _observables.at("inv_m")._value));
+    _observables.at("o_angle_cs")
+        .fill(std::abs(sinh((photons[0].eta() - photons[1].eta())) * 2.0 *
+                       photons[0].pT() * photons[1].pT() /
+                       sqrt(sqr(_observables.at("inv_m")._value) +
+                            sqr(total_momentum.pT())) /
+                       _observables.at("inv_m")._value));
 
     // Fill fiducial cross section
     _xs->fill();
-    _ct += 1;
   }
 
   //@}
@@ -155,6 +159,19 @@ public:
   void finalize() {
     const double sf = crossSection() / (picobarn * sumOfWeights());
     scale(_xs, sf);
+
+    // This is a hack to plot some statistic about discarded events
+    if (_isolation_discard->numEntries() > 0)
+      _isolation_discard->scaleW(_isolation_discard->numEntries() /
+                                 _isolation_discard->val() / numEvents());
+
+    for (int i = 0;
+         i < (numEvents() - _xs->numEntries() - _isolation_discard->val()); i++)
+      _cut_discard->fill(1);
+
+    _cut_discard->scaleW(_cut_discard->numEntries() / _cut_discard->val() /
+                         numEvents());
+
     for (auto const &[_, observable] : _observables) {
       scale(observable._hist, sf);
     }
@@ -164,7 +181,8 @@ public:
   //@{
   std::map<const std::string, Observable> _observables;
   CounterPtr _xs;
-  double _ct = 0;
+  CounterPtr _isolation_discard;
+  CounterPtr _cut_discard;
   //@}
 };
 
