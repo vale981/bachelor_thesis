@@ -77,8 +77,7 @@ probability~\(f/g\), so that \(g\) cancels out. This is known as the
 %
 The thus obtained samples are then distributed according to \(f/B\)
 and the total probability of accepting a sample, also called the
-efficiency \(\mathfrak{e}\), is given by hat \cref{eq:impsampeff}
-holds.
+efficiency \(\mathfrak{e}\), is given by \cref{eq:impsampeff}.
 %
 \begin{equation}
   \label{eq:impsampeff}
@@ -93,7 +92,7 @@ Choosing \(g\) like \cref{eq:primitiveg} and looking back at
 procedure simplifies to choosing random numbers \(x\in [0,1]\) and
 accepting them with the probability \(f(x)/g(x)\). The efficiency of
 this approach is related to how much \(f\) differs from
-\(f_{\text{max}}\) which in turn related to the variance of
+\(f_{\text{max}}\) which in turn is related to the variance of
 \(f\). Minimizing variance will therefore improve sampling
 performance. The method can also be used in higher dimensions without
 modification and has again been implemented and evaluated.
@@ -135,8 +134,7 @@ upper bound are depicted in \cref{fig:distcos}.
 When transforming \(f\) to a new variable \(y=y(x)\) one arrives at
 \cref{eq:transff} and may reduce variance, analogous to
 \cref{sec:naivechange}. Transforming the distribution in a beneficial
-way in is an alternative method of performing \emph{importance
-  sampling}.
+way is an alternative method of performing \emph{importance sampling}.
 %
 \begin{equation}
   \label{eq:transff}
