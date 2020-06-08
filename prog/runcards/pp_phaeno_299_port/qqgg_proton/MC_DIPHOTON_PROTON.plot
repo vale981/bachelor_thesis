@@ -87,3 +87,28 @@ XMinorTickMarks=0
 LegendAlign=r
 RatioPlot=0
 # END PLOT
+
+# BEGIN PLOT /MC_DIPHOTON_PROTON/isolation_discard
+Title=fraction of events discarded through isolation cuts
+YLabel=Count
+LogY=0
+XLabel=
+LogY=0
+XMinorTickMarks=0
+LegendAlign=r
+RatioPlot=0
+ErrorBars=1
+# END PLOT
+
+# BEGIN PLOT /MC_DIPHOTON_PROTON/cut_discard
+Title=fraction of events discarded through phase space cuts
+YLabel=Count
+LogY=0
+XLabel=
+#LogY=1
+YMin=.965
+YMax=.99
+XMinorTickMarks=0
+LegendAlign=r
+RatioPlot=0
+# END PLOT
