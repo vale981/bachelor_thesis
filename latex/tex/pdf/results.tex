@@ -92,51 +92,65 @@ being very steep.
 %
 To remedy that, one has to use a more efficient sampling algorithm
 (\vegas) or impose very restrictive cuts. The self-coded
-implementation used here can be found in \cref{sec:pycode} and employs
-stratified sampling (as discussed in \cref{sec:stratsamp-real}) and
-the hit-or-miss method. The matrix element (ME) and cuts are
-implemented using \texttt{cython}~\cite{behnel2011:cy} to obtain
-better performance as these are evaluated very often. The ME and the
-cuts are then convolved with the PDF (as in \cref{eq:weighteddist})
-and wrapped into a simple function with a generic interface and
-plugged into the \vegas\ implementation which then computes the
-integral, grid, individual contributions to the grid and rough
-estimates of the maxima in each hypercube. In principle the code could
-be generalized to other processes by simply redefining the matrix
-elements, as no other part of the code is process specific. The cuts
-work as simple \(\theta\)-functions, which has the advantage, that the
-maximum for hit or miss can be chosen with respect to those cuts. On
-the other hand, this method introduces discontinuity into the
-integrand, which is problematic for numeric maximizers.  The estimates
-of the maxima, provided by the \vegas\ implementation used as the
-starting point for a gradient ascend maximizer. In this way, the
-discontinuities introduced by the cuts got circumvented. Because the
-stratified sampling requires very accurate upper bounds, they have
-been overestimated by \result{xs/python/pdf/overesimate}\!, which
-lowers the efficiency slightly but reduces bias. The sampling
-algorithm chooses hypercubes randomly in accordance to their
-contribution to the integral by generating a uniformly distributed
-random number \(r\in [0,1]\) and summing the weights of the hypercubes
-until the sum exceeds this number. The last hypercube in this sum is
-then chosen and one sample is obtained. Taking more than one sample
-can improve performance, but introduces bias, as hypercubes with low
-weight may be oversampled. At various points, the
-\texttt{numba}~\cite{lam2015:po} package has been used to just-in-time
-compile code to increase performance. The python
-\texttt{multiprocessing} module is used to parallelize the sampling
-and exploit all CPU cores. Although the \vegas\ step is very
-(\emph{very}) time intensive, but the actual sampling performance is
-in the same order of magnitude as \sherpa, but some parameters have to
-be manually tuned.
+implementation used here can be found as described in
+\cref{sec:source} and employs stratified sampling (as discussed in
+\cref{sec:stratsamp-real}) and the hit-or-miss method. The matrix
+element (ME) and cuts are implemented using
+\texttt{cython}~\cite{behnel2011:cy} to obtain better performance as
+these are evaluated very often. The ME and the cuts are then convolved
+with the PDF (as in \cref{eq:weighteddist}) and wrapped into a simple
+function with a generic interface and plugged into the \vegas\
+implementation which then computes the integral, grid, individual
+contributions to the grid and rough estimates of the maxima in each
+hypercube. In principle the code could be generalized to other
+processes by simply redefining the matrix elements, as no other part
+of the code is process specific. The cuts work as simple
+\(\theta\)-functions, which has the advantage, that the maximum for
+hit or miss can be chosen with respect to those cuts. On the other
+hand, this method introduces discontinuity into the integrand, which
+is problematic for numeric maximizers.  The estimates of the maxima,
+provided by the \vegas\ implementation used as the starting point for
+a gradient ascend maximizer. In this way, the discontinuities
+introduced by the cuts got circumvented. Because the stratified
+sampling requires very accurate upper bounds, they have been
+overestimated by \result{xs/python/pdf/overesimate}\!, which lowers
+the efficiency slightly but reduces bias. The sampling algorithm
+chooses hypercubes randomly in accordance to their contribution to the
+integral by generating a uniformly distributed random number
+\(r\in [0,1]\) and summing the weights of the hypercubes until the sum
+exceeds this number. The last hypercube in this sum is then chosen and
+one sample is obtained. Taking more than one sample can improve
+performance, but introduces bias, as hypercubes with low weight may be
+oversampled. At various points, the \texttt{numba}~\cite{lam2015:po}
+package has been used to just-in-time compile code to increase
+performance. The python \texttt{multiprocessing} module is used to
+parallelize the sampling and exploit all CPU cores. Although the
+\vegas\ step is very (\emph{very}) time intensive, but the actual
+sampling performance is in the same order of magnitude as \sherpa, but
+some parameters have to be manually tuned.
 
 A sample of \result{xs/python/pdf/sample_size} events has been
 generated both in \sherpa\ (with the same cuts) and through own
 code. The resulting histograms of some observables are depicted in
 \cref{fig:pdf-histos}. The sampling efficiency achieved was
 \result{xs/python/pdf/samp_eff} using a total of
-\result{xs/python/pdf/num_increments} hypercubes. The distributions
-are compatible with each other. The sherpa runcard utilized here and
-the analysis used to produce the histograms can be found in
+\result{xs/python/pdf/num_increments} hypercubes.
+
+The distributions are more or less compatible with each other
+\footnote{See \cref{sec:comphist} for a description of the
+  compatibility test.}. In all cases the difference between
+\(T\)-Value and the mean of the \(\chi^2\) distribution for that value
+(\(=50\), the number of bins) is less then the standard deviation
+(\(=10\)) of the same distribution and thus the histograms are
+considered compatible. The very steep distributions for \(\pt\) and
+\(m_{\gamma\gamma}\) are especially sensitive to fluctuations and the
+systemic errors introduced of the weight of each hypercube. Therefore
+their formal measure of compatibility, the \(P\)-Value, is rather
+low. This shows that the error in the determination of the weights for
+the hypercubes should be studied more carefully.
+
+The \sherpa\ runcard utilized here and the analysis used to produce
+the histograms can be found in
 \cref{sec:ppruncard,sec:ppanalysis}. When comparing
 \cref{fig:pdf-eta,fig:histeta} it becomes apparent, that the PDF has
 substantial influence on the resulting distribution. Also the center

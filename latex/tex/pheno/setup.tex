@@ -4,22 +4,30 @@
 To observe the impact on the individual aspect of the proton
 scattering the following run configurations have been defined. They
 are incremental in the sense that each subsequent configuration
-extents the previous one and thus called stages.
+extents the previous one and thus called stages from now on and are
+listed below.
 %
 \begin{description}
 \item[LO] The hard process on parton level as used in \cref{sec:pdf_results}.
-\item[LO+PS] The shower generator of \sherpa, \emph{CSS} (dipole-shower),
-  is activated and simulates initial state radiation, as there are no
-  partons in the final state yet.
-\item[LO+PS+pT] The beam remnants are simulated, giving rise to final state radiation.
-  Also the partons are being assigned primordial \(\pt\), distributed
-  like a Gaussian with a mean value of \SI{.8}{\giga\electronvolt} and
-  a standard deviation of \SI{.8}{\giga\electronvolt}\footnote{Those
-    values are \sherpa 's defaults.}.
+\item[LO+PS] The shower generator of \sherpa, \emph{CSS}
+  (dipole-shower), is activated and simulates initial state
+  radiation. The recoil scheme proposed in~\cite{hoeche2009:ha}, which
+  has been proven more accurate for diphoton production at leading
+  order, has been enabled.
+\item[LO+PS+pT] The beam remnants are simulated, giving rise to
+  aditional radiation and parton showers.  Also the partons are being
+  assigned primordial \(\pt\), distributed like a Gaussian with a mean
+  value of \SI{.8}{\giga\electronvolt} and a standard deviation of
+  \SI{.8}{\giga\electronvolt}\footnote{Those values are \sherpa 's
+    defaults.}.
 \item[LO+PS+pT+Hadronization] A cluster hadronization model
-  implemented in \emph{Ahadic} is activated.
-\item[LO+PS+pT+Hadronization+MI] Multiple interactions based on the
-  Sj\"ostrand-van-Zijl Model are simulated.
+  implemented in \emph{Ahadic} is activated. The shower particles are
+  being hadronized and the decay of the resulting hadrons simulated if
+  they are unstable.
+\item[LO+PS+pT+Hadronization+MI] Multiple Interactions (MI) based on
+  the Sj\"ostrand-van-Zijl Model are simulated. The MI are parton
+  shower corrected, so that there are generally more particles in the
+  final state.
 \end{description}
 %
 A detailed description of the implementation of those models can be
@@ -41,23 +49,28 @@ non-zero transverse momentum of the photon pair:
 %
 \begin{itemize}
 \item total transverse momentum of the photon pair
-\item azimuth angle between the two photons
+\item azimuthal angle between the two photons
 \item transverse momentum of the sub-leading photon (see below)
 \end{itemize}
 %
 Because the final state now potentially contains additional photons
 from hadron decays, the analysis only selects prompt photons with the
 highest \(\pt\) (leading photons). Furthermore a cone of
-\(R = \sqrt{\qty(\Delta\varphi)^2 + \qty(\Delta\eta)^2} = 0.4\) around
-each photon must not contain more than \SI{4.5}{\percent} of the
-photon transverse momentum (\(+ \SI{6}{\giga\electronvolt}\)),
+\[R = \sqrt{\qty(\Delta\varphi)^2 + \qty(\Delta\eta)^2} \leq 0.4\]
+around each photon must not contain more than \SI{4.5}{\percent} of
+the photon transverse momentum (\(+ \SI{6}{\giga\electronvolt}\)),
 attempting to exclude photons stemming from hadron decay are filtered
 out. The leading photons are required to have \(\Delta R > 0.45\), to
 filter out colinear photons, as they likely stem from hadron
-decays. In truth, the analysis already excludes such photons, but to
+decays.
+% TODO: only for experiments, do not overlap photon iso cones, einfach
+% weglassen
+
+In truth, the analysis already excludes such photons, but to
 be compatible with experimental data, which must rely on such
-criteria, they have been included. The code of the analysis is listed
-in \cref{sec:ppanalysisfull}.
+criteria, they have been included. These cuts are called
+\emph{isolation cuts}. The code of the analysis is listed in
+\cref{sec:ppanalysisfull}.
 
 The production of photons in showers has not been considered.
 
