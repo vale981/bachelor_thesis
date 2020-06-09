@@ -9,11 +9,11 @@ listed below.
 %
 \begin{description}
 \item[LO] The hard process on parton level as used in \cref{sec:pdf_results}.
-\item[LO+PS] The shower generator of \sherpa, \emph{CSS}
-  (dipole-shower), is activated and simulates initial state
-  radiation. The recoil scheme proposed in~\cite{hoeche2009:ha}, which
-  has been proven more accurate for diphoton production at leading
-  order, has been enabled.
+\item[LO+PS] The shower generator of \sherpa,
+  \emph{CSShower}~\cite{schumann2008:ap} (dipole-shower), is activated and
+  simulates initial state radiation. The recoil scheme proposed
+  in~\cite{hoeche2009:ha}, which has been proven more accurate for
+  diphoton production at leading order, has been enabled.
 \item[LO+PS+pT] The beam remnants are simulated, giving rise to
   aditional radiation and parton showers.  Also the partons are being
   assigned primordial \(\pt\), distributed like a Gaussian with a mean
@@ -21,13 +21,14 @@ listed below.
   \SI{.8}{\giga\electronvolt}\footnote{Those values are \sherpa 's
     defaults.}.
 \item[LO+PS+pT+Hadronization] A cluster hadronization model
-  implemented in \emph{Ahadic} is activated. The shower particles are
-  being hadronized and the decay of the resulting hadrons simulated if
-  they are unstable.
+  implemented in \emph{Ahadic}~\cite{Winter2003:tt} is
+  activated. The shower particles are being hadronized and the decay
+  of the resulting hadrons simulated if they are unstable.
 \item[LO+PS+pT+Hadronization+MI] Multiple Interactions (MI) based on
-  the Sj\"ostrand-van-Zijl Model are simulated. The MI are parton
-  shower corrected, so that there are generally more particles in the
-  final state.
+  the Sj\"ostrand-van-Zijl Model are simulated with
+  \emph{Amisic}~\cite{Bothmann:2019yzt}. The MI are parton shower
+  corrected, so that there are generally more particles in the final
+  state.
 \end{description}
 %
 A detailed description of the implementation of those models can be
@@ -39,7 +40,7 @@ configuration can be found in \cref{sec:ppruncardfull}. The
 are the same as in \cref{sec:ppxs} and the beam energies have been
 chosen as \SI{6500}{\giga\electronvolt} to resemble \lhc\ conditions.
 The cuts on the hard process have been loosened to
-\(\pt \geq \SI{5}{\giga\electronvolt}\) and \(\abs{\eta}\leq 3\) to
+\(\pt \geq \SI{5}{\giga\electronvolt}\) and \(\abs{\eta}\leq 3\)
 because jets and primordial \(\pt\) can increase the final state
 \(\pt\) to fall into the analysis cuts.
 
@@ -58,19 +59,16 @@ from hadron decays, the analysis only selects prompt photons with the
 highest \(\pt\) (leading photons). Furthermore a cone of
 \[R = \sqrt{\qty(\Delta\varphi)^2 + \qty(\Delta\eta)^2} \leq 0.4\]
 around each photon must not contain more than \SI{4.5}{\percent} of
-the photon transverse momentum (\(+ \SI{6}{\giga\electronvolt}\)),
-attempting to exclude photons stemming from hadron decay are filtered
-out. The leading photons are required to have \(\Delta R > 0.45\), to
-filter out colinear photons, as they likely stem from hadron
-decays.
-% TODO: only for experiments, do not overlap photon iso cones, einfach
-% weglassen
-
-In truth, the analysis already excludes such photons, but to
-be compatible with experimental data, which must rely on such
+the photon transverse momentum (\(+ \SI{6}{\giga\electronvolt}\)), to
+simulate experimental photon isolation. The leading photons are
+required to have \(\Delta R > 0.45\), to filter photons with
+overlapping isolation cones, which would be hard to isolate in
+experiments. In truth, the analysis already excludes such photons,
+but to be compatible with experimental data, which must rely on such
 criteria, they have been included. These cuts are called
 \emph{isolation cuts}. The code of the analysis is listed in
-\cref{sec:ppanalysisfull}.
+\cref{sec:ppanalysisfull} and has been adapted from code privately
+communicated by Frank Siegert and Heberth Torres.
 
 The production of photons in showers has not been considered.
 

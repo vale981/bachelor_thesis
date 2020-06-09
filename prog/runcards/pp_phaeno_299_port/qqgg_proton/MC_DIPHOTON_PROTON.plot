@@ -29,7 +29,7 @@ Title=$m_{\gamma\gamma}$ of the two leading photons
 XLabel=$m_{\gamma\gamma}$ [GeV]
 YLabel=$\mathrm{d}\sigma/\mathrm{d}m_{\gamma\gamma}$ [pb GeV$^{-1}$]
 LogX=1
-XMin=1
+XMin=10.5
 XMax=2000
 # END PLOT
 
@@ -73,6 +73,7 @@ XLabel=$\pT$
 YLabel=$\mathrm{d}\sigma/\mathrm{d}\pT_{\gamma\gamma}$ [pb GeV$^{-1}$]
 LogY=1
 LogX=1
+XMin=1e-1
 # END PLOT
 
 # BEGIN PLOT /MC_DIPHOTON_PROTON/xs
