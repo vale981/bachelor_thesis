@@ -172,10 +172,13 @@ Viele Gruesse, Frank
 ** what does inclusive mean
 ** Normalize to XS
 ** y axis label for normalized histos
-** TODO PDF cannot be derived: in principle?
-** TODO still compatible?
-** TODO cite atlas paper (analysis?)
-** TODO call it distribution?
+** DONE PDF cannot be derived: in principle?
+** DONE still compatible?
+** DONE cite atlas paper (analysis?)
+** DONE call it distribution?
+** DONE diphoton caps?
+** DONE do remnants radiate?
+** TODO ask about nlo emissions
 * Work Log
 ** 18.03
  - habe mich in manche konzeptionelle Dinge ziemlich verrannt!
@@ -183,12 +186,13 @@ Viele Gruesse, Frank
 * Todo
 ** TODO lab xs kuerzen
 ** TODO shower scale anpassen
-** TODO effekt shower und kperp
+** DONE effekt shower und kperp
 ** DONE y-axis a.u.!
 ** DONE mean, var einzeichnen
 ** DONE Variance of vegas weighted f!
 ** DONE look at xs plot -> they seem different
 ** DONE take new sample: still bias?
+** DONE umnumerieren
 
 * Observations
 ** XS
@@ -264,3 +268,46 @@ Viele Gruesse, Frank
  - biggest effect is the jet kick, photons are no qcd particles and
    not touched after hard process
  - no em radiation activated: would add more noise, here no additional photons
+
+
+426 .. ref for CSS
+433/436 .. refs
+443 .. to zu viel
+448 .. azimuthal
+451 .. verb zu viel
+452 .. collinear
+
+kick -> recoil, klarer, momentum conservation am anfang! 481/6708
+
+primordial pT, erklaeren fermi motion
+
+figs umsortieren
+
+484 .. often
+off the orderd -> of
+
+ok .. pT > 1e-1 MI schwer zu sagen, uninteressant, weglassen, nicht messbar
+
+discuss -> parton shower collinear limes naeherung
+ (falling off steeply), kein grosses pT, keine gute naeherung in > 10 GeV
+
+
+nontrivial feater of .. modeling
+
+
+492 .. back to back preference -> nur folge der nlo unterdrueck
+
+was ist LO threshhold, durch pT cuts
+ist keine c.m. energy -> inv mass
+
+very rare -> higher order (α_s kleiner) harte qcd kosten!
+
+inv m LO+PS nicht verschieben 510 .. 511
+
+524 .. welcher effekt
+
+bigger picture .. lo bild -> geeignet, auch einfache betroffen (auch am anfang) uberall auswirkung
+
+outlook very simple, nlo ME verwenden, fragmentation aus parton (dijet), neue photon iso + viel mehr
+
+chi^2 test

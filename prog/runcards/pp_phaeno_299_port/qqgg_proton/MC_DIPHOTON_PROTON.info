@@ -10,7 +10,7 @@ Beams: [2212, 2212]
 Energies: [6500, 6500]
 #Luminosity_fb: 139.0
 Description:
-  'An analysis used to compare different configuration of the Sherpa event generator.'
+  'An analysis used to compare different configurations of the Sherpa event generator.'
 ValidationInfo:
   'Not validated'
 #ReleaseTests:
