@@ -20,7 +20,7 @@ variable through integration over the remaining variables and then,
 keeping the first variable fixed, sampling the other variables in a
 likewise manner.
 
-Consider a function \(f\colon x\in\Omega\mapsto\mathbb{R}_{\geq 0}\)
+Consider a function \(f\colon x\in\Omega\mapsto\mathbb{R}_{>0}\)
 where \(\Omega = [0, 1]\) without loss of generality. Such a function
 is proportional to a probability density \(\tilde{f}\). When \(X\) is
 a uniformly distributed random variable on~\([0, 1]\) (which can be
@@ -84,8 +84,8 @@ efficiency \(\mathfrak{e}\), is given by \cref{eq:impsampeff}.
   \int_0^1\frac{g(x)}{B}\cdot\frac{f(x)}{g(x)}\dd{x} = \int_0^1\frac{f(x)}{B}\dd{x} = \frac{A}{B} = \mathfrak{e}\leq 1
 \end{equation}
 %
-The closer the volumes enclosed by \(g\) and \(f\) are to each other,
-higher is \(\mathfrak{e}\).
+The closer the sizes of volumes enclosed by \(g\) and \(f\) are to
+each other, the higher is \(\mathfrak{e}\).
 
 Choosing \(g\) like \cref{eq:primitiveg} and looking back at
 \cref{eq:solutionsamp} yields \(y = x\cdot A\), so that the sampling
@@ -142,7 +142,7 @@ way is an alternative method of performing \emph{importance sampling}.
 \end{equation}
 %
 The optimal transformation would be the solution of \(y = F(x)\)
-(\(F\) being the antiderivative), so that
+(\(F\) being the antiderivative of \(f\)), so that
 \(f(x(y)) \cdot \dv{x(y)}{y} = 1\). But transforming \(f\) in this way
 is the same as solving \cref{eq:takesample} which is a problem that
 has been addressed in \cref{sec:hitmiss}. The difference here is, that
@@ -243,14 +243,14 @@ distribution \(f\) is required.
 Yet another approach is to subdivide the sampling volume \(\Omega\)
 into \(K\) sub-volumes \(\Omega_i\subset\Omega\) and then take a
 number of samples from each volume proportional to the integral of the
-function \(f\) in that volume. This is a method of stratified
+function \(f\) in that volume. This is a variant of
 \emph{stratified sampling}, with the advantage that it is now possible
 to optimize the sampling in each sub-volume independently.
 
 Let \(N\) be the total sample count (\(N\gg 1\)),
-\(A_i = \int_{\Omega_i}f(x)\dd{x}\) and \(A=\sum_iA_i\).
-Then we can calculate the total efficiency of taking \(N_i=A_i/A \cdot N\)
-samples in each is then given by \cref{eq:rstrateff}.
+\(A_i = \int_{\Omega_i}f(x)\dd{x}\) and \(A=\sum_iA_i\).  The total
+efficiency when taking \(N_i=A_i/A \cdot N\) samples in each hypercube
+is then given by \cref{eq:rstrateff}.
 %
 \begin{equation}
   \label{eq:rstrateff}
@@ -300,12 +300,12 @@ Jacobian.
 
 Using the distribution \cref{eq:distcos} for the variable
 \(\cos\theta\) and choosing the polar angle \(\varphi\) uniformly
-random, a sample of 4-momenta can be generated and histograms
+random, a sample of 4-momenta can be generated and histograms of
 observables can be drawn.
 
 The observables considered here are the transverse momentum \(\pt\)
-and the pseudo rapidity \(\eta\) which can be computed from 4-momentum
-as described in \cref{eq:observables}.
+and the pseudo rapidity \(\eta\) which can be computed from the
+4-momentum as described in \cref{eq:observables}.
 %
 \begin{align}
   \label{eq:observables}
@@ -358,12 +358,11 @@ is a singularity at \(\pt = \ecm\), due to a term
 determinant. This singularity will vanish once considering a more
 realistic process (see \cref{chap:pdf}).
 
-The compatibility of histograms is tested as discussed in
-\cref{sec:comphist} and the respective \(P\) and \(T\) values are
-being included in the ratio plots. The histograms
-\cref{fig:histeta,fig:histpt} are (see \cref{sec:comphist}) tested for
-consistency with their \rivet-generated counterparts. They have a
-\(P\)-value greater than \(.6\) and are therefore considered valid.
+The compatibility of the histograms and their \rivet-generated
+counterparts is tested as is discussed in \cref{sec:comphist} and the
+respective \(P\) and \(T\) values are being included in the ratio
+plots. The histograms have a \(P\)-value greater than \(0.6\) and are
+therefore considered valid.
 
 %%% Local Variables:
 %%% mode: latex
