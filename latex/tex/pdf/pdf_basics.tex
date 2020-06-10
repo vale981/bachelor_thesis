@@ -2,11 +2,10 @@
 \label{sec:pdf_basics}
 
 Parton Density Functions encode, restricting considerations to leading
-order, the probability to encounter a constituent parton (quark or
-gluon) of a hadron with a certain momentum fraction \(x\) at a certain
-factorization scale \(Q^2\) in a scattering process. PDFs are
-normalized according to \cref{eq:pdf-norm}, where the sum runs over
-all partons.
+order, the probability to encounter a constituent parton of a hadron
+with a certain momentum fraction \(x\) at a certain factorization
+scale \(Q^2\) in a scattering process. PDFs are normalized according
+to \cref{eq:pdf-norm}, where the sum runs over all partons.
 %
 \begin{equation}
   \label{eq:pdf-norm}
@@ -16,15 +15,15 @@ all partons.
 More precisely \({f_i}\) denotes a PDF set, which is referred to
 simply as PDF in the following.  PDFs can not be derived from first
 principles and have to be determined experimentally for low \(Q^2\)
-and are evolved to higher \(Q^2\) through the \emph{DGLAP}
+and can be evolved to higher \(Q^2\) through the \emph{DGLAP}
 equations~\cite{altarelli:1977af} at different orders of perturbation
 theory.  In deep inelastic scattering \(Q^2\) is just the negative
-over the momentum transfer \(-q^2\). For more complicated processes
+over the momentum transfer: \(-q^2\). For more complicated processes
 \(Q^2\) has to be chosen in a way that reflects the
 \emph{energy-momentum scale} of the process. If the perturbation
 series behind the process would be expanded to the exact solution, the
-dependence on the factorization scale vanishes. In lower orders, one
-has to choose the scale in a \emph{physically
+dependence on the factorization scale would vanish. In lower orders,
+one has to choose the scale in a \emph{physically
   meaningful}\footnote{That means: not in an arbitrary way.} way,
 which reflects characteristics of the process~\cite{altarelli:1977af}.
 
@@ -45,7 +44,7 @@ scale\footnote{More appropriately: The factorization scale depends on
 %
 \begin{equation}
   \label{eq:pdf-xs}
-  \sigma = \int f_i\qty(x;Q^2) f_j\qty(x;Q^2) \hat{\sigma}_{ij}\qty(x_1,
+  \sigma = \int f_i\qty(x_1;Q^2) f_j\qty(x_2;Q^2) \hat{\sigma}_{ij}\qty(x_1,
   x_2, Q^2)\dd{x_1}\dd{x_2}
 \end{equation}
 %
