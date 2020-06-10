@@ -43,7 +43,7 @@ jobs:
         with:
           tag_name: rel/${{ github.sha }}
           release_name: Release ${{ github.sha }}
-          draft: true
+          draft: false
           prerelease: false
       - name: Upload Release Asset
         id: upload-release-asset
