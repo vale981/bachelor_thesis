@@ -68,13 +68,13 @@ variable \(\vb{x}\), and the integration volume
 \(\Omega\). Accordingly, some ways variance reductions can be
 accomplished are choosing a suitable \(\rho\) (importance sampling),
 by transforming the integral onto another variable or by subdividing
-integration volume into several sub-volumes of different size while
-keeping the sample size constant in all sub-volumes (a special case of
-stratified sampling).\footnote{There are of course still other methods
-  like the multi-channel method.}\footnote{Of course, combinations of
-  these methods can be applied as well.}  Combining ideas from
-importance sampling and stratified sampling leads to the \vegas\
-algorithm~\cite{Lepage:19781an} that approximates the optimal
+the integration volume into several sub-volumes of different size
+while keeping the sample size constant in all sub-volumes (a special
+case of stratified sampling).\footnote{There are of course still other
+  methods like the multi-channel method.}\footnote{Of course,
+  combinations of these methods can be applied as well.}  Combining
+ideas from importance sampling and stratified sampling leads to the
+\vegas\ algorithm~\cite{Lepage:19781an} that approximates the optimal
 distribution of importance sampling by adaptive subdivision of the
 integration volume into a grid.
 
@@ -83,7 +83,7 @@ dimensionality of the integration volume as opposed to many other
 numerical integration algorithms (trapezoid rule, Simpsons rule) that
 usually converge like \(N^{-\frac{k}{n}}\) with
 \(k\in\mathbb{N}_{>0}\) and \(n\) being the dimensionality.  MC
-integration in it's simplest form converges like \(N^{-\frac{1}{2}}\)
+integration in its simplest form converges like \(N^{-\frac{1}{2}}\)
 in \emph{all} dimensions. Because phase space integrals in particle
 physics usually have a high dimensionality, MC integration is a
 suitable approach for those problems. When implementing MC methods,
@@ -171,13 +171,15 @@ equivalent (see \ref{sec:equap}).
 \subsection{Integration with \vegas}
 \label{sec:mcintvegas}
 
-Stratified sampling gives optimal results, when the variance in every
-sub-volume is the same~\cite{Lepage:19781an}. In importance sampling,
-the optimal probability distribution is given
-by \cref{eq:optimalrho}, where \(f(\Omega) \geq 0\) is presumed
-without loss of generality. When applying \vegas\ to multi dimensional
-integrals,~\cref{eq:optimalrho} is usually modified to factorize into
-distributions for each variable to simplify calculations.
+Subdividing the integration volume into sub-volumes and taking the same
+number of samples in each volume (stratified sampling), gives optimal
+results, when the variance in every sub-volume is the
+same~\cite{Lepage:19781an}. In importance sampling, the optimal
+probability distribution is given by \cref{eq:optimalrho}, where
+\(f(\Omega) \geq 0\) is presumed without loss of generality. When
+applying \vegas\ to multi dimensional integrals,~\cref{eq:optimalrho}
+is usually modified to factorize into distributions for each variable
+to simplify calculations.
 %
 \begin{equation}
   \label{eq:optimalrho}
@@ -188,21 +190,23 @@ The idea behind \vegas\ is to subdivide \(\Omega\) into hypercubes
 (create a grid), define \(\rho\) as step-function with constant value
 on those hypercubes and iteratively approximating
 \cref{eq:optimalrho}, instead of trying to minimize the variance
-directly. In the end, the samples are concentrated where \(f\) takes
-on the highest values and changes most rapidly. This is done by
-subdividing the hypercubes into smaller chunks, based on their
-contribution to the integral, which is calculated through MC sampling,
-and then varying the hypercube borders until all hypercubes contain
-the same number of chunks.  So if the contribution of a hypercube is
-large, it will be divided into more chunks than others. When the
-hypercube borders are then shifted, this hypercube will shrink, while
-others will grow by consuming the remaining chunks.  Repeating this
-step in so called \vegas\ iterations will converge the contribution of
-each hypercube to the same value. More details about the algorithm can
-be found in~\cite{Lepage:19781an}.  Note that no knowledge about the
-integrand is required. The probability density used by \vegas\ is
-given in \cref{eq:vegasrho} with \(K\) being the number of hypercubes
-and \(\Omega_i\) being the hypercubes themselves.
+directly. As in stratified sampling, the sample number is kept the
+same in each hypercube to realize \cref{eq:optimalrho}. In the end,
+the samples are concentrated where \(f\) takes on the highest values
+and changes most rapidly. This is done by subdividing the hypercubes
+into smaller chunks, based on their contribution to the integral,
+which is calculated through MC sampling, and then varying the
+hypercube borders until all hypercubes contain the same number of
+chunks.  So if the contribution of a hypercube is large, it will be
+divided into more chunks than others. When the hypercube borders are
+then shifted, this hypercube will shrink, while others will grow by
+consuming the remaining chunks.  Repeating this step in so called
+\vegas\ iterations will converge the contribution of each hypercube to
+the same value. More details about the algorithm can be found
+in~\cite{Lepage:19781an}.  Note that no knowledge about the integrand
+is required. The probability density used by \vegas\ is given in
+\cref{eq:vegasrho} with \(K\) being the number of hypercubes and
+\(\Omega_i\) being the hypercubes themselves.
 %
 \begin{equation}
   \label{eq:vegasrho}
@@ -222,7 +226,7 @@ and \(\Omega_i\) being the hypercubes themselves.
     deviations of the distributions with matching color.}
 \end{figure}
 %
-This algorithm has been implemented in python and applied to
+This algorithm has been implemented in \texttt{Python} and applied to
 \cref{eq:crossec}.  In one dimension the hypercubes become simple
 interval increments and applying \vegas\ to \cref{eq:crossec} with
 \result{xs/python/xs_mc_θ_vegas_K} increments yields
