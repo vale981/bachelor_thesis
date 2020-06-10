@@ -27,8 +27,6 @@ from tangled import observables
 #+END_SRC
 
 #+RESULTS:
-: The autoreload extension is already loaded. To reload it, use:
-:   %reload_ext autoreload
 
 ** Global Config
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -49,14 +47,12 @@ We gonna export that for reference in the tex document.
 #+begin_src jupyter-python :exports both :results raw drawer
   tex_value(min_pT, prefix=r"\pt \geq ", prec=0, unit=r"\giga\electronvolt", save=("results/pdf/", "min_pT.tex"))
   tex_value(e_proton, prefix=r"E_p = ", prec=0, unit=r"\giga\electronvolt", save=("results/pdf/", "e_proton.tex"))
-  tex_value(η, prefix=r"\abs{\eta} \leq ", prec=0, save=("results/pdf/", "eta.tex"))
+  tex_value(η, prefix=r"\abs{\eta} \leq ", prec=1, save=("results/pdf/", "eta.tex"))
 #+end_src
 
 
 #+RESULTS:
-: \(\abs{\eta} \leq 2\)
-
-: \(\abs{\eta} \leq 2\)
+: \(\abs{\eta} \leq 2.5\)
 
 * Implementation
 ** Lab Frame XS
@@ -647,7 +643,7 @@ Now we create an eye-candy surface plot.
 
   xs = np.linspace(0.01, 0.1/4, 100)
   x_2s = np.linspace(0.01, 0.1/4, 100)
-  eta_const = 2.5
+  eta_const = 0
 
   grid_xs, grid_x_2s = np.meshgrid(xs, x_2s)
   pdf_surface = np.array(
@@ -664,7 +660,7 @@ Now we create an eye-candy surface plot.
   ax = fig.add_subplot(111, projection="3d")
   ax.set_xlabel("$x_1$")
   ax.set_ylabel(r"$x_2$")
-  # ax.set_zlabel(r"$d^3\sigma$ [GeV]")
+  #ax.set_zlabel(r"$\mathrm{d}^3\sigma/\mathrm{d}\eta\mathrm{d} x_1 \mathrm{d} x_2$ [GeV]")
 
   surface = ax.plot_surface(
       grid_xs, grid_x_2s, pdf_surface, cmap=cm.coolwarm, linewidth=0
@@ -674,11 +670,11 @@ Now we create an eye-candy surface plot.
   ax.yaxis.set_major_locator(plt.MaxNLocator(4))
   # fig.colorbar(surface, shrink=0.5, aspect=5)
   save_fig(fig, "dist3d_eta_const", "pdf", size=(5, 2.5))
-  tex_value(eta_const, prefix=r"\eta = ", prec=2, save=("results/pdf/", "plot_eta.tex"))
+  tex_value(eta_const, prefix=r"\eta = ", prec=0, save=("results/pdf/", "plot_eta.tex"))
 #+end_src
 
 #+RESULTS:
-: \(\eta = 2.50\)
+: \(\eta = 0\)
 
 Lets plot how the pdf looks.
 #+begin_src jupyter-python :exports both :results raw drawer

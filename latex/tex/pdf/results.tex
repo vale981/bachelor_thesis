@@ -5,7 +5,7 @@ The considerations of \cref{sec:pdf_basics,sec:lab_xs} can now be
 applied to obtain a cross section and histograms of observables for
 the scattering of two protons into two photons. Because the PDF is not
 available in closed form, event generation is the only viable way to
-obtain distributions of observables and verify theory against
+obtain distributions of observables and to verify theory against
 experiment, even with this simple leading-order process.
 
 The integrand in \cref{eq:pdf-xs} can be concertized into
@@ -38,10 +38,11 @@ obtain a total cross-section as described in \cref{sec:mcint}.  For
 the numeric analysis a proton beam energy of
 \result{xs/python/pdf/e_proton} has been chosen, in resemblance to
 \lhc{} beam energies. The cuts \result{xs/python/pdf/eta} and
-\result{xs/python/pdf/min_pT} have been imposed. Integrating
-\cref{eq:weighteddist} with respect to those cuts using \vegas\ yields
-\result{xs/python/pdf/my_sigma} which is compatible with
-\result{xs/python/pdf/sherpa_sigma}, the value \sherpa\ gives.
+\result{xs/python/pdf/min_pT} have been imposed for each
+photon. Integrating \cref{eq:weighteddist} with respect to those cuts
+using \vegas\ yields \result{xs/python/pdf/my_sigma} which is
+compatible with \result{xs/python/pdf/sherpa_sigma}, the value
+\sherpa\ gives.
 
 \subsection{Event Generation and Histograms}%
 \label{sec:ppevents}
@@ -51,13 +52,13 @@ sampling the partonic cross section. As before, the range of the
 \(\eta\) parameter has to be constrained to obtain physical
 results. Because the absolute values of the pseudo rapidities of the
 two final state photons are not equal in the lab frame, the shape of
-the integration/sampling volume differs from a simple hypercube
-\(\Omega\). Furthermore, for the massless limit to be applicable the
+the integration/sampling volume differs from a simple
+hypercube. Furthermore, for the massless limit to be applicable, the
 center of mass energy of the partonic system must be much greater than
 the quark masses. This can be implemented by demanding the transverse
-momentum \(p_T\) of a final state photon to be greater
-than~\SI{20}{\giga\electronvolt}. A restriction (cut) on \(p_T\) is
-suitable because detectors are usually only sensitive above a certain
+momentum \(p_T\) of the final state photons to be greater
+than~\result{xs/python/pdf/min_pT}. A restriction on \(p_T\) is
+suitable, because detectors are usually only sensitive above a certain
 \(p_T\) threshold and the final state particles have to be isolated
 from the beams.
 
@@ -67,9 +68,9 @@ The resulting distribution (without cuts) is depicted in
 the distribution retains some likeness with the partonic distribution
 (see \cref{fig:xs-int-eta}) but gets suppressed for greater values of
 \(x_1\). The overall shape of the distribution is clearly highly
-sub-optimal for hit-or-miss sampling, only having significant magnitude
-when \(x_1\) or \(x_2\) are small (\cref{fig:dist-pdf-fixed-eta}) and
-being very steep.
+sub-optimal for hit-or-miss sampling, being very steep and only having
+significant magnitude when \(x_1\) or \(x_2\) are small
+(\cref{fig:dist-pdf-fixed-eta}).
 %
 \begin{figure}[ht]
   \centering
@@ -93,25 +94,25 @@ being very steep.
 To remedy that, one has to use a more efficient sampling algorithm
 (\vegas) or impose very restrictive cuts. The self-coded
 implementation used here can be found as described in
-\cref{sec:source} and employs stratified sampling (as discussed in
-\cref{sec:stratsamp-real}) and the hit-or-miss method. The matrix
-element (ME) and cuts are implemented using
-\texttt{Cython}~\cite{behnel2011:cy} to obtain better performance as
-these are evaluated very often. The ME and the cuts are then convolved
-with the PDF (as in \cref{eq:weighteddist}) and wrapped into a simple
-function with a generic interface and plugged into the \vegas\
-implementation which then computes the integral, grid, individual
-contributions to the grid and rough estimates of the maxima in each
-hypercube. In principle the code could be generalized to other
-processes by simply redefining the matrix elements, as no other part
-of the code is process specific. The cuts work as simple
+\cref{sec:source} and employs \vegas-optimized stratified sampling (as
+discussed in \cref{sec:stratsamp-real}) and the hit-or-miss
+method. The matrix element (ME) and cuts are implemented using
+\texttt{Cython}~\cite{behnel2011:cy} to obtain better performance, as
+these terms are evaluated very often. The ME and the cuts are then
+convolved with the PDF (as in \cref{eq:weighteddist}) and wrapped into
+a simple function with a generic interface and plugged into the
+\vegas\ implementation which then computes the integral, grid, the
+individual weights of the grid hypercubes and rough estimates of the
+maxima in each hypercube. In principle the code could be generalized
+to other processes by simply redefining the matrix elements, as no
+other part of the code is process specific. The cuts work as simple
 \(\theta\)-functions, which has the advantage, that the maximum for
 hit or miss can be chosen with respect to those cuts. On the other
 hand, this method introduces discontinuity into the integrand, which
 is problematic for numeric maximizers.  The estimates of the maxima,
-provided by the \vegas\ implementation used as the starting point for
-a gradient ascend maximizer. In this way, the discontinuities
-introduced by the cuts got circumvented. Because the stratified
+provided by the \vegas\ implementation, are used as the starting point
+for a gradient ascend maximizer. In this way, the discontinuities
+introduced by the cuts are being circumvented. Because the stratified
 sampling requires very accurate upper bounds, they have been
 overestimated by \result{xs/python/pdf/overesimate}\!, which lowers
 the efficiency slightly but reduces bias. The sampling algorithm
@@ -125,9 +126,8 @@ oversampled. At various points, the \texttt{numba}~\cite{lam2015:po}
 package has been used to just-in-time compile code to increase
 performance. The \texttt{Python} \texttt{multiprocessing} module is
 used to parallelize the sampling and exploit all CPU cores. Although
-the \vegas\ step is very (\emph{very}) time intensive, but the actual
-sampling performance is in the same order of magnitude as \sherpa, but
-some parameters have to be manually tuned.
+the \vegas\ step is very (\emph{very}) time intensive, the actual
+sampling performance is in the same order of magnitude as \sherpa.
 
 A sample of \result{xs/python/pdf/sample_size} events has been
 generated both in \sherpa\ (with the same cuts) and through own
@@ -151,7 +151,7 @@ compatibility, the \(P\)-Value, is rather low. This indicates that the
 MC error in the determination of the weights for the hypercubes should
 be studied more carefully and highlights the disadvantage of the
 sampling method chosen here. The kinematics and PDF values were
-compared with sherpa and proved to be equivalent.
+compared with \sherpa\ and proved to be equivalent.
 
 The \sherpa\ runcard utilized here and the analysis used to produce
 the histograms can be found in
@@ -172,9 +172,18 @@ majority of the reactions take place at a rather low c.m. energy,
 owing to the high weights of the PDF at small \(x\) values. Due to the
 \(\pt\) cuts the first bin is slightly lower than the second.
 
-The cosines of the scattering angles in the labe frame and the
+The cosines of the scattering angles in the lab frame and the
 Collins-Soper (CS) frame are defined in
-\cref{eq:sangle,eq:sangle-cs}. The scattering angle is just the angle
+\cref{eq:sangle,eq:sangle-cs}.
+%
+\begin{align}
+  \cos\theta^\ast &= \tanh\frac{\eta_1 - \eta_2}{2} \label{eq:sangle}\\
+  \cos\theta^*_\text{CS} &= \frac{\sinh(\eta_1 -
+                           \eta_2)}{\sqrt{1+(p_{\text{T},1} + p_{\text{T},2})^2/m_{\gamma\gamma}^2}}\cdot
+                          \frac{2p_{\text{T},1}p_{\text{T},2}}{m_{\gamma\gamma}^2}\label{eq:sangle-cs}
+\end{align}
+%
+The scattering angle is just the angle
 between one photon and the z-axis (beam axis) in the c.m. frame if
 this frame can be reached by a boost along the z-axis\footnote{Or more
   generally, in a z-boosted frame where the polar angles of the two
@@ -196,15 +205,8 @@ of effects of transverse parton momenta is facilitated. Because of the
 above-mentioned symmetry, the histograms in
 \cref{fig:pdf-o-angle,fig:pdf-o-angle-cs} are the same. One would
 naively expect some likeness to \cref{fig:distcos} but the cuts
-imposed alter the distribution quite considerably, cutting of the
+imposed alter the distribution quite considerably, cutting off the
 \(\cos\theta^\ast\rightarrow 1\) region.
-%
-\begin{align}
-  \cos\theta^\ast &= \tanh\frac{\eta_1 - \eta_2}{2} \label{eq:sangle}\\
-  \cos\theta^*_\text{CS} &= \frac{\sinh(\eta_1 -
-                           \eta_2)}{\sqrt{1+(p_{\text{T},1} + p_{\text{T},2})^2/m_{\gamma\gamma}^2}}\cdot
-                          \frac{2p_{\text{T},1}p_{\text{T},2}}{m_{\gamma\gamma}^2}\label{eq:sangle-cs}
-\end{align}
 %
 \begin{figure}[hp]
   \centering

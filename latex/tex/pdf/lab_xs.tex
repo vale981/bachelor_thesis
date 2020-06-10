@@ -1,6 +1,21 @@
 \section{Kinematics and Cross-Section in the Lab-Frame}%
 \label{sec:lab_xs}
 
+\begin{wrapfigure}{R}{0.4\textwidth}
+\centering
+\begin{tikzpicture}
+  \coordinate (origin) at (0,0);
+
+  \draw[Latex-] (origin) --  node [midway, above] {\(x_1\)} (-2,0) node[left] {\(p_1\)};
+  \draw[Latex-] (origin) -- node [midway, below] {\(x_2\)} (2,0) coordinate (p4) node[right] {\(p_2\)};
+  \draw[-Latex,rotate=40] (origin) -- (2,0) coordinate (p2) node[right] {\(p_3\)};
+  \draw[-Latex,rotate=70] (origin) -- (-2,0) node[left] {\(p_4\)};
+  \draw[fill=black] (origin) circle (.03);
+
+  \draw pic["$\theta$", draw=black, <->, angle eccentricity=1.2, angle radius=1.5cm] {angle=p4--origin--p2};
+\end{tikzpicture}
+\end{wrapfigure}
+%
 To utilize \cref{eq:pdf-xs} for modeling the~\(\ppgg\) process and to
 generate event samples, the results of \cref{chap:qqgg} have to be
 transformed into the center of momentum frame of the colliding
@@ -23,11 +38,11 @@ given by \cref{eq:ecm_partons}.
 \end{equation}
 %
 The center of momentum frame moves with a velocity
-\(\beta = (x_1-x_2)/(x_1+x_2)\). Because (pseudo-) rapidities are
-additive, it is simplest to work with cross section in terms of the
-pseudo-rapidity.  The pseudo-rapidity of a final state photon in the
-c.m.-frame of the partons is therefore given
-by \cref{eq:rap_phot_lf}.
+\(\beta = (x_1-x_2)/(x_1+x_2)\). Because the (pseudo-) rapidities are
+additive under boosts, it is simplest to work with cross section in
+terms of the pseudo-rapidity.  The pseudo-rapidity of a final state
+photon in the c.m.-frame of the partons is therefore given by
+\cref{eq:rap_phot_lf}.
 %
 \begin{equation}
   \label{eq:rap_phot_lf}
@@ -44,26 +59,11 @@ the pseudo-rapidity one photon.
     x_1x_2}\cdot\qty(\tanh(\eta - w)^2 + 1)
 \end{equation}
 %
-\begin{wrapfigure}{R}{0.4\textwidth}
-\centering
-\begin{tikzpicture}
-  \coordinate (origin) at (0,0);
-
-  \draw[Latex-] (origin) --  node [midway, above] {\(x_1\)} (-2,0) node[left] {\(p_1\)};
-  \draw[Latex-] (origin) -- node [midway, below] {\(x_2\)} (2,0) coordinate (p4) node[right] {\(p_2\)};
-  \draw[-Latex,rotate=40] (origin) -- (2,0) coordinate (p2) node[right] {\(p_3\)};
-  \draw[-Latex,rotate=70] (origin) -- (-2,0) node[left] {\(p_4\)};
-  \draw[fill=black] (origin) circle (.03);
-
-  \draw pic["$\theta$", draw=black, <->, angle eccentricity=1.2, angle radius=1.5cm] {angle=p4--origin--p2};
-\end{tikzpicture}
-\end{wrapfigure}
 The 4-momenta of the final state photons can be obtained by explicit
 Lorentz transformation and are listed in \cref{eq:lab-momenta-fs}
 where \(\theta\) is the polar angle of the ``first'' final state
 photon. These relations are easily transcribed to \(\eta\) dependence
 by using the identity \(\cos(\theta) = \tanh(\eta)\).
-
 %
 \begin{align}
   \label{eq:lab-momenta-fs}

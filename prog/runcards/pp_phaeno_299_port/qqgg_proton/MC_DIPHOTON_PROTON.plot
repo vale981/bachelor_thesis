@@ -79,6 +79,7 @@ XMin=1e-1
 # BEGIN PLOT /MC_DIPHOTON_PROTON/xs
 Title=total cross section
 YLabel=$\sigma$ [pb]
+LegendYPos=0.75
 LogY=0
 YMin=32
 YMax=40
@@ -92,6 +93,7 @@ RatioPlot=0
 # BEGIN PLOT /MC_DIPHOTON_PROTON/isolation_discard
 Title=fraction of events discarded through isolation cuts
 YLabel=Fraction
+LegendYPos=0.75
 LogY=0
 XLabel=
 LogY=0
