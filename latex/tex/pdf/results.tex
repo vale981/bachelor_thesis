@@ -96,7 +96,7 @@ implementation used here can be found as described in
 \cref{sec:source} and employs stratified sampling (as discussed in
 \cref{sec:stratsamp-real}) and the hit-or-miss method. The matrix
 element (ME) and cuts are implemented using
-\texttt{cython}~\cite{behnel2011:cy} to obtain better performance as
+\texttt{Cython}~\cite{behnel2011:cy} to obtain better performance as
 these are evaluated very often. The ME and the cuts are then convolved
 with the PDF (as in \cref{eq:weighteddist}) and wrapped into a simple
 function with a generic interface and plugged into the \vegas\
@@ -123,9 +123,9 @@ one sample is obtained. Taking more than one sample can improve
 performance, but introduces bias, as hypercubes with low weight may be
 oversampled. At various points, the \texttt{numba}~\cite{lam2015:po}
 package has been used to just-in-time compile code to increase
-performance. The python \texttt{multiprocessing} module is used to
-parallelize the sampling and exploit all CPU cores. Although the
-\vegas\ step is very (\emph{very}) time intensive, but the actual
+performance. The \texttt{Python} \texttt{multiprocessing} module is
+used to parallelize the sampling and exploit all CPU cores. Although
+the \vegas\ step is very (\emph{very}) time intensive, but the actual
 sampling performance is in the same order of magnitude as \sherpa, but
 some parameters have to be manually tuned.
 
