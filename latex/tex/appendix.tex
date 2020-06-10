@@ -96,7 +96,7 @@ transformation.
 The compatibility of histograms is tested as described
 in~\cite{porter2008:te}. The test value
 is \[T=\sum_{i=1}^k\frac{(u_i-v_i)^2}{u_i+v_i}\] where \(u_i, v_i\)
-are the number of samples in the \(i\)-th bins of the histograms
+are the number of samples in the \(i\)-th bin of the histograms
 \(u,v\) and \(k\) is the number of bins. This value is \(\chi^2\)
 distributed with \(k\) degrees, when the number of samples in the
 histogram is reasonably high. The mean of this distribution is \(k\)
@@ -105,7 +105,8 @@ and its standard deviation is \(\sqrt{2k}\). The value
 \(T\) value would be greater than the obtained one, where \(f\) is the
 probability density of the \(\chi^2\) distribution. Thus
 \(P\in [0,1]\) is a measure of confidence for the compatibility of the
-histograms.
+histograms. These formulas hold, if the total number of events in both
+histograms is the same.
 
 %%% Local Variables:
 %%% mode: latex
