@@ -1,0 +1,40 @@
+
+What the heck should be in there. Let's do an outline.
+
+* Intro
+** Importance of MC Methods :SHORT:
+ - entropy motor :)
+** Diphoton Process
+
+* Calculation of the XS
+** Approach
+** Choice of Methods
+** Result + Sherpa
+
+* Monte Carlo Methods
+** Integration
+*** Method X
+**** Basic Ideas
+**** Implementation and Results
+** Sampling
+*** Method X
+**** Basic Ideas
+**** Implementation and Results
+** Outlook
+*** Multichannel
+*** TODO Other modern Stuff
+
+* Toy Event Generator
+** Basics :SHORT:
+** Implementation
+** Results
+
+* Pheno Stuff
+** Shortcomings of the Toy Generator
+** Short review of HO Effects
+** Presentation and Discussion of selected Histograms
+
+* Wrap-Up
+** Summary
+** Lessons Learned (if any)
+** Outlook
