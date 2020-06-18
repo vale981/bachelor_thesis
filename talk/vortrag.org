@@ -33,9 +33,12 @@ What the heck should be in there. Let's draft up an outline.
    - mixing terms cancel out, not zero in themselves
  - resulting expression for ME essentially t/u channel propagator
    (1/(t*u)) and spin correlation 1 + cos(x)^2
-** Choice of Methods
+ - only angular dependencies, no kinematics, "nice" factors
+ - symmetric in θ
 ** Result + Sherpa
-
+ - apply the golden rule for 2->2 processes
+ - show plots and total xs
+ - shape verified later -> we need sampling techniques first
 * Monte Carlo Methods
 ** Integration
 *** Method X
