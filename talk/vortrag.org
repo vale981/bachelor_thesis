@@ -1,5 +1,4 @@
-
-What the heck should be in there. Let's do an outline.
+What the heck should be in there. Let's draft up an outline.
 
 * Intro
 ** Importance of MC Methods :SHORT:
@@ -17,6 +16,23 @@ What the heck should be in there. Let's do an outline.
  - pure QED
 * Calculation of the XS
 ** Approach
+ - formalism well separated from underlying theory
+   - but can fool intuition (spin arguments)
+   - in the course of semester: learned more about the theory :)
+ - translating feynman diagrams to abstract matrix elements straight
+   forward
+ - first try: casimir's trick
+   - error in calculation + one identity unknown
+ - second try: evaluating the matrices directly
+   - discovered a lot of tricks
+   - error prone
+ - back to studying the formalism: completeness relation for real
+   photons
+   - a matter of algebraic gymnastics
+   - boils down to some trace and dirac matrix gymnastics
+   - mixing terms cancel out, not zero in themselves
+ - resulting expression for ME essentially t/u channel propagator
+   (1/(t*u)) and spin correlation 1 + cos(x)^2
 ** Choice of Methods
 ** Result + Sherpa
 
