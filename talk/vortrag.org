@@ -14,7 +14,7 @@ What the heck should be in there. Let's draft up an outline.
  - higgs decay channel
  - dihiggs decay
  - pure QED
-* Calculation of the XS
+* Calculation of the XS :TOO_LONG:
 ** Approach
  - formalism well separated from underlying theory
    - but can fool intuition (spin arguments)
@@ -40,10 +40,14 @@ What the heck should be in there. Let's draft up an outline.
  - show plots and total xs
  - shape verified later -> we need sampling techniques first
 * Monte Carlo Methods
+ - one simple idea, can be exploited and refined
+ - how to extract information from a totally unknown function
+   - look at it -> random points are the most "symmetric" choice
+   - statistics to the rescue
+
 ** Integration
-*** Method X
-**** Basic Ideas
-**** Implementation and Results
+*** Basic Idea
+ -
 ** Sampling
 *** Method X
 **** Basic Ideas
