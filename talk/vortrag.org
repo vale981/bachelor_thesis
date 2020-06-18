@@ -3,7 +3,13 @@ What the heck should be in there. Let's do an outline.
 
 * Intro
 ** Importance of MC Methods :SHORT:
- - entropy motor :)
+ - important tool in particle physics
+   - not just numerical
+ - somewhat romenatic: distilling information with entropy
+ - validation of new theories
+   - some predictions are often more subtle than just the existense of
+     new particles
+   - backgrounds have to be substracted
 ** Diphoton Process
 
 * Calculation of the XS
