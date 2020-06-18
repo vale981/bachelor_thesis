@@ -11,7 +11,10 @@ What the heck should be in there. Let's do an outline.
      new particles
    - backgrounds have to be substracted
 ** Diphoton Process
-
+ - feynman diags and reaction formula
+ - higgs decay channel
+ - dihiggs decay
+ - pure QED
 * Calculation of the XS
 ** Approach
 ** Choice of Methods
