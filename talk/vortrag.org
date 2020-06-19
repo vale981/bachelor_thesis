@@ -4,6 +4,7 @@ What the heck should be in there. Let's draft up an outline.
 ** Importance of MC Methods :SHORT:
  - important tool in particle physics
    - not just numerical
+ - also applications in stat. phys and lattice QCD
  - somewhat romenatic: distilling information with entropy
  - validation of new theories
    - some predictions are often more subtle than just the existense of
@@ -159,14 +160,111 @@ What the heck should be in there. Let's draft up an outline.
 
 * Toy Event Generator
 ** Basics :SHORT:
+ - just sampling the hard xs not realistic
+   1. free quarks do not occur in nature
+   2. hadron interaction more complicated in general
+ - we address the first problem here
+ - quarks in protons: no analytical bound state solution known so-far
+
+*** Parton Density Functions
+ - in leading order, high momentum limit: propability to encounter
+   parton at some energy scale with some momentum fraction
+ - can not be calcualated from first principles
+   - have to be fitted from exp. data
+   - can be evolved to other Q^2 with DGLAP
+   - *calculated* with lattice QCQ: very recently
+     https://arxiv.org/abs/2005.02102
+ - scale has to be chosen appropriately: in deep inelastic scattering
+   -> momentum transfer
+   - p_T good choice
+   - here s/2 (mean of t and u in this case)
+ - xs formula
+ - here LO fit and evolution of PDFs
+
+**** TODO check s/2
+
 ** Implementation
+ - find xs in lab frame
+ - impose more cuts
+   - guarantee applicability of massless limit
+   - satisfy experimental requirements
+ - used vegas to integrate
+ - cuts now more complicated because photons not back to back
+ - apply stratified sampling variant along with VEGAS
+   - 3 dimensions: x1, x2 (symmetric), η
+   - use VEGAS to find grid, grid-weights and maxima
+   - improve maxima by gradient ascend (usually very fast)
+   - improve performance by cythonizing the xs and cut computation
+   - sampling routines JIT compiled with numba, especially performant
+     for loops and /very/ easy
+   - trivial parallelism through python multiprocessing
+   - overestimating the maxima corrects for numerical maximization
+     error
+   - assumptions: mc found maximum and VEGAS weights are precise enough
+ - most time consuming part: multidimensional implementation + debugging
+ - along the way: validation of kinematics and PDF values through sherpa
+
 ** Results
+*** Integration with VEGAS
+ - Python Tax: very slow, parallelism implemented, but omitted due
+     to complications with the PDF library
+   - also very inefficient memory management :P
+ - result compatible with sherpa
+ - that was the easy part
+
+*** Sampling and Observables
+ - observables:
+   - usual: η and cosθ
+ - p_t of one photon and invariant mass are more interesting
+ - influence of PDF:
+   - more weight to the central angles (see eta)
+   - p_t cutoff due to cuts, very steep falloff due to pdf
+   - same picture in inv mass
+ - compatibilty problematic: just within acceptable limits
+   - for p_t and inv mass: low statistic and very steep falloff
+   - very sensitive to uncertainties of weights (can be improved by
+     improving accuracy of VEGAS)
+   - prompts a more rigorous study of uncertainties in the vegas step!
 
 * Pheno Stuff
-** Shortcomings of the Toy Generator
-** Short review of HO Effects
-** Presentation and Discussion of selected Histograms
+ - non LO effects completely neglected
+ - sherpa generator allows to model some of them
+   - always approximations
 
+** Short review of HO Effects
+ - always introduce stage and effects along with the nice event
+   picture
+*** LO
+ - same as toy generator
+*** LO+PS
+ - parton shower ~CSS~ (dipole) activated
+ - radiation of gluons, and splitting into quarks -> shower like
+   cascades QCD
+ - as there are no QCD particles in FS: initial state radiation
+ - due to 4-mom conservation: recoil momenta (and energies)
+*** LO+PS+pT
+ - beam remnants and primordial transverse momenta simulated
+ - additinal radiation and parton showers
+ - primordial p_T due to localization of quarks, modeled like gaussian
+   distribution
+   - mean, sigma: .8 GeV, standard values in sherpa
+   - consistent with the notion of "fermi motion"
+*** LO+PS+pT+Hadronization
+ - AHADIC activated (cluster hadr)
+ - jets of parton cluster into hadrons: non perturbative
+ - models inspired by qcd but still just models
+ - mainly affects isolation of photons (come back to that)
+ - in sherpa, unstable are being decayed (using lookup tables) with
+   correct kinematics
+*** LO+PS+pT+Hadronization+MI
+ - Multiple Interactions (AMISIC) turned on
+ - no reason for just one single scattering in event
+ - based on overlap of hadrons and the most important QCD scattering
+   processes
+ - in sherpa: shower corrections
+ - generally more particles in FS, affects isolation
+
+** Presentation and Discussion of selected Histograms
 * Wrap-Up
 ** Summary
 ** Lessons Learned (if any)
