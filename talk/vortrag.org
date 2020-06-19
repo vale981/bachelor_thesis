@@ -47,9 +47,51 @@ What the heck should be in there. Let's draft up an outline.
  - what does this have to do with minecraft
 
 ** Integration
-*** Basic Idea
- -
-** Sampling
+ - integration as mean value
+ - convergence due to law of large numbers
+   - independent of dimension
+   - trivially parallelism
+ - result normal distributed with σ due to central limit theorem
+ - goal: speeding up convergence
+   1. modify distribution
+   2. integration variable
+   3. subdivide integration volume
+ - all those methods can be somewhat intertwined
+ - focus on some simple methods
+
+*** Naive Integration
+ - why mix in that distribution: we choose it uniform
+ - integral is mean
+ - variance is variance of function: stddev linear in Volume!
+ - include result
+ - rediculous sample size
+
+**** TODO compare to other numeric
+
+*** Change of Variables
+ - drastic improvement by transf. to η
+ - only works by chance (more or less)
+   - pseudo rapidity eats up angular divergence
+ - can be shown: same effect as propability density
+ - implementation is different
+
+*** VEGAS
+ - a simple ρ: step function on hypercubes, can be trivially generated
+ - effectively subdividing the integration volume
+ - optimal: same variance in every cube
+ - easier to optimize: approximate optimal rho by step function
+ - clarify: use rectangular grid and blank out unwated edges with θ
+   function
+ - nice feature: integrand does not have to be smooth :)
+ - similar efficiency as the travo case
+   - but a lot of room for parameter adjustment and tuning
+
+**** TODO research the drawbacks that led to VEGAS
+**** TODO nice visualization of vegas working
+**** TODO look at original vegas
+   - in 70s/80s memory a constraint
+
+** Samplingu
 *** Method X
 **** Basic Ideas
 **** Implementation and Results
