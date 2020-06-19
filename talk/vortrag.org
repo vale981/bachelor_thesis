@@ -45,6 +45,9 @@ What the heck should be in there. Let's draft up an outline.
    - look at it -> random points are the most "symmetric" choice
    - statistics to the rescue
  - what does this have to do with minecraft
+ - theory deals with truly random (uncorrelated) so that statistics
+   apply, prng's cater to that: deterministic, efficient (we don't do
+   crypto)
 
 ** Integration
  - integration as mean value
@@ -91,12 +94,67 @@ What the heck should be in there. Let's draft up an outline.
 **** TODO look at original vegas
    - in 70s/80s memory a constraint
 
-** Samplingu
-*** Method X
-**** Basic Ideas
-**** Implementation and Results
+** Sampling
+ - why: generate events
+   - same as exp. measurements
+   - (includes statistical effects)
+   - events can be "dressed" with more effects
+ - usual case: we have access to uniformly distributed random values
+ - task: convert this sample into a sample of another distribution
+ - short: solve equation
+
+*** Hit or Miss
+ - we don't always know f, may have complicated (inexplicit) form
+ - solve "by proxy": generate sample of g and accept with propability f/g
+ - the closer g to f, the better the efficiency
+ - simplest choice: flat upper bound
+ - show results etc
+ - one can optimize upper bound with VEGAS
+
+*** Change of Variables
+ - reduction of variance similar to integration
+ - simplify or reduce variance
+ - one removes the step of generating g-samples
+ - show results etc
+ - hard to automate, but intuition and 'general rules' may serve well
+   - see later case with PDFs -> choose eta right away
+
+*** Hit or Miss VEGAS
+ - use scaled vegas distribution as g and to hit or miss
+ - samples for g are trivial to generate
+ - vegas again approximates optimal distribution
+ - results etc
+ - advantage: no function specific input
+ - problem: isolated parts of the distribution can drag down
+   efficiency
+   - where the hypercube approx does not work well
+   - especially at discontinuities
+
+**** TODO add pic that i've sent Frank
+
+*** Stratified Sampling
+ - avoid global effects: subdivide integration interval and sample
+   independently
+ - first generate coarse samples and distribute them in the respective grid points
+ - optimizing: make cubes with low efficiency small! -> VEGAS
+ - this approach was used for the self-made event generator and
+   improved the efficiency greatly (< 1% to 30%)
+ - disadvantage: accuracies of upper bounds and grid weights has to be
+   good
+   - will come back to this
+
+*** Observables
+ - particle identities and kinematics determine final state
+ - other observables can be calculated on a per-event base
+   - as can be shown, this results in the correct distributions
+     without knowledge of the Jacobian
+
 ** Outlook
-*** Multichannel
+ - of course more methods
+ - Sherpa exploits form propagators etc
+ - multichannel uses multiple distributions for importance sampling
+   and can be optimized "live"
+   - https://www.sciencedirect.com/science/article/pii/0010465594900434
 *** TODO Other modern Stuff
 
 * Toy Event Generator
