@@ -265,7 +265,65 @@ What the heck should be in there. Let's draft up an outline.
  - generally more particles in FS, affects isolation
 
 ** Presentation and Discussion of selected Histograms
+*** pT of γγ system
+ - Parton showers enhance at higher pT
+ - intrinsic pT at lower pT (around 1GeV)
+ - some isolation impact
+ - but highest in phase space cuts
+   - increase is almost one percent
+   - pT recoils to the diphoton system usually substract pT from one
+     photon -> harder to pass cuts -> amplified through big
+     probability of low pT events!
+
+*** pT of leading and sub-leading photon
+ - shape similar to LO
+ - first photon slight pT boost
+ - second almost untouched
+   - cut bias to select events that have little effect on sub-lead
+     photon
+
+*** Invariant Mass
+ - events with lower m are allowed throgh cuts
+ - events with very high recoil suppressed: colinear limit...
+
+*** Angular Observables
+ - mostly untouched
+ - biggest difference: total xs and details
+ - but LO gives good qualitative picture
+ - reasonable, because LO should be dominating
+
+*** Effects of Hadronization and MI
+ - fiducial XS differs because of isolation and cuts in the phase
+   space
+ - we've seen: parton shower affect kinematics and thus the shape of
+   observables and phase space cuts
+ - isolation critera:
+   - photon has to be isolated in detector
+   - allow only certain amount of energy in cone around photon
+   - force moinimum separation of photons to prevent cone overlap
+ - Hadronization spreads out FS particles (decay kinematics) and
+   produces particles like muons and neutrinos that aren't detectable
+   or easily filtered out -> decrase in isolation toll
+ - MI increases hadr activity in FS -> more events filtered out
+
+*** Summary
+ - LO gives qualitative picture
+ - NLO affect observables shape, create new interesting observables
+ - some NLO effects affect mainly the isolation
+ - caveat: non-exhaustive, no QED radiation enabled
+
 * Wrap-Up
 ** Summary
+ - calculated XS
+ - studied and applied simple MC methods
+ - built a basic working event generator
+ - looked at what lies beyond that simple generator
 ** Lessons Learned (if any)
+ - calculations have to be done verbose and explicit
+ - spending time on tooling is OK
+ - have to put more time into detailed diagnosis
+ - event generators are marvelously complex
 ** Outlook
+ - more effects
+ - multi channel mc
+ - better validation of vegas
