@@ -1,0 +1,290 @@
+\documentclass[10pt, aspectratio=169]{beamer}
+\usepackage{siunitx}
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage[backend=biber]{biblatex}
+\usepackage{mathtools,amssymb}
+\usepackage{physics}
+\usepackage{slashed}
+\usepackage{tikz}
+\usepackage{tikz-feynman}
+\usepackage[list=true, font=small,
+labelformat=brace, position=top]{subcaption}
+% \setbeameroption{show notes on second screen} %
+\addbibresource{thesis.bib}
+\graphicspath{ {figs/} }
+
+\usetheme{Antibes}
+\usepackage{eulerpx}
+\usepackage{ifdraft}
+
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{itemize items}[default]
+\setbeamertemplate{enumerate items}[default]
+\AtBeginSection[]
+{
+   \begin{frame}
+       \tableofcontents[currentsection]
+   \end{frame}
+}
+
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{note page}[plain]
+
+\sisetup{separate-uncertainty = true}
+% Macros
+
+%% qqgg
+\newcommand{\qqgg}[0]{q\bar{q}\rightarrow\gamma\gamma}
+
+%% ppgg
+\newcommand{\ppgg}[0]{pp\rightarrow\gamma\gamma}
+
+%% Momenta and Polarization Vectors convenience
+\DeclareMathOperator{\ps}{\slashed{p}}
+
+\DeclareMathOperator{\pe}{\varepsilon}
+\DeclareMathOperator{\pes}{\slashed{\pe}}
+
+\DeclareMathOperator{\pse}{\varepsilon^{*}}
+\DeclareMathOperator{\pses}{\slashed{\pe}^{*}}
+
+%% Spinor convenience
+\DeclareMathOperator{\us}{u}
+\DeclareMathOperator{\usb}{\bar{u}}
+
+\DeclareMathOperator{\vs}{v}
+\DeclareMathOperator*{\vsb}{\overline{v}}
+
+%% Center of Mass energy
+\DeclareMathOperator{\ecm}{E_{\text{CM}}}
+
+%% area hyperbolicus
+\DeclareMathOperator{\artanh}{artanh}
+\DeclareMathOperator{\arcosh}{arcosh}
+
+%% Fast Slash
+\let\sl\slashed
+
+%% Notes on Equations
+\newcommand{\shorteqnote}[1]{ &  & \text{\small\llap{#1}}}
+
+%% Typewriter Macros
+\newcommand{\sherpa}{\texttt{Sherpa}}
+\newcommand{\rivet}{\texttt{Rivet}}
+\newcommand{\vegas}{\texttt{VEGAS}}
+\newcommand{\lhapdf}{\texttt{LHAPDF6}}
+\newcommand{\scipy}{\texttt{scipy}}
+
+%% Sherpa Versions
+\newcommand{\oldsherpa}{\texttt{2.2.10}}
+\newcommand{\newsherpa}{\texttt{3.0.0} (unreleased)}
+
+%% Special Names
+\newcommand{\lhc}{\emph{LHC}}
+
+%% Expected Value and Variance
+\newcommand{\EX}[1]{\operatorname{E}\qty[#1]}
+\newcommand{\VAR}[1]{\operatorname{VAR}\qty[#1]}
+
+%% Uppercase Rho
+\newcommand{\Rho}{P}
+
+%% Transverse Momentum
+\newcommand{\pt}[0]{p_\mathrm{T}}
+
+%% Sign Function
+\DeclareMathOperator{\sign}{sgn}
+
+%% Stages
+\newcommand{\stone}{\texttt{LO}}
+\newcommand{\sttwo}{\texttt{LO+PS}}
+\newcommand{\stthree}{\texttt{LO+PS+pT}}
+\newcommand{\stfour}{\texttt{LO+PS+pT+Hadr.}}
+\newcommand{\stfive}{\texttt{LO+PS+pT+Hadr.+MI}}
+
+%% GeV
+\newcommand{\gev}[1]{\SI{#1}{\giga\electronvolt}}
+
+%% Including plots
+\newcommand{\plot}[2][,]{%
+  \includegraphics[draft=false,#1]{./figs/#2.pdf}}
+\newcommand{\rivethist}[2][,]{%
+  \includegraphics[draft=false,width=\textwidth,#1]{./figs/rivet/#2.pdf}}
+
+%% Including Results
+\newcommand{\result}[1]{\input{./results/#1}\!}
+
+\title{A Study of Monte Carlo Methods and their Application to
+  Diphoton Production at the Large Hadron Collider}
+\subtitle{Bachelorvortrag}
+\author{Valentin Boettcher}
+\beamertemplatenavigationsymbolsempty
+
+\begin{document}
+\hypersetup{pageanchor=false}
+\maketitle
+
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+
+\begin{frame}
+  \tableofcontents
+\end{frame}
+
+\section{Introduction}
+\begin{frame}{Motivation}
+  \begin{block}{Monte Carlo Methods}
+    \begin{itemize}
+    \item (most) important numerical tools (not just) in particle
+      physics
+    \item crucial interface of theory and experiment
+    \item enable precision predictions within and beyond SM
+    \end{itemize}
+  \end{block}
+  \pause
+  \begin{block}{Diphoton Process \(\qqgg\)}
+    \begin{itemize}
+    \item simple QED process, calculable by hand
+    \item higgs decay channel: \(H\rightarrow \gamma\gamma\)
+      \begin{itemize}
+      \item instrumental in its
+        discovery~\cite{Aad:2012tfa,Chatrchyan:2012ufa}
+      \end{itemize}
+    \item dihiggs decay \(HH\rightarrow b\bar{b}\gamma\gamma\)
+      \begin{itemize}
+      \item process of recent interest~\cite{aaboud2018:sf}
+      \end{itemize}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\section{Calculation of the \(\qqgg\) Cross Section}
+\subsection{Approach}
+\begin{frame}
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+      \begin{figure}[ht]
+        \centering
+        \begin{subfigure}[c]{.28\textwidth}
+          \centering
+          \begin{tikzpicture}[scale=.6]
+            \begin{feynman}
+              \diagram [small,horizontal=i2 to a] { i2
+                [particle=\(q\)] -- [fermion, momentum=\(p_2\)] a --
+                [fermion, reversed momentum=\(q\)] b, i1
+                [particle=\(\bar{q}\)] -- [anti fermion,
+                momentum'=\(p_1\)] b, i2 -- [opacity=0] i1, a --
+                [photon, momentum=\(p_3\)] f1 [particle=\(\gamma\)], b
+                -- [photon, momentum'=\(p_4\)] f2
+                [particle=\(\gamma\)], f1 -- [opacity=0] f2, };
+            \end{feynman}
+          \end{tikzpicture}
+          \subcaption{u channel}
+        \end{subfigure}
+        \begin{subfigure}[c]{.28\textwidth}
+          \centering
+          \begin{tikzpicture}[scale=.6]
+            \begin{feynman}
+              \diagram [small,horizontal=i2 to a] { i2
+                [particle=\(q\)] -- [fermion, momentum=\(p_2\)] a --
+                [fermion, reversed momentum'=\(q\)] b, i1
+                [particle=\(\bar{q}\)] -- [anti fermion,
+                momentum'=\(p_1\)] b, i2 -- [opacity=0] i1, a --
+                [draw=none] f2 [particle=\(\gamma\)], b -- [draw=none]
+                f1 [particle=\(\gamma\)], f1 -- [opacity=0] f2, };
+              \diagram* { (a) -- [photon] (f1), (b) -- [photon] (f2),
+              };
+            \end{feynman}
+          \end{tikzpicture}
+          \subcaption{\label{fig:qqggfeyn2}t channel}
+        \end{subfigure}
+%
+        \caption{Leading order diagrams for \(\qqgg\).}%
+        \label{fig:qqggfeyn}
+      \end{figure}
+    \end{column}
+    \pause
+    \begin{column}{.5\textwidth}
+      \begin{block}{Task: calculate
+          \(\abs{\mathcal{M}}^2\)}
+        \begin{enumerate}[<+->]
+        \item translate diagrams to
+          matrix elements
+        \item use Casimir's trick to
+          average over spins
+        \item use completeness
+          relation to sum over
+          photon polarizations
+        \item use trace identities
+          to compute the absolute
+          square
+        \item simplify with
+          trigonometric identities
+        \end{enumerate}
+      \end{block}
+      \pause Here: Quark masses
+      neglected.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{Result}
+
+\begin{frame}
+  \begin{equation}
+    \label{eq:averagedm_final}
+    \langle\abs{\mathcal{M}}^2\rangle = \frac{4}{3}(gZ)^4
+    \cdot\frac{1+\cos^2(\theta)}{\sin^2(\theta)} =
+    \frac{4}{3}(gZ)^4\cdot(2\cosh(\eta) - 1)
+  \end{equation}
+  %
+  \pause
+  \[\overset{\text{Golden Rule}}{\implies}\]
+  \pause
+  \begin{equation}
+    \label{eq:crossec}
+    \dv{\sigma}{\Omega} =
+    \frac{1}{2}\frac{1}{(8\pi)^2}\cdot\frac{\abs{\mathcal{M}}^2}{\ecm^2}\cdot\frac{\abs{p_f}}{\abs{p_i}}
+    = \underbrace{\frac{\alpha^2Z^4}{6\ecm^2}}_{\mathfrak{C}}\frac{1+\cos^2(\theta)}{\sin^2(\theta)}
+  \end{equation}
+
+  \pause
+  \begin{figure}[ht]
+    \centering
+    \begin{minipage}[c]{0.3\textwidth}
+      \plot[scale=.6]{xs/diff_xs}
+    \end{minipage}
+    \begin{minipage}[c]{0.3\textwidth}
+      \caption{The differential cross section as a function of the
+        polar angle \(\theta\).}
+    \end{minipage}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Comparison with \sherpa}
+  \begin{itemize}
+  \item<1-> choose \result{xs/python/eta} and \result{xs/python/ecm} and
+    integrate XS
+    \begin{equation}
+      \label{eq:total-crossec}
+      \sigma = {\frac{\pi\alpha^2Z^4}{3\ecm^2}}\cdot\qty[\tanh(\eta_2) - \tanh(\eta_1) + 2(\eta_1
+      - \eta_2)]
+    \end{equation}
+  \item<2-> analytical result: \result{xs/python/xs}
+  \item<3-> compatible with \sherpa: \result{xs/python/xs_sherpa}
+  \end{itemize}
+  \begin{figure}[ht]
+    \centering
+    \begin{minipage}[c]{0.3\textwidth}
+      \plot[scale=.5]{xs/total_xs}
+    \end{minipage}
+    \begin{minipage}[c]{0.3\textwidth}
+      \caption{\label{fig:totxs} The cross section
+        of the process for a pseudo-rapidity
+        integrated over \([-\eta, \eta]\).}
+    \end{minipage}
+  \end{figure}
+\end{frame}
+\end{document}
+massless limit

@@ -1,11 +1,14 @@
 What the heck should be in there. Let's draft up an outline.
+20 minutes: bloody short, so just results
 
-* Intro
+* Intro :1_30m:
 ** Importance of MC Methods :SHORT:
  - important tool in particle physics
    - not just numerical
  - also applications in stat. phys and lattice QCD
- - somewhat romenatic: distilling information with entropy
+ - somewhat romantic: distilling information with entropy
+ - interface with exp
+ - precision predictions within, beyond sm
  - validation of new theories
    - some predictions are often more subtle than just the existense of
      new particles
@@ -15,7 +18,7 @@ What the heck should be in there. Let's draft up an outline.
  - higgs decay channel
  - dihiggs decay
  - pure QED
-* Calculation of the XS :TOO_LONG:
+* Calculation of the XS :TOO_LONG: :5m:
 ** Approach
  - formalism well separated from underlying theory
    - but can fool intuition (spin arguments)
@@ -40,7 +43,7 @@ What the heck should be in there. Let's draft up an outline.
  - apply the golden rule for 2->2 processes
  - show plots and total xs
  - shape verified later -> we need sampling techniques first
-* Monte Carlo Methods
+* Monte Carlo Methods :8m:
  - one simple idea, can be exploited and refined
  - how to extract information from a totally unknown function
    - look at it -> random points are the most "symmetric" choice
@@ -158,7 +161,7 @@ What the heck should be in there. Let's draft up an outline.
    - https://www.sciencedirect.com/science/article/pii/0010465594900434
 *** TODO Other modern Stuff
 
-* Toy Event Generator
+* Toy Event Generator :3m:
 ** Basics :SHORT:
  - just sampling the hard xs not realistic
    1. free quarks do not occur in nature
@@ -226,7 +229,7 @@ What the heck should be in there. Let's draft up an outline.
      improving accuracy of VEGAS)
    - prompts a more rigorous study of uncertainties in the vegas step!
 
-* Pheno Stuff
+* Pheno Stuff :2m:
  - non LO effects completely neglected
  - sherpa generator allows to model some of them
    - always approximations
