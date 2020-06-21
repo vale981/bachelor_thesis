@@ -45,7 +45,7 @@ expected value \(\EX{X_i}=\mathbb{E}\) and variance
 %
 Because \(\frac{\sigma^2}{N}\xrightarrow{N\rightarrow\infty} 0\)
 \cref{eq:approxexp} really converges to \(I\). For finite, but large
-\(N\) the value of \cref{eq:approxexp} is distributed (in increasingly
+\(N\) the value of \(\EX{F/P}\) is distributed (in increasingly
 good approximation) according to a normal distribution around \(I\)
 with the variance \(\VAR{F/\Rho}\cdot N^{-1}\) as in \cref{eq:varI} by
 virtue of the central limit theorem.
@@ -121,7 +121,7 @@ squared when approximating the integral by the sum.
 %
 \begin{equation}
   \label{eq:approxvar-I}
-  \VAR{I} = \abs{\Omega}\int_\Omega f(\vb{x})^2 -
+  \VAR{\frac{F}{P}} = \abs{\Omega}\int_\Omega f(\vb{x})^2 -
   \underbrace{\qty(\frac{I}{\abs{\Omega}})^2}_{=\bar{f}} \dd{\vb{x}} \equiv \abs{\Omega}\cdot\sigma_f^2 \approx
   \frac{\abs{\Omega}^2}{N-1}\sum_{i}\qty[f(\vb{x}_i) - \bar{f}]^2
 \end{equation}
@@ -129,8 +129,9 @@ squared when approximating the integral by the sum.
 Applying this method to integrate the \(\qqgg\) cross section from
 \cref{eq:crossec} over a \(\theta\) interval, equivalent to
 \(\eta\in [-2.5, 2.5]\) with a target accuracy of
-\(\varepsilon=10^{-3}\) results in \result{xs/python/xs_mc} with a
-sample size of \result{xs/python/xs_mc_N}.
+\(\sigma=\SI{1e-3}{\pico\barn}\) results in
+\result{xs/python/xs_mc} with a sample size of
+\result{xs/python/xs_mc_N}.
 
 Changing variables and integrating \cref{eq:xs-eta} over \(\eta\) with
 the same target accuracy yields~\result{xs/python/xs_mc_eta} with a
