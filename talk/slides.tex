@@ -15,10 +15,10 @@ labelformat=brace, position=top]{subcaption}
 \graphicspath{ {figs/} }
 
 \usetheme{Antibes}
-\usepackage{eulerpx}
+% \usepackage{eulerpx}
 \usepackage{ifdraft}
 
-\usefonttheme[onlymath]{serif}
+% \usefonttheme[onlymath]{serif}
 \setbeamertemplate{itemize items}[default]
 \setbeamertemplate{enumerate items}[default]
 \AtBeginSection[]
@@ -209,18 +209,12 @@ labelformat=brace, position=top]{subcaption}
       \begin{block}{Task: calculate
           \(\abs{\mathcal{M}}^2\)}
         \begin{enumerate}[<+->]
-        \item translate diagrams to
-          matrix elements
-        \item use Casimir's trick to
-          average over spins
-        \item use completeness
-          relation to sum over
-          photon polarizations
-        \item use trace identities
-          to compute the absolute
-          square
-        \item simplify with
-          trigonometric identities
+        \item translate diagrams to matrix elements
+        \item use Casimir's trick to average over spins
+        \item use completeness relation to sum over photon
+          polarizations
+        \item use trace identities to compute the absolute square
+        \item simplify with trigonometric identities
         \end{enumerate}
       \end{block}
       \pause Here: Quark masses
@@ -286,5 +280,118 @@ labelformat=brace, position=top]{subcaption}
     \end{minipage}
   \end{figure}
 \end{frame}
+
+\section{Monte Carlo Methods}
+
+\note[itemize]{
+\item Gradually bring in knowledge through distribution.
+}
+\begin{frame}
+  \begin{block}{Basic Ideas}
+    \begin{itemize}
+    \item<+-> Given some unknown function
+      \(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\) \ldots
+    \item<+-> \ldots\ how do we answer questions about \(f\)?
+    \end{itemize}
+    \;\;\onslide<+->{\(\implies\) Sample it at random points.}
+  \end{block}
+  \pause
+  \begin{block}{Main Applications}
+    \begin{enumerate}
+    \item<+-> integrate \(f\) over some volume \(\Omega\)
+    \item<+-> treat \(f\) as distribution and take random samples
+    \end{enumerate}
+  \end{block}
+\end{frame}
+
+\subsection{Integration}
+\note[itemize]{
+\item omitting details (law of big numbers, central limit theorem)
+\item at least three angles of attack
+\item some sort of importance sampling, volume: stratified sampling
+}
+\begin{frame}
+  \begin{itemize}
+  \item<+-> we have:
+    \(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\)
+    and \(\rho\colon \vb{x}\in\Omega\mapsto\mathbb{R}_{> 0}\) with
+    \(\int_{\Omega}\rho(\vb{x})\dd{\vb{x}} = 1\).
+  \item<+-> we seek:
+    \begin{equation}
+      \label{eq:baseintegral}
+      I = \int_\Omega f(\vb{x}) \dd{\vb{x}}
+      \onslide<+->{= \int_\Omega
+        \qty[\frac{f(\vb{x})}{\rho(\vb{x})}] \rho(\vb{x}) \dd{\vb{x}} = \EX{\frac{F}{\Rho}}}
+    \end{equation}
+  \item<+-> numeric approximation:
+    \begin{equation}
+      \label{eq:approxexp}
+      \EX{\frac{F}{\Rho}} \approx
+      \frac{1}{N}\sum_{i=1}^N\frac{f(\vb{x_i})}{\rho(\vb{x_i})}
+      \xrightarrow{N\rightarrow\infty} I
+    \end{equation}
+  \item<+-> error approximation:
+    \begin{align}
+      \sigma_I^2 &= \frac{\textcolor<+->{red}{\sigma^2}}{\textcolor<.->{blue}{N}} \\
+      \sigma^2 &= \VAR{\frac{F}{\Rho}} = \int_{\textcolor<+(3)->{blue}{\Omega}} \qty[I -
+      \frac{f(\vb{x})}{\textcolor<+->{blue}{\rho(\vb{x})}}]^2
+      \textcolor<.->{blue}{\rho(\vb{x})} \textcolor<+->{blue}{\dd{\vb{x}}} \approx \frac{1}{N - 1}\sum_i \qty[I -
+      \frac{f(\vb{x_i})}{\rho(\vb{x_i})}]^2  \label{eq:varI-approx}
+    \end{align}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Change of Variables}
+  Choose \(\rho(\vb{x}) = \frac{1}{\abs{\Omega}}\)
+  \onslide<2->{\(\implies I=\frac{\abs{\Omega}}{N}\sum_{i=1}^N
+    f(\vb{x_i})=\abs{\Omega}\cdot\bar{f}\) and
+    \(\VAR{\frac{F}{P}}\approx\frac{\abs{\Omega}^2}{N-1}\sum_{i}\qty[f(\vb{x}_i)
+    - \bar{f}]^2\)}
+  \begin{block}{Results}
+    \begin{itemize}
+    \item<3-> integrating \(\dv{\sigma}{\theta}\) with target error of
+      \(\sigma = \SI{1e-3}{\pico\barn}\) takes
+      \result{xs/python/xs_mc_N} samples
+    \item<4-> integrating \(\dv{\sigma}{\eta}\) takes just
+      \result{xs/python/xs_mc_eta_N} samples
+    \end{itemize}
+  \end{block}
+  \begin{figure}[hb]
+    \centering \onslide<3->{
+      \begin{subfigure}[c]{.4\textwidth}
+        \centering \plot[scale=.6]{xs/xs_integrand}
+      \end{subfigure}
+    } \onslide<4->{
+      \begin{subfigure}[c]{.4\textwidth}
+        \centering \plot[scale=.6]{xs/xs_integrand_eta}
+      \end{subfigure}
+    }
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Vegas}
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \begin{block}{Idea}
+        \begin{enumerate}
+        \item subdivide integration volume into grid, take equal
+          number of samples in each hypercube \(\iff\) define \(\rho\)
+          as step function
+        \item iteratively approximate optimal \(\rho = f(\vb{x})/I\)
+          with step function
+        \end{enumerate}
+      \end{block}
+      \begin{block}{Result}
+        Total function evaluations: \result{xs/python/xs_mc_θ_vegas_N}
+      \end{block}
+    \end{column}
+    \begin{column}{.5\textwidth}
+      \begin{figure}[ht]
+        \centering \plot[scale=.6]{xs/xs_integrand_vegas}
+        \caption{\(2\pi\dv{\sigma}{\theta}\) scaled to increments
+          found by \vegas}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
 \end{document}
-massless limit

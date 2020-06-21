@@ -326,6 +326,7 @@ What the heck should be in there. Let's draft up an outline.
  - spending time on tooling is OK
  - have to put more time into detailed diagnosis
  - event generators are marvelously complex
+ - should have introduced the term importance sampling properly
 ** Outlook
  - more effects
  - multi channel mc
