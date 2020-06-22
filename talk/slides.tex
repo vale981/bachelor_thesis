@@ -13,7 +13,8 @@ labelformat=brace, position=top]{subcaption}
 % \setbeameroption{show notes on second screen} %
 \addbibresource{thesis.bib}
 \graphicspath{ {figs/} }
-
+\usepackage{animate}
+\newfontfamily\DejaSans{DejaVu Sans}
 \usetheme{Antibes}
 % \usepackage{eulerpx}
 \usepackage{ifdraft}
@@ -30,6 +31,9 @@ labelformat=brace, position=top]{subcaption}
 
 \setbeamertemplate{footline}[frame number]
 \setbeamertemplate{note page}[plain]
+\setbeamertemplate{bibliography item}{\insertbiblabel} %% Remove book
+                                %% symbol from references and add
+                                %% number
 
 \sisetup{separate-uncertainty = true}
 % Macros
@@ -125,8 +129,7 @@ labelformat=brace, position=top]{subcaption}
 \hypersetup{pageanchor=false}
 \maketitle
 
-\hypersetup{pageanchor=true}
-\pagenumbering{arabic}
+\hypersetup{pageanchor=true} \pagenumbering{arabic}
 
 \begin{frame}
   \tableofcontents
@@ -206,8 +209,7 @@ labelformat=brace, position=top]{subcaption}
     \end{column}
     \pause
     \begin{column}{.5\textwidth}
-      \begin{block}{Task: calculate
-          \(\abs{\mathcal{M}}^2\)}
+      \begin{block}{Task: calculate \(\abs{\mathcal{M}}^2\)}
         \begin{enumerate}[<+->]
         \item translate diagrams to matrix elements
         \item use Casimir's trick to average over spins
@@ -217,8 +219,7 @@ labelformat=brace, position=top]{subcaption}
         \item simplify with trigonometric identities
         \end{enumerate}
       \end{block}
-      \pause Here: Quark masses
-      neglected.
+      \pause Here: Quark masses neglected.
     \end{column}
   \end{columns}
 \end{frame}
@@ -256,10 +257,11 @@ labelformat=brace, position=top]{subcaption}
   \end{figure}
 \end{frame}
 
-\begin{frame}{Comparison with \sherpa}
+\begin{frame}{Comparison with \sherpa~\cite{Bothmann:2019yzt}}
   \begin{itemize}
-  \item<1-> choose \result{xs/python/eta} and \result{xs/python/ecm} and
-    integrate XS
+
+  \item<1-> choose \result{xs/python/eta} and \result{xs/python/ecm}
+    and integrate XS
     \begin{equation}
       \label{eq:total-crossec}
       \sigma = {\frac{\pi\alpha^2Z^4}{3\ecm^2}}\cdot\qty[\tanh(\eta_2) - \tanh(\eta_1) + 2(\eta_1
@@ -274,9 +276,8 @@ labelformat=brace, position=top]{subcaption}
       \plot[scale=.5]{xs/total_xs}
     \end{minipage}
     \begin{minipage}[c]{0.3\textwidth}
-      \caption{\label{fig:totxs} The cross section
-        of the process for a pseudo-rapidity
-        integrated over \([-\eta, \eta]\).}
+      \caption{\label{fig:totxs} The cross section of the process for
+        a pseudo-rapidity integrated over \([-\eta, \eta]\).}
     \end{minipage}
   \end{figure}
 \end{frame}
@@ -284,13 +285,13 @@ labelformat=brace, position=top]{subcaption}
 \section{Monte Carlo Methods}
 
 \note[itemize]{
-\item Gradually bring in knowledge through distribution.
-}
+\item Gradually bring in knowledge through distribution.  }
 \begin{frame}
   \begin{block}{Basic Ideas}
     \begin{itemize}
     \item<+-> Given some unknown function
-      \(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\) \ldots
+      \(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\)
+      \ldots
     \item<+-> \ldots\ how do we answer questions about \(f\)?
     \end{itemize}
     \;\;\onslide<+->{\(\implies\) Sample it at random points.}
@@ -308,8 +309,7 @@ labelformat=brace, position=top]{subcaption}
 \note[itemize]{
 \item omitting details (law of big numbers, central limit theorem)
 \item at least three angles of attack
-\item some sort of importance sampling, volume: stratified sampling
-}
+\item some sort of importance sampling, volume: stratified sampling }
 \begin{frame}
   \begin{itemize}
   \item<+-> we have:
@@ -334,9 +334,9 @@ labelformat=brace, position=top]{subcaption}
     \begin{align}
       \sigma_I^2 &= \frac{\textcolor<+->{red}{\sigma^2}}{\textcolor<.->{blue}{N}} \\
       \sigma^2 &= \VAR{\frac{F}{\Rho}} = \int_{\textcolor<+(3)->{blue}{\Omega}} \qty[I -
-      \frac{f(\vb{x})}{\textcolor<+->{blue}{\rho(\vb{x})}}]^2
-      \textcolor<.->{blue}{\rho(\vb{x})} \textcolor<+->{blue}{\dd{\vb{x}}} \approx \frac{1}{N - 1}\sum_i \qty[I -
-      \frac{f(\vb{x_i})}{\rho(\vb{x_i})}]^2  \label{eq:varI-approx}
+                 \frac{f(\vb{x})}{\textcolor<+->{blue}{\rho(\vb{x})}}]^2
+                 \textcolor<.->{blue}{\rho(\vb{x})} \textcolor<+->{blue}{\dd{\vb{x}}} \approx \frac{1}{N - 1}\sum_i \qty[I -
+                 \frac{f(\vb{x_i})}{\rho(\vb{x_i})}]^2  \label{eq:varI-approx}
     \end{align}
   \end{itemize}
 \end{frame}
@@ -369,7 +369,12 @@ labelformat=brace, position=top]{subcaption}
   \end{figure}
 \end{frame}
 
-\begin{frame}{Vegas}
+\note[itemize]{
+\item proposed by G. Peter Lepage (slac) 1976
+\item own implementation!!!
+}
+\begin{frame}{\vegas\ Algorithm \cite{Lepage:19781an}}
+
   \begin{columns}
     \begin{column}{.5\textwidth}
       \begin{block}{Idea}
@@ -379,10 +384,14 @@ labelformat=brace, position=top]{subcaption}
           as step function
         \item iteratively approximate optimal \(\rho = f(\vb{x})/I\)
           with step function
+        \item this is quite efficient when \(n\geq 4\)
         \end{enumerate}
       \end{block}
+      \pause
       \begin{block}{Result}
-        Total function evaluations: \result{xs/python/xs_mc_θ_vegas_N}
+        Total function evaluations:
+        \result{xs/python/xs_mc_θ_vegas_N}\\
+        (for same accuracy as before)
       \end{block}
     \end{column}
     \begin{column}{.5\textwidth}
@@ -393,5 +402,201 @@ labelformat=brace, position=top]{subcaption}
       \end{figure}
     \end{column}
   \end{columns}
+\end{frame}
+
+\subsection{Sampling}
+
+\note[itemize]{
+\item prop. to density
+\item generalization to n dim is easy
+\item idea -> cumulative propability the same
+}
+\begin{frame}
+  \begin{itemize}[<+->]
+  \item we have: \(f\colon x\in\Omega\mapsto\mathbb{R}_{>0}\)
+    (choose \(\Omega = [0, 1]\)) and uniformly random samples \(\{x_i\}\)
+  \item we seek: a sample \(\{y_i\}\) distributed according to \(f\)
+  \end{itemize}
+  \begin{block}<+->{Basic Idea}
+    \begin{itemize}[<+->]
+    \item<.-> let \(x\) be sample of uniform distribution, solve
+      \[\int_{0}^{y}f(x')\dd{x'} = x\cdot\int_0^1f(x')\dd{x'} =
+        x\cdot A\] for y to obtain sample of \(f/A\)
+    \item let \(F\) be the antiderivative of \(f\), then
+      \(y=F^{-1}(x\cdot A + F(0))\)
+      \begin{itemize}
+      \item sometimes analytical form available
+      \item otherwise tackle that numerically
+      \end{itemize}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Hit or Miss}
+  \centering
+  \animategraphics[loop,scale=.4,autoplay,palindrome]{5}{pi/pi-}{0}{9}
+\end{frame}
+
+\begin{frame}{Hit or Miss}
+  \begin{block}{Basic Idea}
+    \begin{itemize}[<+->]
+    \item take samples \({x_i}\) distributed according to \(g/B\),
+      where \(B=\int_0^1g(x)\dd{x}\) and
+      \(\forall x\in\Omega\colon g(x)\geq f(x)\)
+    \item accept each sample with the probability~\(f(x_i)/g(x_i)\)
+      (importance sampling)
+    \item total probability of accepting a sample: \(\mathfrak{e} =
+      A/B < 1\) (efficiency)
+    \item simplest choice \(g=\max_{x\in\Omega}f(x)=f_{\text{max}}\)
+    \item again: efficiency gain through reduction of variance
+    \end{itemize}
+  \end{block}
+
+  \begin{block}<+->{Results with \(g=f_{\text{max}}\)  }
+    \begin{itemize}[<+->]
+    \item<.-> sampling \(\dv{\sigma}{\cos\theta}\):
+      \result{xs/python/naive_th_samp}
+    \item sampling \(\dv{\sigma}{\cos\theta}\):
+      \result{xs/python/eta_eff}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Hit or Miss}
+  \begin{columns}
+    \begin{column}{.4\textwidth}
+      \begin{block}<+->{Results with \(g=a\cdot x^2 + b\)} Modest
+        efficiency gain: \result{xs/python/tuned_th_samp}
+      \end{block}
+      \begin{itemize}
+      \item<+-> Of course, we can use \vegas\ to provide a better \(g\).
+      \end{itemize}
+    \end{column}
+    \begin{column}{.6\textwidth}
+      \begin{figure}[ht]
+        \centering \plot[scale=.8]{xs_sampling/upper_bound}
+        \caption{The distribution \(\dv{\sigma}{\cos\theta}\) and an
+          upper bound of the form \(a + b\cdot x^2\).}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Stratified Sampling}
+  \begin{block}{Basic Idea}
+    \begin{itemize}
+    \item subdivide sampling volume \(\Omega\) into \(K\) subvolumes
+      \(\Omega_i\)
+    \item let \(A_i = \int_{\Omega_i}f(x)\dd{x}\)
+    \item take \(N_i=A_i \cdot N\) samples in each subvolume
+    \item efficiency is given by:
+      \(\mathfrak{e} = \frac{\sum_i A_i}{\sum_i A_i/\mathfrak{e}_i}\)
+    \end{itemize}
+    \(\implies\) can optimize in each subvolume independently
+  \end{block}
+  How do choose the \(\Omega_i\)? \pause {\huge\vegas! :-)}
+\end{frame}
+
+\note[itemize]{
+\item no need to know the jacobian ;)
+}
+\begin{frame}{Observables}
+  \begin{itemize}
+  \item we want: distributions of other observables
+  \item turns out: simpliy piping samples \(\{x_i\}\) through a map
+    \(\gamma\colon\Omega\mapsto\mathbb{R}\) is enough
+  \end{itemize}
+  \begin{figure}[p]
+    \centering
+
+  \begin{subfigure}[b]{.49\textwidth}
+    \centering \plot[scale=.5]{xs_sampling/histo_sherpa_eta}
+    \caption{histogram of the pseudo-rapidity
+      (\(\eta\)).}
+  \end{subfigure}
+  \begin{subfigure}[b]{.49\textwidth}
+    \centering \plot[scale=.5]{xs_sampling/histo_sherpa_pt}
+    \caption{histogram of the transverse momentum
+      (\(\pt\))}
+  \end{subfigure}
+\end{figure}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{References}
+  \printbibliography
+\end{frame}
+
+\appendix
+\section{Appendix}
+
+\subsection{More on \vegas}
+
+\begin{frame}{\vegas Details}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      \begin{block}{Algorithm 1D}
+        \begin{enumerate}
+        \item start with \(N\) evenly spaced increments
+          \(\{[x_i, x_{i+1}]\}_{i\in\overline{1,N}}\)
+        \item calculate the integral weights
+          \(w_i = \abs{\int_{x_i}^{x_{i+1}}f(x)\dd{x}}\) and define
+          \(W=\sum_iw_i\)
+          \begin{itemize}
+          \item this is done with ordinary MC integration
+          \end{itemize}
+        \item calculate subdivide the \(i\)-th increment into
+          \(K\frac{w_i}{W}\) increments (round up), where
+          \(K = \mathcal{O}(1000)\)
+        \item amalgamate the new increments into \(N\) groups \(=\)
+          new increments
+        \end{enumerate}
+      \end{block}
+    \end{column}
+    \pause
+    \begin{column}{.4\textwidth}
+      \begin{block}{Advantages}
+        \begin{itemize}
+        \item number of \(f\) evaluations independent of number of
+          hypercubes
+        \item adaption itself is adaptive
+        \item \textcolor{red}{the advantages only show if \(n\)
+            ``high''.}
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}[ht]
+    \centering \plot[scale=.9]{xs/xs_integrand_vegas}
+    \caption{\(2\pi\dv{\sigma}{\theta}\) scaled to increments found by
+      \vegas}
+  \end{figure}
+\end{frame}
+\begin{frame}{\vegas\ + Hit or Miss}
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}{.49\textwidth}
+    \centering
+    \plot[scale=.8]{xs_sampling/vegas_strat_dist}
+    \caption[The distribution for \(\cos\theta\), derived from the
+    differential cross-section and the \vegas-weighted
+    distribution]{\label{fig:vegasdist} The distribution for
+      \(\cos\theta\) and the \vegas-weighted
+      distribution.}
+  \end{subfigure}
+  \begin{subfigure}{.49\textwidth}
+    \centering
+    \plot[scale=.8]{xs_sampling/vegas_rho}
+    \caption[The weighting distribution generated by
+    \vegas.]{\label{fig:vegasrho} The weighting distribution generated
+      by \vegas. It is clear, that it closely follows the original
+      distribution.}
+  \end{subfigure}
+  \caption{\label{fig:vegas-weighting} \vegas-weighted distribution
+    and weighting distribution.}
+\end{figure}
 \end{frame}
 \end{document}
