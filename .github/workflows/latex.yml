@@ -9,6 +9,7 @@ on:
     branches: [ master ]
     paths:
       - 'latex/**'
+      - 'talk/**'
       - '.github/workflows/latex.yml'
   pull_request:
     branches: [ master ]
@@ -35,6 +36,21 @@ jobs:
         with:
           name: thesis.pdf
           path: ./latex/document.pdf
+      - name: LaTeX compilation Slides
+        uses: dante-ev/latex-action@v0.2.0
+        with:
+          # The root LaTeX file to be compiled
+          root_file: slides.tex
+          # The working directory for the latex compiler to be invoked
+          working_directory: talk
+          # LaTeX engine to be used
+          args: -pdflua -latexoption=-file-line-error -latexoption=-interaction=nonstopmode -interaction=nonstopmode --shell-escape
+          extra_system_packages: python-pygments
+      - name: Upload the PDF as Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: slides.pdf
+          path: ./talk/slides.pdf
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -54,4 +70,14 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
           asset_path: ./latex/document.pdf
           asset_name: thesis.pdf
+          asset_content_type: application/pdf
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./talk/slides.pdf
+          asset_name: slides.pdf
           asset_content_type: application/pdf
