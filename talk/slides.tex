@@ -14,7 +14,7 @@ labelformat=brace, position=top]{subcaption}
 \addbibresource{thesis.bib}
 \graphicspath{ {figs/} }
 \usepackage{animate}
-\newfontfamily\DejaSans{DejaVu Sans}
+
 \usetheme{Antibes}
 % \usepackage{eulerpx}
 \usepackage{ifdraft}
@@ -28,6 +28,11 @@ labelformat=brace, position=top]{subcaption}
        \tableofcontents[currentsection]
    \end{frame}
 }
+
+\AtBeginSubsection[
+  {\frame<beamer>{\frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]}}%
+]
 
 \setbeamertemplate{footline}[frame number]
 \setbeamertemplate{note page}[plain]
@@ -406,6 +411,13 @@ labelformat=brace, position=top]{subcaption}
 
 \subsection{Sampling}
 
+\begin{frame}{Why Samples?}
+  \begin{itemize}[<+->]
+  \item same format as experimental data: direct comparison
+  \item easy to generate distributions for other observables
+  \item events can be ``dressed'' with additional effects
+  \end{itemize}
+\end{frame}
 \note[itemize]{
 \item prop. to density
 \item generalization to n dim is easy
@@ -502,24 +514,123 @@ labelformat=brace, position=top]{subcaption}
 }
 \begin{frame}{Observables}
   \begin{itemize}
-  \item we want: distributions of other observables
+  \item we want: distributions of other observables \pause
   \item turns out: simpliy piping samples \(\{x_i\}\) through a map
     \(\gamma\colon\Omega\mapsto\mathbb{R}\) is enough
   \end{itemize}
+  \pause
   \begin{figure}[p]
     \centering
-
   \begin{subfigure}[b]{.49\textwidth}
     \centering \plot[scale=.5]{xs_sampling/histo_sherpa_eta}
-    \caption{histogram of the pseudo-rapidity
-      (\(\eta\)).}
+    \caption{histogram of the pseudo-rapidity (\(\eta\))}
   \end{subfigure}
   \begin{subfigure}[b]{.49\textwidth}
     \centering \plot[scale=.5]{xs_sampling/histo_sherpa_pt}
-    \caption{histogram of the transverse momentum
-      (\(\pt\))}
+    \caption{histogram of the transverse momentum (\(\pt\))}
   \end{subfigure}
 \end{figure}
+\end{frame}
+
+\section{A Simple Proton Scattering Event Generator}
+
+\subsection{Parton Density Functions}
+\begin{frame}
+  \begin{itemize}[<+->]
+  \item free quarks are not observed \(\implies\) we have to look at
+    hadron collisions
+  \item parton density functions (PDFs) are a necessary tool
+  \end{itemize}
+  \pause
+  \begin{block}{Basic Idea (Leading Order)}
+    \begin{itemize}
+    \item probability density to encounter a parton \(i\) at momentum
+      fraction \(x\) and factorization scale \(Q^2\): given by
+      \(f_i(x;Q^2)\)
+    \item total cross section for a partonic process in the hadron
+      collision:
+      \begin{equation}
+        \label{eq:pdf-xs}
+        \sigma_{ij} = \int f_i\qty(x_1;Q^2) f_j\qty(x_2;Q^2) \hat{\sigma}_{ij}\qty(x_1,
+        x_2, Q^2)\dd{x_1}\dd{x_2}
+      \end{equation}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\subsection{Implementation}
+\note[itemize]{
+\item took longest time :P
+}
+\begin{frame}
+  \begin{columns}
+    \begin{column}{.4\textwidth}
+      \begin{block}{What do we need?}
+        \begin{itemize}[<+->]
+        \item partonic cross section and kinematics in lab frame
+        \item \(Q^2\pause = 2x_1x_2E_p^2\) \pause
+        \item PDF\pause :
+          \texttt{NNPDF31\_lo\_as\_0118}~\cite{NNPDF:2017pd} \pause
+        \item beam energies and cuts:\pause
+          \begin{itemize}
+          \item \result{xs/python/pdf/e_proton}
+          \item \result{xs/python/pdf/eta} and
+            \result{xs/python/pdf/min_pT}
+          \end{itemize}
+        \item integration and sampling method: \pause \vegas\ +
+          stratified sampling
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{.6\textwidth}
+      \only<+>{
+        \begin{figure}
+          \centering \plot[width=\columnwidth]{pdf/dist3d_x2_const}
+          \caption{\label{fig:dist-pdf}Differential cross section
+            convolved with PDFs for fixed \protect
+            \result{xs/python/pdf/second_x} in picobarn.}
+        \end{figure}
+      }
+      \only<+>{
+        \begin{figure}
+          \centering \plot[width=\columnwidth]{pdf/dist3d_eta_const}
+          \caption{\label{fig:dist-pdf-fixed-eta}Differential cross section
+            convolved with PDFs for fixed \protect
+            \result{xs/python/pdf/plot_eta} in picobarn.}
+        \end{figure}
+      }
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{Results}
+\begin{frame}{Cross Section}
+  \begin{center}
+    {\huge\result{xs/python/pdf/my_sigma}}
+  \end{center}
+  \begin{itemize}
+  \item compatible with \sherpa\
+  \item achieved \result{xs/python/pdf/samp_eff}
+  \item using \result{xs/python/pdf/num_increments} hypercubes
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Observables}
+  \begin{figure}[hp]
+    \centering
+    \begin{subfigure}{.49\textwidth}
+      \centering \plot[width=1\columnwidth]{pdf/eta_hist}
+    \end{subfigure}
+    \begin{subfigure}{.49\textwidth}
+      \centering \plot[width=1\columnwidth]{pdf/cos_theta_hist}
+    \end{subfigure}
+    \begin{subfigure}{.49\textwidth}
+      \centering \plot[width=1\columnwidth]{pdf/pt_hist}
+    \end{subfigure}
+    \begin{subfigure}{.49\textwidth}
+      \centering \plot[width=1\columnwidth]{pdf/inv_m_hist}
+    \end{subfigure}
+  \end{figure}
 \end{frame}
 
 \begin{frame}[allowframebreaks]
@@ -575,6 +686,7 @@ labelformat=brace, position=top]{subcaption}
       \vegas}
   \end{figure}
 \end{frame}
+
 \begin{frame}{\vegas\ + Hit or Miss}
 \begin{figure}[ht]
   \centering
