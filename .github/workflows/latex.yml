@@ -72,7 +72,7 @@ jobs:
           asset_name: thesis.pdf
           asset_content_type: application/pdf
       - name: Upload Release Asset
-        id: upload-release-asset
+        id: upload-release-asset-slides
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
