@@ -8,9 +8,10 @@
 \usepackage{slashed}
 \usepackage{tikz}
 \usepackage{tikz-feynman}
+\usepackage{pdfpcnotes}
 \usepackage[list=true, font=small,
 labelformat=brace, position=top]{subcaption}
-% \setbeameroption{show notes on second screen} %
+%\setbeameroption{show notes on second screen} %
 \addbibresource{thesis.bib}
 \graphicspath{ {figs/} }
 \usepackage{animate}
@@ -30,12 +31,11 @@ labelformat=brace, position=top]{subcaption}
 }
 
 \AtBeginSubsection[
-  {\frame<beamer>{\frametitle{Outline}
+  {\frame<beamer>{%
     \tableofcontents[currentsection,currentsubsection]}}%
 ]
 
 \setbeamertemplate{footline}[frame number]
-\setbeamertemplate{note page}[plain]
 \setbeamertemplate{bibliography item}{\insertbiblabel} %% Remove book
                                 %% symbol from references and add
                                 %% number
@@ -165,6 +165,7 @@ labelformat=brace, position=top]{subcaption}
       \end{itemize}
     \end{itemize}
   \end{block}
+  \pnote{Why usefult for ev. gen -> later}
 \end{frame}
 
 \section{Calculation of the \(\qqgg\) Cross Section}
@@ -236,7 +237,7 @@ labelformat=brace, position=top]{subcaption}
     \label{eq:averagedm_final}
     \langle\abs{\mathcal{M}}^2\rangle = \frac{4}{3}(gZ)^4
     \cdot\frac{1+\cos^2(\theta)}{\sin^2(\theta)} =
-    \frac{4}{3}(gZ)^4\cdot(2\cosh(\eta) - 1)
+    \frac{4}{3}(gZ)^4\cdot(\tanh(\eta)^2 + 1)
   \end{equation}
   %
   \pause
@@ -289,9 +290,9 @@ labelformat=brace, position=top]{subcaption}
 
 \section{Monte Carlo Methods}
 
-\note[itemize]{
-\item Gradually bring in knowledge through distribution.  }
 \begin{frame}
+\pnote{
+  - Gradually bring in knowledge through distribution.  }
   \begin{block}{Basic Ideas}
     \begin{itemize}
     \item<+-> Given some unknown function
@@ -311,12 +312,15 @@ labelformat=brace, position=top]{subcaption}
 \end{frame}
 
 \subsection{Integration}
-\note[itemize]{
-\item omitting details (law of big numbers, central limit theorem)
-\item at least three angles of attack
-\item some sort of importance sampling, volume: stratified sampling }
+
 \begin{frame}
-  \begin{itemize}
+\pnote{
+- omitting details (law of big numbers, central limit theorem)\\
+- at least three angles of attack\\
+- some sort of importance sampling, volume: stratified sampling\\
+- ADVANTAGES OF MC
+- METHOD NAMES}
+\begin{itemize}
   \item<+-> we have:
     \(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\)
     and \(\rho\colon \vb{x}\in\Omega\mapsto\mathbb{R}_{> 0}\) with
@@ -337,7 +341,7 @@ labelformat=brace, position=top]{subcaption}
     \end{equation}
   \item<+-> error approximation:
     \begin{align}
-      \sigma_I^2 &= \frac{\textcolor<+->{red}{\sigma^2}}{\textcolor<.->{blue}{N}} \\
+      \sigma_I^2 &= \frac{\textcolor<+->{blue}{\sigma^2}}{\textcolor<.->{red}{N}} \\
       \sigma^2 &= \VAR{\frac{F}{\Rho}} = \int_{\textcolor<+(3)->{blue}{\Omega}} \qty[I -
                  \frac{f(\vb{x})}{\textcolor<+->{blue}{\rho(\vb{x})}}]^2
                  \textcolor<.->{blue}{\rho(\vb{x})} \textcolor<+->{blue}{\dd{\vb{x}}} \approx \frac{1}{N - 1}\sum_i \qty[I -
@@ -346,7 +350,7 @@ labelformat=brace, position=top]{subcaption}
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Change of Variables}
+\begin{frame}{Naive Integration Change of Variables}
   Choose \(\rho(\vb{x}) = \frac{1}{\abs{\Omega}}\)
   \onslide<2->{\(\implies I=\frac{\abs{\Omega}}{N}\sum_{i=1}^N
     f(\vb{x_i})=\abs{\Omega}\cdot\bar{f}\) and
@@ -374,12 +378,11 @@ labelformat=brace, position=top]{subcaption}
   \end{figure}
 \end{frame}
 
-\note[itemize]{
-\item proposed by G. Peter Lepage (slac) 1976
-\item own implementation!!!
-}
 \begin{frame}{\vegas\ Algorithm \cite{Lepage:19781an}}
-
+\pnote{
+- proposed by G. Peter Lepage (slac) 1976 \\
+- own implementation!!!
+}
   \begin{columns}
     \begin{column}{.5\textwidth}
       \begin{block}{Idea}
@@ -418,13 +421,14 @@ labelformat=brace, position=top]{subcaption}
   \item events can be ``dressed'' with additional effects
   \end{itemize}
 \end{frame}
-\note[itemize]{
-\item prop. to density
-\item generalization to n dim is easy
-\item idea -> cumulative propability the same
-}
+
 \begin{frame}
-  \begin{itemize}[<+->]
+\pnote{
+- prop. to density
+- generalization to n dim is easy
+- idea -> cumulative propability the same
+}
+\begin{itemize}[<+->]
   \item we have: \(f\colon x\in\Omega\mapsto\mathbb{R}_{>0}\)
     (choose \(\Omega = [0, 1]\)) and uniformly random samples \(\{x_i\}\)
   \item we seek: a sample \(\{y_i\}\) distributed according to \(f\)
@@ -458,7 +462,7 @@ labelformat=brace, position=top]{subcaption}
     \item accept each sample with the probability~\(f(x_i)/g(x_i)\)
       (importance sampling)
     \item total probability of accepting a sample: \(\mathfrak{e} =
-      A/B < 1\) (efficiency)
+      A/B \leq 1\) (efficiency)
     \item simplest choice \(g=\max_{x\in\Omega}f(x)=f_{\text{max}}\)
     \item again: efficiency gain through reduction of variance
     \end{itemize}
@@ -468,7 +472,7 @@ labelformat=brace, position=top]{subcaption}
     \begin{itemize}[<+->]
     \item<.-> sampling \(\dv{\sigma}{\cos\theta}\):
       \result{xs/python/naive_th_samp}
-    \item sampling \(\dv{\sigma}{\cos\theta}\):
+    \item sampling \(\dv{\sigma}{\eta}\):
       \result{xs/python/eta_eff}
     \end{itemize}
   \end{block}
@@ -481,7 +485,9 @@ labelformat=brace, position=top]{subcaption}
         efficiency gain: \result{xs/python/tuned_th_samp}
       \end{block}
       \begin{itemize}
-      \item<+-> Of course, we can use \vegas\ to provide a better \(g\).
+      \item<+-> Of course, we can use \vegas\ to provide a better
+        \(g\implies\) \result{xs/python/strat_th_samp}
+        \pnote{Has problems, not discussing now.}
       \end{itemize}
     \end{column}
     \begin{column}{.6\textwidth}
@@ -500,7 +506,7 @@ labelformat=brace, position=top]{subcaption}
     \item subdivide sampling volume \(\Omega\) into \(K\) subvolumes
       \(\Omega_i\)
     \item let \(A_i = \int_{\Omega_i}f(x)\dd{x}\)
-    \item take \(N_i=A_i \cdot N\) samples in each subvolume
+    \item take \(N_i=\frac{A_i}{\sum_jA_j} \cdot N\) samples in each subvolume
     \item efficiency is given by:
       \(\mathfrak{e} = \frac{\sum_i A_i}{\sum_i A_i/\mathfrak{e}_i}\)
     \end{itemize}
@@ -509,11 +515,11 @@ labelformat=brace, position=top]{subcaption}
   How do choose the \(\Omega_i\)? \pause {\huge\vegas! :-)}
 \end{frame}
 
-\note[itemize]{
-\item no need to know the jacobian ;)
-}
 \begin{frame}{Observables}
-  \begin{itemize}
+\pnote{
+- no need to know the jacobian ;)
+}
+\begin{itemize}
   \item we want: distributions of other observables \pause
   \item turns out: simpliy piping samples \(\{x_i\}\) through a map
     \(\gamma\colon\Omega\mapsto\mathbb{R}\) is enough
@@ -554,15 +560,15 @@ labelformat=brace, position=top]{subcaption}
         \sigma_{ij} = \int f_i\qty(x_1;Q^2) f_j\qty(x_2;Q^2) \hat{\sigma}_{ij}\qty(x_1,
         x_2, Q^2)\dd{x_1}\dd{x_2}
       \end{equation}
+    \item have to be obtained experimentally (or through lattice QCD\cite{Bhat:2020ktg})
     \end{itemize}
   \end{block}
 \end{frame}
 
 \subsection{Implementation}
-\note[itemize]{
-\item took longest time :P
-}
+
 \begin{frame}
+  \pnote{ - took longest time :P }
   \begin{columns}
     \begin{column}{.4\textwidth}
       \begin{block}{What do we need?}
@@ -590,12 +596,11 @@ labelformat=brace, position=top]{subcaption}
             convolved with PDFs for fixed \protect
             \result{xs/python/pdf/second_x} in picobarn.}
         \end{figure}
-      }
-      \only<+>{
+      } \only<+>{
         \begin{figure}
           \centering \plot[width=\columnwidth]{pdf/dist3d_eta_const}
-          \caption{\label{fig:dist-pdf-fixed-eta}Differential cross section
-            convolved with PDFs for fixed \protect
+          \caption{\label{fig:dist-pdf-fixed-eta}Differential cross
+            section convolved with PDFs for fixed \protect
             \result{xs/python/pdf/plot_eta} in picobarn.}
         \end{figure}
       }
@@ -632,6 +637,153 @@ labelformat=brace, position=top]{subcaption}
     \end{subfigure}
   \end{figure}
 \end{frame}
+
+
+\section{Penomenological Studies}
+
+\begin{frame}{What is missing?}
+  \pause
+  \begin{itemize}[<+->]
+  \item treatement of the beam remnants
+  \item intrinsic \(\pt\)
+  \item parton showers \pnote{NLO effects}
+  \item hadronization
+  \item (NLO matrix elements)
+  \item multiple interactions
+  \end{itemize}
+  \pause \(\implies\) \sherpa\ can model those effects
+\end{frame}
+
+
+\subsection{Set-Up}
+\begin{frame}
+  \pnote{ - cuts and energies same as before\\
+    - pun intended\\
+    - now discuss impact}
+  \begin{itemize}
+  \item same phase-space cuts and energies as before
+  \item isolation cone cuts
+  \end{itemize}
+
+  \begin{block}{The five Stages}
+    \begin{description}
+    \item[LO] as before
+    \item[LO+PS] parton showers with
+      \emph{CSShower}~\cite{schumann2008:ap}
+    \item[LO+PS+pT] beam remnants and primordial \(\pt\)
+    \item[LO+PS+pT+Hadronization] hadronization with
+      \emph{Ahadic}~\cite{Winter2003:tt}.
+    \item[LO+PS+pT+Hadronization+MI] Multiple Interactions (MI) with
+      \emph{Amisic}~\cite{Bothmann:2019yzt}
+    \end{description}
+  \end{block}
+\end{frame}
+
+\subsection{Results}
+
+\begin{frame}{Transverse Momentum of the \(\gamma\gamma\) System}
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \begin{figure}[ht]
+          \rivethist[width=\columnwidth]{pheno/total_pT}
+      \end{figure}
+    \end{column}
+    \begin{column}{.5\textwidth}
+      \begin{itemize}
+      \item photon system acquires recoil momentum
+      \item primordial \(\pt\) enhances xs in low momentum regions
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\pnote{
+  - parton shower: col-linear limit\\
+  - others the same
+}
+\end{frame}
+
+\begin{frame}{Transverse Momentum of the leading Photon}
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \begin{figure}[ht]
+          \rivethist[width=\columnwidth]{pheno/pT}
+      \end{figure}
+    \end{column}
+    \begin{column}{.5\textwidth}
+      \begin{itemize}
+      \item boost to higher \(\pt\)
+      \item all but \stone\ stage largely compatible
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Invariant Mass of the \(\gamma\gamma\) System}
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \begin{figure}[ht]
+          \rivethist[width=\columnwidth]{pheno/inv_m}
+      \end{figure}
+    \end{column}
+    \begin{column}{.5\textwidth}
+      \begin{itemize}
+      \item events can be recoiled past the cuts (very rare)
+      \item otherwise shape similar to the \stone\ stage
+        \begin{itemize}
+        \item largely governed by the PDF
+        \end{itemize}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Angular Distributions}
+  \begin{figure}[ht]
+    \rivethist[width=.49\columnwidth]{pheno/eta}
+    \rivethist[width=.49\columnwidth]{pheno/cos_theta}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Conclusions}
+  \begin{itemize}
+  \item parton showering and primordial \(\pt\) have biggest effect on
+    shape
+  \item hadronization and multiple interactions give rise to isolation
+    effects
+  \item for angular observables the \stone\ case gives a reasonably
+    good qualitative picture
+  \end{itemize}
+  \pnote{
+- no qed showers\\
+- nlo me
+}
+\end{frame}
+
+\section{Summary}
+\begin{frame}
+  \begin{columns}
+    \begin{column}{.7\textwidth}
+      We have...
+      \begin{itemize}
+      \item calculated the cross section for \(\qqgg\)
+      \item studied and implemented Monte Carlo integration and
+        sampling
+        \begin{itemize}
+        \item using in \vegas\ whenever possible :)
+        \end{itemize}
+      \item built a simple \(\ppgg\) event generator
+      \item looked further down the road with sherpa
+      \end{itemize}
+    \end{column}
+    \pause
+    \begin{column}{.3\textwidth}
+      \includegraphics[width=\columnwidth]{questions.jpeg}
+    \end{column}
+  \end{columns}
+  \begin{center}
+    {\huge Thanks for your attention! Questions: Now!}
+  \end{center}
+\end{frame}
+
 
 \begin{frame}[allowframebreaks]
   \frametitle{References}
@@ -710,5 +862,48 @@ labelformat=brace, position=top]{subcaption}
   \caption{\label{fig:vegas-weighting} \vegas-weighted distribution
     and weighting distribution.}
 \end{figure}
+\end{frame}
+\begin{frame}{Compatibility of Histograms}
+  The compatibility of histograms is tested as described
+in~\cite{porter2008:te}. The test value
+is \[T=\sum_{i=1}^k\frac{(u_i-v_i)^2}{u_i+v_i}\] where \(u_i, v_i\)
+are the number of samples in the \(i\)-th bin of the histograms
+\(u,v\) and \(k\) is the number of bins. This value is \(\chi^2\)
+distributed with \(k\) degrees, when the number of samples in the
+histogram is reasonably high. The mean of this distribution is \(k\)
+and its standard deviation is \(\sqrt{2k}\). The value
+\[P = 1 - \int_0^{T}f(x;k)\dd{x}\] states with which probability the
+\(T\) value would be greater than the obtained one, where \(f\) is the
+probability density of the \(\chi^2\) distribution. Thus
+\(P\in [0,1]\) is a measure of confidence for the compatibility of the
+histograms. These formulas hold, if the total number of events in both
+histograms is the same.
+\end{frame}
+
+\begin{frame}{Cut Flow}
+\pnote{
+- 2 kinds of impact: phase space and isolation\\
+- these effects have an impact on fiducial xs\\
+- PS, pT more phase space\\
+- Hadr. and MI isolation
+}
+  \begin{table}[ht]
+    \centering
+    \begin{tabular}{l|SSS}
+      &&\multicolumn{2}{c}{events discarded by cuts} \\
+      Stage & {\(\sigma\) [\si{\pico\barn}]} & {phase space
+                                               [\si{\percent}]} &
+                                                                  {isolation
+                                                                  [\SI{1e-4}{\percent}]} \\
+      \toprule
+      \stfive & 33.02(7) & 97.63 & 9.56 \\
+      \stfour & 34.08(7) & 97.56 & 1.89\\
+      \stthree & 33.97(7) & 97.56 & 3.52 \\
+      \sttwo & 34.60(7) & 97.52 & 3.63 \\
+      \stone & 38.74(7) & 96.77 & 0 \\
+
+    \end{tabular}
+    \caption{\label{tab:xscut}Cross sections and cut statistics.}
+  \end{table}
 \end{frame}
 \end{document}
