@@ -12,17 +12,25 @@
 \usepackage[list=true, font=small,
 labelformat=brace, position=top]{subcaption}
 %\setbeameroption{show notes on second screen} %
-\addbibresource{thesis.bib}
-\graphicspath{ {figs/} }
 \usepackage{animate}
-
-\usetheme{Antibes}
-% \usepackage{eulerpx}
 \usepackage{ifdraft}
 
-% \usefonttheme[onlymath]{serif}
+\graphicspath{ {figs/} }
+\addbibresource{thesis.bib}
+\sisetup{separate-uncertainty = true}
+
+\usetheme{default}
+\usecolortheme{dolphin}
+\usefonttheme{professionalfonts}
+%\usepackage{newmathpx}
+\institute[TUD] % (optional)
+{
+ IKTP, TU Dresden
+}
+
 \setbeamertemplate{itemize items}[default]
 \setbeamertemplate{enumerate items}[default]
+
 \AtBeginSection[]
 {
    \begin{frame}
@@ -30,17 +38,23 @@ labelformat=brace, position=top]{subcaption}
    \end{frame}
 }
 
-\AtBeginSubsection[
-  {\frame<beamer>{%
-    \tableofcontents[currentsection,currentsubsection]}}%
-]
+
+\AtBeginSubsection[]
+{
+   \begin{frame}
+       \tableofcontents[currentsubsection]
+   \end{frame}
+ }
 
 \setbeamertemplate{footline}[frame number]
-\setbeamertemplate{bibliography item}{\insertbiblabel} %% Remove book
-                                %% symbol from references and add
-                                %% number
+\setbeamertemplate{bibliography item}{\insertbiblabel}
 
-\sisetup{separate-uncertainty = true}
+
+\newtheorem{results}{Results}
+\newenvironment<>{results}[1][Results]{%
+  \setbeamercolor{block example}{fg=white,bg=red!75!black}%
+  \begin{exampleblock}#2{#1}}{\end{exampleblock}}
+
 % Macros
 
 %% qqgg
@@ -232,7 +246,7 @@ labelformat=brace, position=top]{subcaption}
 
 \subsection{Result}
 
-\begin{frame}
+\begin{frame}{Result}
   \begin{equation}
     \label{eq:averagedm_final}
     \langle\abs{\mathcal{M}}^2\rangle = \frac{4}{3}(gZ)^4
@@ -352,11 +366,12 @@ labelformat=brace, position=top]{subcaption}
 
 \begin{frame}{Naive Integration Change of Variables}
   Choose \(\rho(\vb{x}) = \frac{1}{\abs{\Omega}}\)
-  \onslide<2->{\(\implies I=\frac{\abs{\Omega}}{N}\sum_{i=1}^N
+  \onslide<1->{\(\implies I=\frac{\abs{\Omega}}{N}\sum_{i=1}^N
     f(\vb{x_i})=\abs{\Omega}\cdot\bar{f}\) and
     \(\VAR{\frac{F}{P}}\approx\frac{\abs{\Omega}^2}{N-1}\sum_{i}\qty[f(\vb{x}_i)
     - \bar{f}]^2\)}
-  \begin{block}{Results}
+  \pause
+  \begin{results}
     \begin{itemize}
     \item<3-> integrating \(\dv{\sigma}{\theta}\) with target error of
       \(\sigma = \SI{1e-3}{\pico\barn}\) takes
@@ -364,15 +379,15 @@ labelformat=brace, position=top]{subcaption}
     \item<4-> integrating \(\dv{\sigma}{\eta}\) takes just
       \result{xs/python/xs_mc_eta_N} samples
     \end{itemize}
-  \end{block}
+  \end{results}
   \begin{figure}[hb]
     \centering \onslide<3->{
-      \begin{subfigure}[c]{.4\textwidth}
-        \centering \plot[scale=.6]{xs/xs_integrand}
+      \begin{subfigure}[c]{.41\textwidth}
+        \centering \plot[width=\columnwidth]{xs/xs_integrand}
       \end{subfigure}
     } \onslide<4->{
-      \begin{subfigure}[c]{.4\textwidth}
-        \centering \plot[scale=.6]{xs/xs_integrand_eta}
+      \begin{subfigure}[c]{.41\textwidth}
+        \centering \plot[width=\columnwidth]{xs/xs_integrand_eta}
       \end{subfigure}
     }
   \end{figure}
@@ -396,11 +411,13 @@ labelformat=brace, position=top]{subcaption}
         \end{enumerate}
       \end{block}
       \pause
-      \begin{block}{Result}
-        Total function evaluations:
+      \begin{results}
+        \begin{itemize}
+        \item Total function evaluations:
         \result{xs/python/xs_mc_θ_vegas_N}\\
         (for same accuracy as before)
-      \end{block}
+        \end{itemize}
+      \end{results}
     \end{column}
     \begin{column}{.5\textwidth}
       \begin{figure}[ht]
@@ -468,27 +485,29 @@ labelformat=brace, position=top]{subcaption}
     \end{itemize}
   \end{block}
 
-  \begin{block}<+->{Results with \(g=f_{\text{max}}\)  }
+  \begin{results}<+->[Results with \(g=f_{\text{max}}\)]
     \begin{itemize}[<+->]
     \item<.-> sampling \(\dv{\sigma}{\cos\theta}\):
       \result{xs/python/naive_th_samp}
     \item sampling \(\dv{\sigma}{\eta}\):
       \result{xs/python/eta_eff}
     \end{itemize}
-  \end{block}
+  \end{results}
 \end{frame}
 
 \begin{frame}{Hit or Miss}
   \begin{columns}
     \begin{column}{.4\textwidth}
-      \begin{block}<+->{Results with \(g=a\cdot x^2 + b\)} Modest
-        efficiency gain: \result{xs/python/tuned_th_samp}
-      \end{block}
-      \begin{itemize}
-      \item<+-> Of course, we can use \vegas\ to provide a better
-        \(g\implies\) \result{xs/python/strat_th_samp}
-        \pnote{Has problems, not discussing now.}
-      \end{itemize}
+      \begin{results}<+->[Results with \(g=a\cdot x^2 + b\)]
+        \begin{itemize}
+        \item<+-> Modest efficiency gain:
+          \result{xs/python/tuned_th_samp}
+
+        \item<+-> Of course, we can use \vegas\ to provide a better
+          \(g\implies\) \result{xs/python/strat_th_samp} \pnote{Has
+            problems, not discussing now.}
+        \end{itemize}
+      \end{results}
     \end{column}
     \begin{column}{.6\textwidth}
       \begin{figure}[ht]
@@ -501,18 +520,32 @@ labelformat=brace, position=top]{subcaption}
 \end{frame}
 
 \begin{frame}{Stratified Sampling}
-  \begin{block}{Basic Idea}
-    \begin{itemize}
-    \item subdivide sampling volume \(\Omega\) into \(K\) subvolumes
-      \(\Omega_i\)
-    \item let \(A_i = \int_{\Omega_i}f(x)\dd{x}\)
-    \item take \(N_i=\frac{A_i}{\sum_jA_j} \cdot N\) samples in each subvolume
-    \item efficiency is given by:
-      \(\mathfrak{e} = \frac{\sum_i A_i}{\sum_i A_i/\mathfrak{e}_i}\)
-    \end{itemize}
-    \(\implies\) can optimize in each subvolume independently
-  \end{block}
-  How do choose the \(\Omega_i\)? \pause {\huge\vegas! :-)}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      \begin{block}{Basic Idea}
+        \begin{itemize}
+        \item subdivide sampling volume \(\Omega\) into \(K\)
+          subvolumes \(\Omega_i\)
+        \item let \(A_i = \int_{\Omega_i}f(x)\dd{x}\)
+        \item take \(N_i=\frac{A_i}{\sum_jA_j} \cdot N\) samples in
+          each subvolume
+        \item efficiency is given by:
+          \(\mathfrak{e} = \frac{\sum_i A_i}{\sum_i
+            A_i/\mathfrak{e}_i}\)
+        \end{itemize}
+        \(\implies\) can optimize in each subvolume independently
+      \end{block}
+    \end{column}
+    \pause
+    \begin{column}{.4\textwidth}
+      \begin{center}
+        {\LARGE
+          How do we choose the \(\Omega_i\)? \pause\\
+          \vspace{1em}
+          \(\implies\) \vegas!  :-) }
+      \end{center}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Observables}
@@ -528,12 +561,10 @@ labelformat=brace, position=top]{subcaption}
   \begin{figure}[p]
     \centering
   \begin{subfigure}[b]{.49\textwidth}
-    \centering \plot[scale=.5]{xs_sampling/histo_sherpa_eta}
-    \caption{histogram of the pseudo-rapidity (\(\eta\))}
+    \centering \plot[scale=.7]{xs_sampling/histo_sherpa_eta}
   \end{subfigure}
   \begin{subfigure}[b]{.49\textwidth}
-    \centering \plot[scale=.5]{xs_sampling/histo_sherpa_pt}
-    \caption{histogram of the transverse momentum (\(\pt\))}
+    \centering \plot[scale=.7]{xs_sampling/histo_sherpa_pt}
   \end{subfigure}
 \end{figure}
 \end{frame}
