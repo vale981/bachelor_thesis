@@ -140,7 +140,7 @@ labelformat=brace, position=top]{subcaption}
 
 \title{A Study of Monte Carlo Methods and their Application to
   Diphoton Production at the Large Hadron Collider}
-\subtitle{Bachelorvortrag}
+\subtitle{Bachelor Thesis Presentation}
 \author{Valentin Boettcher}
 \beamertemplatenavigationsymbolsempty
 
@@ -506,6 +506,10 @@ labelformat=brace, position=top]{subcaption}
         \item<+-> Of course, we can use \vegas\ to provide a better
           \(g\implies\) \result{xs/python/strat_th_samp} \pnote{Has
             problems, not discussing now.}
+          \begin{itemize}
+          \item<+-> this approach leads to problems when \(f\) is not
+            smooth or \emph{very} small some regions
+          \end{itemize}
         \end{itemize}
       \end{results}
     \end{column}
@@ -824,9 +828,7 @@ labelformat=brace, position=top]{subcaption}
 \appendix
 \section{Appendix}
 
-\subsection{More on \vegas}
-
-\begin{frame}{\vegas Details}
+\begin{frame}{\vegas\ Details}
   \begin{columns}
     \begin{column}{.6\textwidth}
       \begin{block}{Algorithm 1D}
@@ -936,5 +938,26 @@ histograms is the same.
     \end{tabular}
     \caption{\label{tab:xscut}Cross sections and cut statistics.}
   \end{table}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}[ht]
+    \rivethist[width=.49\columnwidth]{pheno/azimuthal_angle}
+    \rivethist[width=.49\columnwidth]{pheno/pT_subl}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}[ht]
+    \rivethist[width=.49\columnwidth]{pheno/azimuthal_angle}
+    \rivethist[width=.49\columnwidth]{pheno/pT_subl}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}[ht]
+    \rivethist[width=.49\columnwidth]{pheno/o_angle}
+    \rivethist[width=.49\columnwidth]{pheno/o_angle_cs}
+  \end{figure}
 \end{frame}
 \end{document}
