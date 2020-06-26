@@ -185,63 +185,45 @@ labelformat=brace, position=top]{subcaption}
 \section{Calculation of the \(\qqgg\) Cross Section}
 \subsection{Approach}
 \begin{frame}
-  \begin{columns}[T]
-    \begin{column}{.5\textwidth}
-      \begin{figure}[ht]
-        \centering
-        \begin{subfigure}[c]{.28\textwidth}
-          \centering
-          \begin{tikzpicture}[scale=.6]
-            \begin{feynman}
-              \diagram [small,horizontal=i2 to a] { i2
-                [particle=\(q\)] -- [fermion, momentum=\(p_2\)] a --
-                [fermion, reversed momentum=\(q\)] b, i1
-                [particle=\(\bar{q}\)] -- [anti fermion,
-                momentum'=\(p_1\)] b, i2 -- [opacity=0] i1, a --
-                [photon, momentum=\(p_3\)] f1 [particle=\(\gamma\)], b
-                -- [photon, momentum'=\(p_4\)] f2
-                [particle=\(\gamma\)], f1 -- [opacity=0] f2, };
-            \end{feynman}
-          \end{tikzpicture}
-          \subcaption{u channel}
-        \end{subfigure}
-        \begin{subfigure}[c]{.28\textwidth}
-          \centering
-          \begin{tikzpicture}[scale=.6]
-            \begin{feynman}
-              \diagram [small,horizontal=i2 to a] { i2
-                [particle=\(q\)] -- [fermion, momentum=\(p_2\)] a --
-                [fermion, reversed momentum'=\(q\)] b, i1
-                [particle=\(\bar{q}\)] -- [anti fermion,
-                momentum'=\(p_1\)] b, i2 -- [opacity=0] i1, a --
-                [draw=none] f2 [particle=\(\gamma\)], b -- [draw=none]
-                f1 [particle=\(\gamma\)], f1 -- [opacity=0] f2, };
-              \diagram* { (a) -- [photon] (f1), (b) -- [photon] (f2),
-              };
-            \end{feynman}
-          \end{tikzpicture}
-          \subcaption{\label{fig:qqggfeyn2}t channel}
-        \end{subfigure}
-%
-        \caption{Leading order diagrams for \(\qqgg\).}%
-        \label{fig:qqggfeyn}
-      \end{figure}
-    \end{column}
-    \pause
-    \begin{column}{.5\textwidth}
-      \begin{block}{Task: calculate \(\abs{\mathcal{M}}^2\)}
-        \begin{enumerate}[<+->]
-        \item translate diagrams to matrix elements
-        \item use Casimir's trick to average over spins
-        \item use completeness relation to sum over photon
-          polarizations
-        \item use trace identities to compute the absolute square
-        \item simplify with trigonometric identities
-        \end{enumerate}
-      \end{block}
-      \pause Here: Quark masses neglected.
-    \end{column}
-  \end{columns}
+  \begin{figure}[ht]
+    \centering
+    \begin{subfigure}{.28\textwidth}
+      \centering
+      \begin{tikzpicture}[scale=1]
+        \begin{feynman}
+          \diagram [small,horizontal=i2 to a] { i2 [particle=\(q\)] --
+            [fermion, momentum=\(p_2\)] a -- [fermion, reversed
+            momentum=\(q\)] b, i1 [particle=\(\bar{q}\)] -- [anti
+            fermion, momentum'=\(p_1\)] b, i2 -- [opacity=0] i1, a --
+            [photon, momentum=\(p_3\)] f1 [particle=\(\gamma\)], b --
+            [photon, momentum'=\(p_4\)] f2 [particle=\(\gamma\)], f1
+            -- [opacity=0] f2, };
+        \end{feynman}
+      \end{tikzpicture}
+      \subcaption{u channel}
+    \end{subfigure}
+    \begin{subfigure}{.28\textwidth}
+      \centering
+      \begin{tikzpicture}[scale=1]
+        \begin{feynman}
+          \diagram [small,horizontal=i2 to a] { i2 [particle=\(q\)] --
+            [fermion, momentum=\(p_2\)] a -- [fermion, reversed
+            momentum'=\(q\)] b, i1 [particle=\(\bar{q}\)] -- [anti
+            fermion, momentum'=\(p_1\)] b, i2 -- [opacity=0] i1, a --
+            [draw=none] f2 [particle=\(\gamma\)], b -- [draw=none] f1
+            [particle=\(\gamma\)], f1 -- [opacity=0] f2, }; \diagram*
+          { (a) -- [photon] (f1), (b) -- [photon] (f2), };
+        \end{feynman}
+      \end{tikzpicture}
+      \subcaption{\t channel}
+    \end{subfigure}
+    \caption{Leading order diagrams for \(\qqgg\).}%
+    \label{fig:qqggfeyn}
+  \end{figure}
+  \pause
+  \begin{center}
+    here: massless limit
+  \end{center}
 \end{frame}
 
 \subsection{Result}
@@ -329,11 +311,13 @@ labelformat=brace, position=top]{subcaption}
 
 \begin{frame}
 \pnote{
+- WHAT DOES RHO DO
 - omitting details (law of big numbers, central limit theorem)\\
 - at least three angles of attack\\
 - some sort of importance sampling, volume: stratified sampling\\
 - ADVANTAGES OF MC
-- METHOD NAMES}
+- METHOD NAMES
+}
 \begin{itemize}
   \item<+-> we have:
     \(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\)
@@ -346,11 +330,11 @@ labelformat=brace, position=top]{subcaption}
       \onslide<+->{= \int_\Omega
         \qty[\frac{f(\vb{x})}{\rho(\vb{x})}] \rho(\vb{x}) \dd{\vb{x}} = \EX{\frac{F}{\Rho}}}
     \end{equation}
-  \item<+-> numeric approximation:
+  \item<+-> numeric approximation \({\vb{x}_i \sim \rho}\):
     \begin{equation}
       \label{eq:approxexp}
       \EX{\frac{F}{\Rho}} \approx
-      \frac{1}{N}\sum_{i=1}^N\frac{f(\vb{x_i})}{\rho(\vb{x_i})}
+      \frac{1}{N}\sum_{i=1}^N\frac{f(\vb{x}_i)}{\rho(\vb{x}_i)}
       \xrightarrow{N\rightarrow\infty} I
     \end{equation}
   \item<+-> error approximation:
@@ -715,7 +699,23 @@ labelformat=brace, position=top]{subcaption}
 \end{frame}
 
 \subsection{Results}
-
+\begin{frame}{Cross Sections}
+\pnote{
+- effects of the cuts
+}
+  \begin{table}[ht]
+    \centering
+    \begin{tabular}{l|SSS}
+      Stage & {\(\sigma\) [\si{\pico\barn}]}\\
+      \toprule
+      \stfive & 33.02(7) \\
+      \stfour & 34.08(7) \\
+      \stthree & 33.97(7) \\
+      \sttwo & 34.60(7) \\
+      \stone & 38.74(7) \\
+    \end{tabular}
+  \end{table}
+\end{frame}
 \begin{frame}{Transverse Momentum of the \(\gamma\gamma\) System}
   \begin{columns}
     \begin{column}{.5\textwidth}
@@ -827,6 +827,65 @@ labelformat=brace, position=top]{subcaption}
 
 \appendix
 \section{Appendix}
+\begin{frame}
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+      \begin{figure}[ht]
+        \centering
+        \begin{subfigure}[c]{.28\textwidth}
+          \centering
+          \begin{tikzpicture}[scale=.6]
+            \begin{feynman}
+              \diagram [small,horizontal=i2 to a] { i2
+                [particle=\(q\)] -- [fermion, momentum=\(p_2\)] a --
+                [fermion, reversed momentum=\(q\)] b, i1
+                [particle=\(\bar{q}\)] -- [anti fermion,
+                momentum'=\(p_1\)] b, i2 -- [opacity=0] i1, a --
+                [photon, momentum=\(p_3\)] f1 [particle=\(\gamma\)], b
+                -- [photon, momentum'=\(p_4\)] f2
+                [particle=\(\gamma\)], f1 -- [opacity=0] f2, };
+            \end{feynman}
+          \end{tikzpicture}
+          \subcaption{u channel}
+        \end{subfigure}
+        \begin{subfigure}[c]{.28\textwidth}
+          \centering
+          \begin{tikzpicture}[scale=.6]
+            \begin{feynman}
+              \diagram [small,horizontal=i2 to a] { i2
+                [particle=\(q\)] -- [fermion, momentum=\(p_2\)] a --
+                [fermion, reversed momentum'=\(q\)] b, i1
+                [particle=\(\bar{q}\)] -- [anti fermion,
+                momentum'=\(p_1\)] b, i2 -- [opacity=0] i1, a --
+                [draw=none] f2 [particle=\(\gamma\)], b -- [draw=none]
+                f1 [particle=\(\gamma\)], f1 -- [opacity=0] f2, };
+              \diagram* { (a) -- [photon] (f1), (b) -- [photon] (f2),
+              };
+            \end{feynman}
+          \end{tikzpicture}
+          \subcaption{\label{fig:qqggfeyn2}t channel}
+        \end{subfigure}
+%
+        \caption{Leading order diagrams for \(\qqgg\).}%
+        \label{fig:qqggfeyn}
+      \end{figure}
+    \end{column}
+    \pause
+    \begin{column}{.5\textwidth}
+      \begin{block}{Task: calculate \(\abs{\mathcal{M}}^2\)}
+        \begin{enumerate}[<+->]
+        \item translate diagrams to matrix elements
+        \item use Casimir's trick to average over spins
+        \item use completeness relation to sum over photon
+          polarizations
+        \item use trace identities to compute the absolute square
+        \item simplify with trigonometric identities
+        \end{enumerate}
+      \end{block}
+      \pause Here: Quark masses neglected.
+    \end{column}
+  \end{columns}
+\end{frame}
 
 \begin{frame}{\vegas\ Details}
   \begin{columns}
