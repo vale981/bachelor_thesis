@@ -220,6 +220,19 @@ labelformat=brace, position=top]{subcaption}
     \caption{Leading order diagrams for \(\qqgg\).}%
     \label{fig:qqggfeyn}
   \end{figure}
+  \begin{tikzpicture}
+    \coordinate (origin) at (0,0);
+
+    \draw[-Latex] (origin) -- (-2,0) node[left] {\(p_3\)};
+    \draw[-Latex] (origin) -- (2,0) coordinate (p4) node[right]
+    {\(p_4\)}; \draw[Latex-,rotate=40] (origin) -- (2,0) coordinate
+    (p2) node[right] {\(p_2\)}; \draw[Latex-,rotate=40] (origin) --
+    (-2,0) node[left] {\(p_1\)}; \draw[fill=black] (origin) circle
+    (.03);
+
+    \draw pic["$\theta$", draw=black, <->, angle eccentricity=1.2,
+    angle radius=1cm] {angle=p4--origin--p2};
+  \end{tikzpicture}
   \pause
   \begin{center}
     here: massless limit
@@ -245,18 +258,6 @@ labelformat=brace, position=top]{subcaption}
     \frac{1}{2}\frac{1}{(8\pi)^2}\cdot\frac{\abs{\mathcal{M}}^2}{\ecm^2}\cdot\frac{\abs{p_f}}{\abs{p_i}}
     = \underbrace{\frac{\alpha^2Z^4}{6\ecm^2}}_{\mathfrak{C}}\frac{1+\cos^2(\theta)}{\sin^2(\theta)}
   \end{equation}
-
-  \pause
-  \begin{figure}[ht]
-    \centering
-    \begin{minipage}[c]{0.3\textwidth}
-      \plot[scale=.6]{xs/diff_xs}
-    \end{minipage}
-    \begin{minipage}[c]{0.3\textwidth}
-      \caption{The differential cross section as a function of the
-        polar angle \(\theta\).}
-    \end{minipage}
-  \end{figure}
 \end{frame}
 
 \begin{frame}{Comparison with \sherpa~\cite{Bothmann:2019yzt}}
@@ -299,7 +300,7 @@ labelformat=brace, position=top]{subcaption}
     \;\;\onslide<+->{\(\implies\) Sample it at random points.}
   \end{block}
   \pause
-  \begin{block}{Main Applications}
+  \begin{block}{Concrete Applications}
     \begin{enumerate}
     \item<+-> integrate \(f\) over some volume \(\Omega\)
     \item<+-> treat \(f\) as distribution and take random samples
@@ -447,11 +448,6 @@ labelformat=brace, position=top]{subcaption}
       \end{itemize}
     \end{itemize}
   \end{block}
-\end{frame}
-
-\begin{frame}{Hit or Miss}
-  \centering
-  \animategraphics[loop,scale=.4,autoplay,palindrome]{5}{pi/pi-}{0}{9}
 \end{frame}
 
 \begin{frame}{Hit or Miss}
@@ -806,7 +802,7 @@ labelformat=brace, position=top]{subcaption}
         \item using in \vegas\ whenever possible :)
         \end{itemize}
       \item built a simple \(\ppgg\) event generator
-      \item looked further down the road with sherpa
+      \item looked further down the road with \sherpa
       \end{itemize}
     \end{column}
     \pause
@@ -997,13 +993,6 @@ histograms is the same.
     \end{tabular}
     \caption{\label{tab:xscut}Cross sections and cut statistics.}
   \end{table}
-\end{frame}
-
-\begin{frame}
-  \begin{figure}[ht]
-    \rivethist[width=.49\columnwidth]{pheno/azimuthal_angle}
-    \rivethist[width=.49\columnwidth]{pheno/pT_subl}
-  \end{figure}
 \end{frame}
 
 \begin{frame}
