@@ -7,6 +7,6 @@ slides: slides.tex
 .PHONY: clean
 clean:
 	rm -rf $(OUTDIR)/*
-	rm -r tikz/*
+	rm -rf tikz/*
 	mkdir -p $(OUTDIR)/tikz
 	touch tikz/placeholder

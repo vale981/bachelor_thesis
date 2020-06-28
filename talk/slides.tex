@@ -14,6 +14,8 @@ labelformat=brace, position=top]{subcaption}
 %\setbeameroption{show notes on second screen} %
 \usepackage{animate}
 \usepackage{ifdraft}
+\usetikzlibrary{arrows,shapes,angles,quotes,arrows.meta,external}
+\tikzexternalize[prefix=tikz/]
 
 \graphicspath{ {figs/} }
 \addbibresource{thesis.bib}
@@ -220,7 +222,8 @@ labelformat=brace, position=top]{subcaption}
     \caption{Leading order diagrams for \(\qqgg\).}%
     \label{fig:qqggfeyn}
   \end{figure}
-  \begin{tikzpicture}
+  \begin{center}
+  \begin{tikzpicture}[scale=.8]
     \coordinate (origin) at (0,0);
 
     \draw[-Latex] (origin) -- (-2,0) node[left] {\(p_3\)};
@@ -234,7 +237,7 @@ labelformat=brace, position=top]{subcaption}
     angle radius=1cm] {angle=p4--origin--p2};
   \end{tikzpicture}
   \pause
-  \begin{center}
+
     here: massless limit
   \end{center}
 \end{frame}
