@@ -185,7 +185,7 @@ labelformat=brace, position=top]{subcaption}
   \pnote{Why usefult for ev. gen -> later}
 \end{frame}
 
-\section{Calculation of the \(\qqgg\) Cross Section}
+\section{The \(\qqgg\) Cross Section}
 \subsection{Approach}
 \begin{frame}
   \begin{figure}[ht]
@@ -350,6 +350,7 @@ labelformat=brace, position=top]{subcaption}
                  \textcolor<.->{blue}{\rho(\vb{x})} \textcolor<+->{blue}{\dd{\vb{x}}} \approx \frac{1}{N - 1}\sum_i \qty[I -
                  \frac{f(\vb{x_i})}{\rho(\vb{x_i})}]^2  \label{eq:varI-approx}
     \end{align}
+  \item<+-> No mention of dimensionality :)
   \end{itemize}
 \end{frame}
 
@@ -512,7 +513,7 @@ labelformat=brace, position=top]{subcaption}
     \begin{column}{.6\textwidth}
       \begin{block}{Basic Idea}
         \begin{itemize}
-        \item subdivide sampling volume \(\Omega\) into \(K\)
+        \item subdivide sampling volume \(\Omega\) into
           subvolumes \(\Omega_i\)
         \item let \(A_i = \int_{\Omega_i}f(x)\dd{x}\)
         \item take \(N_i=\frac{A_i}{\sum_jA_j} \cdot N\) samples in
@@ -667,7 +668,6 @@ labelformat=brace, position=top]{subcaption}
   \item intrinsic \(\pt\)
   \item parton showers \pnote{NLO effects}
   \item hadronization
-  \item (NLO matrix elements)
   \item multiple interactions
   \end{itemize}
   \pause \(\implies\) \sherpa\ can model those effects
