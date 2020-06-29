@@ -218,7 +218,7 @@ labelformat=brace, position=top]{subcaption}
           { (a) -- [photon] (f1), (b) -- [photon] (f2), };
         \end{feynman}
       \end{tikzpicture}
-      \subcaption{\t channel}
+      \subcaption{t channel}
     \end{subfigure}
     \caption{Leading order diagrams for \(\qqgg\).}%
     \label{fig:qqggfeyn}
@@ -294,17 +294,17 @@ labelformat=brace, position=top]{subcaption}
 \begin{frame}
 \pnote{
   - Gradually bring in knowledge through distribution.  }
-  \begin{block}{Basic Ideas}
-    \begin{itemize}
-    \item<+-> Given some unknown function
-      \(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\)
-      \ldots
-    \item<+-> \ldots\ how do we answer questions about \(f\)?
-    \end{itemize}
+\begin{block}{Basic Idea}
+  \begin{center}
+  Given some unknown function
+  \(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\)
+  \ldots \\ \pauses\ldots\ how do we answer questions about
+  \(f\)?  \\\pause
     \;\;\onslide<+->{\(\implies\) Sample it at random points.}
-  \end{block}
+  \end{center}
+\end{block}
   \pause
-  \begin{block}{Concrete Applications}
+  \begin{block}{Concrete Applicationss}
     \begin{enumerate}
     \item<+-> integrate \(f\) over some volume \(\Omega\)
     \item<+-> treat \(f\) as distribution and take random samples
@@ -325,8 +325,8 @@ labelformat=brace, position=top]{subcaption}
 }
 \begin{itemize}
   \item<+-> we have:
-    \(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\)
-    and \(\rho\colon \vb{x}\in\Omega\mapsto\mathbb{R}_{> 0}\) with
+    \(f\colon \vb{x}\in\Omega\subset\mathbb{R}^n\mapsto\mathbb{R}\)\quad
+    and\quad \(\rho\colon \vb{x}\in\Omega\mapsto\mathbb{R}_{> 0}\)\quad with\quad
     \(\int_{\Omega}\rho(\vb{x})\dd{\vb{x}} = 1\).
   \item<+-> we seek:
     \begin{equation}
@@ -355,9 +355,9 @@ labelformat=brace, position=top]{subcaption}
 \end{frame}
 
 \begin{frame}{Naive Integration Change of Variables}
-  Choose \(\rho(\vb{x}) = \frac{1}{\abs{\Omega}}\)
-  \onslide<1->{\(\implies I=\frac{\abs{\Omega}}{N}\sum_{i=1}^N
-    f(\vb{x_i})=\abs{\Omega}\cdot\bar{f}\) and
+  Choose \(\rho(\vb{x}) = \frac{1}{\abs{\Omega}}\)\\
+  \onslide<1->{\quad\(\implies I=\frac{\abs{\Omega}}{N}\sum_{i=1}^N
+    f(\vb{x_i})=\abs{\Omega}\cdot\bar{f}\)\quad and\quad
     \(\VAR{\frac{F}{P}}\approx\frac{\abs{\Omega}^2}{N-1}\sum_{i}\qty[f(\vb{x}_i)
     - \bar{f}]^2\)}
   \pause
@@ -440,19 +440,30 @@ labelformat=brace, position=top]{subcaption}
     (choose \(\Omega = [0, 1]\)) and uniformly random samples \(\{x_i\}\)
   \item we seek: a sample \(\{y_i\}\) distributed according to \(f\)
   \end{itemize}
-  \begin{block}<+->{Basic Idea}
-    \begin{itemize}[<+->]
-    \item<.-> let \(x\) be sample of uniform distribution, solve
-      \[\int_{0}^{y}f(x')\dd{x'} = x\cdot\int_0^1f(x')\dd{x'} =
-        x\cdot A\] for y to obtain sample of \(f/A\)
-    \item let \(F\) be the antiderivative of \(f\), then
-      \(y=F^{-1}(x\cdot A + F(0))\)
-      \begin{itemize}
-      \item sometimes analytical form available
-      \item otherwise tackle that numerically
-      \end{itemize}
-    \end{itemize}
-  \end{block}
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \begin{block}<+->{Basic Idea}
+        \begin{itemize}[<+->]
+        \item<.-> let \(x\) be sample of uniform distribution, solve
+          \[\int_{0}^{y}f(x')\dd{x'} = x\cdot\int_0^1f(x')\dd{x'} =
+            x\cdot A\] for \(y\) to obtain sample of \(f/A\)
+        \item let \(F\) be the antiderivative of \(f\), then
+          \(y=F^{-1}(x\cdot A + F(0))\)
+          \begin{itemize}
+          \item sometimes analytical form available
+          \item otherwise tackle that numerically
+          \end{itemize}
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{.5\textwidth}<.(-3)->
+      \begin{figure}
+        \centering
+        \includegraphics[width=\columnwidth]{figs/normal_cdf.pdf}
+        \caption{CDF of the normal distribution.~\cite{wiki:2020no}}
+      \end{figure}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Hit or Miss}
@@ -483,7 +494,7 @@ labelformat=brace, position=top]{subcaption}
 \begin{frame}{Hit or Miss}
   \begin{columns}
     \begin{column}{.4\textwidth}
-      \begin{results}<+->[Results with \(g=a\cdot x^2 + b\)]
+      \begin{results}<+->[Results with \(g=a + b\cdot x^2\)]
         \begin{itemize}
         \item<+-> Modest efficiency gain:
           \result{xs/python/tuned_th_samp}
@@ -543,7 +554,7 @@ labelformat=brace, position=top]{subcaption}
 }
 \begin{itemize}
   \item we want: distributions of other observables \pause
-  \item turns out: simpliy piping samples \(\{x_i\}\) through a map
+  \item turns out: simply piping samples \(\{x_i\}\) through a map
     \(\gamma\colon\Omega\mapsto\mathbb{R}\) is enough
   \end{itemize}
   \pause
@@ -662,15 +673,23 @@ labelformat=brace, position=top]{subcaption}
 \section{Phenomenological Studies}
 
 \begin{frame}{What is missing?}
-  \pause
-  \begin{itemize}[<+->]
-  \item treatement of the beam remnants
-  \item intrinsic \(\pt\)
-  \item parton showers \pnote{NLO effects}
-  \item hadronization
-  \item multiple interactions
-  \end{itemize}
-  \pause \(\implies\) \sherpa\ can model those effects
+  \pause\pnote{of course there's more missing}
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \begin{itemize}[<+->]
+      \item treatement of the beam remnants
+      \item intrinsic \(\pt\)
+      \item parton showers \pnote{NLO effects}
+      \item hadronization
+      \item multiple interactions
+      \end{itemize}
+    \end{column}
+    \begin{column}{.5\textwidth}
+      \begin{center}
+        \pause {\Huge \sherpa\ can model those effects}
+      \end{center}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 
