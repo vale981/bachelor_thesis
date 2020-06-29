@@ -350,6 +350,7 @@ labelformat=brace, position=top]{subcaption}
                  \textcolor<.->{blue}{\rho(\vb{x})} \textcolor<+->{blue}{\dd{\vb{x}}} \approx \frac{1}{N - 1}\sum_i \qty[I -
                  \frac{f(\vb{x_i})}{\rho(\vb{x_i})}]^2  \label{eq:varI-approx}
     \end{align}
+    \pause
   \item<+-> No mention of dimensionality :)
   \end{itemize}
 \end{frame}
@@ -648,10 +649,12 @@ labelformat=brace, position=top]{subcaption}
   \item compatible with \sherpa\
   \item achieved \result{xs/python/pdf/samp_eff}
   \item using \result{xs/python/pdf/num_increments} hypercubes
+    (\(N=10^7\) samples)
   \end{itemize}
 \end{frame}
 
 \begin{frame}[allowframebreaks]{Observables}
+  \pnone{effect of the pt cuts}
   \begin{figure}[hp]
     \centering
     \begin{subfigure}{.49\textwidth}
