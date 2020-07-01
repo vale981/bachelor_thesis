@@ -16,7 +16,6 @@ labelformat=brace, position=top]{subcaption}
 \usepackage{ifdraft}
 \usepackage{appendixnumberbeamer}
 \usetikzlibrary{arrows,shapes,angles,quotes,arrows.meta,external}
-\tikzexternalize[prefix=tikz/]
 
 \graphicspath{ {figs/} }
 \addbibresource{thesis.bib}
@@ -171,12 +170,13 @@ labelformat=brace, position=top]{subcaption}
   \begin{block}{Diphoton Process \(\qqgg\)}
     \begin{itemize}
     \item simple QED process, calculable by hand
-    \item higgs decay channel: \(H\rightarrow \gamma\gamma\)
+    \item background for important higgs decay channel:
+      \(H\rightarrow \gamma\gamma\)
       \begin{itemize}
       \item instrumental in its
         discovery~\cite{Aad:2012tfa,Chatrchyan:2012ufa}
       \end{itemize}
-    \item dihiggs decay \(HH\rightarrow b\bar{b}\gamma\gamma\)
+    \item partial background for dihiggs decay \(HH\rightarrow b\bar{b}\gamma\gamma\)
       \begin{itemize}
       \item process of recent interest~\cite{aaboud2018:sf}
       \end{itemize}
@@ -306,8 +306,8 @@ labelformat=brace, position=top]{subcaption}
   \pause
   \begin{block}{Concrete Applicationss}
     \begin{enumerate}
-    \item<+-> integrate \(f\) over some volume \(\Omega\)
-    \item<+-> treat \(f\) as distribution and take random samples
+    \item integrate \(f\) over some volume \(\Omega\)
+    \item treat \(f\) as distribution and take random samples
     \end{enumerate}
   \end{block}
 \end{frame}
@@ -345,13 +345,13 @@ labelformat=brace, position=top]{subcaption}
   \item<+-> integration error:
     \begin{align}
       \sigma_I^2 &= \frac{\textcolor<+->{blue}{\sigma^2}}{\textcolor<.->{red}{N}} \\
-      \sigma^2 &= \VAR{\frac{F}{\Rho}} = \int_{\textcolor<+(3)->{blue}{\Omega}} \qty[I -
-                 \frac{f(\vb{x})}{\textcolor<+->{blue}{\rho(\vb{x})}}]^2
+      \sigma^2 &= \VAR{\frac{F}{\Rho}} = \int_{\textcolor<+(2)->{blue}{\Omega}} \qty[I -
+                 \frac{f(\vb{x})}{\textcolor<.->{blue}{\rho(\vb{x})}}]^2
                  \textcolor<.->{blue}{\rho(\vb{x})} \textcolor<+->{blue}{\dd{\vb{x}}} \approx \frac{1}{N - 1}\sum_i \qty[I -
                  \frac{f(\vb{x_i})}{\rho(\vb{x_i})}]^2  \label{eq:varI-approx}
     \end{align}
     \pause
-  \item<+-> No mention of dimensionality :)
+  \item<+-> independent of dimensionality :)
   \end{itemize}
 \end{frame}
 
@@ -365,7 +365,7 @@ labelformat=brace, position=top]{subcaption}
   \begin{results}
     \begin{itemize}
     \item<3-> integrating \(\dv{\sigma}{\theta}\) with target error of
-      \(\sigma = \SI{1e-3}{\pico\barn}\) takes
+      \(\SI{1e-3}{\pico\barn}\) takes
       \result{xs/python/xs_mc_N} samples
     \item<4-> integrating \(\dv{\sigma}{\eta}\) takes just
       \result{xs/python/xs_mc_eta_N} samples
@@ -402,11 +402,12 @@ labelformat=brace, position=top]{subcaption}
         \end{enumerate}
       \end{block}
       \pause
-      \begin{results}
+      \begin{results}[Results: Application to \(\dd{\sigma}/\dd{\theta}\)]
         \begin{itemize}
-        \item Total function evaluations:
-        \result{xs/python/xs_mc_θ_vegas_N}\\
-        (for same accuracy as before)
+        \item total function evaluations:
+          \result{xs/python/xs_mc_θ_vegas_N}\\
+          (for same accuracy as before)
+        \item without \vegas\: \result{xs/python/xs_mc_N}
         \end{itemize}
       \end{results}
     \end{column}
@@ -424,7 +425,7 @@ labelformat=brace, position=top]{subcaption}
 
 \begin{frame}{Why Samples?}
   \begin{itemize}[<+->]
-  \item same format as experimental data: direct comparison
+  \item same format as experimental data: direct comparison possible
   \item easy to generate distributions for other observables
   \item events can be ``dressed'' with additional effects
   \end{itemize}
@@ -451,13 +452,13 @@ labelformat=brace, position=top]{subcaption}
         \item let \(F\) be the antiderivative of \(f\), then
           \(y=F^{-1}(x\cdot A + F(0))\)
           \begin{itemize}
-          \item sometimes analytical form available
-          \item otherwise tackle that numerically
+          \item<.-> sometimes analytical form available
+          \item<.-> otherwise tackle that numerically
           \end{itemize}
         \end{itemize}
       \end{block}
     \end{column}
-    \begin{column}{.5\textwidth}<.(-3)->
+    \begin{column}{.5\textwidth}<.(-1)->
       \begin{figure}
         \centering
         \includegraphics[width=\columnwidth]{figs/normal_cdf.pdf}
@@ -469,7 +470,7 @@ labelformat=brace, position=top]{subcaption}
 
 \begin{frame}{Hit or Miss}
   \begin{block}{Basic Idea}
-    \begin{itemize}[<+->]
+    \begin{itemize}
     \item take samples \({x_i}\) distributed according to \(g/B\),
       where \(B=\int_0^1g(x)\dd{x}\) and
       \(\forall x\in\Omega\colon g(x)\geq f(x)\)
@@ -481,9 +482,9 @@ labelformat=brace, position=top]{subcaption}
     \item again: efficiency gain through reduction of variance
     \end{itemize}
   \end{block}
-
-  \begin{results}<+->[Results with \(g=f_{\text{max}}\)]
-    \begin{itemize}[<+->]
+  \pause
+  \begin{results}[Results with \(g=f_{\text{max}}\)]
+    \begin{itemize}
     \item<.-> sampling \(\dv{\sigma}{\cos\theta}\):
       \result{xs/python/naive_th_samp}
     \item sampling \(\dv{\sigma}{\eta}\):
@@ -505,7 +506,7 @@ labelformat=brace, position=top]{subcaption}
             problems, not discussing now.}
           \begin{itemize}
           \item<+-> this approach leads to problems when \(f\) is not
-            smooth or \emph{very} small some regions
+            smooth or \emph{very} small over larger regions
           \end{itemize}
         \end{itemize}
       \end{results}
@@ -555,8 +556,8 @@ labelformat=brace, position=top]{subcaption}
 }
 \begin{itemize}
   \item we want: distributions of other observables \pause
-  \item turns out: simply piping samples \(\{x_i\}\) through a map
-    \(\gamma\colon\Omega\mapsto\mathbb{R}\) is enough
+  \item turns out: reconstructing full event (kinematics, ...) from
+    sampling variables + calculating other observables from that is enough
   \end{itemize}
   \pause
   \begin{figure}[p]
@@ -592,7 +593,9 @@ labelformat=brace, position=top]{subcaption}
         \sigma_{ij} = \int f_i\qty(x_1;Q^2) f_j\qty(x_2;Q^2) \hat{\sigma}_{ij}\qty(x_1,
         x_2, Q^2)\dd{x_1}\dd{x_2}
       \end{equation}
-    \item have to be obtained experimentally (or through lattice QCD\cite{Bhat:2020ktg})
+    \item have to be obtained experimentally (or through lattice
+      QCD\cite{Bhat:2020ktg}) at given \(Q^2\) and evolved with the
+      \emph{DGLAP} equations
     \end{itemize}
   \end{block}
 \end{frame}
@@ -646,7 +649,7 @@ labelformat=brace, position=top]{subcaption}
     {\huge\result{xs/python/pdf/my_sigma}}
   \end{center}
   \begin{itemize}
-  \item compatible with \sherpa\
+  \item compatible with \sherpa: \result{xs/python/pdf/sherpa_sigma}
   \item achieved \result{xs/python/pdf/samp_eff}
   \item using \result{xs/python/pdf/num_increments} hypercubes
     (\(N=10^7\) samples)
@@ -654,7 +657,7 @@ labelformat=brace, position=top]{subcaption}
 \end{frame}
 
 \begin{frame}[allowframebreaks]{Observables}
-  \pnone{effect of the pt cuts}
+  \pnote{effect of the pt cuts}
   \begin{figure}[hp]
     \centering
     \begin{subfigure}{.49\textwidth}
@@ -687,9 +690,9 @@ labelformat=brace, position=top]{subcaption}
       \item multiple interactions
       \end{itemize}
     \end{column}
-    \begin{column}{.5\textwidth}
+    \begin{column}{.5\textwidth}<+->
       \begin{center}
-        \pause {\Huge \sherpa\ can model those effects}
+        {\Huge \sherpa\ can model those effects}
       \end{center}
     \end{column}
   \end{columns}
@@ -721,7 +724,7 @@ labelformat=brace, position=top]{subcaption}
 \end{frame}
 
 \subsection{Results}
-\begin{frame}{Cross Sections}
+\begin{frame}{Fiducial Cross Sections}
 \pnote{
 - effects of the cuts
 }
@@ -746,10 +749,45 @@ labelformat=brace, position=top]{subcaption}
       \end{figure}
     \end{column}
     \begin{column}{.5\textwidth}
-      \begin{itemize}
+      \begin{minipage}[c][.6\textheight][c]{\linewidth}
+        \begin{itemize}
       \item photon system acquires recoil momentum
       \item primordial \(\pt\) enhances xs in low momentum regions
-      \end{itemize}
+        \end{itemize}
+      \end{minipage}
+      \begin{onlyenv}<-+>
+        \begin{figure}
+          \centering
+          \begin{tikzpicture}[remember picture,overlay]
+            \tikzset{yshift=1.2cm}
+            \coordinate (origin) at (0,0);
+
+            \draw[Latex-] (origin) -- (-2,0) node[left] {\(p_1\)};
+            \draw[Latex-] (origin) -- (2,0) coordinate (p4) node[right] {\(p_2\)};
+            \draw[-Latex] (origin) -- (1.32,1.5) coordinate (p2) node[right] {\(p_3\)};
+            \draw[-Latex] (origin) -- (-1.32,-1.5) node[left] {\(p_4\)};
+            \draw[fill=black] (origin) circle (.03);
+          \end{tikzpicture}
+        \end{figure}
+      \end{onlyenv}
+      \begin{onlyenv}<+>
+        \begin{figure}
+          \centering
+          \begin{tikzpicture}[remember picture,overlay]
+            \tikzset{yshift=1.2cm}
+            \coordinate (origin) at (0,.1);
+            \coordinate (right) at (2,0);
+            \coordinate (left) at (-2,0);
+
+            \draw[Latex-] (origin) -- (left) node[left] {\(p_1\)};
+            \draw[Latex-] (origin) -- (right) coordinate (p4) node[right] {\(p_2\)};
+            \draw[-Latex] (origin) -- (1.32,1.7) coordinate (p2) node[right] {\(p_3\)};
+            \draw[-Latex] (origin) -- (-1.32,-1.3) node[left] {\(p_4\)};
+            \draw[fill=black] (origin) circle (.03);
+            \draw[dashed] (left) -- (right);
+          \end{tikzpicture}
+        \end{figure}
+      \end{onlyenv}
     \end{column}
   \end{columns}
 \pnote{
@@ -768,6 +806,9 @@ labelformat=brace, position=top]{subcaption}
     \begin{column}{.5\textwidth}
       \begin{itemize}
       \item boost to higher \(\pt\)
+      \item low \(\pt\lesssim \SI{40}{\giga\electronvolt}\) shape
+        known and expected from QCD resummation of multiple emissions
+        (parton shower)
       \item all but \stone\ stage largely compatible
       \end{itemize}
     \end{column}
@@ -783,7 +824,8 @@ labelformat=brace, position=top]{subcaption}
     \end{column}
     \begin{column}{.5\textwidth}
       \begin{itemize}
-      \item events can be recoiled past the cuts (very rare)
+      \item some events recoiled so both photons acquire
+        \(\pt > \gev{20}\) (very rare)
       \item otherwise shape similar to the \stone\ stage
         \begin{itemize}
         \item largely governed by the PDF
