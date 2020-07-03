@@ -246,6 +246,7 @@ labelformat=brace, position=top]{subcaption}
 \subsection{Result}
 
 \begin{frame}{Result}
+  \pnote{LEADING ORDER}
   \begin{equation}
     \label{eq:averagedm_final}
     \langle\abs{\mathcal{M}}^2\rangle = \frac{4}{3}(gZ)^4
@@ -477,7 +478,7 @@ labelformat=brace, position=top]{subcaption}
     \item accept each sample with the probability~\(f(x_i)/g(x_i)\)
       (importance sampling)
     \item total probability of accepting a sample: \(\mathfrak{e} =
-      A/B \leq 1\) (efficiency)
+      A/B \leq 1\) (efficiency, \(A=\int_0^1f(x)\dd{x}\))
     \item simplest choice \(g=\max_{x\in\Omega}f(x)=f_{\text{max}}\)
     \item again: efficiency gain through reduction of variance
     \end{itemize}
@@ -650,9 +651,8 @@ labelformat=brace, position=top]{subcaption}
   \end{center}
   \begin{itemize}
   \item compatible with \sherpa: \result{xs/python/pdf/sherpa_sigma}
-  \item achieved \result{xs/python/pdf/samp_eff}
+  \item achieved \result{xs/python/pdf/samp_eff} (\(N=10^7\) samples)
   \item using \result{xs/python/pdf/num_increments} hypercubes
-    (\(N=10^7\) samples)
   \end{itemize}
 \end{frame}
 
