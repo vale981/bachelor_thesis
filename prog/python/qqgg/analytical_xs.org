@@ -198,7 +198,7 @@ Let's plot a more detailed view of the xs.
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/7466ab6e4dd5f81d66dae2e1ba4531efa6885336.png]]
+[[file:./.ob-jupyter/76fd6c12bbf149b4207309816f761bcdf5660044.png]]
 
  And now calculate the cross section in picobarn.
  #+BEGIN_SRC jupyter-python :exports both :results raw file :file xs.tex
@@ -225,7 +225,7 @@ Let's plot a more detailed view of the xs.
  #+end_src
 
  #+RESULTS:
- [[file:./.ob-jupyter/4522eb3fbeaa14978f9838371acb0650910b8dbf.png]]
+ [[file:./.ob-jupyter/6c11ca246186eeea4d83adbab28d2bac650d530e.png]]
 
 
  Compared to sherpa, it's pretty close.
@@ -259,7 +259,7 @@ Plot our nice distribution:
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/37306932df4d28e56eff37c1b1dbe5efcf5f38c5.png]]
+[[file:./.ob-jupyter/75a16a47d4f49baccb809d925bbd349a36d945b6.png]]
 
 Define the integrand.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -287,7 +287,7 @@ Plot the integrand. # TODO: remove duplication
       vals.mean() + vals.std(),
       alpha=0.1,
       color="red",
-      label=r"$\sigma$",
+      label=r"$\sigma$ (stddev)",
   )
   ax.legend()
   ax.set_ylim([0, 0.09])
@@ -295,7 +295,7 @@ Plot the integrand. # TODO: remove duplication
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/ae89081fd4dc96b3851ae0ed83ef1a8bf24957a3.png]]
+[[file:./.ob-jupyter/c6475d9a7ff68efac62047df38b6dff727b47ca1.png]]
 *** Integral over θ
 Intergrate σ with the mc method.
 #+begin_src jupyter-python :exports both :results raw drawer
@@ -332,7 +332,7 @@ Plot the intgrand of the pseudo rap.
       vals.mean() + vals.std(),
       alpha=0.1,
       color="red",
-      label=r"$\sigma$",
+      label=r"$\sigma$ (stddev)",
   )
   ax.legend()
   ax.set_ylim([0, 0.09])
@@ -343,7 +343,7 @@ Plot the intgrand of the pseudo rap.
 #+RESULTS:
 :RESULTS:
 : 0.0022315324126441238
-[[file:./.ob-jupyter/df9765373fa441d9bd5b8c72e4570b6e57a4efd1.png]]
+[[file:./.ob-jupyter/8dfec98a513c90cfa5ce0b0fa0c738990a00f545.png]]
 :END:
 
 #+begin_src jupyter-python :exports both :results raw drawer
